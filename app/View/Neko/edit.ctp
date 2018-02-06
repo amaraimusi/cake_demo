@@ -10,7 +10,6 @@ if($noData==true ){
 
 //インクルードするcssファイル
 $cssList = array(
-		'CrudBase/common',
 		'CrudBase/edit',
 );
 

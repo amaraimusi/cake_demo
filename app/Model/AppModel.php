@@ -103,7 +103,9 @@ class AppModel extends Model {
 		}
 	
 		// 更新日時は除去（DB側にまかせる）
-		unset($ent['modified']);
+		if(isset($ent['modified'])){
+			unset($ent['modified']);
+		}
 	
 	
 		return $ent;

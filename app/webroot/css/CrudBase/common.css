@@ -1,6 +1,32 @@
-/* @version 1.0 */
+/* 
+* @version 1.1.1 
+* @date 2015-1-1 | 2016-12-28
+*/
 @CHARSET "UTF-8";
 
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+.sidebar-nav {
+	padding: 9px 0;
+}
+
+/* メニュープルダウン用 */
+.top_menu_pull ul{
+	display:none;
+	position:absolute;
+	width:180px;
+	padding-bottom:10px;
+	background-color:#f8f8f8;
+	
+	z-index:2;
+}
+.top_menu_pull ul a{
+
+	color:#8489ae;
+}
+		
 /* 補足 */
 aside{
 	font-size:0.7em;
@@ -105,3 +131,36 @@ aside{
 	width:30%;
 	text-align:right;
 }
+
+
+.btn-circle {
+width: 30px;
+height: 30px;
+text-align: center;
+padding: 6px 0;
+font-size: 12px;
+line-height: 1.428571429;
+border-radius: 15px;
+}
+.btn-circle.btn-lg {
+width: 50px;
+height: 50px;
+padding: 10px 16px;
+font-size: 18px;
+line-height: 1.33;
+border-radius: 25px;
+}
+.btn-circle.btn-xl {
+width: 70px;
+height: 70px;
+padding: 10px 16px;
+font-size: 24px;
+line-height: 1.33;
+border-radius: 35px;
+}
+
+/* Cake PHPのエラーメッセージ用 */
+.error-message{
+	color:#de5347;
+}
+

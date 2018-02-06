@@ -17,7 +17,8 @@
 <?php 
 $keys=array('Field','Type','Null','Key','Default','Comment');
 foreach($tblList as $i=> $tbl){
-	echo "<h3 id='{$tbl}'>{$tbl}</h3>";
+	$cmTbl = convModelName($tbl);// モデル名に変換する
+	echo "<h3 id='{$tbl}'>{$tbl}\t{$cmTbl}</h3>";
 	
 	$fieldData=$fieldData2[$i];
 	$trs='';
@@ -47,7 +48,30 @@ foreach($tblList as $i=> $tbl){
 	
 }
 ?>
-
+<?php 
+/**
+ * テーブル名からモデル名に変換する
+ * 
+ * @note
+ * テーブル名の末尾が"s"なら削る。
+ *
+ * @param string $tblName テーブル名（例：big_animals)
+ * @return モデル名
+ */
+function convModelName($tblName) {
+	$tblName = strtr($tblName, '_', ' ');
+	$tblName = ucwords($tblName);
+	
+	
+	// 末尾が"s"であるなら削る
+	if(mb_substr($tblName,-1) == 's'){
+		$tblName=mb_substr($tblName,0,mb_strlen($tblName)-1);
+	}
+	
+	
+	return str_replace(' ', '', $tblName);
+}
+?>
 
 <table class='table'>
 <thead>

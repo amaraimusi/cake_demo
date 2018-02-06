@@ -63,5 +63,31 @@ class CrudBase extends Model {
 	
 		return $fields;
 	}
+	
+	/**
+	 * nullでないかチェック(フラグ用）
+	 *
+	 * @note
+	 * false : null,空文字,未セット
+	 * true : TRUE系値,0,false
+	 * @param array $kjs
+	 * @param string $field
+	 * @return boolean
+	 */
+	protected function isnotNull($kjs,$field){
+		if(isset($kjs[$field])){
+			if(empty($kjs[$field])){
+				if($kjs[$field] ==='0' || $kjs[$field] ===0 || $kjs[$field] ===false){
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return true;
+			}
+		}else{
+			return false;
+		}
+	}
 
 }

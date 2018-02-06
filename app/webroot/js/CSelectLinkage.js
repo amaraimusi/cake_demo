@@ -10,8 +10,8 @@
  * 例→ <select id="animal_sel" data-value="4" ></select>
  * ※ param.valueに初期値をセットしても良い
  * 
- * @version 1.2 refreshおよびsetValueを追加
- * @date 2016-11-11 | 2016-11-16
+ * @version 1.3.1 resetを追加
+ * @date 2016-11-11 | 2017-2-8
  * 
  * @param param
  * - main_select_slt	主SELECTのセレクタ	
@@ -182,10 +182,25 @@ var CSelectLinkage =function(param){
 		
 		// 主SELECT要素にdata-value属性がセットされているなら、初期値として取得する
 		var def_value = msElm.attr('data-value');
+		if(!def_value){
+			def_value = '';
+		}
 
 		myself.setValue(def_value);
 	};
 	
+	/**
+	 * リセット
+	 */
+	this.reset = function(){
+		var category_v='';
+		
+		var csElm = $(param.category_select_slt); // カテゴリSELECT要素
+		csElm.val('');
+		
+		// カテゴリSELECTチェンジイベント
+		categorySelectChange(category_v);
+	}
 	
 	
 	
@@ -226,7 +241,7 @@ var CSelectLinkage =function(param){
 		// 未選択オプションを作成
 		var emptyOption = "";
 		if(param.empty){
-			emptyOption = "<option value=''>" + param.empty + "</option>\n";
+			emptyOption = makeEmptyOption();// 未選択optionを作成する
 		}
 		
 		var hash = {} // 選択肢HTMLハッシュテーブル
@@ -240,7 +255,8 @@ var CSelectLinkage =function(param){
 			// 選択肢HTMLを作成する
 			for(var i in list){
 				var ent2 = list[i];
-				opHtm += "<option value='" + ent2.main_v + "'>" + ent2.display_v + "</option>\n";
+				var display_v = xssSanitaizeEncode(ent2.display_v); // XSSサニタイズ（「<>」記号をエンコードしないと選択肢が消えていしまうバグがある）
+				opHtm += "<option value='" + ent2.main_v + "'>" + display_v + "</option>\n";
 			}
 			
 			hash[category_v] = opHtm;
@@ -250,6 +266,22 @@ var CSelectLinkage =function(param){
 		return hash;
 	};
 	
+	/**
+	 * 未選択optionを作成する
+	 * @returns 未選択option
+	 */
+	function makeEmptyOption(){
+		return "<option value=''>" + myself.param.empty + "</option>\n";
+	}
+	
+	//XSSサニタイズエンコード
+	function xssSanitaizeEncode(str){
+		if(typeof str == 'string'){
+			return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		}else{
+			return str;
+		}
+	}
 	
 	
 	
@@ -334,17 +366,18 @@ var CSelectLinkage =function(param){
 		}
 		
 		if(category_v == undefined || category_v == ""){
-			
 			// 全カテゴリフラグがtrueなら全選択HTMLをセットする
 			if(myself.param.all_category_flg){
 				$(myself.param.main_select_slt).html(myself.allOpHtm);
+			}else{
+				emptyOption = makeEmptyOption();// 未選択optionを作成する
+				$(myself.param.main_select_slt).html(emptyOption);
 			}
 			
 		}else{
 			// 主SELECTのoption部分を切り替える
 			changeOptionHtml(category_v);
 		}
-		
 		myself.old_category_v = category_v;
 
 		

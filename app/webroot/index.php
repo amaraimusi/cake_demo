@@ -66,13 +66,13 @@ if (!defined('APP_DIR')) {
 switch($_SERVER['SERVER_NAME']) {
 	case 'localhost':
 		//define('CAKE_CORE_INCLUDE_PATH', 'C:\xampp\htdocs\CakeZss2014');
-		define('CAKE_CORE_INCLUDE_PATH', 'C:\xampp\htdocs\cakephp-2.7.6\lib');
+		define('CAKE_CORE_INCLUDE_PATH', 'C:\xampp\htdocs\cakephp-2.8.5\lib');
 		
 		
 		break;
 	default:
 		//define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
-		define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib-2.7.6');
+		define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib-2.8.5');
 		//define('CAKE_CORE_INCLUDE_PATH', 'amaraimusi.sakura.ne.jp/Cake');
 		break;
 }

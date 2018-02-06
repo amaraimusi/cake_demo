@@ -8,8 +8,8 @@ App::uses('FormHelper', 'View/Helper');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.4.9 tdIdのoptionにcheckbox_nameを追加
- * @date 2016-7-27 | 2016-12-5
+ * @version 1.5.9
+ * @date 2016-7-27 | 2017-3-29
  * @author k-uehara
  *
  */
@@ -27,6 +27,7 @@ class CrudBaseHelper extends FormHelper {
 	private $_clmSortTds = array(); // 列並用TD要素群
 	private $_clmSortMode = 0;		// 列並モード
 	private $_field_data;			// フィールドデータ
+	
 	
 	/**
 	 * モデル名のセッター
@@ -119,6 +120,7 @@ class CrudBaseHelper extends FormHelper {
 				'placeholder' => '-- ID --',
 				'style'=>'width:100px',
 				'title'=>'IDによる検索',
+				'maxlength'=>8,
 		));
 		
 		echo "</div>\n";
@@ -134,11 +136,17 @@ class CrudBaseHelper extends FormHelper {
 	 * @param string $wamei フィールド和名
 	 * @param int $width 入力フォームの横幅（省略可）
 	 * @param string $title ツールチップメッセージ（省略可）
+	 * @param int $maxlength 最大文字数(共通フィールドは設定不要）
 	 */
-	public function inputKjText($kjs,$field,$wamei,$width=200,$title=null){
+	public function inputKjText($kjs,$field,$wamei,$width=200,$title=null,$maxlength=255){
 		
 		if($title==null){
 			$title = $wamei."で検索";
+		}
+		
+		// maxlengthがデフォルト値のままなら、共通フィールド用のmaxlength属性値を取得する
+		if($maxlength==255){
+			$maxlength = $this->getMaxlenIfCommonField($field,$maxlength);
 		}
 
 		echo "<div class='kj_div'>\n";
@@ -150,8 +158,28 @@ class CrudBaseHelper extends FormHelper {
 				'placeholder' => $wamei,
 				'style'=>"width:{$width}px",
 				'title'=>$title,
+				'maxlength'=>$maxlength,
 		));
 		echo "</div>\n";
+	}
+	
+	/**
+	 * 共通フィールド用のmaxlength属性値を取得する
+	 * 
+	 * @param string $field フィールド名
+	 * @return maxlength属性値;
+	 */
+	private function getMaxlenIfCommonField($field,$maxlength){
+		
+		if($field == 'kj_update_user'){
+			$maxlength = 50;
+		}else if($field == 'kj_user_agent'){
+			$maxlength = 255;
+		}else if($field == 'kj_ip_addr'){
+			$maxlength = 16;
+		}
+		
+		return $maxlength;
 	}
 	
 	
@@ -541,10 +569,29 @@ class CrudBaseHelper extends FormHelper {
 		$this->setTd($td,$field);
 	
 	}
+	// TD:改行用文字列表示
+	public function tdStrRN($v,$field=''){
+	
+		if(is_array($v)){
+			$v = $v[$field];
+		}
+		
+		$v = h($v);
+		
+		$v = nl2br($v);// 改行置換
+		
+		$td = "<td><span class='{$field}'>{$v}</span>\n";
+		
+		$this->setTd($td,$field);
+	
+	}
+	
 	public function tpStr($v,$wamei){
 		$v = h($v);
 		$this->tblPreview($v,$wamei);
 	}
+	
+	
 	
 	
 	
@@ -627,6 +674,7 @@ class CrudBaseHelper extends FormHelper {
 		}
 
 		$v2 = $this->propList($v,$list);
+		$v2 = h($v2);
 		
 		$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";
 		$this->setTd($td,$field);
@@ -681,7 +729,7 @@ class CrudBaseHelper extends FormHelper {
 	 *
 	 * @param unknown $v プロパティまたはエンティティ
 	 * @param string $field フィールド名
-	 * @param int $strLen 表示文字数（バイト）
+	 * @param int $strLen 表示文字数（バイト）(省略時は無制限に文字表示）
 	 */
 	public function tdNote($v,$field='',$strLen = 30){
 		
@@ -693,7 +741,11 @@ class CrudBaseHelper extends FormHelper {
 		$v2="";
 		if(!empty($v)){
 			$v = h($v);
-			$v2=mb_strimwidth($v, 0, $strLen, "...");
+			if(mb_strlen($v) > $strLen){
+				$v2=mb_strimwidth($v, 0, $strLen, "...");
+			}else{
+				$v2 = $v;
+			}
 			$v2= str_replace('\\r\\n', ' ', $v2);
 			$v2= str_replace('\\', '', $v2);
 		}
@@ -701,6 +753,32 @@ class CrudBaseHelper extends FormHelper {
 		$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
+	
+	
+	/**
+	 * ノートなどの長文を改行を含めてそのまま表示する
+	 *
+	 * @param unknown $v プロパティまたはエンティティ
+	 * @param string $field フィールド名
+	 */
+	public function tdNotePlain($v,$field=''){
+		
+		if(is_array($v)){
+			$v = $v[$field];
+		}
+
+		if(!empty($v)){
+			$v = h($v);
+			$v=nl2br($v);
+		
+		}
+
+		$td = "<td><div class='{$field}' >{$v}</div>\n";
+		$this->setTd($td,$field);
+	}
+	
+	
+	
 	
 	
 	public function tpNote($v,$wamei){
@@ -775,6 +853,53 @@ class CrudBaseHelper extends FormHelper {
 
 	}
 	
+	
+	/**
+	 * サムネイルと拡大画像プレビュー Lity.js用
+	 * @param array $ent エンティティ
+	 * @param string $field ﾌｨｰﾙﾄﾞ
+	 * @param string $thum_dir_path サムネイル画像のディレクトリパス
+	 * @param string $orig_dir_path オリジナル画像のディレクトリパス
+	 * @param bool $chash false:キャッシュから画像を読み込まない(デフォルトはtrue)
+	 * @param string $no_img_fp 画像ファイルが存在しないときに表示する画像パス（省略可）
+	 */
+	public function tdThumImgForLity($ent,$field,$thum_dir_path,$orig_dir_path,$chash=true,$no_img_fp=""){
+
+		$dt = "";
+		if(empty($chash)){
+			$dt = '?'.date('Ymdhis');
+		}
+		
+		$fn = $ent[$field];
+		
+
+		
+		$thum_fp="";
+		$orig_fp="";
+		if(empty($fn)){
+			if(empty($no_img_fp)){
+				$no_img_fp = 'img/icon/no_image.png';
+			}
+			$thum_fp = $no_img_fp;
+			$orig_fp = $no_img_fp;
+		}else{
+			$thum_fp = $thum_dir_path.$fn.$dt;
+			$orig_fp = $orig_dir_path.$fn.$dt;
+			
+		}
+		
+		$td_html = "<td>".
+				"<a href='{$orig_fp}' data-lity='data-lity' />".
+				"<img src='{$thum_fp}' data-file-preview = '{$field}' class='{$field}_display' title='{$fn}' /></a>".
+				"<span class='{$field}' style='display:none'>{$fn}</span>".
+				"</td>";
+		
+		
+		$this->setTd($td_html,$field);
+	}
+	
+	
+	
 	/**
 	 * プロパティのプレビュー表示
 	 * @param unknown $v プロパティの値
@@ -797,35 +922,38 @@ class CrudBaseHelper extends FormHelper {
 	 * @param string $field フィールド名
 	 * @param string $wamei 和名
 	 * @param int $width 入力フォーム幅
-	 * @param string $title ツールチップ（省略可）
+	 * @param array option ベースoption。文字列を指定するとtitle属性になる
 	 */
-	public function editText($ent,$field,$wamei,$width=200,$title=null){
+	public function editText($ent,$field,$wamei,$width=200,$option=array()){
+	
+
+		if(!is_array($option)){
+			$title = $option;
+			$option = array('title'=>$title);
+		}
+	
+		echo
+		"<tr>".
+		" 	<td>{$wamei}</td>".
+		" 	<td>";
+	
+		$option['id'] = $field;
+		$option['value'] = $ent[$field];
+		$option['type'] = 'text';
+		$option['label'] = false;
+		$option['div'] = false;
+		$option['placeholder'] = "-- {$wamei} --";
 		
-		
-		echo 
-			"<tr>".
-			" 	<td>{$wamei}</td>".
-			" 	<td>";
-		
-		$option = array(
-				'id'=>$field,
-				'value' => $ent[$field],
-				'type' => 'text',
-				'label' => false,
-				'div' =>false,
-				'placeholder' => "-- {$wamei} --",
-				'style'=>"width:{$width}px;",
-		);
-		
-		if(!empty($title)){
-			$option['title'] = $title;
+		if(!empty($option['style'])){
+			$option['style'] = "width:{$width}px;";
 		}
 		
+	
 		echo $this->input($this->_mdl.$field,$option);
-
+	
 		echo
-			" 	</td>".
-			" </tr>";
+		" 	</td>".
+		" </tr>";
 	}
 	
 	
@@ -1303,9 +1431,12 @@ class CrudBaseHelper extends FormHelper {
 		
 		foreach($list as $v=>$n){
 			$selected = '';
-			if($value===$v){
+			if($value==$v){
 				$selected='selected';
 			}
+			
+			$n = str_replace(array('<','>'),array('&lt;','&gt;'),$n);
+
 			echo "<option value='{$v}' {$selected}>{$n}</option>\n";
 			
 		}
@@ -1351,7 +1482,7 @@ class CrudBaseHelper extends FormHelper {
 	 * 
 	 */
 	public function radioForMult($name,$value,$list,$option=null){
-		// ■■■□□□■■■□□□■■■□□□保留
+		
 		// オプションから各種属性文字を作成する。
 		$optionStr = "";
 		if(!empty($option)){
@@ -1373,12 +1504,130 @@ class CrudBaseHelper extends FormHelper {
 			if($value===$v){
 				$selected='selected';
 			}
+			$n = str_replace(array('<','>'),array('&lt;','&gt;'),$n);
 			echo "<option value='{$v}' {$selected}>{$n}</option>\n";
 			
 		}
 		
 		echo "</select>\n";
 	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * グループ分類SELECT要素を作成する
+	 * @param int $x_name name属性
+	 * @param any $value 初期の値
+	 * @param array $grpList グループ分類リスト
+	 * 	- グループ分類リストの構造例
+	 * 	(int) 17 => array(
+	 *		'label' => '桃太郎',
+	 *		'optgroup_value' => 98,
+	 *		'list' => array(
+	 *			(int) 118 => 'body1.png',
+	 *			(int) 119 => 'eye1.png',
+	 *	(int) 22 => array(
+	 *		'label' => '怪しい影',
+	 *		'optgroup_value' => 99,
+	 *		'list' => array(
+	 *			(int) 144 => 'silhouette.png',
+	 * @param array $option オプション。主にSELECT要素の各種属性値
+	 * - empty 未選択のテキストをセットする。（値要素は空値である。）
+	 */
+	public function selectOptgroup($x_name,$value,$grpList,$param=null){
+		
+		
+		// オプションからselect要素の属性群文字列を作成する
+		$attr_str = "";
+		$empty = null;
+		if($param){
+			foreach($param as $attr_key => $attr_value){
+				if($attr_key == 'empty'){
+					$empty = $attr_value;
+					continue;
+				}
+				$attr_str .= ' '.$attr_key.'="'.$attr_value.'"';
+			}
+		}
+		
+		// ヘッド部分を作成
+		$h_head = "<select name=\"{$x_name}\" {$attr_str}>\n";
+		
+		
+		
+		// 未選択部分の作成
+		$h_data = "";
+		if(!empty($empty)){
+			$h_data = "<option value=\"\">".$empty."</option>\n";
+		}
+		
+		// リスト部分を作成
+		foreach($grpList as $c_i =>$ent){
+			
+			// グループラベルを取得、およびoptgroup要素を組み立て
+			$label = $ent['label'];
+			if(empty($label)){
+				$label = '未分類';
+			}
+			
+			// グループオプション属性の組み立て
+			$optgroup_value_str = "";
+			if(isset($ent['optgroup_value'])){
+				$optgroup_value_str = "data-value = '{$ent['optgroup_value']}'";
+			}
+			
+			$h_data .= "<optgroup label=\"{$label}\" {$optgroup_value_str}>\n";
+			
+			// option要素を組み立てる
+			$list = $ent['list'];
+			foreach($list as $opt_val => $opt_name){
+				$selected = "";
+				if($opt_val == $value){
+					$selected = "selected";
+				}
+				
+				$h_data .= "<option value=\"{$opt_val}\" {$selected}>{$opt_name}</option>\n";
+			}
+			
+			$h_data .= "</optgroup>\n";
+			
+		}
+		
+		
+		// フッター部分を追加
+		$html = $h_head.$h_data."</select>\n";
+		
+		return $html;
+		
+		
+	}
+	
+	
+	
+	/**
+	 * CSVボタンとそれに属するプルダウンメニューを作成する
+	 * @param string $csv_dl_url
+	 */
+	public function makeCsvBtns($csv_dl_url){
+		
+		$html = "
+		<a href='{$csv_dl_url}' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-save'></span>CSVエクスポート</a>
+		<input type='button' value='CSVインポート' class='btn btn-default btn-xs' onclick='jQuery(\"#csv_fu_div\").toggle(300);' />
+		<div id='csv_fu_div' style='display:none'><input type='file' id='csv_fu' /></div>
+		";
+		
+		echo $html;
+		
+	}
+	
+	
+	
+	
+	
 	
 	
 	

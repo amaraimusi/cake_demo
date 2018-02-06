@@ -2,26 +2,26 @@
 $this->CrudBase->setModelName('Neko');
 
 $this->assign('css', $this->Html->css(array(
-		'clm_show_hide',				//列表示切替
-		'ympicker_rap',					//年月ダイアログ
-		'nouislider.min',				//数値範囲入力スライダー・noUiSlider
-		'NoUiSliderRap',				//noUiSliderのラップ
-		'CrudBase/common',				//CRUD共通
-		'CrudBase/index'				//CRUD indexページ共通
+		'clm_show_hide',				// 列表示切替
+		'ympicker_rap',					// 年月ダイアログ
+		'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
+		'NoUiSliderRap',				// noUiSliderのラップ
+		'CrudBase/index'				// CRUD indexページ共通
 )));
 
 $this->assign('script', $this->Html->script(array(
-		'clm_show_hide',				//列表示切替
-		'date_ex',						//日付関連関数集
-		'jquery.ui.ympicker',			//年月選択ダイアログ
-		'ympicker_rap',					//年月選択ダイアログのラップ
-		'nouislider.min',				//数値範囲入力スライダー・noUiSlider
-		'NoUiSliderRap',				//noUiSliderのラップ
-		'AjaxCRUD',						//AjaxによるCRUD
-		'livipage',						//ページ内リンク先プレビュー
-		'ProcessWithMultiSelection',	//一覧のチェックボックス複数選択による一括処理
-		'CrudBase/index',				//CRUD indexページ共通
-		'Neko/index'					//当画面専用JavaScript
+		'clm_show_hide',				// 列表示切替
+		'date_ex',						// 日付関連関数集
+		'jquery.ui.ympicker',			// 年月選択ダイアログ
+		'ympicker_rap',					// 年月選択ダイアログのラップ
+		'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
+		'NoUiSliderRap',				// noUiSliderのラップ
+		'AjaxCRUD',						// AjaxによるCRUD
+		'livipage',						// ページ内リンク先プレビュー
+		'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
+		'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
+		'CrudBase/index',				// CRUD indexページ共通
+		'Neko/index'					// 当画面専用JavaScript
 ),array('charset'=>'utf-8')));
 	
 	
@@ -51,53 +51,66 @@ $this->assign('script', $this->Html->script(array(
 		echo $this->Form->create('Neko', array('url' => true ));
 	?>
 
-
-	<div id="kjs1">
-		<?php $this->CrudBase->inputKjText($kjs,'kj_neko_name','ネコ名前',300); ?>
-		<?php $this->CrudBase->inputKjNengetu($kjs,'kj_neko_date','ネコ日付'); ?>
-	</div><!-- kjs1 -->
 	
 	<div style="clear:both"></div>
 	
-	<div id="kjs2">
+	<div id="detail_div" style="display:none">
 		
 		<?php 
 		
 		// --- Start kj_input
+		$this->CrudBase->inputKjText($kjs,'kj_neko_name','ネコ名前',300);
+		$this->CrudBase->inputKjNengetu($kjs,'kj_neko_date','ネコ日付');
 		$this->CrudBase->inputKjId($kjs); 
 		$this->CrudBase->inputKjNouislider($kjs,'neko_val','ネコ数値'); 
 		$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
 		$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
 		$this->CrudBase->inputKjText($kjs,'kj_note','備考',200,'部分一致検索'); 
 		$this->CrudBase->inputKjDeleteFlg($kjs);
+		echo "<div style='clear:both'></div>";
 		$this->CrudBase->inputKjText($kjs,'kj_update_user','更新者',150);
 		$this->CrudBase->inputKjText($kjs,'kj_ip_addr','更新IPアドレス',200);
 		$this->CrudBase->inputKjCreated($kjs);
 		$this->CrudBase->inputKjModified($kjs);
+		echo "<div style='clear:both'></div>";
 		$this->CrudBase->inputKjLimit($kjs);
 		// --- End kj_input
+		echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));
 		
 		echo $this->element('CrudBase/crud_base_index');
+		
+		$csv_dl_url = $this->html->webroot . 'neko/csv_download';
+		$this->CrudBase->makeCsvBtns($csv_dl_url);
 		?>
+	
 
-	</div><!-- kjs2 -->
+	<div style="margin-top:40px">
+		
+	</div>
 
-	<div id="func_btns">
-		<div class="kj_div">
-			<?php echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));?>
-		</div>
-		<div class="kj_div" style="margin-top:8px">
-			<div class="btn-group">
-				<input type="button" value="詳細" onclick="show_kj_detail()" class="btn btn-primary btn-sm" />
+	</div><!-- detail_div -->
 
+	<div id="func_btns" >
+		
+			<div class="line-left">
+				<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default btn-sm">
+					<span class="glyphicon glyphicon-cog"></span>
+				</button>
 
-				<?php $this->CrudBase->newBtn();?>
-				
-
-				
 			</div>
-		</div>
+			
+			<div class="line-middle"></div>
+			
+			<div class="line-right">
+				<?php 
+					// 新規入力ボタンを作成
+					$newBtnOption = array(
+							'scene'=>'<span class="glyphicon glyphicon-plus"></span>追加'
+					);
+					$this->CrudBase->newBtn($newBtnOption);
+				?>
 
+			</div>
 
 
 
@@ -123,7 +136,7 @@ $this->assign('script', $this->Html->script(array(
 	<?php echo $pages['page_index_html'];//ページ目次 ?>
 </div>
 
-
+<!-- 一覧テーブル -->
 <table id="neko_tbl" border="1"  class="table table-striped table-bordered table-condensed">
 
 <thead>
@@ -193,6 +206,7 @@ foreach($data as $i=>$ent){
 		</div>
 	</div>
 	<div class="panel-body">
+	<div class="err text-danger"></div>
 	<table><tbody>
 
 		<!-- Start ajax_form_new_start -->
@@ -237,7 +251,7 @@ foreach($data as $i=>$ent){
 	</tbody></table>
 	
 
-	<button type="button" onclick="ajaxCrud.newInpReg();" class="btn btn-success">
+	<button type="button" onclick="newInpRegRap();" class="btn btn-success">
 		<span class="glyphicon glyphicon-ok"></span>
 	</button>
 
@@ -257,6 +271,7 @@ foreach($data as $i=>$ent){
 		</div>
 	</div>
 	<div class="panel-body">
+	<div class="err text-danger"></div>
 	<table><tbody>
 
 		<!-- Start ajax_form_edit_start -->
@@ -309,7 +324,7 @@ foreach($data as $i=>$ent){
 	
 	
 
-	<button type="button"  onclick="ajaxCrud.editReg();" class="btn btn-success">
+	<button type="button"  onclick="editRegRap();" class="btn btn-success">
 		<span class="glyphicon glyphicon-ok"></span>
 	</button>
 	<hr>

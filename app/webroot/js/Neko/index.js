@@ -25,18 +25,13 @@ var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複
  * - 列表示切替機能の組み込み
  * - 数値範囲系の検索入力フォームに数値範囲入力スライダーを組み込む
  * 
- * @version 1.1
- * @date 2016-1-22 列並替機能に対応
- * @date 2015-09-16 新規作成
+ * @version 1.2
+ * @date 2015-9-16 | 2016-12-14
  * @author k-uehara
  */
 function init(){
 	
 	//AjaxによるCRUD
-	
-	// ■■■□□□■■■□□□■■■□□□
-	//var field_data = ['id','neko_val','neko_name','neko_date','neko_group','neko_dt','note','delete_flg','update_user','ip_addr','created','modified',];
-	
 	ajaxCrud = new AjaxCRUD({
 			'tbl_slt':'neko_tbl',
 			'edit_reg_url':'neko/ajax_reg',
@@ -91,6 +86,25 @@ function init(){
 		'ajax_url':'neko/ajax_pwms',
 			});
 	// --- End js_index_date
+	
+
+	// 新規入力フォームのinput要素にEnterキー押下イベントを組み込む。
+	$('#ajax_crud_new_inp_form input').keypress(function(e){
+		if(e.which==13){ // Enterキーである場合
+			newInpRegRap(); // 登録処理
+		}
+	});
+	
+	// 編集フォームのinput要素にEnterキー押下イベントを組み込む。
+	$('#ajax_crud_edit_form input').keypress(function(e){
+		if(e.which==13){ // Enterキーである場合
+			editRegRap(); // 登録処理
+		}
+	});
+	
+	// CSVインポートの初期化  <CrudBase/index.js>
+	initCsvImportFu('neko/csv_fu');
+	
 }
 
 
@@ -155,45 +169,25 @@ function moveClmSorter(){
 
 
 
-////新規入力登録
-//function newInpReg(){
-//	
-//	// DBへ登録。DB登録後、画像アップロードを行う。
-//	ajaxCrud.newInpReg(afterRegNew);
-//}
-//
-//
-//
-///**
-// * アイコン画像をAjaxアップロードした後のイベント。（新規入力フォーム用）
-// * 
-// * フォームおよび一覧にアップロードしたアイコン画像やファイル名を表示させる。
-// * 
-// * @param fn アップロードされたファイル名
-// */
-//function afterRegNew(ent){
-//	
-//
-////	var fn = ent.icon_fn;
-////
-////	var ent = ajaxCrud.getEntity(-1);
-////	var app_id = ent.id;
-//	
-//
-//	// 現在新規入力中の行から、指定したフィールドに紐づくTD要素を取得する
-//	var td = ajaxCrud.getTd(-1,'icon_fn');
-//	
-////	// TD要素内の各要素へアイコン画像やファイル名などをセットする。
-////	var icon_img = td.find('.icon_img');
-////	var path = "game_rs/app" + app_id + "/app_icon/" + fn;
-////	icon_img.attr('src',path);
-////	icon_img.attr('title',fn);
-////	var icon_span = td.find('span');
-////	icon_span.html(fn);
-//	
-//
-//	
-//}
+
+
+
+/**
+ * 新規入力フォームの登録ボタンアクション
+ */
+function newInpRegRap(){
+	ajaxCrud.newInpReg(null,null);
+}
+
+
+
+/**
+ * 編集フォームの登録ボタンアクション
+ */
+function editRegRap(){
+	ajaxCrud.editReg(null,null);
+}
+
 
 
 

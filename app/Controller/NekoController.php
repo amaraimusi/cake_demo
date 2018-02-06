@@ -73,6 +73,10 @@ class NekoController extends CrudBaseController {
 		$res=$this->index_before('Neko',$this->request->data);//indexアクションの共通先処理(CrudBaseController)
 		$kjs=$res['kjs'];//検索条件情報
 		$paginations=$res['paginations'];//ページネーション情報
+		
+		// SQLインジェクション対策用のサニタイズをする。
+		App::uses('Sanitize', 'Utility');
+		$kjs = Sanitize::clean($kjs, array('encode' => false));
 
 		//一覧データを取得
 		$data=$this->Neko->findData($kjs,$paginations['page_no'],$paginations['limit'],$paginations['find_order']);
@@ -234,10 +238,10 @@ class NekoController extends CrudBaseController {
 	
 		}
 	
+		//■■■□□□■■■□□□■■■□□□
+		//$ent=Sanitize::clean($ent, array('encode' => true));//サニタイズ（XSS対策）
 	
-		$ent=Sanitize::clean($ent, array('encode' => true));//サニタイズ（XSS対策）
-	
-		$json_data=json_encode($ent);//JSONに変換
+		$json_data=json_encode($ent,true);//JSONに変換
 	
 		return $json_data;
 	}
@@ -263,13 +267,9 @@ class NekoController extends CrudBaseController {
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
 		$ent = json_decode($json,true);
-	
-	
-		// 更新ユーザーなど共通フィールドをセットする。
-		$ent = $this->setCommonToEntity($ent);
-	
-		// ★無効フラグをONにする。
-		$ent['delete_flg'] = 1;
+
+		// 削除用のエンティティを取得する
+		$ent = $this->getEntForDelete($ent['id']);
 	
 		// エンティティをDB保存
 		$this->Neko->begin();
@@ -282,7 +282,21 @@ class NekoController extends CrudBaseController {
 		$json_data=json_encode($ent);//JSONに変換
 	
 		return $json_data;
-	}	
+	}
+	
+	
+	/**
+	 * CSVインポート | AJAX
+	 *
+	 * @note
+	 *
+	 */
+	public function csv_fu(){
+		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		$this->csv_fu_base($this->Neko,array('id','neko_val','neko_name','neko_date','neko_group','neko_dt','note'));
+		
+	}
 	
 
 
@@ -515,7 +529,7 @@ class NekoController extends CrudBaseController {
 								'name'=>'ID',//HTMLテーブルの列名
 								'row_order'=>'Neko.id',//SQLでの並び替えコード
 								'clm_sort_no'=>0,//列の並び順
-								'clm_show'=>1,//初期の列表示	0:非表示	1:表示
+								'clm_show'=>1,//デフォルト列表示 0:非表示 1:表示
 						),
 						'neko_val'=>array(
 								'name'=>'ネコ数値',

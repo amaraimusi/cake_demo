@@ -6,12 +6,13 @@
  * ディレクトリ存在チェックメソッドを備える。
  * ディレクトリ内のファイルをすべて削除するメソッドを備える。
  *
- * @version 2.2
+ * @version 2.3
  * ★履歴
  * 2010/10/22	新規作成
  * 2015/8/6		リニューアル
  * 2015/8/10	dirClearメソッドを追加
  * 2016/10/27	copyにコピー成功可否レスポンスを追加する
+ * 2017/2/21	パーミッションに対応
  *
  * @author uehara
  */
@@ -23,9 +24,10 @@ class CopyEx{
 	 * 日本語ファイルに対応
 	 * @param string $sourceFn コピー元ファイル名
 	 * @param string $copyFn コピー先ファイル名
+	 * @param int8 $permission ディレクトリまたはファイルのパーミッション
 	 * @return true:コピー成功  false:コピー失敗
 	 */
-	public function copy($sourceFn,$copyFn){
+	public function copy($sourceFn,$copyFn,$permission = 0777){
 
 		$res = null;
 		
@@ -44,6 +46,11 @@ class CopyEx{
 			$sourceFn=mb_convert_encoding($sourceFn,'SJIS','UTF-8');
 			$copyFn=mb_convert_encoding($copyFn,'SJIS','UTF-8');
 			$res = @copy($sourceFn,$copyFn);
+			if($res){
+				chmod($copyFn,$permission);
+			}
+
+			
 		}else{
 
 			//存在しない場合。
@@ -62,7 +69,8 @@ class CopyEx{
 				}
 
 				if (!($this->is_dir_ex($dd))){
-					mkdir($dd);//ディレクトリを作成
+					mkdir($dd,$permission);//ディレクトリを作成
+					chmod($dd,$permission);
 				}
 
 			}
@@ -70,6 +78,7 @@ class CopyEx{
 			$sourceFn=mb_convert_encoding($sourceFn,'SJIS','UTF-8');
 			$copyFn=mb_convert_encoding($copyFn,'SJIS','UTF-8');
 			$res = @copy($sourceFn,$copyFn);//ファイルをコピーする。
+			chmod($copyFn,$permission);
 
 		}
 		

@@ -180,6 +180,10 @@ class Neko extends AppModel {
 		if(!empty($kjs['kj_ip_addr'])){
 			$cnds[]="Neko.ip_addr = '{$kjs['kj_ip_addr']}'";
 		}
+		
+		if(!empty($kjs['kj_user_agent'])){
+			$cnds[]="Neko.user_agent LIKE '%{$kjs['kj_user_agent']}%'";
+		}
 
 		if(!empty($kjs['kj_created'])){
 			$kj_created=$kjs['kj_created'].' 00:00:00';

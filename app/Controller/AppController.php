@@ -154,11 +154,32 @@ class AppController extends Controller {
 		}
 		
 		// 更新日時は除去（DB側にまかせる）
-		unset($ent['modified']);
-		
+		if(isset($ent['modified'])){
+			unset($ent['modified']);
+		}
 		
 		return $ent;
 		
+	}
+	
+	/**
+	 * 削除用のエンティティを取得する
+	 * @param int $id ID
+	 */
+	protected function getEntForDelete($id){
+		if(empty($id)){
+			throw new Exception('IDが空です。');
+		}
+		
+		$ent2 = array(
+				'id'=>$id,
+				'delete_flg'=>1,
+		);
+		
+		// 更新ユーザーなど共通フィールドをセットする。
+		$ent2 = $this->setCommonToEntity($ent2);
+		
+		return $ent2;
 	}
     
     

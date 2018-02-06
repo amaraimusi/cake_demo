@@ -2,7 +2,7 @@
 <?php
 $this->CrudBase->setModelName('Neko');
 
-$this->assign('css', $this->Html->css(array('CrudBase/common','CrudBase/detail')));
+$this->assign('css', $this->Html->css(array('CrudBase/detail')));
 ?>
 
 <h2>ネコ・詳細</h2>

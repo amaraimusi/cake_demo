@@ -5,8 +5,8 @@
  * @note
  * 多重構造のデータからplist用のデータに変換するクラス。
  * 
- * @version 1.1
- * @date 2016-11-22
+ * @version 1.3
+ * @date 2016-11-22 | 2017-4-5
  * @author k-uehara
  *
  */
@@ -36,17 +36,12 @@ class PlistConverter{
 		$lines[] = "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">";
 		$lines[] = "<plist version=\"1.0\">";
 
+
+		// 構造変換を実行する(※高速化のため$linesに値がセットされる）
+		$this->excuteConvert($data,null,$lines,0,0);
+
+
 		
-		// データが通常配列であるかそれとも連想配列であるかを識別する。
-		$ass_flg = 1; // 連想配列フラグ  0:通常配列  , 1:連想配列
-		if (array_values($data) === $data) {
-			$ass_flg = 0;
-		}
-
-		// 構造変換を実行する
-		$lines = $this->excuteConvert($data,null,$lines,0,$ass_flg);
-
-	
 		// フッター部分を組み立てる
 		$lines[] = "</plist>";
 
@@ -54,26 +49,31 @@ class PlistConverter{
 		
 	}
 	
+	
+
+	
 	/**
 	 * 構造変換を実行する
-	 * 
+	 *
 	 * @note
+	 * 再帰呼出しを行っている特殊関数である。
 	 * 内部で当メソッドを再帰呼出ししている。
-	 * 
+	 * $linesが出力であるが高速化のため、returnでなく参照引数としている。
+	 *
 	 * @param unknown $data
 	 * @param multi $key キー
-	 * @param array $lines 行リスト
+	 * @param array $lines 行リスト（当関数の出力でもある）
 	 * @param int $deep 深層値
 	 * @param bool $ass_flg 連想配列フラグ  0:通常配列  , 1:連想配列
-	 * @return 行リスト
+	 * @return  注意：returnすると低速化するため、returnをしてはならない!!
 	 */
-	private function excuteConvert($data,$key,$lines,$deep,$ass_flg){
-		
+	private function excuteConvert(&$data,$key,&$lines,$deep,$ass_flg){
+	
 		$ind = $this->inds[$deep];
-		
+	
 		// データは配列系（通常配列or連想配列）である場合
 		if(is_array($data)){
-			
+	
 			// データは連想配列である場合
 			if (array_values($data) === $data) {
 				$deep++;
@@ -82,11 +82,11 @@ class PlistConverter{
 				}
 				$lines[] = $ind.'<array>';
 				foreach($data as $key2 => $v){
-					$lines = $this->excuteConvert($v,$key2,$lines,$deep,0);
+					$this->excuteConvert($v,$key2,$lines,$deep,0);
 				}
 				$lines[] = $ind.'</array>';
-			} 
-			
+			}
+	
 			// データは通常配列である場合
 			else {
 				$deep++;
@@ -95,13 +95,13 @@ class PlistConverter{
 				}
 				$lines[] = $ind.'<dict>';
 				foreach($data as $key2 => $v){
-					$lines = $this->excuteConvert($v,$key2,$lines,$deep,1);
+					$this->excuteConvert($v,$key2,$lines,$deep,1);
 				}
 				$lines[] = $ind.'</dict>';
 			}
-			
+	
 		}
-		
+	
 		// データはプリミティブである場合（配列でない場合）
 		else{
 			if($ass_flg){
@@ -113,13 +113,42 @@ class PlistConverter{
 			}else{
 				$lines[] = $ind."<{$t}>{$data}</{$t}>";
 			}
-			
+	
 		}
-
-		
-		return $lines;
-		
+	
+	
+		//return 低速化するのでreturn禁止
+	
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	/**

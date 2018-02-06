@@ -105,3 +105,9 @@ CakeLog::config('error', array(
 	'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
 	'file' => 'error',
 ));
+
+
+config('crud_base_const');//CrudBase定数ファイル
+
+
+

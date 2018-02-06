@@ -12,22 +12,23 @@
 		echo $this->Html->meta('icon');
 
 		echo $this->Html->css(array(
-				'bootstrap.min.css',
-				'bootstrap-theme.min.css',
-				'jquery-ui.min.css',
-				'Layouts/default',
-				'common1'
+			'bootstrap.min',
+			'bootstrap-theme.min',
+			'jquery-ui.min',
+			'Layouts/default',
+			'CrudBase/common',
 		));
 
-		echo $this->fetch('meta');
-		echo $this->fetch('css');
+
 		echo $this->Html->script(array(
-			'jquery-2.1.4.min.js',
-			'jquery-ui.min.js',
-			'bootstrap.min.js',
+			'jquery-2.1.4.min',
+			'bootstrap.min',
+			'jquery-ui.min',
 			'Layouts/default',
 			));
-
+		
+		echo $this->fetch('meta');
+		echo $this->fetch('css');
 		echo $this->fetch('script');
 	?>
 
@@ -35,49 +36,18 @@
 </head>
 <body>
 
+	<?php 
+		echo $this->element('header');
+	?>
+	
 	<div class="container">
-
-		<div id="header">
-			<div class="row">
-				<div  class="col-lg-12" >
-					<h1>
-						<?php
-						if(empty($main_title)){
-							echo 'CAKE DEMO';
-						}else{
-							echo $main_title;
-						}
-						?>
-					</h1>
-
-				</div>
-
-			</div>
-			<div class="row">
-				<div  class="col-xs-12" style="text-align:right" >
-					<?php
-					if($logout_flg==true){
-						echo $this->Html->link('ログアウト', '/users/logout');
-					}
-					?>
-				</div>
-			</div>
-		</div>
-
-		<?php echo $this->Session->flash(); ?>
-
-		<?php echo $this->fetch('content'); ?>
-
-		<div class="row">
-			<div id="footer"  class="col-md-12" style="text-align:center">
-				(c)wacgance 2015
-			</div>
-		</div>
-		<?php echo $this->element('sql_dump'); ?>
+		<?php 
+		echo $this->Session->flash();
+		echo $content_for_layout;
+		echo $this->element('footer');
+		?>
 	</div>
 
-
-
-
+	<?php echo $this->element('sql_dump'); ?>
 </body>
 </html>
