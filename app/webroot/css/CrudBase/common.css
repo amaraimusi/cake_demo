@@ -1,0 +1,107 @@
+/* @version 1.0 */
+@CHARSET "UTF-8";
+
+/* •â‘« */
+aside{
+	font-size:0.7em;
+	color:#6f6b81;
+}
+
+/* ƒe[ƒuƒ‹ */
+.tbl2{
+	border-collapse:collapse;
+	border-color:#b7badb;
+	border: 1px #bdbfdf solid;
+}
+.tbl2 thead{
+	background-color:#cccee6;
+}
+.tbl2 tbody{
+	background-color:#f5f9fe;
+}
+.tbl2 th{
+	padding:5px;
+	border: 1px #bdbfdf dotted;
+	color:#393656;
+}
+.tbl2 td{
+	padding:5px;
+	border: 1px #bdbfdf dotted;
+	color:#34353f;
+}
+
+/* ’ß */
+.annot{
+	color:#df3952;
+	font-style: italic;
+}
+
+/* ƒwƒ‹ƒv */
+#help_x{
+	border:solid 3px #c69dd9;
+	padding:10px;
+	
+
+}
+#help_x h2{
+	color:#c69dd9;
+}
+.help_x{
+	color:#333839;
+	font-size:14px;
+	line-height:2em;
+	font-family: "Lucida Grande", "Lucida Sans Unicode", "Hiragino Kaku Gothic Pro", "ƒqƒ‰ƒMƒmŠpƒS Pro W3", "ƒƒCƒŠƒI", Meiryo, "‚l‚r ‚oƒSƒVƒbƒN", Helvetica, Arial, Verdana, sans-serif
+	
+}
+.help_x h3{
+	color:#dd5044;
+}
+
+.help_x h4{
+	margin-top:30px;
+	color:#9c56be;
+}
+
+
+.help_x p{
+	font-weight:bold;
+	margin-top:10px;
+	margin-bottom:0px;
+}
+
+
+.pnl_head1{
+	width:40%;
+	display:inline-block;
+}
+
+.pnl_head2{
+	width:40%;
+	display:inline-block;
+}
+
+.pnl_head3{
+	width:15%;
+	margin-left:auto;
+	display:inline-block;
+	text-align:right;
+}
+
+.line-left{
+	display:inline-block;
+	width:30%;
+	margin-right:auto;
+}
+
+
+.line-middle{
+	display:inline-block;
+	width:39%;
+	height:10px;
+}
+
+.line-right{
+	display:inline-block;
+	width:30%;
+	text-align:right;
+}
