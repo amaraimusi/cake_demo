@@ -3,32 +3,32 @@ App::uses('Model', 'Model');
 
 
 /**
- * ネコのモデルクラス
+ * タナガーのモデルクラス
  *
- * ネコ画面用のDB関連メソッドを定義しています。
- * ネコテーブルと関連付けられています。
+ * タナガー画面用のDB関連メソッドを定義しています。
+ * タナガーテーブルと関連付けられています。
  *
  * @date 2015/09/16	新規作成
  * @author k-uehara
  *
  */
-class Neko extends AppModel {
+class Tanager extends AppModel {
 
 
-	/// ネコテーブルを関連付け
-	public $name='Neko';
+	/// タナガーテーブルを関連付け
+	public $name='Tanager';
 
 
 	/// バリデーションはコントローラクラスで定義
 	public $validate = null;
 	
 	/**
-	 * ネコエンティティを取得
+	 * タナガーエンティティを取得
 	 *
-	 * ネコテーブルからidに紐づくエンティティを取得します。
+	 * タナガーテーブルからidに紐づくエンティティを取得します。
 	 *
-	 * @param int $id ネコID
-	 * @return array ネコエンティティ
+	 * @param int $id タナガーID
+	 * @return array タナガーエンティティ
 	 */
 	public function findEntity($id){
 
@@ -44,7 +44,7 @@ class Neko extends AppModel {
 
 		$ent=array();
 		if(!empty($data)){
-			$ent=$data['Neko'];
+			$ent=$data['Tanager'];
 		}
 		
 
@@ -54,16 +54,16 @@ class Neko extends AppModel {
 	}
 
 	/**
-	 * ネコ画面の一覧に表示するデータを、ネコテーブルから取得します。
+	 * タナガー画面の一覧に表示するデータを、タナガーテーブルから取得します。
 	 * 
-	 * 検索条件、ページ番号、表示件数、ソート情報からDB（ネコテーブル）を検索し、
+	 * 検索条件、ページ番号、表示件数、ソート情報からDB（タナガーテーブル）を検索し、
 	 * 一覧に表示するデータを取得します。
 	 * 
 	 * @param $kjs 検索条件情報
 	 * @param $page_no ページ番号
 	 * @param $limit 表示件数
 	 * @param $findOrder ソート情報
-	 * @return ネコ画面一覧のデータ
+	 * @return タナガー画面一覧のデータ
 	 */
 	public function findData($kjs,$page_no,$limit,$findOrder){
 
@@ -112,10 +112,10 @@ class Neko extends AppModel {
 	private function dumpSql($option){
 		$dbo = $this->getDataSource();
 		
-		$option['table']=$dbo->fullTableName($this->Neko);
-		$option['alias']='Neko';
+		$option['table']=$dbo->fullTableName($this->Tanager);
+		$option['alias']='Tanager';
 		
-		$query = $dbo->buildStatement($option,$this->Neko);
+		$query = $dbo->buildStatement($option,$this->Tanager);
 		
 		Debugger::dump($query);
 	}
@@ -134,65 +134,65 @@ class Neko extends AppModel {
 		// --- Start kjConditions
 		
 		if(!empty($kjs['kj_id'])){
-			$cnds[]="Neko.id = {$kjs['kj_id']}";
+			$cnds[]="Tanager.id = {$kjs['kj_id']}";
 		}
 		
-		if(!empty($kjs['kj_neko_val1'])){
-			$cnds[]="Neko.neko_val >= {$kjs['kj_neko_val1']}";
+		if(!empty($kjs['kj_tanager_val1'])){
+			$cnds[]="Tanager.tanager_val >= {$kjs['kj_tanager_val1']}";
 		}
 		
-		if(!empty($kjs['kj_neko_val2'])){
-			$cnds[]="Neko.neko_val <= {$kjs['kj_neko_val2']}";
+		if(!empty($kjs['kj_tanager_val2'])){
+			$cnds[]="Tanager.tanager_val <= {$kjs['kj_tanager_val2']}";
 		}
 		
-		if(!empty($kjs['kj_neko_name'])){
-			$cnds[]="Neko.neko_name LIKE '%{$kjs['kj_neko_name']}%'";
+		if(!empty($kjs['kj_tanager_name'])){
+			$cnds[]="Tanager.tanager_name LIKE '%{$kjs['kj_tanager_name']}%'";
 		}
 		
-		if(!empty($kjs['kj_neko_date1'])){
-			$cnds[]="Neko.neko_date >= '{$kjs['kj_neko_date1']}'";
+		if(!empty($kjs['kj_tanager_date1'])){
+			$cnds[]="Tanager.tanager_date >= '{$kjs['kj_tanager_date1']}'";
 		}
 		
-		if(!empty($kjs['kj_neko_date2'])){
-			$cnds[]="Neko.neko_date <= '{$kjs['kj_neko_date2']}'";
+		if(!empty($kjs['kj_tanager_date2'])){
+			$cnds[]="Tanager.tanager_date <= '{$kjs['kj_tanager_date2']}'";
 		}
 		
-		if(!empty($kjs['kj_neko_group'])){
-			$cnds[]="Neko.neko_group = {$kjs['kj_neko_group']}";
+		if(!empty($kjs['kj_tanager_group'])){
+			$cnds[]="Tanager.tanager_group = {$kjs['kj_tanager_group']}";
 		}
 		
-		if(!empty($kjs['kj_neko_dt'])){
-			$cnds[]="Neko.neko_dt = '{$kjs['kj_neko_dt']}'";
+		if(!empty($kjs['kj_tanager_dt'])){
+			$cnds[]="Tanager.tanager_dt = '{$kjs['kj_tanager_dt']}'";
 		}
 
 		if(!empty($kjs['kj_note'])){
-			$cnds[]="Neko.note LIKE '%{$kjs['kj_note']}%'";
+			$cnds[]="Tanager.note LIKE '%{$kjs['kj_note']}%'";
 		}
 		
 		if(!empty($kjs['kj_delete_flg']) || $kjs['kj_delete_flg'] ==='0' || $kjs['kj_delete_flg'] ===0){
-			$cnds[]="Neko.delete_flg = {$kjs['kj_delete_flg']}";
+			$cnds[]="Tanager.delete_flg = {$kjs['kj_delete_flg']}";
 		}
 
 		if(!empty($kjs['kj_update_user'])){
-			$cnds[]="Neko.update_user = '{$kjs['kj_update_user']}'";
+			$cnds[]="Tanager.update_user = '{$kjs['kj_update_user']}'";
 		}
 
 		if(!empty($kjs['kj_ip_addr'])){
-			$cnds[]="Neko.ip_addr = '{$kjs['kj_ip_addr']}'";
+			$cnds[]="Tanager.ip_addr = '{$kjs['kj_ip_addr']}'";
 		}
 		
 		if(!empty($kjs['kj_user_agent'])){
-			$cnds[]="Neko.user_agent LIKE '%{$kjs['kj_user_agent']}%'";
+			$cnds[]="Tanager.user_agent LIKE '%{$kjs['kj_user_agent']}%'";
 		}
 
 		if(!empty($kjs['kj_created'])){
 			$kj_created=$kjs['kj_created'].' 00:00:00';
-			$cnds[]="Neko.created >= '{$kj_created}'";
+			$cnds[]="Tanager.created >= '{$kj_created}'";
 		}
 		
 		if(!empty($kjs['kj_modified'])){
 			$kj_modified=$kjs['kj_modified'].' 00:00:00';
-			$cnds[]="Neko.modified >= '{$kj_modified}'";
+			$cnds[]="Tanager.modified >= '{$kj_modified}'";
 		}
 		
 		// --- End kjConditions
@@ -209,10 +209,10 @@ class Neko extends AppModel {
 	/**
 	 * エンティティをDB保存
 	 *
-	 * ネコエンティティをネコテーブルに保存します。
+	 * タナガーエンティティをタナガーテーブルに保存します。
 	 *
-	 * @param array $ent ネコエンティティ
-	 * @return array ネコエンティティ（saveメソッドのレスポンス）
+	 * @param array $ent タナガーエンティティ
+	 * @return array タナガーエンティティ（saveメソッドのレスポンス）
 	 */
 	public function saveEntity($ent){
 
@@ -223,10 +223,10 @@ class Neko extends AppModel {
 		//DBからエンティティを取得
 		$ent = $this->find('first',
 				array(
-						'conditions' => "id={$ent['Neko']['id']}"
+						'conditions' => "id={$ent['Tanager']['id']}"
 				));
 		
-		$ent=$ent['Neko'];
+		$ent=$ent['Tanager'];
 		
 		return $ent;
 	}

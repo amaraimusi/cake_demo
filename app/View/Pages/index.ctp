@@ -3,6 +3,7 @@
 
 
 <ul>
+	<li><a href="<?php echo $this->Html->webroot.'tanager'?>">タナガーCRUDサンプル</a></li>
 	<li><a href="<?php echo $this->Html->webroot.'neko'?>">ネコCRUDサンプル</a></li>
 	<li><a href="<?php echo $this->Html->webroot.'yagi'?>">ヤギAjaxサンプル</a></li>
 	<li><a href="<?php echo $this->Html->webroot.'kani'?>">カニ・ワーカースレッド ver 1.1</a></li>
