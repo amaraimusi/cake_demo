@@ -1,9 +1,7 @@
 
 
 $(function() {
-
 	init();//初期化
-	
 });
 
 // --- Start ex1
@@ -32,7 +30,7 @@ var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複
 function init(){
 	
 	//AjaxによるCRUD
-	ajaxCrud = new AjaxCRUD({
+	ajaxCrud = new CrudBase({
 			'tbl_slt':'neko_tbl',
 			'edit_reg_url':'neko/ajax_reg',
 			'new_reg_url':'neko/ajax_reg',
@@ -102,8 +100,9 @@ function init(){
 		}
 	});
 	
-	// CSVインポートの初期化  <CrudBase/index.js>
-	initCsvImportFu('neko/csv_fu');
+	// ■■■□□□■■■□□□■■■□□□■■■
+//	// CSVインポートの初期化  <CrudBase/index.js>
+//	initCsvImportFu('neko/csv_fu');
 	
 }
 
