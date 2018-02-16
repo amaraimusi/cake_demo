@@ -183,6 +183,7 @@ foreach($data as $i=>$ent){
 	$id = $ent['id'];
 	$this->CrudBase->rowEditBtn($id);
 	$this->CrudBase->rowPreviewBtn($id);
+	$this->CrudBase->rowCopyBtn($id);
 	$this->CrudBase->rowDeleteBtn($id);
 	echo "</div></td>";
 	
@@ -202,7 +203,7 @@ foreach($data as $i=>$ent){
 		<div class="pnl_head1">新規入力</div>
 		<div class="pnl_head2"></div>
 		<div class="pnl_head3">
-			<button type="button" class="btn btn-primary btn-sm" onclick="ajaxCrud.closeForm('new_inp')"><span class="glyphicon glyphicon-remove"></span></button>
+			<button type="button" class="btn btn-primary btn-sm" onclick="closeForm('new_inp')"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
 	</div>
 	<div class="panel-body">
@@ -221,7 +222,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ日付: </td><td>
-			<input type="text" name="neko_date" class="valid" value=""  pattern="\d{4}-\d{2}-\d{2}" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+			<input type="text" name="neko_date" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
 			<label class="text-danger" for="neko_date"></label>
 		</td></tr>
 
@@ -239,7 +240,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ日時: </td><td>
-			<input type="text" name="neko_dt" class="valid" value=""  pattern="\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
+			<input type="text" name="neko_dt" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
 			<label class="text-danger" for="neko_dt"></label>
 		</td></tr>
 
@@ -251,7 +252,7 @@ foreach($data as $i=>$ent){
 	</tbody></table>
 	
 
-	<button type="button" onclick="newInpRegRap();" class="btn btn-success">
+	<button type="button" onclick="newInpReg();" class="btn btn-success">
 		<span class="glyphicon glyphicon-ok"></span>
 	</button>
 
@@ -267,7 +268,7 @@ foreach($data as $i=>$ent){
 		<div class="pnl_head1">編集</div>
 		<div class="pnl_head2"></div>
 		<div class="pnl_head3">
-			<button type="button" class="btn btn-primary btn-sm" onclick="ajaxCrud.closeForm('edit')"><span class="glyphicon glyphicon-remove"></span></button>
+			<button type="button" class="btn btn-primary btn-sm" onclick="closeForm('edit')"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
 	</div>
 	<div class="panel-body">
@@ -290,7 +291,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ日付: </td><td>
-			<input type="text" name="neko_date" class="valid" value=""  pattern="\d{4}-\d{2}-\d{2}" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+			<input type="text" name="neko_date" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
 			<label class="text-danger" for="neko_date"></label>
 		</td></tr>
 
@@ -307,7 +308,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ日時: </td><td>
-			<input type="text" name="neko_dt" class="valid" value=""  pattern="\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
+			<input type="text" name="neko_dt" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
 			<label class="text-danger" for="neko_dt"></label>
 		</td></tr>
 
@@ -324,7 +325,7 @@ foreach($data as $i=>$ent){
 	
 	
 
-	<button type="button"  onclick="editRegRap();" class="btn btn-success">
+	<button type="button"  onclick="editReg();" class="btn btn-success">
 		<span class="glyphicon glyphicon-ok"></span>
 	</button>
 	<hr>
@@ -351,7 +352,7 @@ foreach($data as $i=>$ent){
 		<div class="pnl_head1">削除</div>
 		<div class="pnl_head2"></div>
 		<div class="pnl_head3">
-			<button type="button" class="btn btn-default btn-sm" onclick="ajaxCrud.closeForm('delete')"><span class="glyphicon glyphicon-remove"></span></button>
+			<button type="button" class="btn btn-default btn-sm" onclick="closeForm('delete')"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
 	</div>
 	

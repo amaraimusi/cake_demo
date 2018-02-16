@@ -11,7 +11,7 @@ var nusrNekoVal = new NoUiSliderRap();
 
 var csh=new ClmShowHide();//列表示切替
 
-var ajaxCrud;//AjaxによるCRUD
+var crudBase;//AjaxによるCRUD
 
 var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複数選択による一括処理
 
@@ -30,7 +30,7 @@ var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複
 function init(){
 	
 	//AjaxによるCRUD
-	ajaxCrud = new CrudBase({
+	crudBase = new CrudBase({
 			'tbl_slt':'neko_tbl',
 			'edit_reg_url':'neko/ajax_reg',
 			'new_reg_url':'neko/ajax_reg',
@@ -89,14 +89,14 @@ function init(){
 	// 新規入力フォームのinput要素にEnterキー押下イベントを組み込む。
 	$('#ajax_crud_new_inp_form input').keypress(function(e){
 		if(e.which==13){ // Enterキーである場合
-			newInpRegRap(); // 登録処理
+			newInpReg(); // 登録処理
 		}
 	});
 	
 	// 編集フォームのinput要素にEnterキー押下イベントを組み込む。
 	$('#ajax_crud_edit_form input').keypress(function(e){
 		if(e.which==13){ // Enterキーである場合
-			editRegRap(); // 登録処理
+			editReg(); // 登録処理
 		}
 	});
 	
@@ -106,6 +106,21 @@ function init(){
 	
 }
 
+/**
+ * 新規入力フォームを表示
+ * @param btnElm ボタン要素
+ */
+function newInpShow(btnElm){
+	crudBase.newInpShow(btnElm);
+}
+
+/**
+ * 編集フォームを表示
+ * @param btnElm ボタン要素
+ */
+function editShow(btnElm){
+	crudBase.editShow(btnElm);
+}
 
 /**
  * 詳細検索フォーム表示切替
@@ -114,6 +129,14 @@ function init(){
  */
 function show_kj_detail(){
 	$("#kjs2").fadeToggle();
+}
+
+/**
+ * フォームを閉じる
+ * @parma string formType new_inp:新規入力 edit:編集 delete:削除
+ */
+function closeForm(formType){
+	crudBase.closeForm(formType)
 }
 
 
@@ -174,8 +197,8 @@ function moveClmSorter(){
 /**
  * 新規入力フォームの登録ボタンアクション
  */
-function newInpRegRap(){
-	ajaxCrud.newInpReg(null,null);
+function newInpReg(){
+	crudBase.newInpReg(null,null);
 }
 
 
@@ -183,8 +206,8 @@ function newInpRegRap(){
 /**
  * 編集フォームの登録ボタンアクション
  */
-function editRegRap(){
-	ajaxCrud.editReg(null,null);
+function editReg(){
+	crudBase.editReg(null,null);
 }
 
 

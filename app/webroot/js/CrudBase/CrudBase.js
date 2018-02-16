@@ -36,6 +36,7 @@
  *  - form_z_index	重なり順序(cssのz-indexと同じ)
  *  - valid_msg_slt	バリデーションメッセージセレクタ
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない  1:フォームの外側をクリックすると自動的に閉じる（デフォルト）
+ *  - ni_tr_place	新規入力追加場所フラグ 0:末尾 , 1:先頭
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
 
@@ -676,11 +677,16 @@ class CrudBase{
 			return option['add_row_index'];
 		}
 
-		var add_row_index = -1;
-
+		var add_row_index = -1;// 末尾行への追加を表す
+		if(this.param.ni_tr_place == 1){
+			add_row_index = 0;// 先頭行への追加を表す
+		}
+		
 		// フォーム種別が複製である場合、フォームから行番を取得してセットする。
 		if(formType == 'copy'){
 			add_row_index = this.getValueFromForm(form,'row_index');
+			add_row_index = add_row_index * 1;
+			add_row_index++;
 		}
 
 		return add_row_index;
@@ -1262,40 +1268,76 @@ class CrudBase{
 		add_row_index *= 1; // 数値型に変換する。
 
 		// テーブルのtbody要素を取得する
-		var tbodySlt = '#' + this.param.tbl_slt + ' tbody';
-		var tbody = jQuery(tbodySlt);
-
-		// テーブルの行数を取得する
-		var row_len = tbody.children('tr').length;
-
-		// 追加行インデックスが-1(末尾）なら末尾行番をセットする。
-		if(add_row_index == -1){
-			add_row_index = row_len - 1;
-		}
-
-		var trs = tbody.find('tr'); // TR群要素
-		var tr0 = trs.eq(0);// 先頭行を取得
+		var tbl_slt = '#' + this.param.tbl_slt;
+		var trs = jQuery(tbl_slt + ' tbody tr'); // TR群要素
 
 		// 先頭行が空ならブラウザリロードを行う。
-		if(!tr0[0]){
+		if(trs.length == 0){
 			location.reload(true);
 		}
+		
+		var tr0 = trs.eq(0);// 先頭行を取得
 
 		// 先頭行から新行を作成する
-		var newTrHtml = "<tr class='new_line'>" + tr0.html() + "</tr>";
+		var new_tr_html = "<tr style='background-color:#fdeaea'>" + tr0.html() + "</tr>";
 
-		// 追加行インデックスで指定した行の下に新行を挿入
-		trs.eq(add_row_index).after(newTrHtml);
-
-		// 新行要素を再取得する
-		var slt = '#' + this.param.tbl_slt + ' tbody tr';
-		var newTr = jQuery(slt).eq(add_row_index + 1);
+		// TR要素をテーブルの指定行に挿入する
+		var newTr = this._insertTr(tbl_slt,add_row_index,new_tr_html);
 
 		// 新行要素にエンティティをセットする
 		this._setEntityToTr(newTr,ent,'new_inp');
 
 	}
 
+	/**
+	 * TR要素をテーブルの指定行に挿入する
+	 * @note
+	 * tbodyは必須
+	 * 
+	 * @param string tbl_slt テーブル要素のセレクタ
+	 * @param int row_index 挿入行インデックス (1行目に挿入する場合は0を指定する。末尾に追加する場合は行数以上の数字を指定）
+	 * @param string tr_html 挿入TR要素
+	 * @returns 新規追加TR要素
+	 */
+	_insertTr(tbl_slt,row_index,tr_html){
+		var tbody = jQuery(tbl_slt + " tbody");
+		var trs = tbody.find("tr");
+		var tr_len = trs.length;
+		var new_index = null;
+	
+		// 行数が1件以上である場合
+		if(tr_len > 0){
+			
+			// 追加行番が行数未満である場合
+			if(row_index < tr_len && row_index > -1){
+				// 行番にひもづくTR要素を取得
+				var tr = trs[row_index];
+				
+				// TR要素の上に新TR要素を追加
+				jQuery(tr).before(tr_html);// × → tr.before(tr_html);
+				new_index = row_index;
+			}
+			// 追加行番が行数以上である場合
+			else{
+				// 最後のTR要素を取得
+				var tr = trs[tr_len-1];
+				
+				// TR要素の下に新TR要素を追加する
+				jQuery(tr).after(tr_html);
+				new_index = tr_len;
+			}
+		}
+		// 行数が0件である場合,tbody要素にtr要素を追加する。
+		else{
+			tbody.append(tr_html);
+			new_index = 0;
+		}
+		
+		trs = tbody.find("tr");
+		var newTr = trs[new_index];
+		
+		return jQuery(newTr); 
+	}
 
 
 	// 編集中の行にエンティティを反映する。
@@ -1897,6 +1939,11 @@ class CrudBase{
 		// 自動閉フラグ
 		if(param['auto_close_flg'] == null){
 			param['auto_close_flg'] = 1;
+		}
+
+		// 新規入力追加場所フラグ
+		if(param['ni_tr_place'] == null){
+			param['ni_tr_place'] = 0;
 		}
 
 		return param;

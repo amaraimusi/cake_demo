@@ -78,7 +78,7 @@ class CrudBaseHelper extends FormHelper {
 		}
 		
 		if(empty($option['onclick'])){
-			$option['onclick'] = 'ajaxCrud.newInpShow(this);';
+			$option['onclick'] = 'newInpShow(this);';
 		}
 		
 		if(empty($option[$this->_mdl_snk])){
@@ -1085,9 +1085,7 @@ class CrudBaseHelper extends FormHelper {
 		" 	</td>".
 		" </tr>";
 	}
-	
-	
-	
+
 	
 	
 	
@@ -1098,14 +1096,13 @@ class CrudBaseHelper extends FormHelper {
 	 * @param $onclick 編集フォームを呼び出すjs関数（CRUDタイプがajax型である場合。省略可)
 	 */
 	public function rowEditBtn($id,$css_class=null,$onclick=null){
-		
-		
+
 		if(empty($css_class)){
 			$css_class='btn btn-warning btn-xs';
 		}
 		
 		if(empty($onclick)){
-			$onclick="ajaxCrud.editShow(this);";
+			$onclick="editShow(this);";
 		}
 		
 		$crudType = $this->param['crudType'];
@@ -1113,7 +1110,6 @@ class CrudBaseHelper extends FormHelper {
 		// CRUDタイプがajax型である場合
 		if(empty($crudType)){
 			echo "<input type='button' value='編集'  class='{$css_class}' onclick='{$onclick}' />";
-				
 		}
 		
 		// CRUDタイプがsubmit型である場合
@@ -1121,9 +1117,44 @@ class CrudBaseHelper extends FormHelper {
 			$url=$this->Html->webroot.$this->_mdl_snk.'/edit?id='.$id;
 			echo "<a href='{$url}' class='{$css_class}'>編集</a>";
 		}
-		
-		
-		
+
+	}
+	
+	
+	
+	
+	/**
+	 * 行の複製ボタンを作成する
+	 * @param int $id ID
+	 * @param string $css_class CSSスタイル（省略可）
+	 * @param $onclick 複製フォームを呼び出すjs関数（CRUDタイプがajax型である場合。省略可)
+	 */
+	public function rowCopyBtn($id,$css_class=null,$onclick=null){
+	    
+	    if(empty($css_class)){
+	        $css_class='btn btn-primary btn-xs';
+	    }
+	    
+	    if(empty($onclick)){
+	        $onclick="ajaxCrud.copyShow(this);";
+	    }
+	    
+	    $crudType = $this->param['crudType'];
+	    
+	    echo "<input type='button' value='複製'  class='{$css_class}' onclick='{$onclick}' />";
+	    
+	    // ■■■□□□■■■□□□■■■□□□■■■
+// 	    // CRUDタイプがajax型である場合
+// 	    if(empty($crudType)){
+// 	        echo "<input type='button' value='複製'  class='{$css_class}' onclick='{$onclick}' />";
+// 	    }
+	    
+// 	    // CRUDタイプがsubmit型である場合
+// 	    else{
+// 	        $url=$this->Html->webroot.$this->_mdl_snk.'/edit?id='.$id;
+// 	        echo "<a href='{$url}' class='{$css_class}'>複製</a>";
+// 	    }
+	    
 	}
 	
 	
