@@ -1136,7 +1136,7 @@ class CrudBaseHelper extends FormHelper {
 	    }
 	    
 	    if(empty($onclick)){
-	        $onclick="ajaxCrud.copyShow(this);";
+	        $onclick="copyShow(this);";
 	    }
 	    
 	    $crudType = $this->param['crudType'];

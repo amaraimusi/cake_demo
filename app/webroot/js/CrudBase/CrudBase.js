@@ -356,7 +356,7 @@ class CrudBase{
 	 * @param callBack フォームに一覧の行データを自動セットしたあとに呼び出されるコールバック関数(省略可）
 	 * 
 	 */
-	copyAddShow(elm,option,callBack){
+	copyShow(elm,option,callBack){
 
 		var tr=jQuery(elm).parents('tr'); // 先祖をさかのぼりtr要素を取得する
 		this.editRowIndex = tr.index(); // 行番（インデックス）を取得する
@@ -383,8 +383,8 @@ class CrudBase{
 			upload_file_dir = option['upload_file_dir'];
 		}
 
-		// フォームに親要素内の各フィールド値をセットする。
-		_setFieldsToForm('new_inp',form,ent,upload_file_dir);
+		// フォームにエンティティの値をセットする
+		this._setFieldsToForm('new_inp',form,ent,upload_file_dir);
 
 		// バリデーションエラーメッセージをクリアする
 		this._clearValidErr(form);
@@ -600,6 +600,7 @@ class CrudBase{
 
 		// フォーム種別を取得してFDにセット
 		var formType = this.getValueFromForm(form,'formType');
+		console.log('formType=' + formType);//■■■□□□■■■□□□■■■□□□■■■)
 		fd.append( "formType", formType );
 
 		// 諸パラメータから追加行インデックスを決定する

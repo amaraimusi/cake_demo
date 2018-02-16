@@ -208,6 +208,11 @@ foreach($data as $i=>$ent){
 	</div>
 	<div class="panel-body">
 	<div class="err text-danger"></div>
+	
+	<div style="display:none">
+    	<input type="hidden" class="formType">
+    	<input type="hidden" class="row_index">
+	</div>
 	<table><tbody>
 
 		<!-- Start ajax_form_new_start -->

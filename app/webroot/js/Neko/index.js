@@ -121,6 +121,13 @@ function newInpShow(btnElm){
 function editShow(btnElm){
 	crudBase.editShow(btnElm);
 }
+/**
+ * 複製フォームを表示（新規入力フォームと同じ）
+ * @param btnElm ボタン要素
+ */
+function copyShow(btnElm){
+	crudBase.copyShow(btnElm);
+}
 
 /**
  * 詳細検索フォーム表示切替
