@@ -15,7 +15,8 @@ $this->assign('script', $this->Html->script(array(
 		'jquery.ui.ympicker',			// 年月選択ダイアログ
 		'ympicker_rap',					// 年月選択ダイアログのラップ
 		'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-		'NoUiSliderRap',				// noUiSliderのラップ
+        'NoUiSliderRap',				// noUiSliderのラップ
+        'CrudBase/CrudBaseBase.js?ver=1.0',						// AjaxによるCRUD
 		'CrudBase/CrudBase.js?ver=2.0',						// AjaxによるCRUD
 		'livipage',						// ページ内リンク先プレビュー
 		'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
