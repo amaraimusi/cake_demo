@@ -713,7 +713,7 @@ class CrudBaseHelper extends FormHelper {
 		
 		$v2 = $this->propMoney($v);
 		
-		$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";
+		$td = "<td><span name='{$field}' style='display:none'>{$v}</span><span class='{$field}' >{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
 	public function tpMoney($v,$wamei){
@@ -1210,7 +1210,7 @@ class CrudBaseHelper extends FormHelper {
 			$css_class='btn btn-danger btn-xs';
 		}
 		if(empty($onclick)){
-			$onclick="ajaxCrud.deleteShow(this);";
+			$onclick="deleteShow(this);";
 		}
 		
 		

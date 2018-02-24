@@ -29,10 +29,10 @@
  *  - form_width	フォーム横幅	数値で指定。未指定（null)である場合、autoと同様になる。ただしform_positionがmaxなら横幅最大になる。
  *  - form_height	フォーム縦幅	上記と同じ
  *  - file_uploads	ファイルアップロードデータ
- *  - upload_file_dir	アップロードファイルディレクトリ
+ *  - upload_dp	アップロードファイルディレクトリ
  *  - preview_img_width		プレビュー画像・横幅
  *  - preview_img_height	プレビュー画像・縦幅
- *  - callback_after_file_change(e,field,formType,fileName)	ファイルチェンジ後のコールバック
+ *  - callback_after_file_change(e,field,form_type,fileName)	ファイルチェンジ後のコールバック
  *  - form_z_index	重なり順序(cssのz-indexと同じ)
  *  - valid_msg_slt	バリデーションメッセージセレクタ
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない  1:フォームの外側をクリックすると自動的に閉じる（デフォルト）
@@ -45,48 +45,63 @@ class CrudBaseBase{
 	/**
 	 * コンストラクタ
 	 * 
-	 * @param param
-	 * - flg
 	 */
-	constructor(param,fieldData){
+	constructor(){
 
-		this.param = param;
-		this.fieldData = fieldData; // フィールドデータ
-		this.fieldHashTable = []; // フィールドハッシュテーブル key:フィールド名  val:列インデックス
+		this.param; 		// パラメータ
+		this.fieldData; 	// フィールドデータ
+		this.fieldHashTable;// フィールドハッシュテーブル key:フィールド名  val:列インデックス
 		this.formInfo; 		// フォーム情報
-		this.editRowIndex; 	// 編集行のインデックス
-		this.deleteRowIndex; // 削除行のインデックス
 		this.defNiEnt; 		// デフォルト新規入力エンティティ
 		this.formNewInp;	// 新規入力フォーム
 		this.formEdit;		// 編集フォーム
 		this.formDelete;	// 削除フォーム
 		this.showFormStrategy; // 入力フォーム表示ストラテジー
-		
-		
-		// パラメータに空プロパティがあれば、デフォルト値をセットする
-		this.param = this._setParamIfEmpty(this.param);
-
-		// フォーム情報の取得と初期化
-		this.formInfo = this._initFormInfo(this.param);
-
-		// フィールドデータにプロパティを追加する
-		this.fieldData = this._addMoreFieldData(this.param.tbl_slt,this.fieldData);
-
-		// フィールドデータへフォーム内の要素情報をセットする
-		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'new_inp');
-		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'edit');
-		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'del');
-
-		// フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
-		this.fieldData = this._initFileUpData(this.fieldData);
-
-		// フィールドハッシュテーブルをフィールドデータから生成する。
-		this.fieldHashTable = this._createFieldHashTable(this.fieldData);
-
-		// デフォルト新規入力エンティティを新規入力フォームから取得する
-		this.defNiEnt = this._getEntByForm('new_inp');
+		this.react; 		// CrudBaseのリアクティブ機能クラス | CrudBaseReact.js
 	}
 	
+	/**
+	 * コンテナのSetter。
+	 * 
+	 * @note コンテナ内のオブジェクトを当クラスのメンバへセットする。
+	 * 
+	 * @param container コンテナ
+	 */
+	setContainer(container){
+		this.param = container.param; //  パラメータ
+		this.fieldData = container.fieldData; //  フィールドデータ
+		this.fieldHashTable = container.fieldHashTable; //  フィールドハッシュテーブル key:フィールド名  val:列インデックス
+		this.formInfo = container.formInfo; //  フォーム情報
+		this.defNiEnt = container.defNiEnt; //  デフォルト新規入力エンティティ
+		this.formNewInp = container.formNewInp; // 新規入力フォーム
+		this.formEdit = container.formEdit; // 編集フォーム
+		this.formDelete = container.formDelete; // 削除フォーム
+		this.showFormStrategy = container.showFormStrategy; //  入力フォーム表示ストラテジー
+		this.react = container.react; // CrudBaseのリアクティブ機能クラス | CrudBaseReact.js
+	}
+	
+	/**
+	 * コンテナのGetter
+	 * 
+	 * @note コンテナには当クラスのメンバを格納している。
+	 * 
+	 * @return コンテナ
+	 */
+	getContainer(){
+		var container = {
+				'param':this.param , //  パラメータ
+				'fieldData':this.fieldData , //  フィールドデータ
+				'fieldHashTable':this.fieldHashTable , //  フィールドハッシュテーブル key:フィールド名  val:列インデックス
+				'formInfo':this.formInfo , //  フォーム情報
+				'defNiEnt':this.defNiEnt , //  デフォルト新規入力エンティティ
+				'formNewInp':this.formNewInp , // 新規入力フォーム
+				'formEdit':this.formEdit , // 編集フォーム
+				'formDelete':this.formDelete , // 削除フォーム
+				'showFormStrategy':this.showFormStrategy , //  入力フォーム表示ストラテジー
+				'react':this.react , //  CrudBaseのリアクティブ機能クラス | CrudBaseReact.js
+		}
+		return container;
+	}
 
 	/**
 	 * ファイルアップロードのチェンジイベント(新規入力用）
@@ -127,13 +142,13 @@ class CrudBaseBase{
 	 * ファイルアップロードのチェンジイベント
 	 * @param e イベント
 	 * @param field フィールド
-	 * @param formType フォーム種別
+	 * @param form_type フォーム種別
 	 */
-	_fileChangeEvent(e,field,formType){
+	_fileChangeEvent(e,field,form_type){
 
 		// エンティティおよび入力要素エンティティを取得する
 		var ent = this._getFieldEntByField(field);
-		var inpKey = 'inp_' + formType;
+		var inpKey = 'inp_' + form_type;
 		var inp_ent = ent[inpKey];
 
 		// イベントハンドラをファイルアップロードデータにセットする。（登録系の処理で用いる）
@@ -163,7 +178,7 @@ class CrudBaseBase{
 			if (accept == '' || accept.indexOf('image') >= 0){
 
 				// フォーム種別からフォーム要素を取得する
-				var form = this.getForm(formType);
+				var form = this.getForm(form_type);
 
 				//画像プレビュー要素を取得。（なければ作成）
 				imgElm = this._getPreviewImgElm(form,field,inp_ent);
@@ -178,7 +193,7 @@ class CrudBaseBase{
 		// ファイルチェンジ後のコールバックを実行する
 		if(this.param.callback_after_file_change){
 			var fileName = oFile.name;
-			this.param.callback_after_file_change(e,field,formType,fileName);
+			this.param.callback_after_file_change(e,field,form_type,fileName);
 		}
 
 	}
@@ -271,11 +286,11 @@ class CrudBaseBase{
 	/**
 	 * 諸パラメータから追加行インデックスを決定する
 	 * @param form フォーム要素
-	 * @param formType フォーム種別
+	 * @param form_type フォーム種別
 	 * @param option
 	 * @returns 追加行インデックス
 	 */
-	_decAddRowIndex(form,formType,option){
+	_decAddRowIndex(form,form_type,option){
 
 		// オプション内の追加行インデックスがセット済みでならそれを返す。
 		if(option['add_row_index'] != null){
@@ -288,7 +303,7 @@ class CrudBaseBase{
 		}
 		
 		// フォーム種別が複製である場合、フォームから行番を取得してセットする。
-		if(formType == 'copy'){
+		if(form_type == 'copy'){
 			add_row_index = this.getValueFromForm(form,'row_index');
 			add_row_index = add_row_index * 1;
 			add_row_index++;
@@ -321,7 +336,7 @@ class CrudBaseBase{
 
 		// ファイルアップロード関連のエンティティをFormDataに追加する
 		var fd = new FormData();
-		fd.append( "formType", 'del' );
+		fd.append( "form_type", 'del' );
 
 		// Ajax送信前のコールバックを実行する
 		if(beforeCallBack){
@@ -425,7 +440,7 @@ class CrudBaseBase{
 	 */
 	getTrInEditing(){
 
-		var slt = '#' + this.param.tbl_slt + ' tbody tr:eq(' + this.editRowIndex + ')';
+		var slt = '#' + this.param.tbl_slt + ' tbody tr:eq(' + this.param.active_row_index + ')';
 		var tr = jQuery(slt);
 
 		return tr;
@@ -480,6 +495,10 @@ class CrudBaseBase{
 	 * @return object エンティティ
 	 */
 	getEntity(row_index){
+		
+		if(row_index == null){
+			row_index = this.param.active_row_index;
+		}
 
 		// 行番を指定してTR要素を取得する
 		var tr = this.getTr(row_index);
@@ -632,10 +651,10 @@ class CrudBaseBase{
 	/**
 	 * エラーをフォームに表示する
 	 * @param err エラー情報
-	 * @param formType フォーム種別 new_inp:新規入力 edit:編集
+	 * @param form_type フォーム種別 new_inp:新規入力 edit:編集
 	 * 
 	 */
-	_showErrToForm(err,formType){
+	_showErrToForm(err,form_type){
 
 		// エラー情報が配列であれば、値を改行で連結して１つのエラーメッセージにする。
 		var err1 = err;
@@ -644,7 +663,7 @@ class CrudBaseBase{
 		}
 
 		// フォーム種別からフォーム要素を取得
-		var info = this.formInfo[formType];
+		var info = this.formInfo[form_type];
 		var form = jQuery(info.slt);
 
 		// フォーム要素からエラー要素を取得
@@ -657,7 +676,7 @@ class CrudBaseBase{
 
 	/**
 	 * バリデーションエラーメッセージをクリアする
-	 * @param formType フォーム種別 new_inp:新規入力 edit:編集
+	 * @param form_type フォーム種別 new_inp:新規入力 edit:編集
 	 */
 	_clearValidErr(form){
 
@@ -676,15 +695,15 @@ class CrudBaseBase{
 
 	/**
 	 * フォームのバリデーション
-	 * @param formType フォーム種別 new_inp:新規入力 edit:編集
+	 * @param form_type フォーム種別 new_inp:新規入力 edit:編集
 	 * @return validFlg バリデーションフラグ true:正常 false:入力エラー
 	 */
-	_validationCheckForm(formType){
+	_validationCheckForm(form_type){
 
 		var validFlg = true; // バリデーションフラグ
 
 		// フォーム種別からフォーム要素を取得
-		var info = this.formInfo[formType];
+		var info = this.formInfo[form_type];
 		var form = jQuery(info.slt);
 
 		form.find('.valid').each((i,elm)=>{
@@ -863,16 +882,16 @@ class CrudBaseBase{
 	 * TR要素にエンティティをセットする
 	 * @param tr TR要素オブジェクト
 	 * @param ent エンティティ
-	 * @param formType フォーム種別 new_inp,edit,del
+	 * @param form_type フォーム種別 new_inp,edit,del
 	 */
-	_setEntityToTr(tr,ent,formType){
+	_setEntityToTr(tr,ent,form_type){
 
 		if(ent==null){
 			return;
 		}
 
 		// フォーム種別からフォーム要素を取得
-		var info = this.formInfo[formType];
+		var info = this.formInfo[form_type];
 		var form = jQuery(info.slt);
 
 		// TR要素内の各プロパティ要素内にエンティティの値をセットする
@@ -1031,10 +1050,10 @@ class CrudBaseBase{
 
 	/**
 	 * フォームからエンティティを取得する
-	 * @param string formType フォーム種別  edit,new_inp,delete
+	 * @param string form_type フォーム種別  edit,new_inp,delete
 	 * @return エンティティ
 	 */
-	_getEntByForm(formType){
+	_getEntByForm(form_type){
 
 		// 現在編集中の行要素を取得する
 		var tr = this.getTrInEditing();
@@ -1043,9 +1062,9 @@ class CrudBaseBase{
 		var ent = {};
 
 		// フォーム要素を取得する
-		var form = this.getForm(formType);
+		var form = this.getForm(form_type);
 
-		if(formType=='edit' || formType=='delete'){
+		if(form_type=='edit' || form_type=='delete'){
 			ent = this.getEntityByTr(tr);
 		}
 
@@ -1092,18 +1111,18 @@ class CrudBaseBase{
 
 	/**
 	 * フォーム要素を取得する
-	 * @param formType フォーム種別
+	 * @param form_type フォーム種別
 	 * @param cache キャッシュフラグ 0:キャッシュから取得しない , 1:キャッシュがあればそこから取得
 	 * @returns フォーム要素
 	 */
-	getForm(formType,cache){
+	getForm(form_type,cache){
 
 		if(cache == null){
 			cache = 1;
 		}
 
 		var form;
-		if(formType=='new_inp' || formType=='copy'){
+		if(form_type=='new_inp' || form_type=='copy'){
 			if(cache == 1){
 				if(this.formNewInp != null){
 					form = this.formNewInp;
@@ -1115,7 +1134,7 @@ class CrudBaseBase{
 			}
 			this.formNewInp = form;
 
-		}else if(formType=='edit'){
+		}else if(form_type=='edit'){
 
 			if(cache == 1){
 				if(this.formEdit != null){
@@ -1128,7 +1147,7 @@ class CrudBaseBase{
 			}
 			this.formEdit = form;
 
-		}else if(formType=='delete'){
+		}else if(form_type=='delete'){
 
 			if(cache == 1){
 				if(this.formDelete != null){
@@ -1142,7 +1161,7 @@ class CrudBaseBase{
 			this.formDelete = form;
 
 		}else{
-			throw new Error('Uknown formType!');
+			throw new Error('Uknown form_type!');
 		}
 
 		return form;
@@ -1212,15 +1231,15 @@ class CrudBaseBase{
 	/**
 	 * フィールドデータからファイルアップロード要素であるエンティティだけ抽出する
 	 * @param fieldData フィールドデータ
-	 * @param formType フォーム種別
+	 * @param form_type フォーム種別
 	 */
-	_extractFuEnt(fieldData,formType){
+	_extractFuEnt(fieldData,form_type){
 		var fuEnts = [];
 		for(var i in fieldData){
 			var ent = fieldData[i];
 
 			// 入力要素エンティティを取得する
-			var inp_key = 'inp_' + formType;
+			var inp_key = 'inp_' + form_type;
 			var inp_ent;
 			if(ent[inp_key]){
 				inp_ent = ent[inp_key];
@@ -1242,16 +1261,16 @@ class CrudBaseBase{
 	 * ファイルアップロード関連のエンティティをFormDataに追加する
 	 * @param fd FormData（フォームデータ）
 	 * @param fuEnts フィールドエンティティリスト（ファイルアップロード関連のもの）
-	 * @param formType フォーム種別
+	 * @param form_type フォーム種別
 	 * @return 追加後のfd
 	 */
-	_addFuEntToFd(fd,fuEnts,formType){
+	_addFuEntToFd(fd,fuEnts,form_type){
 
 		for(var i in fuEnts){
 			var fuEnt = fuEnts[i];
 
 			var fu_key = fuEnt.field;
-			var inp_key = 'inp_' + formType;
+			var inp_key = 'inp_' + form_type;
 			var elm = fuEnt[inp_key].elm; // ファイル要素オブジェクトを取得
 
 			fd.append( fu_key, elm.prop("files")[0] );
@@ -1393,8 +1412,8 @@ class CrudBaseBase{
 		}
 
 		// ファイルアップロードディレクトリ
-		if(param['upload_file_dir'] == null){
-			param['upload_file_dir'] = null;
+		if(param['upload_dp'] == null){
+			param['upload_dp'] = null;
 		}
 
 		// ファイルアップロードデータ
@@ -1447,6 +1466,16 @@ class CrudBaseBase{
 			param['ni_tr_place'] = 0;
 		}
 
+		// アクティブ行インデックス
+		if(param['active_row_index'] == null){
+			param['active_row_index'] = 0;
+		}
+
+		// 表示フィルターデータ
+		if(param['disFilData'] == null){
+			param['disFilData'] = null;
+		}
+		
 		return param;
 
 	}
@@ -1456,13 +1485,13 @@ class CrudBaseBase{
 	 * フィールドデータへ新規入力フォーム内の要素情報をセットする
 	 * @param fieldData フィールドデータ
 	 * @param formInfo フォーム情報
-	 * @param formType フォームタイプ new_inp,edit
+	 * @param form_type フォームタイプ new_inp,edit
 	 * @return フィールドデータ
 	 */
-	_setFieldDataFromForm(fieldData,formInfo,formType){
+	_setFieldDataFromForm(fieldData,formInfo,form_type){
 
 		// フォーム要素オブジェクトを取得する
-		var info = formInfo[formType];
+		var info = formInfo[form_type];
 		var form = info.form;
 
 		for(var i in fieldData){
@@ -1509,7 +1538,7 @@ class CrudBaseBase{
 
 			}
 
-			ent['inp_' + formType] = inp_ent;
+			ent['inp_' + form_type] = inp_ent;
 
 		}
 
@@ -1524,15 +1553,15 @@ class CrudBaseBase{
 	_initFileUpData(fieldData){
 
 		// フォーム名のリスト
-		var formTypeList = ['new_inp','edit','del'];
+		var form_typeList = ['new_inp','edit','del'];
 
 		// ファイル要素系にのみ、ファイル要素情報をセットする。
 		for(var i in fieldData){
 			var f_ent = fieldData[i];
 
-			for(var ft_i = 0 ; ft_i < formTypeList.length ; ft_i++){
-				var formType = formTypeList[ft_i];
-				var key = 'inp_' + formType;
+			for(var ft_i = 0 ; ft_i < form_typeList.length ; ft_i++){
+				var form_type = form_typeList[ft_i];
+				var key = 'inp_' + form_type;
 
 				if(!f_ent[key]){
 					continue;
@@ -1545,9 +1574,9 @@ class CrudBaseBase{
 					ent = this._setFileUploadEntity(f_ent.field,ent);
 
 					// イベントリスナを登録する
-					if(formType == 'new_inp'){
+					if(form_type == 'new_inp'){
 						ent.elm.change(this._fileChangeEventNewInp);
-					}else if(formType == 'edit'){
+					}else if(form_type == 'edit'){
 						ent.elm.change(this._fileChangeEventEdit);
 					}else{
 						ent.elm.change(this._fileChangeEventDel);
@@ -1573,125 +1602,316 @@ class CrudBaseBase{
 
 		ent['evt'] = null;
 		ent['file_name'] = null;
-		ent['file_path'] = this.param.upload_file_dir;
+		ent['file_path'] = this.param.upload_dp;
 		ent['preview_slt'] = preview_slt;
 
 		return ent;
+	}
+	
+	
+	
+	/**
+	 * TRからDIVへ反映
+	 * @param par(string or jQuery object) 親要素オブジェクトまたはセレクタ
+	 * @parma row_index 行インデックス	省略した場合アクティブTRの行インデックスになる。
+	 * @param option
+	 *  - form_type フォーム種別
+	 *  - upload_dp アップロードディレクトリパス
+	 *  - xss サニタイズフラグ 0:サニタイズしない , 1:xssサニタイズを施す（デフォルト）
+	 */
+	trToDiv(par,row_index,option){
+		var ent = this.getEntity(row_index); // アクティブTR要素からエンティティを取得する
+		this.entToBinds(par,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
+		this.entToBinds(par,ent,'name',option);// エンティティをname属性バインド要素群へセットする
+		
+	}
+	
+	/**
+	 * エンティティをバインド要素群へセットする
+	 * 
+	 * @note
+	 * entのフィールドに紐づく値がundefinedならバインド要素にセットしない。nullならセットする。
+	 * 
+	 * @param par(string or jQuery object) 親要素オブジェクトまたはセレクタ
+	 * @param ent エンティティ
+	 * @param bind_attr バインド属性	'class' or 'name'
+	 * @param option
+	 *  - form_type フォーム種別
+	 *  - upload_dp アップロードディレクトリパス
+	 *  - xss サニタイズフラグ 0:サニタイズしない , 1:xssサニタイズを施す（デフォルト）
+	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
+	 */
+	entToBinds(par,ent,bind_attr,option){
+		var bindElms = this.getBindElms(par,bind_attr,option); // class属性に紐づくバインド要素リストを親要素から取得する
+		
+		if(!option) option = {};
+		
+		// class属性である場合、表示フィルターをONにする。name属性であるならOFFにする。
+		if(bind_attr == 'class'){
+			option['dis_fil_flg'] = 1;
+		}else if (bind_attr == 'name'){
+			option['dis_fil_flg'] = 0;
+		}
+		
+		// バインド要素リストにエンティティをセットする
+		for(var i in this.fieldData){
+			var field = this.fieldData[i].field;
+			if(ent[field] === undefined) continue;
+			var elms = bindElms[field];
+			for(var e_i in elms){
+				var elm = elms[e_i];
+				this.setValueToElement(elm,field,ent[field],option); // バインド要素リストを取得する
+			}
+		}
+	}
+	
+	
+	/**
+	 * バインド要素リストを取得する
+	 * @param par(string or jQuery object) 親要素
+	 * @param bind_attr バインド属性	'class' or 'name'
+	 * @return object[s][n] バインド属性リスト  
+	 */
+	getBindElms(par,bind_attr){
+		var bindElms = {}; 
+		
+		if(!(par instanceof jQuery)){
+			par = jQuery(par);
+		}
+		
+		for(var i in this.fieldData){
+			
+			var fEnt = this.fieldData[i];
+			
+			//要素を取得する
+			var bElms;
+			if(bind_attr == 'class'){
+				bElms = par.find('.' + fEnt.field);
+			}else if(bind_attr == 'name'){
+				bElms = par.find(`[name='${fEnt.field}']`);
+			}else{
+				continue;
+			}
+
+			if(!bElms[0]) continue;// 要素が取得できなかったら次へ
+			
+			// 2層構造でバインド要素リストに取得要素をセットする
+			var bElms2 = [];
+			for(var be_i=0;be_i<bElms.length;be_i++){
+				bElms2.push(bElms.eq(be_i));
+			}
+			bindElms[fEnt.field] = bElms2;
+		}
+		return bindElms;
 	}
 
 
 	/**
 	 * フォームにエンティティをセットする
-	 * @param string formType フォーム種別
-	 * @param object form フォーム
+	 * @param string form_type フォーム種別
 	 * @param object ent エンティティ
-	 * @param string upload_file_dir アップロードファイルディレクトリ（省略可）
+	 * @param option 省略可
+	 *  - upload_dp アップロードファイルディレクトリ
+	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
 	 */
-	_setFieldsToForm(formType,form,ent,upload_file_dir){
+	setFieldsToForm(form_type,ent,option){
 
-		for(var f in ent){
+		var form = this.getForm(form_type);// フォーム要素を取得
+		
+		if(option==null) option = {};
+		option = {
+				'par':form,
+				'form_type':form_type,
+		}
+		
+		this.entToBinds(form,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
+		this.entToBinds(form,ent,'name',option);// エンティティをname属性バインド要素群へセットする
+		
+	}
+	
+	
+	/**
+	 * 様々なタイプの要素へ値をセットする
+	 * @param elm(string or jQuery object) 要素オブジェクト、またはセレクタ
+	 * @param field フィールド
+	 * @param val1 要素にセットする値
+	 * @param option
+	 *  - par 親要素(jQuery object)
+	 *  - form_type フォーム種別
+	 *  - upload_dp アップロードディレクトリパス
+	 *  - xss サニタイズフラグ 0:サニタイズしない , 1:xssサニタイズを施す（デフォルト）
+	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
+	 *  - dis_fil_flg 表示フィルター適用フラグ 0:OFF(デフォルト) , 1:ON
+	 */
+	setValueToElement(elm,field,val1,option){
+		
+		if(!(elm instanceof jQuery)) elm = jQuery(elm);// 要素がjQueryオブジェクトでなければ、jQueryオブジェクトに変換。
+		
+		// オプションの初期化
+		if(option == null) option = {};
+		if(option['xss']==null) option['xss'] = 1;
+		
+		var tag_name = elm.get(0).tagName; // 入力要素のタグ名を取得する
+		
+		// 値に表示フィルターをかける
+		if(option['dis_fil_flg']){
+			val1 = this.displayFilter(val1,field,option.disFilData);
+		}
+		
+		// 値を入力フォームにセットする。
+		if(tag_name == 'INPUT' || tag_name == 'SELECT'){
 
-			// class属性またはname属性を指定して入力要素を取得する。
-			var inp = form.find('.' + f);
-			if(inp[0]==null){
-				inp = form.find("[name='" + f + "']");
+			// type属性を取得
+			var typ = elm.attr('type');
+
+			if(typ=='file'){
+
+				// アップロードファイル要素用の入力フォームセッター
+				this._setToFormForFile(option.form_type,option.par,field,val1,option.upload_dp);
+
 			}
 
-			// 入力要素が取得できなければcontinueする。
-			if(inp[0]==null){
-				continue;
-			}
-
-			var v = ent[f];
-
-			var tagName = inp.get(0).tagName; // 入力要素のタグ名を取得する
-
-			// 値を入力フォームにセットする。
-			if(tagName == 'INPUT' || tagName == 'SELECT'){
-
-				// type属性を取得
-				var typ = inp.attr('type');
-
-				if(typ=='file'){
-
-					// アップロードファイル要素用の入力フォームセッター
-					this._setToFormForFile(formType,form,f,v,upload_file_dir);
-
-				}
-
-				else if(typ=='checkbox'){
-					if(v ==0 || v==null || v==''){
-						inp.prop("checked",false);
-					}else{
-						inp.prop("checked",true);
-					}
-
-				}
-
-				else if(typ=='radio'){
-					var opElm = form.find("[name='" + f + "'][value='" + v + "']");
-					if(opElm[0]){
-						opElm.prop("checked",true);
-					}
-
-				}
-
-				else{
-					v = this._xssSanitaizeDecode(v);// XSSサニタイズを解除
-					inp.val(v);
+			else if(typ=='checkbox'){
+				if(val1 ==0 || val1==null || val1==''){
+					elm.prop("checked",false);
+				}else{
+					elm.prop("checked",true);
 				}
 
 			}
 
-			// テキストエリア用のセット
-			else if(tagName == 'TEXTAREA'){
-
-				if(v!="" && v!=null){
-					v=v.replace(/<br>/g,"\r");
-					v = this._xssSanitaizeDecode(v);
+			else if(typ=='radio'){
+				var opElm = option.par.find("[name='" + field + "'][value='" + val1 + "']");
+				if(opElm[0]){
+					opElm.prop("checked",true);
 				}
-				inp.val(v);
+
 			}
 
-			// IMGタグへのセット
-			else if(tagName == 'IMG'){
-				// IMG要素用の入力フォームセッター
-				this._setToFormForImg(formType,form,inp,f,v,upload_file_dir);
+			else{
+				val1 = this._xssSanitaizeDecode(val1);// XSSサニタイズを解除
+				elm.val(val1);
 			}
 
-			// audioタグへのセット
-			else if(tagName == 'AUDIO'){
+		}
 
-				// オーディオ要素用の入力フォームセッター
-				this._setToFormForAdo(formType,form,inp,f,v,upload_file_dir);
+		// テキストエリア用のセット
+		else if(tag_name == 'TEXTAREA'){
 
-			}else{
-				if(v != null){
-					v=v.replace(/<br>/g,"\r");
-					v = this._xssSanitaizeEncode(v); // XSSサニタイズを施す
-					v = this._nl2brEx(v);// 改行コートをBRタグに変換する
+			if(val1!="" && val1!=null){
+				val1=val1.replace(/<br>/g,"\r");
+				val1 = this._xssSanitaizeDecode(val1);
+			}
+			elm.val(val1);
+		}
+
+		// IMGタグへのセット
+		else if(tag_name == 'IMG'){
+			// IMG要素用の入力フォームセッター
+			this._setToFormForImg(option.form_type,option.par,elm,field,val1,option.upload_dp);
+		}
+
+		// audioタグへのセット
+		else if(tag_name == 'AUDIO'){
+
+			// オーディオ要素用の入力フォームセッター
+			this._setToFormForAdo(option.form_type,option.par,elm,field,val1,option.upload_dp);
+
+		}else{
+			if(val1 != null){
+				val1=val1.replace(/<br>/g,"\r");
+				// XSSサニタイズを施す
+				if(option.xss == 1){
+					val1 = this._xssSanitaizeEncode(val1); 
 				}
-				inp.html(v);
+				val1 = this._nl2brEx(val1);// 改行コートをBRタグに変換する
+			}
+			elm.html(val1);
+		}
+		
+		
+	}
+	
+	/**
+	 * 値に表示フィルターをかける
+	 * @param val1 値
+	 * @param field フィールド
+	 * @param disFilData 表示フィルターデータ
+	 * @return フィルター後の値
+	 */
+	displayFilter(val1,field,disFilData){
+		
+		console.log('displayFilter');//■■■□□□■■■□□□■■■□□□■■■)
+		
+		if(!disFilData) disFilData = this.param.disFilData;
+		if(!disFilData) return val1;
+		if(!disFilData[field]) return val1;
+		
+		console.log('OK');//■■■□□□■■■□□□■■■□□□■■■
+		console.log(disFilData);//■■■□□□■■■□□□■■■□□□■■■))
+		
+		var filEnt = disFilData[field];
+
+		switch (filEnt.fil_type) {
+		case 'money':
+
+			val1 = this.disFilMoney(val1,field,filEnt.option);// 表示フィルター・金額
+			break;
+
+		default:
+			break;
+		}
+		
+		
+		return val1;
+	}
+	
+	/**
+	 * 表示フィルターデータのSetter
+	 * @param disFilData 表示フィルターデータ
+	 */
+	setDisplayFilterData(disFilData){
+		this.param['disFilData'] = disFilData;
+	}
+	
+	/**
+	 * 表示フィルター・金額
+	 * @param val1 フィルターをかける値
+	 * @param field フィールド
+	 * @param option 
+	 * 
+	 */
+	disFilMoney(val1,field,option){
+		
+		if(val1 == null) return val1;
+		
+		var currency = "&yen;";
+		if(option){
+			if(option['currency']){
+				currency = option['currency'];
 			}
 		}
+		return currency + String(val1).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+
 	}
+	
 
 	// アップロードファイル要素用の入力フォームセッター
-	_setToFormForFile(formType,form,field,v,upload_file_dir){
+	_setToFormForFile(form_type,form,field,v,upload_dp){
 
 		// 入力要素エンティティを取得する
 		var ent = this._getFieldEntByField(field);
 
-		var inp_ent = ent['inp_' + formType];
+		var inp_ent = ent['inp_' + form_type];
 
 		// アップロードファイル要素をクリアする
 		var inpElm = inp_ent.elm;
 		inpElm.val("");
 
-		if(!upload_file_dir){
-			upload_file_dir = inp_ent.file_path;
+		if(!upload_dp){
+			upload_dp = inp_ent.file_path;
 		}
-		var fp = upload_file_dir + v;
+		var fp = upload_dp + v;
 
 		var accept = inp_ent.accept;
 
@@ -1727,14 +1947,14 @@ class CrudBaseBase{
 	/**
 	 * 入力要素エンティティを取得する
 	 * @param field フィールド
-	 * @param formType フォーム種別
+	 * @param form_type フォーム種別
 	 * @return 入力要素エンティティ
 	 */
-	_getInpEnt(field,formType){
+	_getInpEnt(field,form_type){
 		var index = this.fieldHashTable[field];
 		var ent = this.fieldData[index];
 		var inp_ent;
-		var inp_key = 'inp_' + formType;
+		var inp_key = 'inp_' + form_type;
 		if(ent[inp_key]){
 			inp_ent = ent[inp_key];
 		}
@@ -1743,15 +1963,15 @@ class CrudBaseBase{
 
 
 	// IMG要素用の入力フォームセッター
-	_setToFormForImg(formType,form,imgElm,field,v,upload_file_dir){
+	_setToFormForImg(form_type,form,imgElm,field,v,upload_dp){
 
 		// 入力エンティティを取得する
-		var inp_ent = this._getInpEnt(field,formType)
+		var inp_ent = this._getInpEnt(field,form_type)
 
-		if(!upload_file_dir){
-			upload_file_dir = inp_ent.file_path;
+		if(!upload_dp){
+			upload_dp = inp_ent.file_path;
 		}
-		var fp = upload_file_dir + v;
+		var fp = upload_dp + v;
 		imgElm.attr('src',fp);
 
 		this._setLabel(form,field,v);// ラベル要素へセット
@@ -1759,15 +1979,15 @@ class CrudBaseBase{
 	}
 
 	// オーディオ要素用の入力フォームセッター
-	_setToFormForAdo(formType,form,adoElm,field,v,upload_file_dir){
+	_setToFormForAdo(form_type,form,adoElm,field,v,upload_dp){
 
 		// 入力エンティティを取得する
-		var inp_ent = this._getInpEnt(field,formType)
+		var inp_ent = this._getInpEnt(field,form_type)
 
-		if(!upload_file_dir){
-			upload_file_dir = inp_ent.file_path;
+		if(!upload_dp){
+			upload_dp = inp_ent.file_path;
 		}
-		var fp = upload_file_dir + v;
+		var fp = upload_dp + v;
 		adoElm.attr('src',fp);
 
 		this._setLabel(form,field,v);// ラベル要素へセット
@@ -2048,13 +2268,13 @@ class CrudBaseBase{
 	 *  - 文字列型<string>	エラーメッセージのみ
 	 *  - エラー出力指定型(単一) <{'err_slt','err_msg'}>		出力先セレクタとエラーメッセージ
 	 *  - エラー出力指定型（複数） <[{'err_slt','err_msg'}]>	上記の配列
-	 * @param formType フォーム種別
+	 * @param form_type フォーム種別
 	 * @returns void
 	 */
-	_errShow(errData,formType){
+	_errShow(errData,form_type){
 
 		// フォーム種別からフォーム要素を取得する
-		var form = this.getForm(formType);
+		var form = this.getForm(form_type);
 
 		// 一旦、バリデーションエラーメッセージをクリアする
 		this._clearValidErr(form);

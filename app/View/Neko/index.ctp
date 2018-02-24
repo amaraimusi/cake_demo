@@ -16,8 +16,9 @@ $this->assign('script', $this->Html->script(array(
 		'ympicker_rap',					// 年月選択ダイアログのラップ
 		'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
         'NoUiSliderRap',				// noUiSliderのラップ
-        'CrudBase/CrudBaseBase.js?ver=1.0',						// AjaxによるCRUD
-		'CrudBase/CrudBase.js?ver=2.0',						// AjaxによるCRUD
+        'CrudBase/CrudBaseBase.js?ver=1.0',
+        'CrudBase/CrudBase.js?ver=2.0',
+        'CrudBase/CrudBaseReact.js?ver=1.0',
 		'livipage',						// ページ内リンク先プレビュー
 		'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
 		'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
@@ -137,6 +138,16 @@ $this->assign('script', $this->Html->script(array(
 	<?php echo $pages['page_index_html'];//ページ目次 ?>
 </div>
 
+<div id="react_test1">
+	<div class="neko_name">XXX1</div>
+	<input type="text" name="neko_name" value="" /><br>
+	<div class="neko_name">XXX2</div>
+	<div class="neko_val">123</div>
+	<input type="text" name="neko_val" value="" /><br>
+	<div class="neko_val">123</div>
+	<input type="button" value="trToDiv" onclick="trToDiv('#react_test1')" />
+</div>
+
 <!-- 一覧テーブル -->
 <table id="neko_tbl" border="1"  class="table table-striped table-bordered table-condensed">
 
@@ -159,8 +170,6 @@ $this->CrudBase->startClmSortMode($field_data);
 
 foreach($data as $i=>$ent){
 
-
-	
 	echo "<tr id=i{$ent['id']}>";
 	// --- Start field_table
 	$this->CrudBase->tdId($ent,'id',array('checkbox_name'=>'pwms'));
@@ -211,7 +220,7 @@ foreach($data as $i=>$ent){
 	<div class="err text-danger"></div>
 	
 	<div style="display:none">
-    	<input type="hidden" class="formType">
+    	<input type="hidden" class="form_type">
     	<input type="hidden" class="row_index">
 	</div>
 	<table><tbody>
@@ -358,7 +367,7 @@ foreach($data as $i=>$ent){
 		<div class="pnl_head1">削除</div>
 		<div class="pnl_head2"></div>
 		<div class="pnl_head3">
-			<button type="button" class="btn btn-default btn-sm" onclick="closeForm('delete')"><span class="glyphicon glyphicon-remove"></span></button>
+			<button type="button" class="btn btn-default btn-sm" onclick="closeForm('del')"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
 	</div>
 	
@@ -381,7 +390,7 @@ foreach($data as $i=>$ent){
 	<br>
 	
 
-	<button type="button"  onclick="ajaxCrud.deleteReg();" class="btn btn-danger">
+	<button type="button"  onclick="deleteReg();" class="btn btn-danger">
 		<span class="glyphicon glyphicon-remove"></span>　削除する
 	</button>
 	<hr>

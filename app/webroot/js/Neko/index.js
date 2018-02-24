@@ -37,6 +37,15 @@ function init(){
 			'delete_reg_url':'neko/ajax_delete',
 		});
 
+	// 表示フィルターデータの定義とセット
+	var disFilData = {
+			'neko_val':{
+				'fil_type':'money',
+				'option':{'currency':'&yen;'}
+			}
+	};
+	crudBase.setDisplayFilterData(disFilData);
+	
 	
 	// 列表示切替機能の初期化
 	var csh_json = $('#csh_json').val();
@@ -121,12 +130,21 @@ function newInpShow(btnElm){
 function editShow(btnElm){
 	crudBase.editShow(btnElm);
 }
+
 /**
  * 複製フォームを表示（新規入力フォームと同じ）
  * @param btnElm ボタン要素
  */
 function copyShow(btnElm){
 	crudBase.copyShow(btnElm);
+}
+
+/**
+ * 削除フォーム表示
+ * @param btnElm ボタン要素
+ */
+function deleteShow(btnElm){
+	crudBase.deleteShow(btnElm);
 }
 
 /**
@@ -140,10 +158,10 @@ function show_kj_detail(){
 
 /**
  * フォームを閉じる
- * @parma string formType new_inp:新規入力 edit:編集 delete:削除
+ * @parma string form_type new_inp:新規入力 edit:編集 delete:削除
  */
-function closeForm(formType){
-	crudBase.closeForm(formType)
+function closeForm(form_type){
+	crudBase.closeForm(form_type)
 }
 
 
@@ -208,8 +226,6 @@ function newInpReg(){
 	crudBase.newInpReg(null,null);
 }
 
-
-
 /**
  * 編集フォームの登録ボタンアクション
  */
@@ -217,6 +233,21 @@ function editReg(){
 	crudBase.editReg(null,null);
 }
 
+/**
+ * 削除フォームの削除ボタンアクション
+ */
+function deleteReg(){
+	crudBase.deleteReg();
+}
+
+
+/**
+ * リアクティブ機能：TRからDIVへ反映
+ * @param div_slt DIV要素のセレクタ
+ */
+function trToDiv(div_slt){
+	crudBase.trToDiv(div_slt);
+}
 
 
 

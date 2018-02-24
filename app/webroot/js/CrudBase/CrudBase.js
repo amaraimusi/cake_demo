@@ -32,7 +32,7 @@
  *  - upload_file_dir	アップロードファイルディレクトリ
  *  - preview_img_width		プレビュー画像・横幅
  *  - preview_img_height	プレビュー画像・縦幅
- *  - callback_after_file_change(e,field,formType,fileName)	ファイルチェンジ後のコールバック
+ *  - callback_after_file_change(e,field,form_type,fileName)	ファイルチェンジ後のコールバック
  *  - form_z_index	重なり順序(cssのz-indexと同じ)
  *  - valid_msg_slt	バリデーションメッセージセレクタ
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない  1:フォームの外側をクリックすると自動的に閉じる（デフォルト）
@@ -49,8 +49,106 @@ class CrudBase extends CrudBaseBase{
 	 * - flg
 	 */
 	constructor(param,fieldData){
-		console.log('OK2');//■■■□□□■■■□□□■■■□□□■■■)
-		super(param,fieldData);
+		console.log('OK5');//■■■□□□■■■□□□■■■□□□■■■)
+		
+		// ■■■□□□■■■□□□■■■□□□■■■
+//		super(param,fieldData);
+		
+//		// パラメータに空プロパティがあれば、デフォルト値をセットする
+//		this.param = this._setParamIfEmpty(this.param);
+//
+//		// フォーム情報の取得と初期化
+//		this.formInfo = this._initFormInfo(this.param);
+//
+//		// フィールドデータにプロパティを追加する
+//		this.fieldData = this._addMoreFieldData(this.param.tbl_slt,this.fieldData);
+//
+//		// フィールドデータへフォーム内の要素情報をセットする
+//		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'new_inp');
+//		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'edit');
+//		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'del');
+//
+//		// フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
+//		this.fieldData = this._initFileUpData(this.fieldData);
+//
+//		// フィールドハッシュテーブルをフィールドデータから生成する。
+//		this.fieldHashTable = this._createFieldHashTable(this.fieldData);
+//
+//		// デフォルト新規入力エンティティを新規入力フォームから取得する
+//		this.defNiEnt = this._getEntByForm('new_inp');
+		
+//		// パラメータに空プロパティがあれば、デフォルト値をセットする
+//		var param = this._setParamIfEmpty(param);
+//		
+//		console.log('param');//■■■□□□■■■□□□■■■□□□■■■)
+//		console.log(param);//■■■□□□■■■□□□■■■□□□■■■)
+//
+//		// フォーム情報の取得と初期化
+//		var formInfo = this._initFormInfo(param);
+//
+//		// フィールドデータにプロパティを追加する
+//		var fieldData = this._addMoreFieldData(param.tbl_slt,fieldData);
+//
+//		// フィールドデータへフォーム内の要素情報をセットする
+//		fieldData = this._setFieldDataFromForm(fieldData,formInfo,'new_inp');
+//		fieldData = this._setFieldDataFromForm(fieldData,formInfo,'edit');
+//		fieldData = this._setFieldDataFromForm(fieldData,formInfo,'del');
+//
+//		// フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
+//		fieldData = this._initFileUpData(fieldData);
+//
+//		// フィールドハッシュテーブルをフィールドデータから生成する。
+//		var fieldHashTable = this._createFieldHashTable(fieldData);
+//
+//		// デフォルト新規入力エンティティを新規入力フォームから取得する
+//		var defNiEnt = this._getEntByForm('new_inp');
+//		
+//		// コンテナへ各種オブジェクトをセットし、基本クラスへ渡す
+//		var container = {
+//				'param':param,
+//				'formInfo':formInfo,
+//				'fieldData':fieldData,
+//				'fieldHashTable':fieldHashTable,
+//				'defNiEnt':defNiEnt,
+//		};
+//		this.setContainer(container);
+
+		
+		super();
+		
+		// --- 初期化: CrudBaseBaseクラスのメンバを初期化する ----
+		
+		// パラメータに空プロパティがあれば、デフォルト値をセットする
+		this.param = this._setParamIfEmpty(param);
+
+		// フォーム情報の取得と初期化
+		this.formInfo = this._initFormInfo(this.param);
+
+		// フィールドデータにプロパティを追加する
+		this.fieldData = this._addMoreFieldData(this.param.tbl_slt,this.fieldData);
+
+		// フィールドデータへフォーム内の要素情報をセットする
+		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'new_inp');
+		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'edit');
+		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'del');
+
+		// フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
+		this.fieldData = this._initFileUpData(this.fieldData);
+
+		// フィールドハッシュテーブルをフィールドデータから生成する。
+		this.fieldHashTable = this._createFieldHashTable(this.fieldData);
+
+		// デフォルト新規入力エンティティを新規入力フォームから取得する
+		this.defNiEnt = this._getEntByForm('new_inp');
+		
+		// 機能拡張クラス
+		this.react = new CrudBaseReact(); // CrudBaseのリアクティブ機能クラス
+		
+		// 各種の機能拡張クラスへコンテナをセットする
+		var container = this.getContainer();
+		this.react.setContainer(container);
+		
+		// --------
 
 	}
 
@@ -68,13 +166,13 @@ class CrudBase extends CrudBaseBase{
 
 		info.show_flg=1; // 表示制御フラグを表示中にする
 
+		// デフォルト新規入力エンティティを新規入力フォームにセットする
+		this.setFieldsToForm('new_inp',this.defNiEnt);
+
 		var form = this.getForm('new_inp');// フォーム要素を取得
 
-		// デフォルト新規入力エンティティを新規入力フォームにセットする
-		this._setFieldsToForm('new_inp',form,this.defNiEnt);
-
 		// フォーム種別をフォーム内の指定入力要素へセット
-		this.setValueToFrom(form,'formType','new_inp');
+		this.setValueToFrom(form,'form_type','new_inp');
 
 		// バリデーションエラーメッセージをクリアする
 		this._clearValidErr(form);
@@ -101,7 +199,7 @@ class CrudBase extends CrudBaseBase{
 	editShow(elm,option,callBack){
 
 		var tr=jQuery(elm).parents('tr'); // 先祖をさかのぼりtr要素を取得する
-		this.editRowIndex = tr.index(); // 行番（インデックス）を取得する
+		this.param.active_row_index = tr.index(); // 行番（インデックス）を取得する
 
 		var info = this.formInfo['edit'];
 
@@ -110,16 +208,17 @@ class CrudBase extends CrudBaseBase{
 		// TR要素からエンティティを取得する
 		var ent = this.getEntityByTr(tr);
 
-		var form = jQuery(info.slt);// 編集フォーム要素を取得
-
-		// オプションからアップロードファイルディレクトリを取得する
-		var upload_file_dir = null;
-		if(option){
-			upload_file_dir = option['upload_file_dir'];
-		}
+		// ■■■□□□■■■□□□■■■□□□■■■
+//		// オプションからアップロードファイルディレクトリを取得する
+//		var upload_file_dir = null;
+//		if(option){
+//			upload_file_dir = option['upload_file_dir'];
+//		}
 
 		// フォームに親要素内の各フィールド値をセットする。
-		this._setFieldsToForm('edit',form,ent,upload_file_dir);
+		this.setFieldsToForm('edit',ent,option);
+
+		var form = jQuery(info.slt);// 編集フォーム要素を取得
 
 		// バリデーションエラーメッセージをクリアする
 		this._clearValidErr(form);
@@ -149,7 +248,7 @@ class CrudBase extends CrudBaseBase{
 	copyShow(elm,option,callBack){
 
 		var tr=jQuery(elm).parents('tr'); // 先祖をさかのぼりtr要素を取得する
-		this.editRowIndex = tr.index(); // 行番（インデックス）を取得する
+		this.param.active_row_index = tr.index(); // 行番（インデックス）を取得する
 
 		var info = this.formInfo['new_inp'];
 
@@ -161,20 +260,21 @@ class CrudBase extends CrudBaseBase{
 		var form = this.getForm('copy');
 
 		// フォーム種別をフォーム内の指定入力要素へセット
-		this.setValueToFrom(form,'formType','copy');
+		this.setValueToFrom(form,'form_type','copy');
 
 		// 行番を取得し、要素にセットする
 		var row_index = tr.index(); // 行番（インデックス）を取得する
 		this.setValueToFrom(form,'row_index',row_index);
 
-		// オプションからアップロードファイルディレクトリを取得する
-		var upload_file_dir = null;
-		if(option){
-			upload_file_dir = option['upload_file_dir'];
-		}
+		// ■■■□□□■■■□□□■■■□□□■■■
+//		// オプションからアップロードファイルディレクトリを取得する
+//		var upload_file_dir = null;
+//		if(option){
+//			upload_file_dir = option['upload_file_dir'];
+//		}
 
 		// フォームにエンティティの値をセットする
-		this._setFieldsToForm('new_inp',form,ent,upload_file_dir);
+		this.setFieldsToForm('new_inp',ent,option);
 
 		// バリデーションエラーメッセージをクリアする
 		this._clearValidErr(form);
@@ -201,7 +301,7 @@ class CrudBase extends CrudBaseBase{
 	 */
 	deleteShow(elm,option,callBack){
 		var tr=jQuery(elm).parents('tr'); // 先祖をさかのぼりtr要素を取得する
-		this.deleteRowIndex = tr.index(); // 行番（インデックス）を取得する
+		this.param.active_row_index = tr.index(); // 行番（インデックス）を取得する
 
 		var info = this.formInfo['del'];
 
@@ -212,14 +312,15 @@ class CrudBase extends CrudBaseBase{
 
 		var form = jQuery(info.slt);// 削除フォーム要素を取得
 
-		// オプションからアップロードファイルディレクトリを取得する
-		var upload_file_dir = null;
-		if(option){
-			upload_file_dir = option['upload_file_dir'];
-		}
+		//■■■□□□■■■□□□■■■□□□■■■
+//		// オプションからアップロードファイルディレクトリを取得する
+//		var upload_file_dir = null;
+//		if(option){
+//			upload_file_dir = option['upload_file_dir'];
+//		}
 
 		// フォームに親要素内の各フィールド値をセットする。
-		this._setFieldsToForm('del',form,ent,upload_file_dir);
+		this.setFieldsToForm('del',ent,option);
 
 		// コールバックを実行する
 		if(callBack){
@@ -302,12 +403,12 @@ class CrudBase extends CrudBaseBase{
 		}
 
 		// フォーム種別を取得してFDにセット
-		var formType = this.getValueFromForm(form,'formType');
+		var form_type = this.getValueFromForm(form,'form_type');
 
-		fd.append( "formType", formType );
+		fd.append( "form_type", form_type );
 
 		// 諸パラメータから追加行インデックスを決定する
-		var add_row_index = this._decAddRowIndex(form,formType,option);
+		var add_row_index = this._decAddRowIndex(form,form_type,option);
 
 
 		jQuery.ajax({
@@ -388,8 +489,8 @@ class CrudBase extends CrudBaseBase{
 			option = {};
 		}
 
-		// 編集行のインデックスを取得する
-		var index = this.editRowIndex; 
+		// アクティブ行インデックスを取得する
+		var index = this.param.active_row_index; 
 
 		// 編集フォームからエンティティを取得する。
 		var ent = this._getEntByForm('edit');
@@ -428,7 +529,7 @@ class CrudBase extends CrudBaseBase{
 			}
 		}
 
-		fd.append( "formType", 'edit' );
+		fd.append( "form_type", 'edit' );
 
 		jQuery.ajax({
 			type: "post",
@@ -508,7 +609,7 @@ class CrudBase extends CrudBaseBase{
 	 */
 	deleteReg (beforeCallBack,afterCallBack,option){
 
-		var row_index = this.deleteRowIndex; // 削除行のインデックス
+		var row_index = this.param.active_row_index; // アクティブ行インデックス
 
 		// 削除フォームからエンティティを取得する
 		var ent = this._getEntByForm('delete');
@@ -543,12 +644,12 @@ class CrudBase extends CrudBaseBase{
 
 	/**
 	 * フォームを閉じる
-	 * @parma string formType new_inp:新規入力 edit:編集 delete:削除
+	 * @parma string form_type new_inp:新規入力 edit:編集 delete:削除
 	 */
-	closeForm(formType){
+	closeForm(form_type){
 
 		// フォーム情報を取得
-		var fi = this.formInfo[formType];
+		var fi = this.formInfo[form_type];
 
 		// フォームのオブジェクトを取得する
 		var form = fi.form;
@@ -558,6 +659,13 @@ class CrudBase extends CrudBaseBase{
 
 	}
 	
+	//■■■□□□■■■□□□■■■□□□■■■
+//	/**
+//	 * リアクティブ機能：TRからDIVへ反映
+//	 */
+//	reactTrToDiv(div_slt){
+//		this.react.trToDiv(div_slt);
+//	}
 	
 
 }
