@@ -494,6 +494,8 @@ class CrudBase extends CrudBaseBase{
 
 		// 編集フォームからエンティティを取得する。
 		var ent = this._getEntByForm('edit');
+		console.log('編集フォームからエンティティを取得する。');//■■■□□□■■■□□□■■■□□□■■■)
+		console.log(ent);//■■■□□□■■■□□□■■■□□□■■■)
 
 		// フィールドデータからファイルアップロード要素であるフィールドリストを抽出する
 		var fuEnts = this._extractFuEnt(this.fieldData,'edit');
@@ -574,6 +576,9 @@ class CrudBase extends CrudBaseBase{
 					location.reload(true);
 				}
 
+				console.log('TR要素にエンティティの値をセットする');//■■■□□□■■■□□□■■■□□□■■■)
+				console.log(ent);//■■■□□□■■■□□□■■■□□□■■■)
+				
 				// TR要素にエンティティの値をセットする
 				this._setEntityToEditTr(ent,tr);
 

@@ -82,10 +82,15 @@ class NekoController extends CrudBaseController {
 		$data=$this->Neko->findData($kjs,$paginations['page_no'],$paginations['limit'],$paginations['find_order']);
 
 		$res=$this->index_after($kjs);//indexアクションの共通後処理
+		
+		$nekoGroupList = array(1=>'ペルシャ',2=>'ボンベイ',3=>'三毛',4=>'シャム',5=>'雉トラ',6=>'スフィンクス');
+		$neko_group_json = json_encode($nekoGroupList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
 		$this->set(array(
-				'title_for_layout'=>'ネコ',
-				'data'=> $data,
+			'title_for_layout'=>'ネコ',
+		    'data'=> $data,
+		    'nekoGroupList' => $nekoGroupList,
+		    'neko_group_json' => $neko_group_json,
 		));
 		
 		//当画面系の共通セット
@@ -224,7 +229,10 @@ class NekoController extends CrudBaseController {
 		$this->Neko->begin();
 		$ent = $this->Neko->saveEntity($ent);
 		$this->Neko->commit();//コミット
-	
+		
+		
+		$this->log('Test'); // ■■■□□□■■■□□□■■■□□□■■■
+		$this->log($ent); // ■■■□□□■■■□□□■■■□□□■■■)
 	
 		if(!empty($upload_file)){
 			
@@ -375,14 +383,13 @@ class NekoController extends CrudBaseController {
 	 * 当画面系の共通セット
 	 */
 	private function setCommon(){
-		$nekoGroupList = array(1=>'ペルシャ',2=>'ボンベイ',3=>'三毛',4=>'シャム',5=>'雉トラ',6=>'スフィンクス');
+
 		
 		// 新バージョンであるかチェックする。
 		$new_version_flg = $this->checkNewPageVersion($this->this_page_version);
 		
 		$this->set(array(
 				'header' => 'header_demo',
-				'nekoGroupList' => $nekoGroupList,
 				'new_version_flg' => $new_version_flg, // 当ページの新バージョンフラグ   0:バージョン変更なし  1:新バージョン
 				'this_page_version' => $this->this_page_version,// 当ページのバージョン
 		));

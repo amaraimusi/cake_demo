@@ -548,7 +548,8 @@ class CrudBaseHelper extends FormHelper {
 			$v = $v[$field];
 		}
 		
-		$td = "<td><span class='{$field}' >{$v}</span></td>\n";
+		//$td = "<td><span class='{$field}' >{$v}</span></td>\n";■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}'  /><span class='{$field}' >{$v}</span></td>\n";
 		$this->setTd($td,$field);
 	}
 	public function tpPlain($v,$wamei){
@@ -565,7 +566,8 @@ class CrudBaseHelper extends FormHelper {
 		}
 		
 		$v = h($v);
-		$td = "<td><span class='{$field}' >{$v}</span></td>\n";
+		//$td = "<td><span class='{$field}' >{$v}</span></td>\n";■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' >{$v}</span></td>\n";
 		$this->setTd($td,$field);
 	
 	}
@@ -580,7 +582,8 @@ class CrudBaseHelper extends FormHelper {
 		
 		$v = nl2br($v);// 改行置換
 		
-		$td = "<td><span class='{$field}'>{$v}</span>\n";
+		//$td = "<td><span class='{$field}'>{$v}</span>\n";//■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v}</span>\n";
 		
 		$this->setTd($td,$field);
 	
@@ -632,7 +635,8 @@ class CrudBaseHelper extends FormHelper {
 		
 		
 		// TD要素を組み立てる
-		$td = "<td>{$cbHtml}<span class='{$field}' >{$v}</span></td>\n";
+		//$td = "<td>{$cbHtml}<span class='{$field}' >{$v}</span></td>\n";■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td>{$cbHtml}<input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' >{$v}</span></td>\n";
 		
 		$this->setTd($td,$field);
 		
@@ -676,7 +680,8 @@ class CrudBaseHelper extends FormHelper {
 		$v2 = $this->propList($v,$list);
 		$v2 = h($v2);
 		
-		$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";
+		//$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	
 	}
@@ -713,7 +718,8 @@ class CrudBaseHelper extends FormHelper {
 		
 		$v2 = $this->propMoney($v);
 		
-		$td = "<td><span name='{$field}' style='display:none'>{$v}</span><span class='{$field}' >{$v2}</span></td>\n";
+		//$td = "<td><span name='{$field}' style='display:none'>{$v}</span><span class='{$field}' >{$v2}</span></td>\n";//■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
 	public function tpMoney($v,$wamei){
@@ -750,7 +756,8 @@ class CrudBaseHelper extends FormHelper {
 			$v2= str_replace('\\', '', $v2);
 		}
 
-		$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";
+		//$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";//■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
 	
@@ -773,7 +780,8 @@ class CrudBaseHelper extends FormHelper {
 		
 		}
 
-		$td = "<td><div class='{$field}' >{$v}</div>\n";
+		//$td = "<td><div class='{$field}' >{$v}</div>\n";■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><div class='{$field}' >{$v}</div></td>\n";
 		$this->setTd($td,$field);
 	}
 	
@@ -843,7 +851,9 @@ class CrudBaseHelper extends FormHelper {
 		}
 		
 		$v2 = $this->propDeleteFlg($v);
-		$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";
+		//$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";// ■■■□□□■■■□□□■■■□□□■■■
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
+		
 		$this->setTd($td,$field);
 	}
 	public function tpDeleteFlg($v,$wamei='無効フラグ'){
@@ -888,11 +898,18 @@ class CrudBaseHelper extends FormHelper {
 			
 		}
 		
+		//■■■□□□■■■□□□■■■□□□■■■
+// 		$td_html = "<td>".
+// 				"<a href='{$orig_fp}' data-lity='data-lity' />".
+// 				"<img src='{$thum_fp}' data-file-preview = '{$field}' class='{$field}_display' title='{$fn}' /></a>".
+// 				"<span class='{$field}' style='display:none'>{$fn}</span>".
+// 				"</td>";
+		
 		$td_html = "<td>".
-				"<a href='{$orig_fp}' data-lity='data-lity' />".
-				"<img src='{$thum_fp}' data-file-preview = '{$field}' class='{$field}_display' title='{$fn}' /></a>".
-				"<span class='{$field}' style='display:none'>{$fn}</span>".
-				"</td>";
+		  		"<input type='hidden' name='{$field}' value='{$fn}' />".
+		  		"<a href='{$orig_fp}' data-lity='data-lity' />".
+		  		"<img src='{$thum_fp}' data-file-preview = '{$field}' class='{$field}_display' title='{$fn}' /></a>".
+		  		"</td>";
 		
 		
 		$this->setTd($td_html,$field);

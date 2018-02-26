@@ -218,15 +218,19 @@ class Neko extends AppModel {
 
 
 		//DBに登録('atomic' => false　トランザクションなし）
-		$ent = $this->save($ent, array('atomic' => false,'validate'=>'true'));
+	    $ent = $this->save($ent, array('atomic' => false,'validate'=>false));
+	    $this->log('A2'); // ■■■□□□■■■□□□■■■□□□■■■)
+	    $this->log($ent); // ■■■□□□■■■□□□■■■□□□■■■)
 
 		//DBからエンティティを取得
 		$ent = $this->find('first',
 				array(
 						'conditions' => "id={$ent['Neko']['id']}"
 				));
-		
+
 		$ent=$ent['Neko'];
+		if(empty($ent['delete_flg'])) $ent['delete_flg'] = 0;
+		$this->log($ent); // ■■■□□□■■■□□□■■■□□□■■■)
 		
 		return $ent;
 	}

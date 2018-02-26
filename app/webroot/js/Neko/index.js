@@ -36,13 +36,22 @@ function init(){
 			'new_reg_url':'neko/ajax_reg',
 			'delete_reg_url':'neko/ajax_delete',
 		});
+	
+	// ネコグループリストJSON
+	var neko_group_json = jQuery('#neko_group_json').val();
+	var nekoGroupList = JSON.parse(neko_group_json);
 
 	// 表示フィルターデータの定義とセット
 	var disFilData = {
 			'neko_val':{
 				'fil_type':'money',
 				'option':{'currency':'&yen;'}
+			},
+			'neko_group':{
+				'fil_type':'select',
+				'option':{'list':nekoGroupList}
 			}
+			
 	};
 	crudBase.setDisplayFilterData(disFilData);
 	

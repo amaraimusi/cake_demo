@@ -411,7 +411,10 @@ foreach($data as $i=>$ent){
 
 <br />
 
-
+<!-- 埋め込みJSON -->
+<div style="display:none">
+	<input id="neko_group_json" type="hidden" value='<?php echo $neko_group_json; ?>' />
+</div>
 
 
 

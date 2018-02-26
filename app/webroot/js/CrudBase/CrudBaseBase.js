@@ -520,8 +520,9 @@ class CrudBaseBase{
 		var ent = {};
 		for(var i in this.fieldData){
 			var f = this.fieldData[i].field;
-			var elm = tr.find('.' + f);
-			ent[f] = elm.html();
+			//var elm = tr.find('.' + f);//■■■□□□■■■□□□■■■□□□■■■
+			var elm = tr.find("[name='" + f + "']");
+			ent[f] = elm.val();
 		}
 
 		return ent;
@@ -779,13 +780,14 @@ class CrudBaseBase{
 	 * 新しい行を作成する
 	 * @param ent 行エンティティ
 	 * @param add_row_index 追加行インデックス :テーブル行の挿入場所。-1にすると末尾へ追加。-1がデフォルト。
+	 * @param option 拡張予定
 	 */
-	_addTr(ent,add_row_index){
+	_addTr(ent,add_row_index,option){
 
-		if(add_row_index == null){
-			add_row_index = -1;
-		}
+		if(add_row_index == null) add_row_index = -1;
 		add_row_index *= 1; // 数値型に変換する。
+		
+		if(!option) option = {};
 
 		// テーブルのtbody要素を取得する
 		var tbl_slt = '#' + this.param.tbl_slt;
@@ -805,7 +807,8 @@ class CrudBaseBase{
 		var newTr = this._insertTr(tbl_slt,add_row_index,new_tr_html);
 
 		// 新行要素にエンティティをセットする
-		this._setEntityToTr(newTr,ent,'new_inp');
+		option['form_type'] = 'new_inp';
+		this._setEntityToTr(newTr,ent,option);
 
 	}
 
@@ -860,12 +863,16 @@ class CrudBaseBase{
 	}
 
 
-	// 編集中の行にエンティティを反映する。
-	_setEntityToEditTr(ent,tr){
+	/**
+	 * 編集中の行にエンティティを反映する。
+	 * @param ent 行エンティティ
+	 * @param <jQuery object> tr 編集中の行要素
+	 * @param option 拡張予定
+	 */
+	_setEntityToEditTr(ent,tr,option){
 
-		if(ent==null){
-			return;
-		}
+		if(ent==null) return;
+		if(!option) option = {};
 
 		// 現在編集中の行要素を取得する
 		if(tr==null){
@@ -873,7 +880,8 @@ class CrudBaseBase{
 		}
 
 		// TR要素にエンティティをセットする
-		this._setEntityToTr(tr,ent,'edit');
+		option['form_type'] = 'edit';
+		this._setEntityToTr(tr,ent,option);
 
 	};
 
@@ -882,35 +890,38 @@ class CrudBaseBase{
 	 * TR要素にエンティティをセットする
 	 * @param tr TR要素オブジェクト
 	 * @param ent エンティティ
-	 * @param form_type フォーム種別 new_inp,edit,del
+	 * @param option
+	 *  - form_type フォーム種別 new_inp,edit,del
 	 */
-	_setEntityToTr(tr,ent,form_type){
+	_setEntityToTr(tr,ent,option){
 
-		if(ent==null){
-			return;
-		}
-
-		// フォーム種別からフォーム要素を取得
-		var info = this.formInfo[form_type];
-		var form = jQuery(info.slt);
-
-		// TR要素内の各プロパティ要素内にエンティティの値をセットする
-		for(var f in ent){
-			// 源値要素への反映
-			var elm = tr.find('.' + f);
-			var v = ent[f];
-
-			v = this._xssSanitaizeEncode(v);// XSSサニタイズを施す
-			v = this._nl2brEx(v);// 改行コートをBRタグに変換する
-
-			if(elm[0]){
-				elm.html(v);
-			}
-
-			//display系要素への反映
-			this._setEntityToTrDisplay(tr,f,v,form);
-
-		}
+		if(ent==null) return;
+		
+		this.entToBinds(tr,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
+		this.entToBinds(tr,ent,'name',option);// エンティティをname属性バインド要素群へセットする
+		
+		// ■■■□□□■■■□□□■■■□□□■■■
+//		// フォーム種別からフォーム要素を取得
+//		var info = this.formInfo[form_type];
+//		var form = jQuery(info.slt);
+//
+//		// TR要素内の各プロパティ要素内にエンティティの値をセットする
+//		for(var f in ent){
+//			// 源値要素への反映
+//			var elm = tr.find('.' + f);
+//			var v = ent[f];
+//
+//			v = this._xssSanitaizeEncode(v);// XSSサニタイズを施す
+//			v = this._nl2brEx(v);// 改行コートをBRタグに変換する
+//
+//			if(elm[0]){
+//				elm.html(v);
+//			}
+//
+//			//display系要素への反映
+//			this._setEntityToTrDisplay(tr,f,v,form);
+//
+//		}
 
 	};
 
@@ -927,107 +938,108 @@ class CrudBaseBase{
 		return v;
 	}
 
-	/**
-	 * TR要素内のdisplay系要素にエンティティをセットする
-	 * @param tr tr要素
-	 * @param f フィールド名
-	 * @param v 値
-	 * @param form フォーム要素
-	 */
-	_setEntityToTrDisplay(tr,f,v,form){
-
-		if(f=='delete_flg'){
-			var disp = tr.find('.' + f + '_display');
-
-			if(v==0 || v==null || v==''){
-				disp.html("<span style='color:#23d6e4;'>有効</span>");
-			}else{
-				disp.html("<span style='color:#b4b4b4;'>無効</span>");
-			}
-			return;
-		}
-
-		// class属性またはname属性を指定して入力要素を取得する。
-		var inp = form.find('.' + f);
-		if(inp[0]==null){
-			inp = form.find("[name='" + f + "']")		}
-
-		// 入力要素が取得できなければ処理抜けする
-		if(inp[0]==null){
-			return;
-		}
-
-		var tagName = inp.get(0).tagName; // 入力要素のタグ名を取得する
-
-		if(tagName=='INPUT'){
-
-			// type属性を取得
-			var typ = inp.attr('type');
-
-			if(typ=='radio'){
-				var opElm = form.find("[name='" + f + "']:checked");
-				if(!opElm[0]){
-					return;
-				}
-
-				var dVal = opElm.parent('label').text();
-
-				// display系要素を取得し、表記をセットする。
-				var disp = tr.find('.' + f + '_display');
-				if(!disp[0]){
-					return;
-				}
-				disp.html(dVal);
-
-			}
-
-			// CHECKBOX
-			else if(typ=='checkbox'){
-				var disp = tr.find('.' + f + '_display');
-
-				if(v==0 || v==null || v==''){
-					disp.html("<span style='color:#b4b4b4;'>無効</span>");
-				}else{
-					disp.html("<span style='color:#23d6e4;'>有効</span>");
-				}
-				return;
-			}
-
-
-		}
-
-		else if(tagName=='SELECT'){
-
-			// フォームのSELECT要素から表記を取得する
-			var opElm = inp.find("option[value='" + v + "']");
-			if(!opElm[0]){
-				return;
-			}
-			var dVal = opElm.html();// 表記
-			dVal = this._xssSanitaizeEncode(dVal);
-			// display系要素を取得し、表記をセットする。
-			var disp = tr.find('.' + f + '_display');
-			if(!disp[0]){
-				return;
-			}
-			disp.html(dVal);
-
-		}
-
-		else if(tagName=='TEXTAREA'){
-
-			// display系要素を取得し、表記をセットする。
-			var disp = tr.find('.' + f + '_display');
-			if(!disp[0]){
-				return;
-			}
-
-			var v2 = this._nl2br(v);// 改行をBR要素に変換する
-
-			disp.html(v2);
-		}
-
-	};
+	// ■■■□□□■■■□□□■■■□□□■■■
+//	/**
+//	 * TR要素内のdisplay系要素にエンティティをセットする
+//	 * @param tr tr要素
+//	 * @param f フィールド名
+//	 * @param v 値
+//	 * @param form フォーム要素
+//	 */
+//	_setEntityToTrDisplay(tr,f,v,form){
+//
+//		if(f=='delete_flg'){
+//			var disp = tr.find('.' + f + '_display');
+//
+//			if(v==0 || v==null || v==''){
+//				disp.html("<span style='color:#23d6e4;'>有効</span>");
+//			}else{
+//				disp.html("<span style='color:#b4b4b4;'>無効</span>");
+//			}
+//			return;
+//		}
+//
+//		// class属性またはname属性を指定して入力要素を取得する。
+//		var inp = form.find('.' + f);
+//		if(inp[0]==null){
+//			inp = form.find("[name='" + f + "']")		}
+//
+//		// 入力要素が取得できなければ処理抜けする
+//		if(inp[0]==null){
+//			return;
+//		}
+//
+//		var tagName = inp.get(0).tagName; // 入力要素のタグ名を取得する
+//
+//		if(tagName=='INPUT'){
+//
+//			// type属性を取得
+//			var typ = inp.attr('type');
+//
+//			if(typ=='radio'){
+//				var opElm = form.find("[name='" + f + "']:checked");
+//				if(!opElm[0]){
+//					return;
+//				}
+//
+//				var dVal = opElm.parent('label').text();
+//
+//				// display系要素を取得し、表記をセットする。
+//				var disp = tr.find('.' + f + '_display');
+//				if(!disp[0]){
+//					return;
+//				}
+//				disp.html(dVal);
+//
+//			}
+//
+//			// CHECKBOX
+//			else if(typ=='checkbox'){
+//				var disp = tr.find('.' + f + '_display');
+//
+//				if(v==0 || v==null || v==''){
+//					disp.html("<span style='color:#b4b4b4;'>無効</span>");
+//				}else{
+//					disp.html("<span style='color:#23d6e4;'>有効</span>");
+//				}
+//				return;
+//			}
+//
+//
+//		}
+//
+//		else if(tagName=='SELECT'){
+//
+//			// フォームのSELECT要素から表記を取得する
+//			var opElm = inp.find("option[value='" + v + "']");
+//			if(!opElm[0]){
+//				return;
+//			}
+//			var dVal = opElm.html();// 表記
+//			dVal = this._xssSanitaizeEncode(dVal);
+//			// display系要素を取得し、表記をセットする。
+//			var disp = tr.find('.' + f + '_display');
+//			if(!disp[0]){
+//				return;
+//			}
+//			disp.html(dVal);
+//
+//		}
+//
+//		else if(tagName=='TEXTAREA'){
+//
+//			// display系要素を取得し、表記をセットする。
+//			var disp = tr.find('.' + f + '_display');
+//			if(!disp[0]){
+//				return;
+//			}
+//
+//			var v2 = this._nl2br(v);// 改行をBR要素に変換する
+//
+//			disp.html(v2);
+//		}
+//
+//	};
 
 
 	// 行番に紐づく行を隠す
@@ -1818,7 +1830,7 @@ class CrudBaseBase{
 			this._setToFormForAdo(option.form_type,option.par,elm,field,val1,option.upload_dp);
 
 		}else{
-			if(val1 != null){
+			if( typeof val1 == 'string'){
 				val1=val1.replace(/<br>/g,"\r");
 				// XSSサニタイズを施す
 				if(option.xss == 1){
@@ -1840,19 +1852,19 @@ class CrudBaseBase{
 	 * @return フィルター後の値
 	 */
 	displayFilter(val1,field,disFilData){
-		
-		console.log('displayFilter');//■■■□□□■■■□□□■■■□□□■■■)
-		
+
 		if(!disFilData) disFilData = this.param.disFilData;
 		if(!disFilData) return val1;
 		if(!disFilData[field]) return val1;
 		
-		console.log('OK');//■■■□□□■■■□□□■■■□□□■■■
-		console.log(disFilData);//■■■□□□■■■□□□■■■□□□■■■))
-		
 		var filEnt = disFilData[field];
 
 		switch (filEnt.fil_type) {
+		case 'select':
+			
+			val1 = this.disFilSelect(val1,field,filEnt.option);// 表示フィルター・SELECTリスト
+			break;
+			
 		case 'money':
 
 			val1 = this.disFilMoney(val1,field,filEnt.option);// 表示フィルター・金額
@@ -1872,6 +1884,32 @@ class CrudBaseBase{
 	 */
 	setDisplayFilterData(disFilData){
 		this.param['disFilData'] = disFilData;
+	}
+	
+	/**
+	 * 表示フィルター・SELECTリスト
+	 * @param val1 フィルターをかける値
+	 * @param field フィールド
+	 * @param option 
+	 * 
+	 */
+	disFilSelect(val1,field,option){
+		
+		if(val1 == null) return val1;
+		
+		var list = {};
+		if(option){
+			if(option['list']){
+				list = option['list'];
+			}
+		}
+		
+		var display_value = ""; // 表示する値
+		if(list[val1] != null){
+			display_value = list[val1];
+		}
+		return display_value;
+
 	}
 	
 	/**
