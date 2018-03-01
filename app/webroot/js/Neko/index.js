@@ -4,16 +4,12 @@ $(function() {
 	init();//初期化
 });
 
-// --- Start ex1
-///ネコ数値の数値範囲入力スライダー
-var nusrNekoVal = new NoUiSliderRap();
-// --- End ex1
-
-var csh=new ClmShowHide();//列表示切替
 
 var crudBase;//AjaxによるCRUD
-
+var csh=new ClmShowHide();//列表示切替
 var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複数選択による一括処理
+var exchangeTr; // 行入替機能 | ExchangeTr.js
+var nusrNekoVal = new NoUiSliderRap();///ネコ数値の数値範囲入力スライダー
 
 /**
  *  ネコ画面の初期化
@@ -122,6 +118,14 @@ function init(){
 		if(e.which==13){ // Enterキーである場合
 			editReg(); // 登録処理
 		}
+	});
+	
+	
+	// 行入替機能の初期化
+	exchangeTr = new ExchangeTr({
+		'tbl_slt':'#neko_tbl',
+	},()=>{
+		console.log('行入替機能のコールバック');//■■■□□□■■■□□□■■■□□□■■■)
 	});
 	
 	// ■■■□□□■■■□□□■■■□□□■■■
@@ -264,6 +268,13 @@ function trToDiv(div_slt){
 	crudBase.trToDiv(div_slt);
 }
 
+/**
+ * 行入替機能
+ * @param btnElm ボタン要素
+ */
+function exchageTr(btnElm){
+	exchangeTr.showForm(btnElm);
+}
 
 
 

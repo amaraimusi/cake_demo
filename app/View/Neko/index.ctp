@@ -16,6 +16,7 @@ $this->assign('script', $this->Html->script(array(
 		'ympicker_rap',					// 年月選択ダイアログのラップ
 		'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
         'NoUiSliderRap',				// noUiSliderのラップ
+        'ExchangeTr.js?ver=1.1',         // 行入替機能
         'CrudBase/CrudBaseBase.js?ver=1.0',
         'CrudBase/CrudBase.js?ver=2.0',
 		'livipage',						// ページ内リンク先プレビュー
@@ -67,6 +68,7 @@ $this->assign('script', $this->Html->script(array(
 		$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
 		$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
 		$this->CrudBase->inputKjText($kjs,'kj_note','備考',200,'部分一致検索'); 
+		$this->CrudBase->inputKjHidden($kjs,'kj_sort_no');
 		$this->CrudBase->inputKjDeleteFlg($kjs);
 		echo "<div style='clear:both'></div>";
 		$this->CrudBase->inputKjText($kjs,'kj_update_user','更新者',150);
@@ -178,6 +180,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdPlain($ent,'neko_date');
 	$this->CrudBase->tdPlain($ent,'neko_dt');
 	$this->CrudBase->tdNote($ent,'note');
+	$this->CrudBase->tdPlain($ent,'sort_no');
 	$this->CrudBase->tdDeleteFlg($ent,'delete_flg');
 	$this->CrudBase->tdPlain($ent,'update_user');
 	$this->CrudBase->tdPlain($ent,'ip_addr');
@@ -190,6 +193,7 @@ foreach($data as $i=>$ent){
 	// 行のボタン類
 	echo "<td><div class='btn-group'>";
 	$id = $ent['id'];
+	echo  "<input type='button' value='↑↓' onclick='exchageTr(this)' class='btn btn-info btn-xs' />";
 	$this->CrudBase->rowEditBtn($id);
 	$this->CrudBase->rowPreviewBtn($id);
 	$this->CrudBase->rowCopyBtn($id);
@@ -219,8 +223,9 @@ foreach($data as $i=>$ent){
 	<div class="err text-danger"></div>
 	
 	<div style="display:none">
-    	<input type="hidden" class="form_type">
-    	<input type="hidden" class="row_index">
+    	<input type="hidden" name="form_type">
+    	<input type="hidden" name="row_index">
+    	<input type="hidden" name="sort_no">
 	</div>
 	<table><tbody>
 
@@ -284,6 +289,9 @@ foreach($data as $i=>$ent){
 		<div class="pnl_head3">
 			<button type="button" class="btn btn-primary btn-sm" onclick="closeForm('edit')"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
+	</div>
+	<div style="display:none">
+    	<input type="hidden" name="sort_no">
 	</div>
 	<div class="panel-body">
 	<div class="err text-danger"></div>

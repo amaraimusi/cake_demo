@@ -169,6 +169,10 @@ class Neko extends AppModel {
 			$cnds[]="Neko.note LIKE '%{$kjs['kj_note']}%'";
 		}
 		
+		if(!empty($kjs['kj_sort_no']) || $kjs['kj_sort_no'] ==='0' || $kjs['kj_sort_no'] ===0){
+		    $cnds[]="Neko.sort_no = {$kjs['kj_sort_no']}";
+		}
+		
 		if(!empty($kjs['kj_delete_flg']) || $kjs['kj_delete_flg'] ==='0' || $kjs['kj_delete_flg'] ===0){
 			$cnds[]="Neko.delete_flg = {$kjs['kj_delete_flg']}";
 		}

@@ -302,7 +302,7 @@ class NekoController extends CrudBaseController {
 	public function csv_fu(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
-		$this->csv_fu_base($this->Neko,array('id','neko_val','neko_name','neko_date','neko_group','neko_dt','note'));
+		$this->csv_fu_base($this->Neko,array('id','neko_val','neko_name','neko_date','neko_group','neko_dt','note','sort_no'));
 		
 	}
 	
@@ -422,7 +422,8 @@ class NekoController extends CrudBaseController {
 				array('name'=>'kj_neko_date2','def'=>null),
 				array('name'=>'kj_neko_group','def'=>null),
 				array('name'=>'kj_neko_dt','def'=>null),
-				array('name'=>'kj_note','def'=>null),
+    		    array('name'=>'kj_note','def'=>null),
+    		    array('name'=>'kj_sort_no','def'=>null),
 				array('name'=>'kj_delete_flg','def'=>0),
 				array('name'=>'kj_update_user','def'=>null),
 				array('name'=>'kj_ip_addr','def'=>null),
@@ -491,6 +492,14 @@ class NekoController extends CrudBaseController {
 								'allowEmpty' => true
 						),
 				),
+		    
+    		    'kj_sort_no' => array(
+    		        'custom'=>array(
+    		            'rule' => array( 'custom', '/^[-]?[0-9]+?$/' ),
+    		            'message' => '順番は整数を入力してください。',
+    		            'allowEmpty' => true
+    		        ),
+    		    ),
 					
 				'kj_update_user'=> array(
 						'maxLength'=>array(
@@ -530,146 +539,145 @@ class NekoController extends CrudBaseController {
 		
 		
 		///フィールドデータ
-		$this->field_data=array('def'=>array(
+		$this->field_data = array('def'=>array(
 		
-						'id'=>array(
-								'name'=>'ID',//HTMLテーブルの列名
-								'row_order'=>'Neko.id',//SQLでの並び替えコード
-								'clm_sort_no'=>0,//列の並び順
-								'clm_show'=>1,//デフォルト列表示 0:非表示 1:表示
-						),
-						'neko_val'=>array(
-								'name'=>'ネコ数値',
-								'row_order'=>'Neko.neko_val',
-								'clm_sort_no'=>1,
-								'clm_show'=>0,
-						),
-						'neko_name'=>array(
-								'name'=>'ネコ名前',
-								'row_order'=>'Neko.neko_name',
-								'clm_sort_no'=>2,
-								'clm_show'=>1,
-						),
-						'neko_date'=>array(
-								'name'=>'ネコ日',
-								'row_order'=>'Neko.neko_date',
-								'clm_sort_no'=>4,
-								'clm_show'=>1,
-						),
-						'neko_group'=>array(
-								'name'=>'ネコ種別',
-								'row_order'=>'Neko.neko_group',
-								'clm_sort_no'=>3,
-								'clm_show'=>1,
-						),
-						'neko_dt'=>array(
-								'name'=>'ネコ日時',
-								'row_order'=>'Neko.neko_dt',
-								'clm_sort_no'=>5,
-								'clm_show'=>1,
-						),
-						'note'=>array(
-								'name'=>'備考',
-								'row_order'=>'Neko.note',
-								'clm_sort_no'=>6,
-								'clm_show'=>0,
-						),
-						'delete_flg'=>array(
-								'name'=>'無効フラグ',
-								'row_order'=>'Neko.delete_flg',
-								'clm_sort_no'=>7,
-								'clm_show'=>1,
-						),
-						'update_user'=>array(
-								'name'=>'更新者',
-								'row_order'=>'Neko.update_user',
-								'clm_sort_no'=>8,
-								'clm_show'=>0,
-						),
-						'ip_addr'=>array(
-								'name'=>'更新IPアドレス',
-								'row_order'=>'Neko.ip_addr',
-								'clm_sort_no'=>9,
-								'clm_show'=>0,
-						),
-						'created'=>array(
-								'name'=>'生成日時',
-								'row_order'=>'Neko.created',
-								'clm_sort_no'=>10,
-								'clm_show'=>0,
-						),
-						'modified'=>array(
-								'name'=>'更新日時',
-								'row_order'=>'Neko.modified',
-								'clm_sort_no'=>11,
-								'clm_show'=>1,
-						),
-
+			'id'=>array(
+					'name'=>'ID',//HTMLテーブルの列名
+					'row_order'=>'Neko.id',//SQLでの並び替えコード
+					'clm_show'=>1,//デフォルト列表示 0:非表示 1:表示
+			),
+			'neko_val'=>array(
+					'name'=>'ネコ数値',
+					'row_order'=>'Neko.neko_val',
+					'clm_show'=>0,
+			),
+			'neko_name'=>array(
+					'name'=>'ネコ名前',
+					'row_order'=>'Neko.neko_name',
+					'clm_show'=>1,
+			),
+		    'neko_group'=>array(
+		        'name'=>'ネコ種別',
+		        'row_order'=>'Neko.neko_group',
+		        'clm_show'=>1,
+		    ),
+			'neko_date'=>array(
+					'name'=>'ネコ日',
+					'row_order'=>'Neko.neko_date',
+					'clm_show'=>1,
+			),
+			'neko_dt'=>array(
+					'name'=>'ネコ日時',
+					'row_order'=>'Neko.neko_dt',
+					'clm_show'=>1,
+			),
+			'note'=>array(
+					'name'=>'備考',
+					'row_order'=>'Neko.note',
+					'clm_show'=>0,
+			),
+		    'sort_no'=>array(
+		        'name'=>'順番',
+		        'row_order'=>'Neko.sort_no',
+		        'clm_show'=>0,
+		    ),
+			'delete_flg'=>array(
+					'name'=>'無効フラグ',
+					'row_order'=>'Neko.delete_flg',
+					'clm_show'=>1,
+			),
+			'update_user'=>array(
+					'name'=>'更新者',
+					'row_order'=>'Neko.update_user',
+					'clm_show'=>0,
+			),
+			'ip_addr'=>array(
+					'name'=>'更新IPアドレス',
+					'row_order'=>'Neko.ip_addr',
+					'clm_show'=>0,
+			),
+			'created'=>array(
+					'name'=>'生成日時',
+					'row_order'=>'Neko.created',
+					'clm_show'=>0,
+			),
+			'modified'=>array(
+					'name'=>'更新日時',
+					'row_order'=>'Neko.modified',
+					'clm_show'=>1,
+			),
 		));
-		
-		
-		
-		
-		
-		/// 編集エンティティ定義
-		$this->entity_info=array(
-		
-				array('name'=>'id','def'=>null),
-				array('name'=>'neko_val','def'=>null),
-				array('name'=>'neko_name','def'=>null),
-				array('name'=>'neko_date','def'=>null),
-				array('name'=>'neko_group','def'=>null),
-				array('name'=>'neko_dt','def'=>null),
-				array('name'=>'note','def'=>null),
-				array('name'=>'delete_flg','def'=>0),
-		
-		
-		);
-		
-		
-		
-		
-		
-		/// 編集用バリデーション
-		$this->edit_validate=array(
 
-				'neko_val' => array(
-						'custom'=>array(
-								'rule' => array( 'custom', '/^[-]?[0-9]+?$/' ),
-								'message' => 'ネコ数値は整数を入力してください。',
-								'allowEmpty' => true
-						),
-				),
-					
-				'neko_name'=> array(
-						'maxLength'=>array(
-								'rule' => array('maxLength', 255),
-								'message' => 'ネコ名前は255文字以内で入力してください',
-								'allowEmpty' => true
-						),
-				),
-					
-				'neko_date'=> array(
-						'rule' => array( 'date', 'ymd'),
-						'message' => 'ネコ日は日付形式【yyyy-mm-dd】で入力してください。',
-						'allowEmpty' => true
-				),
-					
-				'neko_dt'=> array(
-						'rule' => array( 'datetime', 'ymd'),
-						'message' => 'ネコ日時は日時形式【yyyy-mm-dd h:i:s】で入力してください。',
-						'allowEmpty' => true
-				),
-					
-				'note'=> array(
-						'maxLength'=>array(
-								'rule' => array('maxLength', 255),
-								'message' => '備考は255文字以内で入力してください',
-								'allowEmpty' => true
-						),
-				),
+	    // 列並び順をセットする
+	    $clm_sort_no = 0;
+	    foreach ($this->field_data['def'] as &$fEnt){
+	        $fEnt['clm_sort_no'] = $clm_sort_no;
+	        $clm_sort_no ++;
+		}
+		unset($fEnt);
 
-		);
+
+		
+//■■■□□□■■■□□□■■■□□□■■■		
+// 		/// 編集エンティティ定義
+// 		$this->entity_info=array(
+		
+// 				array('name'=>'id','def'=>null),
+// 				array('name'=>'neko_val','def'=>null),
+// 				array('name'=>'neko_name','def'=>null),
+// 				array('name'=>'neko_date','def'=>null),
+// 				array('name'=>'neko_group','def'=>null),
+// 				array('name'=>'neko_dt','def'=>null),
+// 				array('name'=>'note','def'=>null),
+// 				array('name'=>'delete_flg','def'=>0),
+		
+		
+// 		);
+		
+		
+		
+		
+		//■■■□□□■■■□□□■■■□□□■■■
+// 		/// 編集用バリデーション
+// 		$this->edit_validate=array(
+
+// 				'neko_val' => array(
+// 						'custom'=>array(
+// 								'rule' => array( 'custom', '/^[-]?[0-9]+?$/' ),
+// 								'message' => 'ネコ数値は整数を入力してください。',
+// 								'allowEmpty' => true
+// 						),
+// 				),
+					
+// 				'neko_name'=> array(
+// 						'maxLength'=>array(
+// 								'rule' => array('maxLength', 255),
+// 								'message' => 'ネコ名前は255文字以内で入力してください',
+// 								'allowEmpty' => true
+// 						),
+// 				),
+					
+// 				'neko_date'=> array(
+// 						'rule' => array( 'date', 'ymd'),
+// 						'message' => 'ネコ日は日付形式【yyyy-mm-dd】で入力してください。',
+// 						'allowEmpty' => true
+// 				),
+					
+// 				'neko_dt'=> array(
+// 						'rule' => array( 'datetime', 'ymd'),
+// 						'message' => 'ネコ日時は日時形式【yyyy-mm-dd h:i:s】で入力してください。',
+// 						'allowEmpty' => true
+// 				),
+					
+// 				'note'=> array(
+// 						'maxLength'=>array(
+// 								'rule' => array('maxLength', 255),
+// 								'message' => '備考は255文字以内で入力してください',
+// 								'allowEmpty' => true
+// 						),
+// 				),
+
+// 		);
 		
 		
 		
