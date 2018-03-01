@@ -37,6 +37,7 @@
  *  - valid_msg_slt	バリデーションメッセージセレクタ
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない  1:フォームの外側をクリックすると自動的に閉じる（デフォルト）
  *  - ni_tr_place	新規入力追加場所フラグ 0:末尾 , 1:先頭
+ *  - kj_delete_flg 検索条件削除フラグ
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
 
@@ -1487,6 +1488,15 @@ class CrudBaseBase{
 		if(param['disFilData'] == null){
 			param['disFilData'] = null;
 		}
+
+		// 検索条件削除フラグ
+		if(param['kj_delete_flg'] == null){
+			param['kj_delete_flg'] = null;
+		}else if(param['kj_delete_flg'] === ""){
+			param['kj_delete_flg'] = null;
+		}else{
+			param['kj_delete_flg'] = param['kj_delete_flg'] * 1;
+		}
 		
 		return param;
 
@@ -1761,13 +1771,22 @@ class CrudBaseBase{
 		
 		// オプションの初期化
 		if(option == null) option = {};
-		if(option['xss']==null) option['xss'] = 1;
+		
+		// サニタイズフラグを取得する
+		var xss = 0;
+		if(option['xss']==null){
+			xss = 1;
+		}else{
+			xss = option['xss'];
+		}
 		
 		var tag_name = elm.get(0).tagName; // 入力要素のタグ名を取得する
 		
 		// 値に表示フィルターをかける
 		if(option['dis_fil_flg']){
-			val1 = this.displayFilter(val1,field,option.disFilData);
+			var res = this.displayFilter(val1,field,option.disFilData,xss);
+			val1 = res.val1;
+			xss = res.xss;
 		}
 		
 		// 値を入力フォームにセットする。
@@ -1849,33 +1868,45 @@ class CrudBaseBase{
 	 * @param val1 値
 	 * @param field フィールド
 	 * @param disFilData 表示フィルターデータ
-	 * @return フィルター後の値
+	 * @param xss XSSサニタイズフラグ
+	 * @return object
+	 *  - [val1] フィルター後の値
+	 *  - [xss] XSSサニタイズフラグ
 	 */
-	displayFilter(val1,field,disFilData){
+	displayFilter(val1,field,disFilData,xss){
+		
+		 var res = {'val1':val1,'xss':xss};
 
 		if(!disFilData) disFilData = this.param.disFilData;
-		if(!disFilData) return val1;
-		if(!disFilData[field]) return val1;
+		if(!disFilData) return res;
+		if(!disFilData[field]) return res;
 		
 		var filEnt = disFilData[field];
-
+		var xss = 0 ; // xssサニタイズフラグ
+		
 		switch (filEnt.fil_type) {
 		case 'select':
 			
-			val1 = this.disFilSelect(val1,field,filEnt.option);// 表示フィルター・SELECTリスト
+			res.val1 = this.disFilSelect(val1,field,filEnt.option);// 表示フィルター・SELECTリスト
+			break;
+			
+		case 'delete_flg':
+
+			res.val1 = this.disFilDeleteFlg(val1,field,filEnt.option);// 表示フィルター・削除フラグ
+			res.xss = 0;
 			break;
 			
 		case 'money':
 
-			val1 = this.disFilMoney(val1,field,filEnt.option);// 表示フィルター・金額
+			res.val1 = this.disFilMoney(val1,field,filEnt.option);// 表示フィルター・金額
+			res.xss =0;
 			break;
 
 		default:
 			break;
 		}
 		
-		
-		return val1;
+		return res;
 	}
 	
 	/**
@@ -1909,6 +1940,27 @@ class CrudBaseBase{
 			display_value = list[val1];
 		}
 		return display_value;
+
+	}
+	
+	/**
+	 * 表示フィルター・削除フラグ
+	 * @param val1 フィルターをかける値
+	 * @param field フィールド
+	 * @param option 
+	 * 
+	 */
+	disFilDeleteFlg(val1,field,option){
+		console.log('disFilDeleteFlg');//■■■□□□■■■□□□■■■□□□■■■)
+		if(val1 == null) return val1;
+		
+		if(val1 == 1){
+			console.log('無効');//■■■□□□■■■□□□■■■□□□■■■)
+			return '<span style="color:#b4b4b4;">無効</span>';
+		}else{
+			console.log('有効');//■■■□□□■■■□□□■■■□□□■■■)
+			return '<span style="color:#23d6e4;">有効</span>';
+		}
 
 	}
 	

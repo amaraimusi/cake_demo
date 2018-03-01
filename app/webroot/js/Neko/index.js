@@ -29,12 +29,15 @@ var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複
  */
 function init(){
 	
+	var kj_delete_flg = jQuery('#kj_delete_flg').val();
+	
 	//AjaxによるCRUD
 	crudBase = new CrudBase({
 			'tbl_slt':'neko_tbl',
 			'edit_reg_url':'neko/ajax_reg',
 			'new_reg_url':'neko/ajax_reg',
 			'delete_reg_url':'neko/ajax_delete',
+			'kj_delete_flg':kj_delete_flg,
 		});
 	
 	// ネコグループリストJSON
@@ -50,7 +53,10 @@ function init(){
 			'neko_group':{
 				'fil_type':'select',
 				'option':{'list':nekoGroupList}
-			}
+			},
+			'delete_flg':{
+				'fil_type':'delete_flg',
+			},
 			
 	};
 	crudBase.setDisplayFilterData(disFilData);

@@ -49,71 +49,8 @@ class CrudBase extends CrudBaseBase{
 	 * - flg
 	 */
 	constructor(param,fieldData){
-		console.log('OK5');//■■■□□□■■■□□□■■■□□□■■■)
-		
-		// ■■■□□□■■■□□□■■■□□□■■■
-//		super(param,fieldData);
-		
-//		// パラメータに空プロパティがあれば、デフォルト値をセットする
-//		this.param = this._setParamIfEmpty(this.param);
-//
-//		// フォーム情報の取得と初期化
-//		this.formInfo = this._initFormInfo(this.param);
-//
-//		// フィールドデータにプロパティを追加する
-//		this.fieldData = this._addMoreFieldData(this.param.tbl_slt,this.fieldData);
-//
-//		// フィールドデータへフォーム内の要素情報をセットする
-//		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'new_inp');
-//		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'edit');
-//		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'del');
-//
-//		// フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
-//		this.fieldData = this._initFileUpData(this.fieldData);
-//
-//		// フィールドハッシュテーブルをフィールドデータから生成する。
-//		this.fieldHashTable = this._createFieldHashTable(this.fieldData);
-//
-//		// デフォルト新規入力エンティティを新規入力フォームから取得する
-//		this.defNiEnt = this._getEntByForm('new_inp');
-		
-//		// パラメータに空プロパティがあれば、デフォルト値をセットする
-//		var param = this._setParamIfEmpty(param);
-//		
-//		console.log('param');//■■■□□□■■■□□□■■■□□□■■■)
-//		console.log(param);//■■■□□□■■■□□□■■■□□□■■■)
-//
-//		// フォーム情報の取得と初期化
-//		var formInfo = this._initFormInfo(param);
-//
-//		// フィールドデータにプロパティを追加する
-//		var fieldData = this._addMoreFieldData(param.tbl_slt,fieldData);
-//
-//		// フィールドデータへフォーム内の要素情報をセットする
-//		fieldData = this._setFieldDataFromForm(fieldData,formInfo,'new_inp');
-//		fieldData = this._setFieldDataFromForm(fieldData,formInfo,'edit');
-//		fieldData = this._setFieldDataFromForm(fieldData,formInfo,'del');
-//
-//		// フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
-//		fieldData = this._initFileUpData(fieldData);
-//
-//		// フィールドハッシュテーブルをフィールドデータから生成する。
-//		var fieldHashTable = this._createFieldHashTable(fieldData);
-//
-//		// デフォルト新規入力エンティティを新規入力フォームから取得する
-//		var defNiEnt = this._getEntByForm('new_inp');
-//		
-//		// コンテナへ各種オブジェクトをセットし、基本クラスへ渡す
-//		var container = {
-//				'param':param,
-//				'formInfo':formInfo,
-//				'fieldData':fieldData,
-//				'fieldHashTable':fieldHashTable,
-//				'defNiEnt':defNiEnt,
-//		};
-//		this.setContainer(container);
+		console.log('OK6');//■■■□□□■■■□□□■■■□□□■■■)
 
-		
 		super();
 		
 		// --- 初期化: CrudBaseBaseクラスのメンバを初期化する ----
@@ -141,12 +78,7 @@ class CrudBase extends CrudBaseBase{
 		// デフォルト新規入力エンティティを新規入力フォームから取得する
 		this.defNiEnt = this._getEntByForm('new_inp');
 		
-		// 機能拡張クラス
-		this.react = new CrudBaseReact(); // CrudBaseのリアクティブ機能クラス
-		
-		// 各種の機能拡張クラスへコンテナをセットする
-		var container = this.getContainer();
-		this.react.setContainer(container);
+
 		
 		// --------
 
@@ -494,8 +426,6 @@ class CrudBase extends CrudBaseBase{
 
 		// 編集フォームからエンティティを取得する。
 		var ent = this._getEntByForm('edit');
-		console.log('編集フォームからエンティティを取得する。');//■■■□□□■■■□□□■■■□□□■■■)
-		console.log(ent);//■■■□□□■■■□□□■■■□□□■■■)
 
 		// フィールドデータからファイルアップロード要素であるフィールドリストを抽出する
 		var fuEnts = this._extractFuEnt(this.fieldData,'edit');
@@ -563,9 +493,8 @@ class CrudBase extends CrudBaseBase{
 				}
 				
 				// 無効フラグがONである場合、削除中の行を一覧から隠す
-				if(ent['delete_flg'] && ent['delete_flg']==1){
-					// 削除中の行を一覧から隠す
-					this._hideTr(index);
+				if(this.param['kj_delete_flg'] == 0 && ent['delete_flg']==1){
+					this._hideTr(index);// 削除中の行を一覧から隠す
 				}
 
 				// 編集中のTR要素を取得する
@@ -576,13 +505,8 @@ class CrudBase extends CrudBaseBase{
 					location.reload(true);
 				}
 
-				console.log('TR要素にエンティティの値をセットする');//■■■□□□■■■□□□■■■□□□■■■)
-				console.log(ent);//■■■□□□■■■□□□■■■□□□■■■)
-				
 				// TR要素にエンティティの値をセットする
 				this._setEntityToEditTr(ent,tr);
-
-
 
 				// 登録後にコールバック関数を非同期で実行する
 				if(afterCallBack != null){
