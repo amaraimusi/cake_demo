@@ -59,27 +59,31 @@ class CrudBaseBase{
 		this.formDelete;	// 削除フォーム
 		this.showFormStrategy; // 入力フォーム表示ストラテジー
 		this.react; 		// CrudBaseのリアクティブ機能クラス | CrudBaseReact.js
+		this.tbl;			// テーブルオブジェクト
+		this.autoSave;		// 自動保存機能
 	}
 	
-	/**
-	 * コンテナのSetter。
-	 * 
-	 * @note コンテナ内のオブジェクトを当クラスのメンバへセットする。
-	 * 
-	 * @param container コンテナ
-	 */
-	setContainer(container){
-		this.param = container.param; //  パラメータ
-		this.fieldData = container.fieldData; //  フィールドデータ
-		this.fieldHashTable = container.fieldHashTable; //  フィールドハッシュテーブル key:フィールド名  val:列インデックス
-		this.formInfo = container.formInfo; //  フォーム情報
-		this.defNiEnt = container.defNiEnt; //  デフォルト新規入力エンティティ
-		this.formNewInp = container.formNewInp; // 新規入力フォーム
-		this.formEdit = container.formEdit; // 編集フォーム
-		this.formDelete = container.formDelete; // 削除フォーム
-		this.showFormStrategy = container.showFormStrategy; //  入力フォーム表示ストラテジー
-		this.react = container.react; // CrudBaseのリアクティブ機能クラス | CrudBaseReact.js
-	}
+	// ■■■□□□■■■□□□■■■□□□■■■
+//	/**
+//	 * コンテナのSetter。
+//	 * 
+//	 * @note コンテナ内のオブジェクトを当クラスのメンバへセットする。
+//	 * 
+//	 * @param container コンテナ
+//	 */
+//	setContainer(container){
+//		this.param = container.param; //  パラメータ
+//		this.fieldData = container.fieldData; //  フィールドデータ
+//		this.fieldHashTable = container.fieldHashTable; //  フィールドハッシュテーブル key:フィールド名  val:列インデックス
+//		this.formInfo = container.formInfo; //  フォーム情報
+//		this.defNiEnt = container.defNiEnt; //  デフォルト新規入力エンティティ
+//		this.formNewInp = container.formNewInp; // 新規入力フォーム
+//		this.formEdit = container.formEdit; // 編集フォーム
+//		this.formDelete = container.formDelete; // 削除フォーム
+//		this.showFormStrategy = container.showFormStrategy; //  入力フォーム表示ストラテジー
+//		this.react = container.react; // CrudBaseのリアクティブ機能クラス | CrudBaseReact.js
+//		
+//	}
 	
 	/**
 	 * コンテナのGetter
@@ -521,7 +525,6 @@ class CrudBaseBase{
 		var ent = {};
 		for(var i in this.fieldData){
 			var f = this.fieldData[i].field;
-			//var elm = tr.find('.' + f);//■■■□□□■■■□□□■■■□□□■■■
 			var elm = tr.find("[name='" + f + "']");
 			ent[f] = elm.val();
 		}
@@ -551,18 +554,24 @@ class CrudBaseBase{
 
 	/**
 	 * Htmlテーブルからデータを取得する
+	 * @
 	 * @return object データ
 	 */
-	getDataHTbl(){
-
-		var slt = '#' + this.param.tbl_slt + ' tbody tr';
-
+	getDataHTbl(tbl){
+		
+		if(tbl == null){
+			tbl = this.tbl;
+		}
+		if(!(tbl instanceof jQuery)){
+			tbl = jQuery(tbl);
+		}
+		var trs = tbl.find('tbody tr');
 		var data = [];
 
 		// テーブルの行をループする
-		jQuery(slt).each((i,elm)=>{
+		trs.each((i,elm) => {
 			var tr = jQuery(elm);
-
+			
 			// TR要素からエンティティを取得する
 			var ent = this.getEntityByTr(tr);
 
@@ -1424,6 +1433,11 @@ class CrudBaseBase{
 			param['delete_reg_url'] = 'xxx';
 		}
 
+		// 自動保存サーバーURL
+		if(param['auto_save_url'] == null){
+			param['auto_save_url'] = 'xxx';
+		}
+		
 		// ファイルアップロードディレクトリ
 		if(param['upload_dp'] == null){
 			param['upload_dp'] = null;
@@ -2910,6 +2924,44 @@ class CrudBaseBase{
 		}
 
 	}
+	
+	
+	/**
+	 * 全保存
+	 * 
+	 * @note
+	 * バックグランドでHTMLテーブルのデータをすべてDBへ保存する。
+	 * 二重処理を防止するメカニズムあり。
+	 */
+	saveAll(){
+		this.autoSave.saveRequest();// 保存依頼
+	}
+	
+	
+	/**
+	 * Ajax送信データ用エスケープ。実体参照（&lt; &gt; &amp; &）を記号に戻す。
+	 * 
+	 * @param any data エスケープ対象 :文字列、オブジェクト、配列を指定可
+	 * @returns エスケープ後
+	 */
+	escapeForAjax(data){
+		if (typeof data == 'string'){
+			if ( data.indexOf('&') != -1) {
+				data = data.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
+				return encodeURIComponent(data);
+			}else{
+				return data;
+			}
+		}else if (typeof data == 'object'){
+			for(var i in data){
+				data[i] = this.escapeForAjax(data[i]);
+			}
+			return data;
+		}else{
+			return data;
+		}
+	}
+	
 
 }
 

@@ -2,28 +2,29 @@
 $this->CrudBase->setModelName('Neko');
 
 $this->assign('css', $this->Html->css(array(
-		'clm_show_hide',				// 列表示切替
-		'ympicker_rap',					// 年月ダイアログ
-		'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-		'NoUiSliderRap',				// noUiSliderのラップ
-		'CrudBase/index'				// CRUD indexページ共通
+	'clm_show_hide',				// 列表示切替
+	'ympicker_rap',					// 年月ダイアログ
+	'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
+	'NoUiSliderRap',				// noUiSliderのラップ
+	'CrudBase/index'				// CRUD indexページ共通
 )));
 
 $this->assign('script', $this->Html->script(array(
-		'clm_show_hide',				// 列表示切替
-		'date_ex',						// 日付関連関数集
-		'jquery.ui.ympicker',			// 年月選択ダイアログ
-		'ympicker_rap',					// 年月選択ダイアログのラップ
-		'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-        'NoUiSliderRap',				// noUiSliderのラップ
-        'ExchangeTr.js?ver=1.1',         // 行入替機能
-        'CrudBase/CrudBaseBase.js?ver=1.0',
-        'CrudBase/CrudBase.js?ver=2.0',
-		'livipage',						// ページ内リンク先プレビュー
-		'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
-		'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
-		'CrudBase/index',				// CRUD indexページ共通
-		'Neko/index'					// 当画面専用JavaScript
+	'clm_show_hide',				// 列表示切替
+	'date_ex',						// 日付関連関数集
+	'jquery.ui.ympicker',			// 年月選択ダイアログ
+	'ympicker_rap',					// 年月選択ダイアログのラップ
+	'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
+    'NoUiSliderRap',				// noUiSliderのラップ
+    'ExchangeTr.js?ver=1.1',         // 行入替機能
+    'CrudBase/CrudBaseBase.js?ver=1.0',
+    'CrudBase/CrudBaseAutoSave.js?ver=1.0',
+    'CrudBase/CrudBase.js?ver=2.0',
+	'livipage',						// ページ内リンク先プレビュー
+	'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
+	'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
+	'CrudBase/index',				// CRUD indexページ共通
+	'Neko/index'					// 当画面専用JavaScript
 ),array('charset'=>'utf-8')));
 	
 	
@@ -148,7 +149,9 @@ $this->assign('script', $this->Html->script(array(
 	<div class="neko_val">123</div>
 	<input type="button" value="trToDiv" onclick="trToDiv('#react_test1')" />
 </div>
+<input type="button" value="自動保存テスト" class="btn btn-info" onclick="saveAll()" />
 
+<div id="crud_base_auto_save_msg" style="height:20px;" class="text-success">XX</div>
 <!-- 一覧テーブル -->
 <table id="neko_tbl" border="1"  class="table table-striped table-bordered table-condensed">
 

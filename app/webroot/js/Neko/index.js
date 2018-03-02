@@ -33,6 +33,7 @@ function init(){
 			'edit_reg_url':'neko/ajax_reg',
 			'new_reg_url':'neko/ajax_reg',
 			'delete_reg_url':'neko/ajax_delete',
+			'auto_save_url':'neko/auto_save',
 			'kj_delete_flg':kj_delete_flg,
 		});
 	
@@ -274,6 +275,17 @@ function trToDiv(div_slt){
  */
 function exchageTr(btnElm){
 	exchangeTr.showForm(btnElm);
+}
+
+/**
+ * 全保存
+ * 
+ * @note
+ * バックグランドでHTMLテーブルのデータをすべてDBへ保存する。
+ * 二重処理を防止するメカニズムあり。
+ */
+function saveAll(){
+	crudBase.saveAll();
 }
 
 

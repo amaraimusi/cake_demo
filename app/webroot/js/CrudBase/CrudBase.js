@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-2-12
- * @version 2.0 
+ * @date 2016-9-21 | 2018-3-2
+ * @version 2.1
  * 
  * @param object param
  *  - tbl_slt	CRUD対象テーブルセレクタ
@@ -25,7 +25,9 @@
  *  - contents_slt	コンテンツセレクタ	コンテンツ全体を表すセレクタでフォームの位置調整で利用する。省略時すると画面windowを基準に位置調整する。
  *  - edit_reg_url	編集登録サーバーURL
  *  - new_reg_url	新規登録サーバーURL
- *  - delete_reg_url	削除登録サーバーURL *  - form_position	フォーム位置 auto:自動, left:左側表示, center:中央表示, right:右側表示,max:横幅いっぱい
+ *  - delete_reg_url	削除登録サーバーURL
+ *  - auto_save_url	自動保存サーバーURL
+ *  - form_position	フォーム位置 auto:自動, left:左側表示, center:中央表示, right:右側表示,max:横幅いっぱい
  *  - form_width	フォーム横幅	数値で指定。未指定（null)である場合、autoと同様になる。ただしform_positionがmaxなら横幅最大になる。
  *  - form_height	フォーム縦幅	上記と同じ
  *  - file_uploads	ファイルアップロードデータ
@@ -78,7 +80,12 @@ class CrudBase extends CrudBaseBase{
 		// デフォルト新規入力エンティティを新規入力フォームから取得する
 		this.defNiEnt = this._getEntByForm('new_inp');
 		
-
+		// テーブルオブジェクト
+		this.tbl = jQuery('#' + this.param.tbl_slt);
+		
+		// 自動保存機能の初期化
+		this.autoSave = new CrudBaseAutoSave(this);
+		
 		
 		// --------
 

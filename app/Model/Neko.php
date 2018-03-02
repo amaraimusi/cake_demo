@@ -72,7 +72,7 @@ class Neko extends AppModel {
 
 		//ORDERのデフォルトをセット
 		if(empty($findOrder)){
-			$findOrder='id';
+			$findOrder='sort_no';
 		}
 		
 		$offset=null;

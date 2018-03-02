@@ -24,7 +24,7 @@ class NekoController extends CrudBaseController {
 	public $helpers = array('CrudBase');
 
 	/// デフォルトの並び替え対象フィールド
-	public $defSortFeild='Neko.id';
+	public $defSortFeild='Neko.sort_no';
 	
 	/// デフォルトソートタイプ	  0:昇順 1:降順
 	public $defSortType=0;
@@ -229,11 +229,7 @@ class NekoController extends CrudBaseController {
 		$this->Neko->begin();
 		$ent = $this->Neko->saveEntity($ent);
 		$this->Neko->commit();//コミット
-		
-		
-		$this->log('Test'); // ■■■□□□■■■□□□■■■□□□■■■
-		$this->log($ent); // ■■■□□□■■■□□□■■■□□□■■■)
-	
+
 		if(!empty($upload_file)){
 			
 			// ファイルパスを組み立て
@@ -245,10 +241,7 @@ class NekoController extends CrudBaseController {
 	
 	
 		}
-	
-		//■■■□□□■■■□□□■■■□□□
-		//$ent=Sanitize::clean($ent, array('encode' => true));//サニタイズ（XSS対策）
-	
+
 		$json_data=json_encode($ent,true);//JSONに変換
 	
 		return $json_data;
@@ -291,6 +284,40 @@ class NekoController extends CrudBaseController {
 	
 		return $json_data;
 	}
+	
+	
+	/**
+	* Ajax | 自動保存
+	* 
+	* @note
+	* バリデーション機能は備えていない
+	* 
+	*/
+	public function auto_save(){
+	    
+	    App::uses('Sanitize', 'Utility');
+	    
+	    $this->autoRender = false;//ビュー(ctp)を使わない。
+	    
+	    $json=$_POST['key1'];
+	    
+	    $data = json_decode($json,true);//JSON文字を配列に戻す
+	    
+	    $data = Sanitize::clean($data, array('encode' => false));
+	    
+	    // データ保存
+	    $this->Neko->begin();
+	    $this->Neko->saveAll($data);
+	    $this->Neko->commit();
+
+	    $res = array('success');
+	    
+	    $json_str = json_encode($res);//JSONに変換
+	    
+	    return $json_str;
+	}
+	
+
 	
 	
 	/**
