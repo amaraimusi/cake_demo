@@ -8,7 +8,6 @@ $(function() {
 var crudBase;//AjaxによるCRUD
 var csh=new ClmShowHide();//列表示切替
 var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複数選択による一括処理
-var exchangeTr; // 行入替機能 | ExchangeTr.js
 var nusrNekoVal = new NoUiSliderRap();///ネコ数値の数値範囲入力スライダー
 
 /**
@@ -122,12 +121,7 @@ function init(){
 	});
 	
 	
-	// 行入替機能の初期化
-	exchangeTr = new ExchangeTr({
-		'tbl_slt':'#neko_tbl',
-	},()=>{
-		console.log('行入替機能のコールバック');//■■■□□□■■■□□□■■■□□□■■■)
-	});
+
 	
 	// ■■■□□□■■■□□□■■■□□□■■■
 //	// CSVインポートの初期化  <CrudBase/index.js>
@@ -270,11 +264,11 @@ function trToDiv(div_slt){
 }
 
 /**
- * 行入替機能
+ * 行入替機能のフォームを表示
  * @param btnElm ボタン要素
  */
-function exchageTr(btnElm){
-	exchangeTr.showForm(btnElm);
+function rowExchangeShowForm(btnElm){
+	crudBase.rowExchangeShowForm(btnElm);
 }
 
 /**

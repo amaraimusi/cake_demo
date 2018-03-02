@@ -86,6 +86,11 @@ class CrudBase extends CrudBaseBase{
 		// 自動保存機能の初期化
 		this.autoSave = new CrudBaseAutoSave(this);
 		
+		// 行入替機能の初期化
+		this.rowExchange = new CrudBaseRowExchange(this,null,()=>{
+			console.log('行入替機能のコールバック3');//■■■□□□■■■□□□■■■□□□■■■)
+		});
+		
 		
 		// --------
 
@@ -593,6 +598,15 @@ class CrudBase extends CrudBaseBase{
 		// フォームを隠す
 		form.hide();
 
+	}
+	
+	
+	/**
+	 * 行入替機能のフォームを表示
+	 * @param btnElm ボタン要素
+	 */
+	rowExchangeShowForm(btnElm){
+		this.rowExchange.showForm(btnElm);
 	}
 	
 	//■■■□□□■■■□□□■■■□□□■■■

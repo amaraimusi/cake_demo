@@ -16,9 +16,10 @@ $this->assign('script', $this->Html->script(array(
 	'ympicker_rap',					// 年月選択ダイアログのラップ
 	'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
     'NoUiSliderRap',				// noUiSliderのラップ
-    'ExchangeTr.js?ver=1.1',         // 行入替機能
+//    'ExchangeTr.js?ver=1.1',         // 行入替機能■■■□□□■■■□□□■■■□□□■■■
     'CrudBase/CrudBaseBase.js?ver=1.0',
     'CrudBase/CrudBaseAutoSave.js?ver=1.0',
+    'CrudBase/CrudBaseRowExchange.js?ver=1.2',
     'CrudBase/CrudBase.js?ver=2.0',
 	'livipage',						// ページ内リンク先プレビュー
 	'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
@@ -196,7 +197,7 @@ foreach($data as $i=>$ent){
 	// 行のボタン類
 	echo "<td><div class='btn-group'>";
 	$id = $ent['id'];
-	echo  "<input type='button' value='↑↓' onclick='exchageTr(this)' class='btn btn-info btn-xs' />";
+	echo  "<input type='button' value='↑↓' onclick='rowExchangeShowForm(this)' class='btn btn-info btn-xs' />";
 	$this->CrudBase->rowEditBtn($id);
 	$this->CrudBase->rowPreviewBtn($id);
 	$this->CrudBase->rowCopyBtn($id);
