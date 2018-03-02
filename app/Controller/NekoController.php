@@ -8,7 +8,7 @@ App::uses('PagenationForCake', 'Vendor/Wacg');
  * ネコ画面ではネコ一覧を検索閲覧、および編集ができます。
  * 
  * 
- * @date 2015/09/16	新規作成
+ * @date 2015-9-16	新規作成
  * @author k-uehara
  *
  */
