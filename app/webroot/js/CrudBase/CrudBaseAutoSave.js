@@ -11,51 +11,63 @@ class CrudBaseAutoSave{
 	 * @param crudBase CrudBaseオブジェクト
 	 */
 	constructor(crudBase){
-		console.log('CrudBaseAutoSave２');//■■■□□□■■■□□□■■■□□□■■■)
 
 		this.crudBase = crudBase; // Htmlテーブルからデータを取得する関数
 		this.fieldData = crudBase.fieldData;
 		this.tbl = crudBase.tbl;
-		this.save_status = 0; // 保存状態フラグ 0:待機 , 1:保存中 ,2:依頼
 		this.msgElm = jQuery('#crud_base_auto_save_msg'); // 自動保存メッセージ要素
+		this.data; // 保存するデータ
+		this.set_timeout_hdl; // setTimeout関数のハンドラ
 
 	}
 	
 	/**
-	 * 保存依頼
+	 * 自動保存の依頼をする
 	 * 
 	 * @note
 	 * HTMLテーブルのデータをバックグランドで自動保存する。
+	 * 
+	 * @param data 保存対象データ   省略した場合、HTMLテーブルのデータを保存する。
+	 * @parma option 
+	 *  - reflect_on_tbl 0:HTMLテーブルにdataを反映しない , 1:HTMLテーブルにdataを反映する
 	 */
-	saveRequest(){
+	saveRequest(data,option){
 		
-		// 保存中であるなら、保存状態フラグを「依頼」にして処理抜け。
-		if(this.save_status == 1){
-			this.save_status = 2;
-			return;
-		}
+		this.data = data; // 保存対象データを更新する
+
+		// オプションの初期化
+		if(option==null) option = {};
+		if(option['reflect_on_tbl']==null) option['reflect_on_tbl'] = 0;
+		if(option['interval']==null) option['interval'] = 3000;
+
 		
-		// 保存状態フラグが依頼であるなら、すでに次の保存処理を行う予定になっているので処理抜け。
-		else if(this.save_status == 2){
-			return;
+		// setTimeoutの処理を一旦キャンセルする。
+		if(this.set_timeout_hdl != null){
+			clearTimeout(this.set_timeout_hdl);
 		}
 		
 		// バックグラウンドで自動保存を実行する。(数秒後の遊びを設ける）
-		window.setTimeout(()=>{
-			this._autoSave();
-		}, 1);// ■■■□□□■■■□□□■■■□□□■■■後程3000に変更
-		
-		
-		
+		this.set_timeout_hdl = setTimeout(()=>{
+			this._autoSave(this.data);// 自動保存
+			if(option['reflect_on_tbl']==1){
+				this.crudBase.setDataToTbl(null,data); // データをHTMLテーブルに再セットする
+			}
+		}, option.interval);
+
 	}
 	
 	/**
 	 * 自動保存処理
+	 * 
+	 * @param data 保存対象データ   省略した場合、HTMLテーブルのデータを保存する。
 	 */
-	_autoSave(){
+	_autoSave(data){
 	
 		this.msgElm.html('保存中...');
-		var data = this.crudBase.getDataHTbl();// Htmlテーブルからデータを取得
+		console.log('自動保存');
+		if(data == null){
+			var data = this.crudBase.getDataHTbl();// Htmlテーブルからデータを取得
+		}
 		data = this.crudBase.escapeForAjax(data); // Ajax送信データ用エスケープ。実体参照（&lt; &gt; &amp; &）を記号に戻す。
 		var json_str = JSON.stringify(data);//データをJSON文字列にする。
 		var url = this.crudBase.param.auto_save_url; // 自動保存サーバーURL
@@ -73,6 +85,7 @@ class CrudBaseAutoSave{
 			try{
 				res =jQuery.parseJSON(str_json);
 				this.msgElm.html('');
+
 			}catch(e){
 				this.msgElm.html('自動保存のエラー1');
 				jQuery("#err").html(str_json);

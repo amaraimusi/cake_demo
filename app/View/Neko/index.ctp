@@ -150,7 +150,7 @@ $this->assign('script', $this->Html->script(array(
 	<div class="neko_val">123</div>
 	<input type="button" value="trToDiv" onclick="trToDiv('#react_test1')" />
 </div>
-<input type="button" value="自動保存テスト" class="btn btn-info" onclick="saveAll()" />
+<input type="button" value="自動保存テスト" class="btn btn-info" onclick="saveRequest()" />
 
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success">XX</div>
 <!-- 一覧テーブル -->

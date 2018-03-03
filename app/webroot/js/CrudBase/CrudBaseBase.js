@@ -554,10 +554,14 @@ class CrudBaseBase{
 
 	/**
 	 * Htmlテーブルからデータを取得する
-	 * @
+	 * 
+	 * @note
+	 * 旧メソッド名:getDataHTbl
+	 * 
+	 * @param tbl HTMLテーブル要素(省略可)
 	 * @return object データ
 	 */
-	getDataHTbl(tbl){
+	getDataFromTbl(tbl){
 		
 		if(tbl == null){
 			tbl = this.tbl;
@@ -585,7 +589,7 @@ class CrudBaseBase{
 	 * フィールドリストを指定して、Htmlテーブルからデータを取得する
 	 * @return object データ
 	 */
-	getDataHTblByFields(fields){
+	getDataFromTblByFields(fields){
 
 		var slt = '#' + this.param.tbl_slt + ' tbody tr';
 
@@ -818,7 +822,7 @@ class CrudBaseBase{
 
 		// 新行要素にエンティティをセットする
 		option['form_type'] = 'new_inp';
-		this._setEntityToTr(newTr,ent,option);
+		this.setEntityToTr(newTr,ent,option);
 
 	}
 
@@ -891,9 +895,36 @@ class CrudBaseBase{
 
 		// TR要素にエンティティをセットする
 		option['form_type'] = 'edit';
-		this._setEntityToTr(tr,ent,option);
+		this.setEntityToTr(tr,ent,option);
 
 	};
+	
+	
+	/**
+	 * テーブル要素にデータをセットする
+	 * 
+	 * @note
+	 * 少々、重い処理なので注意。
+	 * 
+	 * @param tbl テーブル要素（省略可）
+	 * @param data セットするデータ
+	 * @param option
+	 *  - form_type フォーム種別 new_inp,edit,del
+	 * 
+	 */
+	setDataToTbl(tbl,data,option){
+		
+		if(tbl == null) tbl = this.tbl;
+		
+		var trs = tbl.find('tbody tr');
+		trs.each((i,tr)=>{
+
+			if(data[i] == null) return; // 次のループへ
+			tr = jQuery(tr);
+			var ent = data[i];
+			this.setEntityToTr(tr,ent,option); // TR要素にエンティティをセットする
+		});
+	}
 
 
 	/**
@@ -903,36 +934,12 @@ class CrudBaseBase{
 	 * @param option
 	 *  - form_type フォーム種別 new_inp,edit,del
 	 */
-	_setEntityToTr(tr,ent,option){
+	setEntityToTr(tr,ent,option){
 
 		if(ent==null) return;
 		
 		this.entToBinds(tr,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
 		this.entToBinds(tr,ent,'name',option);// エンティティをname属性バインド要素群へセットする
-		
-		// ■■■□□□■■■□□□■■■□□□■■■
-//		// フォーム種別からフォーム要素を取得
-//		var info = this.formInfo[form_type];
-//		var form = jQuery(info.slt);
-//
-//		// TR要素内の各プロパティ要素内にエンティティの値をセットする
-//		for(var f in ent){
-//			// 源値要素への反映
-//			var elm = tr.find('.' + f);
-//			var v = ent[f];
-//
-//			v = this._xssSanitaizeEncode(v);// XSSサニタイズを施す
-//			v = this._nl2brEx(v);// 改行コートをBRタグに変換する
-//
-//			if(elm[0]){
-//				elm.html(v);
-//			}
-//
-//			//display系要素への反映
-//			this._setEntityToTrDisplay(tr,f,v,form);
-//
-//		}
-
 	};
 
 	_nl2brEx(v){
@@ -947,110 +954,6 @@ class CrudBaseBase{
 		v = v.replace(/\r\n|\n\r|\r|\n/g,'<br>');
 		return v;
 	}
-
-	// ■■■□□□■■■□□□■■■□□□■■■
-//	/**
-//	 * TR要素内のdisplay系要素にエンティティをセットする
-//	 * @param tr tr要素
-//	 * @param f フィールド名
-//	 * @param v 値
-//	 * @param form フォーム要素
-//	 */
-//	_setEntityToTrDisplay(tr,f,v,form){
-//
-//		if(f=='delete_flg'){
-//			var disp = tr.find('.' + f + '_display');
-//
-//			if(v==0 || v==null || v==''){
-//				disp.html("<span style='color:#23d6e4;'>有効</span>");
-//			}else{
-//				disp.html("<span style='color:#b4b4b4;'>無効</span>");
-//			}
-//			return;
-//		}
-//
-//		// class属性またはname属性を指定して入力要素を取得する。
-//		var inp = form.find('.' + f);
-//		if(inp[0]==null){
-//			inp = form.find("[name='" + f + "']")		}
-//
-//		// 入力要素が取得できなければ処理抜けする
-//		if(inp[0]==null){
-//			return;
-//		}
-//
-//		var tagName = inp.get(0).tagName; // 入力要素のタグ名を取得する
-//
-//		if(tagName=='INPUT'){
-//
-//			// type属性を取得
-//			var typ = inp.attr('type');
-//
-//			if(typ=='radio'){
-//				var opElm = form.find("[name='" + f + "']:checked");
-//				if(!opElm[0]){
-//					return;
-//				}
-//
-//				var dVal = opElm.parent('label').text();
-//
-//				// display系要素を取得し、表記をセットする。
-//				var disp = tr.find('.' + f + '_display');
-//				if(!disp[0]){
-//					return;
-//				}
-//				disp.html(dVal);
-//
-//			}
-//
-//			// CHECKBOX
-//			else if(typ=='checkbox'){
-//				var disp = tr.find('.' + f + '_display');
-//
-//				if(v==0 || v==null || v==''){
-//					disp.html("<span style='color:#b4b4b4;'>無効</span>");
-//				}else{
-//					disp.html("<span style='color:#23d6e4;'>有効</span>");
-//				}
-//				return;
-//			}
-//
-//
-//		}
-//
-//		else if(tagName=='SELECT'){
-//
-//			// フォームのSELECT要素から表記を取得する
-//			var opElm = inp.find("option[value='" + v + "']");
-//			if(!opElm[0]){
-//				return;
-//			}
-//			var dVal = opElm.html();// 表記
-//			dVal = this._xssSanitaizeEncode(dVal);
-//			// display系要素を取得し、表記をセットする。
-//			var disp = tr.find('.' + f + '_display');
-//			if(!disp[0]){
-//				return;
-//			}
-//			disp.html(dVal);
-//
-//		}
-//
-//		else if(tagName=='TEXTAREA'){
-//
-//			// display系要素を取得し、表記をセットする。
-//			var disp = tr.find('.' + f + '_display');
-//			if(!disp[0]){
-//				return;
-//			}
-//
-//			var v2 = this._nl2br(v);// 改行をBR要素に変換する
-//
-//			disp.html(v2);
-//		}
-//
-//	};
-
 
 	// 行番に紐づく行を隠す
 	_hideTr(row_index){
@@ -1965,14 +1868,12 @@ class CrudBaseBase{
 	 * 
 	 */
 	disFilDeleteFlg(val1,field,option){
-		console.log('disFilDeleteFlg');//■■■□□□■■■□□□■■■□□□■■■)
+
 		if(val1 == null) return val1;
 		
 		if(val1 == 1){
-			console.log('無効');//■■■□□□■■■□□□■■■□□□■■■)
 			return '<span style="color:#b4b4b4;">無効</span>';
 		}else{
-			console.log('有効');//■■■□□□■■■□□□■■■□□□■■■)
 			return '<span style="color:#23d6e4;">有効</span>';
 		}
 
@@ -2927,14 +2828,18 @@ class CrudBaseBase{
 	
 	
 	/**
-	 * 全保存
+	 * 自動保存の依頼をする
 	 * 
 	 * @note
 	 * バックグランドでHTMLテーブルのデータをすべてDBへ保存する。
 	 * 二重処理を防止するメカニズムあり。
+	 * 
+	 * @param data 保存対象データ   省略した場合、HTMLテーブルのデータを保存する。
+	 * @parma option 
+	 *  - reflect_on_tbl 0:HTMLテーブルにdataを反映しない , 1:HTMLテーブルにdataを反映する
 	 */
-	saveAll(){
-		this.autoSave.saveRequest();// 保存依頼
+	saveRequest(data,option){
+		this.autoSave.saveRequest(data,option);// 保存依頼
 	}
 	
 	
@@ -2960,6 +2865,27 @@ class CrudBaseBase{
 		}else{
 			return data;
 		}
+	}
+	
+	/**
+	 * 行入替後の処理
+	 */
+	rowExchangeAfter(){
+		
+		var data = this.getDataFromTbl();// Htmlテーブルからデータを取得
+		
+		// データに順番をセットする
+		var sort_no = 1;
+		for(var i in data){
+			var ent = data[i];
+			ent['sort_no'] = sort_no;
+			sort_no ++;
+		}
+		
+		var option = {
+				'reflect_on_tbl':1, // 1:HTMLテーブルにdataを反映する
+		}
+		this.saveRequest(data,option);// 自動保存の依頼をする
 	}
 	
 

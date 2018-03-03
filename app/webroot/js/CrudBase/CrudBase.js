@@ -88,7 +88,7 @@ class CrudBase extends CrudBaseBase{
 		
 		// 行入替機能の初期化
 		this.rowExchange = new CrudBaseRowExchange(this,null,()=>{
-			console.log('行入替機能のコールバック3');//■■■□□□■■■□□□■■■□□□■■■)
+			this.rowExchangeAfter();
 		});
 		
 		

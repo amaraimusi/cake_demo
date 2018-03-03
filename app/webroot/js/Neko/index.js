@@ -272,14 +272,14 @@ function rowExchangeShowForm(btnElm){
 }
 
 /**
- * 全保存
+ * 自動保存の依頼をする
  * 
  * @note
  * バックグランドでHTMLテーブルのデータをすべてDBへ保存する。
  * 二重処理を防止するメカニズムあり。
  */
-function saveAll(){
-	crudBase.saveAll();
+function saveRequest(){
+	crudBase.saveRequest();
 }
 
 
