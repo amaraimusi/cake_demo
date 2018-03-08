@@ -530,7 +530,7 @@ class CrudBaseController extends AppController {
 		$dataCnt=$this->MainModel->findDataCnt($kjs);//検索データ数を取得
 
 		//HTMLテーブルのフィールド
-		$pages=$this->PagenationForCake->createPagenationData($dataCnt,$baseUrl , null,$this->table_fields);
+		$pages=$this->PagenationForCake->createPagenationData($dataCnt,$baseUrl , null,$this->table_fields,$kjs);
 
 		$kjs_json = json_encode($kjs,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 

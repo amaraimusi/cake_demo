@@ -60,6 +60,7 @@ class PagenationForCake{
 	 * @param  string $path			基本的なURLを指定。例:「proj/list.php」。
 	 * @param  array $params		ページ関連外のその他のパラメータをURLに付加する場合。例：「array('xxx'=>'1','flg',true)」
 	 * @param  array $fields		HTMLテーブルのキーはDBフィールド、値はフィールド和名にする。例：「array('title'=>'タイトル')」
+	 * @param  array $kjs           検索条件情報
 	 * @return array $data ページネーションデータ
 	 *
 	 * ◇ページネーションデータの中身
@@ -71,13 +72,18 @@ class PagenationForCake{
 	 * - $data['all_data_cnt'] 検索データ件数
 	 * - $data['all_page_cnt'] ページ数
 	 */
-	public function createPagenationData($allDataCnt,$path,$params,$fields){
-
-		//ソートリンクHTMLのリストを生成する。
-		$sorts=$this->_createSorts2($allDataCnt,$path,$params,$fields);
+	public function createPagenationData($allDataCnt,$path,$params,$fields,$kjs){
+	    
+	    var_dump('test=A');//■■■□□□■■■□□□■■■□□□
+	    
+	    // 検索条件ＵＲＬクエリを生成する。
+	    $kjs_uq = $this->createKjsUrlQuery($kjs);
+	    
+		//　ソートＵＲＬリンクHTMLのリストを生成する。
+	    $sorts=$this->_createSorts2($allDataCnt,$path,$params,$fields,$kjs_uq);
 		
-		//ページ目次用のHTMLコードを生成する。
-		$res = $this->_createIndexHtml2($allDataCnt,$path,$params);
+		//　ページ目次用のHTMLコードを生成する。
+	    $res = $this->_createIndexHtml2($allDataCnt,$path,$params,$kjs_uq);
 
 		$rtn['page_index_html'] = $res['mokuji'];;
 		$rtn['page_prev_link'] = $res['page_prev_link'];
@@ -94,6 +100,51 @@ class PagenationForCake{
 
 		return $rtn;
 	}
+	
+	/**
+	 * 検索条件ＵＲＬクエリを生成する。
+	 * @param  array $kjs 検索条件情報
+	 * @return string 検索条件ＵＲＬクエリ
+	 */
+	private function createKjsUrlQuery($kjs){
+	    
+	    $str = "";
+	    foreach($kjs as $field => $value){
+	        if($value !== "" && $value !==null){
+	            if($str != ""){
+	                $str .= '&';
+	            }
+	            $value = urlencode($value);// URLエンコード
+	            $str .= $field . "=" . $value;
+	        }
+	    }
+	    
+	    return $str;
+	}
+	
+	// ■■■□□□■■■□□□■■■□□□
+// 	/**
+// 	 * 拡張URLエンコード
+// 	 *
+// 	 * @note
+// 	 * 多次元配列に対応
+// 	 * 高速化のため、引数は参照（ポインタ）であり返値もかねている。
+// 	 *
+// 	 * @param any $data URLエンコード対象データ（参照型） | 値および配列を指定
+// 	 * @return void
+// 	 */
+// 	private function urlencodeEx(&$data){
+// 	    if(is_array($data)){
+// 	        foreach($data as &$val){
+// 	            $this->urlencodeEx($val);
+// 	        }
+// 	        unset($val);
+// 	    }elseif(gettype($data)=='string'){
+// 	        $data = urlencode($data);// URLエンコード
+// 	    }else{
+// 	        // 何もしない
+// 	    }
+// 	}	
 
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -166,8 +217,17 @@ class PagenationForCake{
 
 
 
-
-	private function _createIndexHtml2($allDataCnt,$path,$params){
+    /**
+     * ページ目次用のHTMLコードを生成する。
+     * 
+	 * @param  int $allDataCnt	データ件数（limitをかけていない、検索条件を含めたデータの件数）
+	 * @param  string $path			基本的なURLを指定。例:「proj/list.php」。
+	 * @param  array $params		ページ関連外のその他のパラメータをURLに付加する場合。例：「array('xxx'=>'1','flg',true)」
+	 * @param  string $kjs_uq       検索条件ＵＲＬクエリ文字列
+	 * @param  array ページ目次用のHTMLコードデータ
+     * 
+     */
+	private function _createIndexHtml2($allDataCnt,$path,$params,$kjs_uq){
 
 		$nowPageNo=$this->m_reqs['page_no'];
 		$limitCnt=$this->m_reqs['limit'];
@@ -176,9 +236,8 @@ class PagenationForCake{
 		$params['sort']=$this->m_reqs['sort'];
 		$params['sort_type']=$this->m_reqs['sort_type'];
 
-
 		//ページ目次用のHTMLコードを生成する。
-		$res=$this->_createIndexHtml($nowPageNo,$params,$allDataCnt,$limitCnt,$midasiCnt,$path);
+		$res=$this->_createIndexHtml($nowPageNo,$params,$allDataCnt,$limitCnt,$midasiCnt,$path,$kjs_uq);
 
 		return $res;
 	}
@@ -190,21 +249,15 @@ class PagenationForCake{
 	 * @param  $dtCnt			データ数
 	 * @param  $limitCnt	限界表示行数（最大表示行数）
 	 * @param  $midasiCnt	表示する見出し数
-	 * @return NULL|string
+	 * @param  string $kjs_uq       検索条件ＵＲＬクエリ文字列
+	 * @return array ページ目次用のHTMLコードデータ
 	 */
-	private function _createIndexHtml($nowPageNo,$params,$dtCnt,$limitCnt,$midasiCnt=8,$pageName="list.php"){
+	private function _createIndexHtml($nowPageNo,$params,$dtCnt,$limitCnt,$midasiCnt=8,$pageName="list.php",$kjs_uq){
 
-
-
-		if($dtCnt==0){
-			return null;
-		}
-
-		if(!isset($limitCnt)){
-			return null;
-		}
-
-
+		if($dtCnt==0) return null;
+		if(!isset($limitCnt)) return null;
+		if(empty($pageName)) $pageName="list.php";
+		
 		//▼ページネーションを構成する総リンク数をカウントする。
 		$allMdCnt=ceil($dtCnt/$limitCnt);
 		$md2=$allMdCnt;
@@ -212,8 +265,6 @@ class PagenationForCake{
 			$md2=$midasiCnt;
 		}
 		$linkCnt=4+$md2;
-
-
 
 		//▼最終ページ番号を取得
 		if($md2>0){
@@ -229,15 +280,11 @@ class PagenationForCake{
 			}
 		}
 
-
-
-
 		//▼最戻リンクを作成
 		$rtnMax='&lt&lt';
 		if($nowPageNo>0){
-
-			$rtnMax="<a href='{$pageName}?page_no=0{$strParams}'>{$rtnMax}</a>";
-			//$rtnMax="<a href='list.php?pageNo=0{$strParams}'>{$rtnMax}</a>";
+		    $url = "{$pageName}?page_no=0{$strParams}&{$kjs_uq}";
+			$rtnMax="<a href='{$nowPageNo}'>{$rtnMax}</a>";
 		}
 
 		//▼単戻リンクを作成
@@ -245,8 +292,9 @@ class PagenationForCake{
 		$page_prev_link="";
 		if($nowPageNo>0){
 			$p=$nowPageNo-1;
-			$page_prev_link = "{$pageName}?page_no={$p}{$strParams}";
-			$rtn1="<a href='{$page_prev_link}'>{$rtn1}</a>";
+			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
+			//$page_prev_link = "{$pageName}?page_no={$p}{$strParams}";■■■□□□■■■□□□■■■□□□
+			$rtn1="<a href='{$url}'>{$rtn1}</a>";
 		}
 
 		//▼単進リンクを作成
@@ -254,18 +302,19 @@ class PagenationForCake{
 		$next1='&gt';
 		if($nowPageNo<$lastPageNo){
 			$p=$nowPageNo+1;
-			$page_next_link = "{$pageName}?page_no={$p}{$strParams}";
-			$next1="<a href='{$page_next_link}'>{$next1}</a>";;
+			//$page_next_link = "{$pageName}?page_no={$p}{$strParams}";■■■□□□■■■□□□■■■□□□
+			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
+			$next1="<a href='{$url}'>{$next1}</a>";
 		}
 
 		//▼最進リンクを作成
 		$nextMax='&gt&gt';
 		if($nowPageNo<$lastPageNo){
 			$p=$lastPageNo;
-			$nextMax="<a href='{$pageName}?page_no={$p}{$strParams}'>{$nextMax}</a>";
+			//$nextMax="<a href='{$pageName}?page_no={$p}{$strParams}'>{$nextMax}</a>";■■■□□□■■■□□□■■■□□□
+			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
+			$nextMax="<a href='$url'>{$nextMax}</a>";
 		}
-
-
 
 		//▼見出し配列を作成
 		$fno=$lastPageNo-$md2+1;
@@ -277,14 +326,13 @@ class PagenationForCake{
 		for($i=$fno;$i<=$lno;$i++){
 			$pn=$i+1;
 			if($i!=$nowPageNo){
-				$midasiList[]="<a href='{$pageName}?page_no={$i}{$strParams}'>{$pn}</a>";
+			    //$midasiList[]="<a href='{$pageName}?page_no={$i}{$strParams}'>{$pn}</a>";//■■■□□□■■■□□□■■■□□□
+			    $url = "{$pageName}?page_no={$i}{$strParams}&{$kjs_uq}";
+			    $midasiList[]="<a href='$url'>{$pn}</a>";
 			}else{
 				$midasiList[]=$pn;
 			}
 		}
-
-
-
 
 		//▼HTML組み立て
 
@@ -308,8 +356,17 @@ class PagenationForCake{
 		return $res;
 	}
 
-
-	private function _createSorts2($allDataCnt,$path,$params,$fields){
+    /**
+     * ソートＵＲＬリンクHTMLのリストを生成する。
+     *
+	 * @param  int $allDataCnt	データ件数（limitをかけていない、検索条件を含めたデータの件数）
+	 * @param  string $path			基本的なURLを指定。例:「proj/list.php」。
+	 * @param  array $params		ページ関連外のその他のパラメータをURLに付加する場合。例：「array('xxx'=>'1','flg',true)」
+	 * @param  array $fields		HTMLテーブルのキーはDBフィールド、値はフィールド和名にする。例：「array('title'=>'タイトル')」
+	 * @param  string $kjs_uq       検索条件ＵＲＬクエリ文字列
+	 * @param  array ソートＵＲＬリンクHTMLのリスト
+     */
+	private function _createSorts2($allDataCnt,$path,$params,$fields,$kjs_uq){
 		
 
 		//各種パラメータの取得
@@ -318,14 +375,14 @@ class PagenationForCake{
 		$pageNo=$this->m_reqs['page_no'];
 		$limit=$this->m_reqs['limit'];
 
-		$sorts=$this->_createSorts($nowSortField, $nowSortType, $fields, $pageNo, $limit, $path, $params);
+		$sorts=$this->_createSorts($nowSortField, $nowSortType, $fields, $pageNo, $limit, $path, $params,$kjs_uq);
 
 		return $sorts;
 	}
 
 
 	//ソートリンクリストを作成
-	private function _createSorts($nowSortField,$nowSortType,$fields,$pageNo,$limit,$path,$params){
+	private function _createSorts($nowSortField,$nowSortType,$fields,$pageNo,$limit,$path,$params,$kjs_uq){
 
 		//その他パラメータコードを作成する。
 		$strParams='';
@@ -341,7 +398,8 @@ class PagenationForCake{
 		$data=null;
 		foreach($fields as $f=>$fName){
 			//リンクを組み立てる。
-			$link="<a href='{$path}?page_no={$pageNo}&limit={$limit}&sort={$f}&sort_type=0{$strParams}'>{$fName}</a>";
+			$url = "{$path}?page_no={$pageNo}&limit={$limit}&sort={$f}&sort_type=0{$strParams}&{$kjs_uq}";
+			$link = "<a href='$url'>{$fName}</a>";
 
 			//リンクをフィールド名をキーにしてソートリンクリストにセット
 			$data[$f]=$link;
@@ -361,11 +419,14 @@ class PagenationForCake{
 			}
 
 			//リンクを組み立てる。
-			$link="<a href='{$path}?page_no={$pageNo}&limit={$limit}&sort={$nowSortField}&sort_type={$revSortType}{$strParams}'>{$fName}</a>";
+			$url = "{$path}?page_no={$pageNo}&limit={$limit}&sort={$nowSortField}&sort_type={$revSortType}{$strParams}&{$kjs_uq}";
+			$link = "<a href='$url'>{$fName}</a>";
 
 			//ソートリンクリストに現在ソートフィールドをキーにしてリンクをセットする。
 			$data[$nowSortField]=$link;
 		}
+		
+		debug($data);//■■■□□□■■■□□□■■■□□□)
 
 		return $data;
 
