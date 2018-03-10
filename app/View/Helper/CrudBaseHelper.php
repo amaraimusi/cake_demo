@@ -314,10 +314,11 @@ class CrudBaseHelper extends FormHelper {
 			'id' => 'kj_delete_flg',
 			'type' => 'select',
 			'options' => array(
+			    -1=>'すべて表示',
 				0=>'有効',
 				1=>'無効',
 			),
-			'empty' => 'すべて表示',
+			//'empty' => 'すべて表示',■■■□□□■■■□□□■■■□□□
 			'default' => $kjs['kj_delete_flg'],
 			'label' => false,
 		));

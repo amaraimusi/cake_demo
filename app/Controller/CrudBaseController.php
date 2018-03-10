@@ -31,7 +31,7 @@ class CrudBaseController extends AppController {
 	///フィールドデータ（要、オーバーライド）
 	public $field_data = array();
 
-	///一覧列情報(ソート機能付     $field_dataの簡易版）
+	///一覧列情報(ソート機能付	 $field_dataの簡易版）
 	public $table_fields=array();
 
 	///編集エンティティ定義（要,オーバーライド）
@@ -75,7 +75,9 @@ class CrudBaseController extends AppController {
 	 * - bigDataFlg <bool> true:一覧データ件数が500件を超える,false:500件以下。500件の制限はオーバーライドで変更可能。
 	 *
 	 */
-	protected function index_before($name,$request){
+	protected function indexBefore($name,$request=null){
+
+		if(empty($request)) $request = $this->request->data;
 
 		$this->MainModel=ClassRegistry::init($name);
 		$this->main_model_name=$name;
@@ -207,40 +209,67 @@ class CrudBaseController extends AppController {
 
 		// ユーザー情報を取得する
 		$userInfo = $this->getUserInfo();
-
-		$this->set(array(
-				'version'=>$this->version,
-				'field_data'=>$active,
-				'kjs'=>$kjs,
-				'errMsg'=>$errMsg,
-				'iniFlg'=>$iniFlg,
-				'crudType'=>$crudType,
-				'saveKjFlg'=>$saveKjFlg,
-				'csh_json'=>$csh_json,
-				'defKjsJson'=>$defKjsJson,
-				'bigDataFlg'=>$bigDataFlg,
-				'debug_mode'=>$debug_mode,
-				'big_data_fields'=>$big_data_fields,
-				'userInfo'=>$userInfo,
-				'new_version_chg'=>$new_version_chg,
-				'verInfo'=>$verInfo,
-				
-		));
-
-
-		$ret=array(
-				'kjs'=>$kjs,
-				'errMsg'=>$errMsg,
-				'iniFlg'=>$iniFlg,
-				'paginations'=>$paginations,
-				'saveKjFlg'=>$saveKjFlg,
-				'bigDataFlg'=>$bigDataFlg,
-				'csh_ary'=>$csh_ary,
-				'big_data_fields'=>$big_data_fields,
-				'userInfo'=>$userInfo,
+		
+		$crudBaseData = array(
+			'version'=>$this->version,
+			'field_data'=>$active,
+			'kjs'=>$kjs,
+			'errMsg'=>$errMsg,
+			'iniFlg'=>$iniFlg,
+			'crudType'=>$crudType,
+			'saveKjFlg'=>$saveKjFlg,
+			'csh_json'=>$csh_json,
+			'defKjsJson'=>$defKjsJson,
+			'bigDataFlg'=>$bigDataFlg,
+			'debug_mode'=>$debug_mode,
+			'big_data_fields'=>$big_data_fields,
+			'userInfo'=>$userInfo,
+			'new_version_chg'=>$new_version_chg,
+			'verInfo'=>$verInfo,
+			'paginations'=>$paginations,
+			'csh_ary'=>$csh_ary,
 		);
+		
+		return $crudBaseData;
 
-		return $ret;
+		// ■■■□□□■■■□□□■■■□□□
+// 		$this->set(array(
+// 				'version'=>$this->version,
+// 				'field_data'=>$active,
+// 				'kjs'=>$kjs,
+// 				'errMsg'=>$errMsg,
+// 				'iniFlg'=>$iniFlg,
+// 				'crudType'=>$crudType,
+// 				'saveKjFlg'=>$saveKjFlg,
+// 				'csh_json'=>$csh_json,
+// 				'defKjsJson'=>$defKjsJson,
+// 				'bigDataFlg'=>$bigDataFlg,
+// 				'debug_mode'=>$debug_mode,
+// 				'big_data_fields'=>$big_data_fields,
+// 				'userInfo'=>$userInfo,
+// 				'new_version_chg'=>$new_version_chg,
+// 				'verInfo'=>$verInfo,
+				
+// 		));
+
+
+// 		$ret=array(
+// 				'kjs'=>$kjs,
+// 				'errMsg'=>$errMsg,
+// 				'iniFlg'=>$iniFlg,
+// 				'paginations'=>$paginations,
+// 				'saveKjFlg'=>$saveKjFlg,
+// 				'bigDataFlg'=>$bigDataFlg,
+// 				'csh_ary'=>$csh_ary,
+// 				'big_data_fields'=>$big_data_fields,
+// 				'userInfo'=>$userInfo,
+// 		);
+		
+		
+		//-------------
+		
+
+//		return $ret;
 	}
 
 
@@ -504,50 +533,28 @@ class CrudBaseController extends AppController {
 	}
 
 	/**
-	 * indexアクションの共通処理。
+	 * indexアクションの共通処理（後）
 	 *
-	 * ソートリンク情報やページネーション情報、検索結果件数を取得できます。
-	 * ソートリンク情報は一覧列名で使われている並べ替えリンクの情報です。
-	 * ページネーション情報はページ目次のリンクに使われます。
-	 * 検索結果件数は、表示件数で制限されていない、実際の結果件数です。
-	 * indexアクションの末尾で、この関数は実装されます。
-	 *
-	 * @param $kjs 検索条件情報
-	 * @param $pageBaseUrl ページネーションの基本URL
-	 *
-	 * @return array
-	 * - pages <array> ソートリンク情報とページネーション情報
-	 * - data_count <int> 検索結果件数（limit制限なしの件数）
-	 *
+	 * @param $crudBaseData
+	 * @return $crudBaseData
 	 */
-	protected function index_after($kjs,$pageBaseUrl=null){
-		//////////////////  ページネーション情報を取得 //////////////
-		$baseUrl = $pageBaseUrl;
-		if(empty($baseUrl)){
-			$baseUrl=$this->webroot.$this->main_model_name_s;
-		}
+	protected function indexAfter(&$crudBaseData){
 
-		$dataCnt=$this->MainModel->findDataCnt($kjs);//検索データ数を取得
+        // 検索データ数を取得
+	    $kjs = $crudBaseData['kjs'];
+		$data_count=$this->MainModel->findDataCnt($kjs); 
 
-		//HTMLテーブルのフィールド
-		$pages=$this->PagenationForCake->createPagenationData($dataCnt,$baseUrl , null,$this->table_fields,$kjs);
+		//ページ情報を取得する
+		$baseUrl=$this->webroot.$this->main_model_name_s; // ページネーションの基本URL
+		$pages=$this->PagenationForCake->createPagenationData($data_count,$baseUrl , null,$this->table_fields,$kjs);
 
 		$kjs_json = json_encode($kjs,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
+		
+		$crudBaseData['pages'] = $pages; // ページ情報
+		$crudBaseData['data_count'] = $data_count; // 検索データ数
+		$crudBaseData['kjs_json'] = $kjs_json;
 
-		$this->set(array(
-				'pages'=>$pages,
-				'data_count'=>$dataCnt,
-				'kjs_json'=>$kjs_json,
-		));
-
-		$ret=array(
-				'pages'=>$pages,
-				'data_count'=>$dataCnt,
-				'kjs_json'=>$kjs_json,
-
-		);
-
-		return $ret;
+		return $crudBaseData;
 	}
 
 

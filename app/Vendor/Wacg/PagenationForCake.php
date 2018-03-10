@@ -73,9 +73,7 @@ class PagenationForCake{
 	 * - $data['all_page_cnt'] ページ数
 	 */
 	public function createPagenationData($allDataCnt,$path,$params,$fields,$kjs){
-	    
-	    var_dump('test=A');//■■■□□□■■■□□□■■■□□□
-	    
+
 	    // 検索条件ＵＲＬクエリを生成する。
 	    $kjs_uq = $this->createKjsUrlQuery($kjs);
 	    
@@ -92,11 +90,14 @@ class PagenationForCake{
 		$rtn['page_no']=$this->m_reqs['page_no'];//現在ページ
 		$rtn['all_data_cnt']=$allDataCnt;//全データ数
 		if(isset($this->m_reqs['limit'])){
-			$rtn['all_page_cnt']=ceil($rtn['all_data_cnt']/$this->m_reqs['limit']);//全ページ数
+			$rtn['all_page_cnt']=ceil($rtn['all_data_cnt'] / $this->m_reqs['limit']);//全ページ数
+			$rtn['limit'] = $this->m_reqs['limit'];
 		}else{
 			$rtn['all_page_cnt']=1;
+			$rtn['limit'] = $rtn['all_data_cnt'];
 		}
-
+		$rtn['sort'] = $this->m_reqs['sort'];
+		$rtn['sort_type'] = $this->m_reqs['sort_type'];
 
 		return $rtn;
 	}
@@ -122,34 +123,6 @@ class PagenationForCake{
 	    return $str;
 	}
 	
-	// ■■■□□□■■■□□□■■■□□□
-// 	/**
-// 	 * 拡張URLエンコード
-// 	 *
-// 	 * @note
-// 	 * 多次元配列に対応
-// 	 * 高速化のため、引数は参照（ポインタ）であり返値もかねている。
-// 	 *
-// 	 * @param any $data URLエンコード対象データ（参照型） | 値および配列を指定
-// 	 * @return void
-// 	 */
-// 	private function urlencodeEx(&$data){
-// 	    if(is_array($data)){
-// 	        foreach($data as &$val){
-// 	            $this->urlencodeEx($val);
-// 	        }
-// 	        unset($val);
-// 	    }elseif(gettype($data)=='string'){
-// 	        $data = urlencode($data);// URLエンコード
-// 	    }else{
-// 	        // 何もしない
-// 	    }
-// 	}	
-
-
-	///////////////////////////////////////////////////////////////////////////////
-
-
 	//リクエストからデータを取得。サニタイズや空ならデフォルト値のセットも行う。
 	private function _getDataFromRequest($req){
 		App::uses('Sanitize', 'Utility');
@@ -293,7 +266,6 @@ class PagenationForCake{
 		if($nowPageNo>0){
 			$p=$nowPageNo-1;
 			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
-			//$page_prev_link = "{$pageName}?page_no={$p}{$strParams}";■■■□□□■■■□□□■■■□□□
 			$rtn1="<a href='{$url}'>{$rtn1}</a>";
 		}
 
@@ -302,7 +274,6 @@ class PagenationForCake{
 		$next1='&gt';
 		if($nowPageNo<$lastPageNo){
 			$p=$nowPageNo+1;
-			//$page_next_link = "{$pageName}?page_no={$p}{$strParams}";■■■□□□■■■□□□■■■□□□
 			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
 			$next1="<a href='{$url}'>{$next1}</a>";
 		}
@@ -311,7 +282,6 @@ class PagenationForCake{
 		$nextMax='&gt&gt';
 		if($nowPageNo<$lastPageNo){
 			$p=$lastPageNo;
-			//$nextMax="<a href='{$pageName}?page_no={$p}{$strParams}'>{$nextMax}</a>";■■■□□□■■■□□□■■■□□□
 			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
 			$nextMax="<a href='$url'>{$nextMax}</a>";
 		}
@@ -326,7 +296,6 @@ class PagenationForCake{
 		for($i=$fno;$i<=$lno;$i++){
 			$pn=$i+1;
 			if($i!=$nowPageNo){
-			    //$midasiList[]="<a href='{$pageName}?page_no={$i}{$strParams}'>{$pn}</a>";//■■■□□□■■■□□□■■■□□□
 			    $url = "{$pageName}?page_no={$i}{$strParams}&{$kjs_uq}";
 			    $midasiList[]="<a href='$url'>{$pn}</a>";
 			}else{
@@ -425,14 +394,9 @@ class PagenationForCake{
 			//ソートリンクリストに現在ソートフィールドをキーにしてリンクをセットする。
 			$data[$nowSortField]=$link;
 		}
-		
-		debug($data);//■■■□□□■■■□□□■■■□□□)
 
 		return $data;
-
-
 	}
-
 
 }
 ?>

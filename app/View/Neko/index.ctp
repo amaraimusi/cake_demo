@@ -28,7 +28,7 @@ $this->assign('script', $this->Html->script(array(
 	'Neko/index'					// 当画面専用JavaScript
 ),array('charset'=>'utf-8')));
 	
-	
+
 ?>
 
 

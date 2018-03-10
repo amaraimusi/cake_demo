@@ -69,28 +69,24 @@ class NekoController extends CrudBaseController {
 	 */
 	public function index() {
 		
-
-		$res=$this->index_before('Neko',$this->request->data);//indexアクションの共通先処理(CrudBaseController)
-		$kjs=$res['kjs'];//検索条件情報
-		$paginations=$res['paginations'];//ページネーション情報
+        // CrudBase共通処理（前）
+		$crudBaseData = $this->indexBefore('Neko');//indexアクションの共通先処理(CrudBaseController)
 		
-		// SQLインジェクション対策用のサニタイズをする。
-		App::uses('Sanitize', 'Utility');
-		$kjs = Sanitize::clean($kjs, array('encode' => false));
-
 		//一覧データを取得
-		$data=$this->Neko->findData($kjs,$paginations['page_no'],$paginations['limit'],$paginations['find_order']);
+		$data = $this->Neko->findData2($crudBaseData);
 
-		$res=$this->index_after($kjs);//indexアクションの共通後処理
+		// CrudBase共通処理（後）
+		$crudBaseData = $this->indexAfter($crudBaseData);//indexアクションの共通後処理
 		
 		$nekoGroupList = array(1=>'ペルシャ',2=>'ボンベイ',3=>'三毛',4=>'シャム',5=>'雉トラ',6=>'スフィンクス');
 		$neko_group_json = json_encode($nekoGroupList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-
+		
+		$this->set($crudBaseData);
 		$this->set(array(
 			'title_for_layout'=>'ネコ',
-		    'data'=> $data,
-		    'nekoGroupList' => $nekoGroupList,
-		    'neko_group_json' => $neko_group_json,
+			'data'=> $data,
+			'nekoGroupList' => $nekoGroupList,
+			'neko_group_json' => $neko_group_json,
 		));
 		
 		//当画面系の共通セット
@@ -294,27 +290,27 @@ class NekoController extends CrudBaseController {
 	* 
 	*/
 	public function auto_save(){
-	    
-	    App::uses('Sanitize', 'Utility');
-	    
-	    $this->autoRender = false;//ビュー(ctp)を使わない。
-	    
-	    $json=$_POST['key1'];
-	    
-	    $data = json_decode($json,true);//JSON文字を配列に戻す
-	    
-	    $data = Sanitize::clean($data, array('encode' => false));
-	    
-	    // データ保存
-	    $this->Neko->begin();
-	    $this->Neko->saveAll($data);
-	    $this->Neko->commit();
+		
+		App::uses('Sanitize', 'Utility');
+		
+		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		$json=$_POST['key1'];
+		
+		$data = json_decode($json,true);//JSON文字を配列に戻す
+		
+		$data = Sanitize::clean($data, array('encode' => false));
+		
+		// データ保存
+		$this->Neko->begin();
+		$this->Neko->saveAll($data);
+		$this->Neko->commit();
 
-	    $res = array('success');
-	    
-	    $json_str = json_encode($res);//JSONに変換
-	    
-	    return $json_str;
+		$res = array('success');
+		
+		$json_str = json_encode($res);//JSONに変換
+		
+		return $json_str;
 	}
 	
 
@@ -449,8 +445,8 @@ class NekoController extends CrudBaseController {
 				array('name'=>'kj_neko_date2','def'=>null),
 				array('name'=>'kj_neko_group','def'=>null),
 				array('name'=>'kj_neko_dt','def'=>null),
-    		    array('name'=>'kj_note','def'=>null),
-    		    array('name'=>'kj_sort_no','def'=>null),
+				array('name'=>'kj_note','def'=>null),
+				array('name'=>'kj_sort_no','def'=>null),
 				array('name'=>'kj_delete_flg','def'=>0),
 				array('name'=>'kj_update_user','def'=>null),
 				array('name'=>'kj_ip_addr','def'=>null),
@@ -519,14 +515,14 @@ class NekoController extends CrudBaseController {
 								'allowEmpty' => true
 						),
 				),
-		    
-    		    'kj_sort_no' => array(
-    		        'custom'=>array(
-    		            'rule' => array( 'custom', '/^[-]?[0-9]+?$/' ),
-    		            'message' => '順番は整数を入力してください。',
-    		            'allowEmpty' => true
-    		        ),
-    		    ),
+			
+				'kj_sort_no' => array(
+					'custom'=>array(
+						'rule' => array( 'custom', '/^[-]?[0-9]+?$/' ),
+						'message' => '順番は整数を入力してください。',
+						'allowEmpty' => true
+					),
+				),
 					
 				'kj_update_user'=> array(
 						'maxLength'=>array(
@@ -583,11 +579,11 @@ class NekoController extends CrudBaseController {
 					'row_order'=>'Neko.neko_name',
 					'clm_show'=>1,
 			),
-		    'neko_group'=>array(
-		        'name'=>'ネコ種別',
-		        'row_order'=>'Neko.neko_group',
-		        'clm_show'=>1,
-		    ),
+			'neko_group'=>array(
+				'name'=>'ネコ種別',
+				'row_order'=>'Neko.neko_group',
+				'clm_show'=>1,
+			),
 			'neko_date'=>array(
 					'name'=>'ネコ日',
 					'row_order'=>'Neko.neko_date',
@@ -603,11 +599,11 @@ class NekoController extends CrudBaseController {
 					'row_order'=>'Neko.note',
 					'clm_show'=>0,
 			),
-		    'sort_no'=>array(
-		        'name'=>'順番',
-		        'row_order'=>'Neko.sort_no',
-		        'clm_show'=>0,
-		    ),
+			'sort_no'=>array(
+				'name'=>'順番',
+				'row_order'=>'Neko.sort_no',
+				'clm_show'=>0,
+			),
 			'delete_flg'=>array(
 					'name'=>'無効フラグ',
 					'row_order'=>'Neko.delete_flg',
@@ -635,11 +631,11 @@ class NekoController extends CrudBaseController {
 			),
 		));
 
-	    // 列並び順をセットする
-	    $clm_sort_no = 0;
-	    foreach ($this->field_data['def'] as &$fEnt){
-	        $fEnt['clm_sort_no'] = $clm_sort_no;
-	        $clm_sort_no ++;
+		// 列並び順をセットする
+		$clm_sort_no = 0;
+		foreach ($this->field_data['def'] as &$fEnt){
+			$fEnt['clm_sort_no'] = $clm_sort_no;
+			$clm_sort_no ++;
 		}
 		unset($fEnt);
 

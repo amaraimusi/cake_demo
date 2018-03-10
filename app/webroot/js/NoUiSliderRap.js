@@ -8,7 +8,7 @@
  * - init noUiSliderの初期化（数値範囲入力スライダーを生成）
  * - reload 数値テキストボックスに合わせて、スライドバーを修正する。
  * 
- * @date 2015-11-25 新規作成
+ * @date 2015-11-25 | 2018-3-9 v1とv2の両方が0であれば、両方を空文字にする。
  */
 var NoUiSliderRap = function(){
 	
@@ -57,15 +57,17 @@ var NoUiSliderRap = function(){
 		slider.noUiSlider.on('update', function ( values, handle ) {
 			var v1=values[0];
 			var v1=Math.round(v1);
-			$(param.tb1).val(v1);
 
 			var v2=values[1];
 			var v2=Math.round(v2);
-			$(param.tb2).val(v2);
 			
 			if(v1!=0 || v2!=0){
+				$(param.tb1).val(v1);
+				$(param.tb2).val(v2);
 				$(param.value_preview).html(v1 + '～' + v2);
 			}else{
+				$(param.tb1).val('');
+				$(param.tb2).val('');
 				$(param.value_preview).html('OFF');
 			}
 			

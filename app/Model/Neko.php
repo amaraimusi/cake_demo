@@ -87,8 +87,6 @@ class Neko extends AppModel {
 					'order' => $findOrder,
 				);
 		
-		//$this->dumpSql($option);■■■□□□■■■□□□■■■□□□
-		
 		//DBからデータを取得
 		$data = $this->find('all',$option);
 
@@ -104,6 +102,22 @@ class Neko extends AppModel {
 		
 		return $data2;
 	}
+	
+	
+	/**
+	 * 一覧データを取得する
+	 */
+	public function findData2(&$crudBaseData){
+	   
+		$kjs = $crudBaseData['kjs'];//検索条件情報
+		$paginations = $crudBaseData['paginations'];//ページネーション情報
+		
+		$data = $this->findData($kjs,$paginations['page_no'],$paginations['limit'],$paginations['find_order']);
+		
+		return $data;
+	}
+
+	
 	
 	/**
 	 * SQLのダンプ
@@ -170,11 +184,14 @@ class Neko extends AppModel {
 		}
 		
 		if(!empty($kjs['kj_sort_no']) || $kjs['kj_sort_no'] ==='0' || $kjs['kj_sort_no'] ===0){
-		    $cnds[]="Neko.sort_no = {$kjs['kj_sort_no']}";
+			$cnds[]="Neko.sort_no = {$kjs['kj_sort_no']}";
 		}
 		
+		$kj_delete_flg = $kjs['kj_delete_flg'];
 		if(!empty($kjs['kj_delete_flg']) || $kjs['kj_delete_flg'] ==='0' || $kjs['kj_delete_flg'] ===0){
-			$cnds[]="Neko.delete_flg = {$kjs['kj_delete_flg']}";
+			if($kjs['kj_delete_flg'] != -1){
+			   $cnds[]="Neko.delete_flg = {$kjs['kj_delete_flg']}";
+			}
 		}
 
 		if(!empty($kjs['kj_update_user'])){
@@ -220,11 +237,8 @@ class Neko extends AppModel {
 	 */
 	public function saveEntity($ent){
 
-
 		//DBに登録('atomic' => false　トランザクションなし）
-	    $ent = $this->save($ent, array('atomic' => false,'validate'=>false));
-	    $this->log('A2'); // ■■■□□□■■■□□□■■■□□□■■■)
-	    $this->log($ent); // ■■■□□□■■■□□□■■■□□□■■■)
+		$ent = $this->save($ent, array('atomic' => false,'validate'=>false));
 
 		//DBからエンティティを取得
 		$ent = $this->find('first',
@@ -234,11 +248,9 @@ class Neko extends AppModel {
 
 		$ent=$ent['Neko'];
 		if(empty($ent['delete_flg'])) $ent['delete_flg'] = 0;
-		$this->log($ent); // ■■■□□□■■■□□□■■■□□□■■■)
-		
+
 		return $ent;
 	}
-
 
 
 
@@ -254,7 +266,6 @@ class Neko extends AppModel {
 	 */
 	public function findDataCnt($kjs){
 
-
 		//DBから取得するフィールド
 		$fields=array('COUNT(id) AS cnt');
 		$conditions=$this->createKjConditions($kjs);
@@ -265,29 +276,12 @@ class Neko extends AppModel {
 				Array(
 						'fields'=>$fields,
 						'conditions' => $conditions,
-
 				)
 		);
 
 		$cnt=$data[0]['cnt'];
-
-
 		return $cnt;
-		
-
 	}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
