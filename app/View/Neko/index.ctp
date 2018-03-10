@@ -80,6 +80,23 @@ $this->assign('script', $this->Html->script(array(
 		echo "<div style='clear:both'></div>";
 		$this->CrudBase->inputKjLimit($kjs);
 		// --- End kj_input
+		$this->CrudBase->hiddenX('act_flg',1);
+		?>
+		<input id="page_no" type="hidden" value="<?php echo $pages['page_no'] ?>" />
+		<input id="limit" type="hidden" value="<?php echo $pages['limit'] ?>" />
+		<input id="sort" type="hidden" value="<?php echo $pages['sort'] ?>" />
+		<input id="sort_type" type="hidden" value="<?php echo $pages['sort_type'] ?>" />
+		
+		<input id="iniFlg" type="hidden" value="<?php echo $iniFlg ?>" />
+		<input id="crudType" type="hidden" value="<?php echo $crudType ?>" />
+		<input id="webroot" type="hidden" value="<?php echo $this->Html->webroot ?>" />
+		<input id="csh_json" type="hidden" value="<?php echo $csh_json ?>" />
+		<input id="bigDataFlg" type="hidden" value="<?php echo $bigDataFlg ?>" />
+		<div id="defKjsJson" style="display:none"><?php echo $defKjsJson ?></div>
+		<input id="debug_mode" type="hidden" value="<?php echo $debug_mode ?>" />
+		
+		<?php 
+		
 		echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));
 		
 		echo $this->element('CrudBase/crud_base_index');

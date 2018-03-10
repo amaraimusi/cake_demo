@@ -210,6 +210,10 @@ class CrudBaseController extends AppController {
 		// ユーザー情報を取得する
 		$userInfo = $this->getUserInfo();
 		
+		// アクティブフラグをリクエストから取得する
+		$act_flg = $this->getValueFromPostGet('act_flg');
+		debug('$act_flg='.$act_flg);//■■■□□□■■■□□□■■■□□□)
+		
 		$crudBaseData = array(
 			'version'=>$this->version,
 			'field_data'=>$active,
@@ -227,7 +231,8 @@ class CrudBaseController extends AppController {
 			'new_version_chg'=>$new_version_chg,
 			'verInfo'=>$verInfo,
 			'paginations'=>$paginations,
-			'csh_ary'=>$csh_ary,
+		    'csh_ary'=>$csh_ary,
+		    'act_flg'=>$act_flg,
 		);
 		
 		return $crudBaseData;
@@ -1112,21 +1117,17 @@ class CrudBaseController extends AppController {
 	 *
 	 * @return パラメータ
 	 */
-	protected function getParam($key,$formKey,$ses,$def){
+	protected function getParam($key,$formKey,&$ses,&$def){
 		$v=null;
 
 		//POSTからデータ取得を試みる。
 		if(isset($this->request->data[$formKey][$key])){
 			$v=$this->request->data[$formKey][$key];
-			//$v=Sanitize::escape($v);//SQLインジェクションのサニタイズ
-
 		}
 
 		//GETからデータ取得を試みる。
 		elseif(isset($this->params['url'][$key])){
 			$v=$this->params['url'][$key];
-			//$v=Sanitize::escape($v);
-
 		}
 
 		//SESSIONからデータを読み取る。
@@ -1140,6 +1141,58 @@ class CrudBaseController extends AppController {
 		}
 
 		return $v;
+	}
+	
+	
+	/*
+	 * POST、ＧＥＴの順にキーに紐づく値を探して取得する。
+	 * 
+	 * @param string $key キー
+	 * @return string リクエスト値
+	 */
+	protected function getValueFromPostGet($key){
+	    $value = null;
+
+	    //POSTからデータ取得を試みる。
+	    $model_name = $this->main_model_name;
+	    if(isset($this->request->data[$model_name][$key])){
+	        $value = $this->request->data[$model_name][$key];
+	        return $value;
+	    }
+	    
+	    //GETからデータ取得を試みる。
+	    if(isset($this->params['url'][$key])){
+	        $value = $this->params['url'][$key];
+	        return $value;
+	    }
+	    
+	    return $value;
+	}
+	
+	
+	/*
+	 * ＧＥＴ、POSTの順にキーに紐づく値を探して取得する。
+	 *
+	 * @param string $key キー
+	 * @return string リクエスト値
+	 */
+	protected function getValueFromGetPost($key){
+	    $value = null;
+	    
+	    //GETからデータ取得を試みる。
+	    if(isset($this->params['url'][$key])){
+	        $value = $this->params['url'][$key];
+	        return $value;
+	    }
+	    
+	    //POSTからデータ取得を試みる。
+	    $model_name = $this->main_model_name;
+	    if(isset($this->request->data[$model_name][$key])){
+	        $value = $this->request->data[$model_name][$key];
+	        return $value;
+	    }
+	    
+	    return $value;
 	}
 
 	/**

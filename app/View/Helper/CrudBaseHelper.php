@@ -16,8 +16,6 @@ App::uses('FormHelper', 'View/Helper');
 
 class CrudBaseHelper extends FormHelper {
 
-
-	
 	private $_mdl=""; // モデル名
 	private $_mdl_snk=""; // モデル名（スネーク記法）
 	private $_dateTimeList=array(); // 日時選択肢リスト
@@ -1671,6 +1669,23 @@ class CrudBaseHelper extends FormHelper {
 		
 		echo $html;
 		
+	}
+	
+	
+	/**
+	 * Cakeに対応したhidden要素を作成
+	 *
+	 * @param string $field 要素のフィールド（キー）
+	 * @param string $value 値
+	 */
+	public function hiddenX($field,$value){
+	    
+	    echo $this->input($this->_mdl.$field, array(
+	        'id' => $field,
+	        'value' => $value,
+	        'type' => 'hidden',
+	    ));
+	    
 	}
 	
 	

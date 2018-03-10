@@ -10,17 +10,7 @@
 	$model_name_s = $this->CrudBase->getModelNameSnk();//スネーク記法モデル名
 ?>
 <!-- CrudBase共通 -->
-<input id="page_no" type="hidden" value="<?php echo $pages['page_no'] ?>" />
-<input id="limit" type="hidden" value="<?php echo $pages['limit'] ?>" />
-<input id="sort" type="hidden" value="<?php echo $pages['sort'] ?>" />
-<input id="sort_type" type="hidden" value="<?php echo $pages['sort_type'] ?>" />
-<input id="iniFlg" type="hidden" value="<?php echo $iniFlg ?>" />
-<input id="crudType" type="hidden" value="<?php echo $crudType ?>" />
-<input id="webroot" type="hidden" value="<?php echo $this->Html->webroot ?>" />
-<input id="csh_json" type="hidden" value="<?php echo $csh_json ?>" />
-<input id="bigDataFlg" type="hidden" value="<?php echo $bigDataFlg ?>" />
-<div id="defKjsJson" style="display:none"><?php echo $defKjsJson ?></div>
-<input id="debug_mode" type="hidden" value="<?php echo $debug_mode ?>" />
+
 
 
 

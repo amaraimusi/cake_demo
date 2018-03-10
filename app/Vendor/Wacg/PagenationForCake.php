@@ -256,7 +256,7 @@ class PagenationForCake{
 		//▼最戻リンクを作成
 		$rtnMax='&lt&lt';
 		if($nowPageNo>0){
-		    $url = "{$pageName}?page_no=0{$strParams}&{$kjs_uq}";
+		    $url = "{$pageName}?page_no=0{$strParams}&act_flg=2&{$kjs_uq}";
 			$rtnMax="<a href='{$nowPageNo}'>{$rtnMax}</a>";
 		}
 
@@ -265,7 +265,7 @@ class PagenationForCake{
 		$page_prev_link="";
 		if($nowPageNo>0){
 			$p=$nowPageNo-1;
-			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
+			$url = "{$pageName}?page_no={$p}{$strParams}&act_flg=2&{$kjs_uq}";
 			$rtn1="<a href='{$url}'>{$rtn1}</a>";
 		}
 
@@ -274,7 +274,7 @@ class PagenationForCake{
 		$next1='&gt';
 		if($nowPageNo<$lastPageNo){
 			$p=$nowPageNo+1;
-			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
+			$url = "{$pageName}?page_no={$p}{$strParams}&act_flg=2&{$kjs_uq}";
 			$next1="<a href='{$url}'>{$next1}</a>";
 		}
 
@@ -282,7 +282,7 @@ class PagenationForCake{
 		$nextMax='&gt&gt';
 		if($nowPageNo<$lastPageNo){
 			$p=$lastPageNo;
-			$url = "{$pageName}?page_no={$p}{$strParams}&{$kjs_uq}";
+			$url = "{$pageName}?page_no={$p}{$strParams}&act_flg=2&{$kjs_uq}";
 			$nextMax="<a href='$url'>{$nextMax}</a>";
 		}
 
@@ -296,7 +296,7 @@ class PagenationForCake{
 		for($i=$fno;$i<=$lno;$i++){
 			$pn=$i+1;
 			if($i!=$nowPageNo){
-			    $url = "{$pageName}?page_no={$i}{$strParams}&{$kjs_uq}";
+			    $url = "{$pageName}?page_no={$i}{$strParams}&act_flg=2&{$kjs_uq}";
 			    $midasiList[]="<a href='$url'>{$pn}</a>";
 			}else{
 				$midasiList[]=$pn;
@@ -367,7 +367,7 @@ class PagenationForCake{
 		$data=null;
 		foreach($fields as $f=>$fName){
 			//リンクを組み立てる。
-			$url = "{$path}?page_no={$pageNo}&limit={$limit}&sort={$f}&sort_type=0{$strParams}&{$kjs_uq}";
+			$url = "{$path}?page_no={$pageNo}&limit={$limit}&sort={$f}&sort_type=0{$strParams}&act_flg=3&{$kjs_uq}";
 			$link = "<a href='$url'>{$fName}</a>";
 
 			//リンクをフィールド名をキーにしてソートリンクリストにセット
@@ -388,7 +388,7 @@ class PagenationForCake{
 			}
 
 			//リンクを組み立てる。
-			$url = "{$path}?page_no={$pageNo}&limit={$limit}&sort={$nowSortField}&sort_type={$revSortType}{$strParams}&{$kjs_uq}";
+			$url = "{$path}?page_no={$pageNo}&limit={$limit}&sort={$nowSortField}&sort_type={$revSortType}{$strParams}&act_flg=3&{$kjs_uq}";
 			$link = "<a href='$url'>{$fName}</a>";
 
 			//ソートリンクリストに現在ソートフィールドをキーにしてリンクをセットする。
