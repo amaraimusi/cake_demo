@@ -29,9 +29,6 @@ class NekoController extends CrudBaseController {
 	/// デフォルトソートタイプ	  0:昇順 1:降順
 	public $defSortType=0;
 	
-	/// 検索条件のセッション保存フラグ
-	public $kj_session_flg=true;
-	
 	/// 検索条件情報の定義
 	public $kensakuJoken=array();
 

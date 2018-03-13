@@ -20,7 +20,7 @@ class CrudBaseController extends AppController {
 	var $defSortType=0;//0:昇順 1:降順
 
 	///検索条件のセッション保存フラグ
-	public $kj_session_flg=true;
+	public $kj_session_flg = false;
 
 	///検索条件定義（要,オーバーライド）
 	public $kensakuJoken=array();
@@ -65,8 +65,8 @@ class CrudBaseController extends AppController {
 	 *
 	 * 検索条件情報の取得、入力エラー、ページネーションなどの情報を取得します。
 	 * このメソッドはindexアクションの冒頭部分で呼び出されます。
-	 * @param $name 	対応するモデル名（キャメル記法）
-	 * @param $request 	HTTPリクエスト
+	 * @param string $name 	対応するモデル名（キャメル記法）
+	 * @param array $request 	HTTPリクエスト
 	 * @return array
 	 * - kjs <array> 検索条件情報
 	 * - errMsg <string> 検索条件入力のエラーメッセージ
@@ -93,14 +93,16 @@ class CrudBaseController extends AppController {
 		$actionType = $this->judgActionType();
 
 		//▽検索入力保存フラグの処理
-		$skfData = $this->judeSessionFlg($postData,$actionType,$name);
-		$saveKjFlg = $skfData['saveKjFlg'];
+// 		$skfData = $this->judeSessionFlg($postData,$actionType,$name);
+// 		$saveKjFlg = $skfData['saveKjFlg'];
+		$saveKjFlg = $this->kj_session_flg;
+		
 
 		
  		// 新バージョンであるかチェック。新バージョンである場合セッションクリアを行う。２回目のリクエスト（画面表示）から新バージョンではなくなる。
-		$verInfo = Configure::read('VersionInfo'); // 当システムのバージョン情報を取得
 		$new_version_chg = 0; // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更
-		$system_version = $this->checkNewPageVersion($verInfo['system_version']);
+		$system_version = $this->checkNewPageVersion($this->this_page_version);
+
 		if(!empty($system_version)){
 			$new_version_chg = 1;
 			$this->sessionClear();
@@ -197,7 +199,7 @@ class CrudBaseController extends AppController {
 
 		}
 
-		$defKjsJson=$this->getDefKjsJson();// 検索条件情報からデフォルト検索JSONを取得する
+		$defKjsJson=$this->getDefKjsJson();// 検索条件情報からデフォルト検索情報JSONを取得する
 
 		$debug_mode=Configure::read('debug');//デバッグモードを取得
 
@@ -212,75 +214,34 @@ class CrudBaseController extends AppController {
 		
 		// アクティブフラグをリクエストから取得する
 		$act_flg = $this->getValueFromPostGet('act_flg');
-		debug('$act_flg='.$act_flg);//■■■□□□■■■□□□■■■□□□)
-		
+
 		$crudBaseData = array(
-			'version'=>$this->version,
-			'field_data'=>$active,
-			'kjs'=>$kjs,
-			'errMsg'=>$errMsg,
-			'iniFlg'=>$iniFlg,
-			'crudType'=>$crudType,
-			'saveKjFlg'=>$saveKjFlg,
-			'csh_json'=>$csh_json,
-			'defKjsJson'=>$defKjsJson,
-			'bigDataFlg'=>$bigDataFlg,
-			'debug_mode'=>$debug_mode,
-			'big_data_fields'=>$big_data_fields,
-			'userInfo'=>$userInfo,
-			'new_version_chg'=>$new_version_chg,
-			'verInfo'=>$verInfo,
-			'paginations'=>$paginations,
-		    'csh_ary'=>$csh_ary,
-		    'act_flg'=>$act_flg,
+		    'field_data'=>$active, // アクティブフィールドデータ
+		    'kjs'=>$kjs, // 検索条件情報
+		    'defKjsJson'=>$defKjsJson, // デフォルト検索情報JSON
+		    'errMsg'=>$errMsg, // エラーメッセージ
+		    'version'=>$this->version, // CrudBaseのバージョン
+		    'userInfo'=>$userInfo, // ユーザー情報
+		    'new_version_chg'=>$new_version_chg, // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更
+		    'debug_mode'=>$debug_mode, // デバッグモード    CakePHPのデバッグモードと同じもの
+		    'csh_ary'=>$csh_ary, // 列表示配列    列表示切替機能用
+		    'csh_json'=>$csh_json, // 列表示配列JSON     列表示切替機能用
+		    'bigDataFlg'=>$bigDataFlg, // 巨大データフラグ    画面に表示する行数が制限数（$big_data_limit）を超えるとONになる。
+		    'big_data_fields'=>$big_data_fields, // 巨大データ用のフィールド情報 (高速化のため列の種類は少なめ）
+			'paginations'=>$paginations, // ページネーションパラメータ
+		    'act_flg'=>$act_flg, // アクティブフラグ    null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
+		    'crudType'=>$crudType, // CRUDタイプ 0:AjaxCrud.js型   1:submit型
+		    'iniFlg'=>$iniFlg, // 初期フラグ（非推奨）    URLクエリで指定する初期状態を表すフラグ
+		    'saveKjFlg'=>$saveKjFlg, // 検索条件保存フラグ（非推奨）
 		);
 		
 		return $crudBaseData;
-
-		// ■■■□□□■■■□□□■■■□□□
-// 		$this->set(array(
-// 				'version'=>$this->version,
-// 				'field_data'=>$active,
-// 				'kjs'=>$kjs,
-// 				'errMsg'=>$errMsg,
-// 				'iniFlg'=>$iniFlg,
-// 				'crudType'=>$crudType,
-// 				'saveKjFlg'=>$saveKjFlg,
-// 				'csh_json'=>$csh_json,
-// 				'defKjsJson'=>$defKjsJson,
-// 				'bigDataFlg'=>$bigDataFlg,
-// 				'debug_mode'=>$debug_mode,
-// 				'big_data_fields'=>$big_data_fields,
-// 				'userInfo'=>$userInfo,
-// 				'new_version_chg'=>$new_version_chg,
-// 				'verInfo'=>$verInfo,
-				
-// 		));
-
-
-// 		$ret=array(
-// 				'kjs'=>$kjs,
-// 				'errMsg'=>$errMsg,
-// 				'iniFlg'=>$iniFlg,
-// 				'paginations'=>$paginations,
-// 				'saveKjFlg'=>$saveKjFlg,
-// 				'bigDataFlg'=>$bigDataFlg,
-// 				'csh_ary'=>$csh_ary,
-// 				'big_data_fields'=>$big_data_fields,
-// 				'userInfo'=>$userInfo,
-// 		);
-		
-		
-		//-------------
-		
-
-//		return $ret;
 	}
 
 
 	/**
 	 * アクション種別を取得する
-	 * @return アクション種別   0:初期表示、1:検索ボタン、2:ページネーション、3:ソート
+	 * @return int アクション種別   0:初期表示、1:検索ボタン、2:ページネーション、3:ソート
 	 */
 	private function judgActionType(){
 
@@ -321,7 +282,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * GETのパラメータを判定してアクション種別を取得する
 	 * @param array $getData GETリクエストのパラメータ
-	 * @return アクション種別  0:初期表示、 2:ページネーション、 3:ソート
+	 * @return int アクション種別  0:初期表示、 2:ページネーション、 3:ソート
 	 */
 	private function judgActionTypeByGet($getData){
 
@@ -351,7 +312,7 @@ class CrudBaseController extends AppController {
 	 * @param array $postData POSTリクエストのデータ
 	 * @param int $actionType アクション種別  0:初期表示、1:検索ボタン、2:ページネーション、3:ソート
 	 * @param string $name モデル名
-	 * @return 検索入力保存フラグ
+	 * @return bool 検索入力保存フラグ
 	 */
 	private function judeSessionFlg($postData,$actionType,$name){
 
@@ -455,6 +416,7 @@ class CrudBaseController extends AppController {
 		$svkj_ses_key=$page_code.'_saveKjFlg';//検索入力保存フラグのセッションキー
 		$csv_ses_key=$page_code.'_kjs';//CSV用のセッションキー
 		$mains_ses_key = $page_code.'_mains_cb';//主要パラメータのセッションキー
+		$ini_cnds_ses_key = $page_code.'_ini_cnds';// 初期条件データのセッションキー
 
 		$this->Session->delete($fd_ses_key);
 		$this->Session->delete($tf_ses_key);
@@ -464,6 +426,7 @@ class CrudBaseController extends AppController {
 		$this->Session->delete($svkj_ses_key);
 		$this->Session->delete($csv_ses_key);
 		$this->Session->delete($mains_ses_key);
+		$this->Session->delete($ini_cnds_ses_key);
 
 	}
 
@@ -472,7 +435,7 @@ class CrudBaseController extends AppController {
 	 * 
 	 * @param array $def_field_data コントローラで定義しているフィールドデータ
 	 * @param string $page_code ページコード（モデル名）
-	 * @return res 
+	 * @return array res 
 	 * - table_fields 一覧列情報
 	 */
 	private function exe_field_data($def_field_data,$page_code){
@@ -527,7 +490,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * フィールドデータから列表示配列を取得
 	 * @param array $field_data フィールドデータ
-	 * @return 列表示配列
+	 * @return array 列表示配列
 	 */
 	private function exstractClmShowHideArray($field_data){
 		$csh_ary=array();
@@ -550,23 +513,168 @@ class CrudBaseController extends AppController {
 		$data_count=$this->MainModel->findDataCnt($kjs); 
 
 		//ページ情報を取得する
-		$baseUrl=$this->webroot.$this->main_model_name_s; // ページネーションの基本URL
-		$pages=$this->PagenationForCake->createPagenationData($data_count,$baseUrl , null,$this->table_fields,$kjs);
+		$base_url=$this->webroot.$this->main_model_name_s; // 基本ＵＲＬ
+		$pages=$this->PagenationForCake->createPagenationData($data_count,$base_url , null,$this->table_fields,$kjs);
 
 		$kjs_json = json_encode($kjs,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		
+		// ホームＵＲＬを作成する
+		$home_url = $this->makeHomeUrl($crudBaseData,$pages,$base_url);
+		
+		// 行入替機能フラグを取得する
+		$row_exc_flg = $this->getRowExcFlg($crudBaseData,$pages);
+		
+		
 		$crudBaseData['pages'] = $pages; // ページ情報
 		$crudBaseData['data_count'] = $data_count; // 検索データ数
-		$crudBaseData['kjs_json'] = $kjs_json;
+		$crudBaseData['kjs_json'] = $kjs_json; // 検索条件ＪＳＯＮ
+		$crudBaseData['base_url'] = $base_url; // 基本ＵＲＬ
+		$crudBaseData['home_url'] = $home_url; // ホームＵＲＬ
+		$crudBaseData['row_exc_flg'] = $row_exc_flg; // 行入替機能フラグ  0:行入替ボタンは非表示 , 1:表示
+		
 
 		return $crudBaseData;
 	}
 
+	
+	/**
+	 * ホームＵＲＬを作成する
+	 * @param array $crudBaseData
+	 * @param array $pages ページ情報
+	 * @param string $base_url 基本ＵＲＬ
+	 * @return string ホームＵＲＬ
+	 */
+	private function makeHomeUrl(&$crudBaseData,&$pages,$base_url){
+
+	    // 初期条件データを取得する
+	    $iniCnds = $this->getIniCnds($crudBaseData,$pages);
+
+	    //　‎初期条件データからURLを作成
+	    $home_url = $this->makeHomeUrlByIniCnds($iniCnds,$base_url);
+
+        return $home_url;
+
+	}
+	
+	/**
+	 * 初期条件データを取得する
+	 * @param array $crudBaseData
+	 * @param array $pages ページ情報
+	 * @return array 初期条件データ
+	 */
+	private function getIniCnds(&$crudBaseData,&$pages){
+	    
+	    $iniCnds = null; // 初期条件データ
+	    $ses_key = $this->main_model_name_s.'_ini_cnds';
+	    
+	    //アクションフラグが空である場合
+	    if(empty($crudBaseData['act_flg'])){
+	        
+	        // 初期条件データにセットする
+	        $iniCnds = array('kjs' => $crudBaseData['kjs'],'pages'=>$pages);
+	        
+	        // ‎セッションにデータをセット
+	        $this->Session->write($ses_key,$iniCnds);
+	        
+	    }
+	    else{
+	        // 	    セッションにデータが存在する場合
+	        $iniCnds = $this->Session->read($ses_key);
+	        
+	        if(empty($iniCnds)){
+	            
+	            $iniCnds = array('kjs' => $crudBaseData['kjs'],'pages'=>$pages);
+	            $this->Session->write($ses_key,$iniCnds);
+	        }
+	        
+	    }
+	    
+	    return $iniCnds;
+	}
+	
+	/**
+	 * 初期条件データからホームURLを作成
+	 * @param array $iniCnds 初期条件データ
+	 * @param string $base_url 基本ＵＲＬ
+	 * @return string ホームURL
+	*/
+	private function makeHomeUrlByIniCnds($iniCnds,$base_url){
+	    
+	    $query_str = "";
+	    $pages = $iniCnds['pages'];
+	    $kjs = $iniCnds['kjs'];
+	    
+	    $list = array('page_no','sort','sort_type');
+	    foreach($list as $field){
+	        $value = $iniCnds['pages'][$field];
+	        if(!empty($value) || $value === 0){
+	            $value = urlencode($value);// URLエンコード
+	            $query_str .= "&{$field}={$value}";
+	        }
+	    }
+	    
+	    foreach($iniCnds['kjs'] as $field => $value){
+	        if(!empty($value) || $value===0){
+	            $value = urlencode($value);
+	            $query_str .= "&{$field}={$value}";
+	        }
+	    }
+	    
+	    $home_url = $base_url;
+	    if(!empty($query_str)){
+	        $query_str = mb_substr($query_str,1); // 先頭の一文字を削る(&を削る）
+	        $home_url = $home_url . '?' . $query_str;
+	    }
+	    
+	    return $home_url;
+	    
+	}
+	
+	
+	/**
+	 * 行入替機能フラグを取得する
+	 * @param array $crudBaseData
+	 * @param array $pages ページ情報
+	 * @return int 行入替機能フラグ
+	 */
+	private function getRowExcFlg(&$crudBaseData,&$pages){
+	    
+	    // 初期条件データを取得する
+	    $iniCnds = $this->getIniCnds($crudBaseData,$pages);
+	    
+        // 検索条件情報の初期データと現在データを比較する。
+        $iKjs = $iniCnds['kjs']; // 初期の検索条件情報
+        $aKjs = $crudBaseData['kjs']; // 現在条件情報
+        foreach($aKjs as $field => $a_value){
+            
+            // 初期データの値が空である場合
+            if(empty($iKjs[$field])){
+                
+                // 再考察の必要あり
+                if($iKjs[$field] === 0 || $iKjs[$field] === '0'){
+                    if($iKjs[$field] != $a_value){
+                        return 0;
+                    }
+                }else{
+                    if(!$this->_empty($a_value)){
+                        return 0;
+                    }
+                }
+            }else{
+                
+            }
+        }
+        
+	    
+	    return 1;
+	    
+	}
+	
 
 	/**
 	 * ユーザー情報を取得する
 	 * 
-	 * @return ユーザー情報
+	 * @return array ユーザー情報
 	 * - ユーザー名
 	 * - IPアドレス
 	 * - ユーザーエージェント
@@ -593,7 +701,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * 権限に紐づく権力エンティティを取得する
 	 * @param string $role 権限
-	 * @return 権力エンティティ
+	 * @return array 権力エンティティ
 	 */
 	protected function getAuthority($role){
 
@@ -610,7 +718,7 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * 権力データを取得する
-	 * @return 権力データ
+	 * @return array 権力データ
 	 */
 	protected function getAuthorityData(){
 		$data=array(
@@ -741,7 +849,7 @@ class CrudBaseController extends AppController {
 	 *
 	 * 結果エンティティとモードを取得します。
 	 * 結果エンティティは登録したエンティティで、また全フィールドを持っています。
-	 * @param $name 対象モデル名
+	 * @param string $name 対象モデル名
 	 * @return array
 	 * - ent <array> 結果エンティティ
 	 * - mode <string> new:新規入力モード,edit:編集モード
@@ -804,7 +912,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * 編集画面へリダイレクトで戻ります。その際、入力エラーメッセージも一緒に送られます。
 	 *
-	 * @param $errMsg 入力エラーメッセージ
+	 * @param string $errMsg 入力エラーメッセージ
 	 * @return なし。（編集画面に遷移する）
 	 */
 	protected function errBackToEdit($errMsg){
@@ -826,9 +934,9 @@ class CrudBaseController extends AppController {
 	 * 引数のデータを、バリデーション情報を元にエラーチェックを行います。
 	 * その際、エラーがあれば、エラーメッセージを作成して返します。
 	 *
-	 * @param  $data バリデーション対象データ
-	 * @param  $validate バリデーション情報
-	 * @return 正常な場合、nullを返す。異常値がある場合、エラーメッセージを返す。
+	 * @param array $data バリデーション対象データ
+	 * @param array $validate バリデーション情報
+	 * @return string 正常な場合、nullを返す。異常値がある場合、エラーメッセージを返す。
 	 */
 	protected function valid($data,$validate){
 
@@ -863,8 +971,8 @@ class CrudBaseController extends AppController {
 	 * POST,またはSESSION,あるいはデフォルトから検索条件情報を取得します。
 	 *
 	 * @param $formKey form要素のキー。通常はモデル名をキーにしているので、モデルを指定すれば良い。
-	 * @param $saveKjFlg セッション保存フラグ
-	 * @return 検索条件情報
+	 * @param int $saveKjFlg セッション保存フラグ
+	 * @return array 検索条件情報
 	 */
 	protected function getKjs($formKey,$saveKjFlg){
 
@@ -890,7 +998,7 @@ class CrudBaseController extends AppController {
 	 * 検索条件キーリストを取得
 	 *
 	 * 検索条件情報からname要素だけを、キーリストとして取得します。
-	 * @return 検索条件キーリスト
+	 * @return array 検索条件キーリスト
 	 */
 	protected function getKjKeys(){
 
@@ -907,7 +1015,7 @@ class CrudBaseController extends AppController {
 	 * デフォルト検索条件を取得
 	 *
 	 * 検索条件情報からdef要素だけを、デフォルト検索条件として取得します。
-	 * @return デフォルト検索条件
+	 * @return array デフォルト検索条件
 	 */
 	protected function getDefKjs(){
 
@@ -924,9 +1032,9 @@ class CrudBaseController extends AppController {
 	/**
 	 * SESSION,あるいはデフォルトから検索条件情報を取得する
 	 *
-	 * @param $formKey モデル名、またはformタグのname要素
-	 * @param $saveKjFlg セッション保存フラグ
-	 * @return 検索条件情報
+	 * @param string $formKey モデル名、またはformタグのname要素
+	 * @param int $saveKjFlg セッション保存フラグ
+	 * @return array 検索条件情報
 	 */
 	protected function getKjsSD($formKey,$saveKjFlg){
 
@@ -944,8 +1052,8 @@ class CrudBaseController extends AppController {
 	 * POSTからデータを取得する際、ついでにサニタイズします。
 	 * サニタイズはSQLインジェクション対策用です。
 	 *
-	 * @param $key リクエストキー
-	 * @return リクエストの値
+	 * @param string $key リクエストキー
+	 * @return string リクエストの値
 	 * 
 	 */
 	protected function getPost($key){
@@ -963,8 +1071,8 @@ class CrudBaseController extends AppController {
 	 *
 	 * ページネーション情報は、ページ番号の羅列であるページ目次のほかに、ソート機能にも使われます。
 	 *
-	 * @param $saveKjFlg セッション保存フラグ
-	 * @param $overData 上書きデータ
+	 * @param int $saveKjFlg セッション保存フラグ
+	 * @param array $overData 上書きデータ
 	 * @return array
 	 * - page_no <int> 現在のページ番号
 	 * - limit <int> 表示件数
@@ -1014,8 +1122,8 @@ class CrudBaseController extends AppController {
 	 * ついでにセッションへのページネーション情報を保存します。
 	 * このメソッドはサブミット時の処理用です。
 	 *
-	 * @param $kjs 検索条件情報。kj_limitのみ利用する。
-	 * @param $saveKjFlg セッション保存フラグ
+	 * @param array $kjs 検索条件情報。kj_limitのみ利用する。
+	 * @param int $saveKjFlg セッション保存フラグ
 	 * @return array
 	 * - page_no <int> ページ番号
 	 * - limit <int> 表示件数
@@ -1042,11 +1150,11 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * SESSION,あるいはデフォルトからパラメータを取得する。
-	 * @param  $keys	キーリスト
-	 * @param  $formKey	フォームキー
-	 * @param  $def		デフォルトパラメータ
-	 * @param $saveKjFlg セッション保存フラグ
-	 * @return フォームデータ <array>
+	 * @param string $keys キーリスト
+	 * @param string $formKey フォームキー
+	 * @param string $def デフォルトパラメータ
+	 * @param bool $saveKjFlg セッション保存フラグ
+	 * @return array フォームデータ
 	 */
 	protected function getParamsSD($keys,$formKey,$def,$saveKjFlg){
 
@@ -1087,11 +1195,11 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * POST,GET,SESSION,デフォルトのいずれかからパラメータリストを取得する
-	 * @param  $keys キーリスト
-	 * @param  $formKey フォームキー
-	 * @param  $def デフォルトパラメータ
-	 * @param $saveKjFlg セッション保存フラグ
-	 * @return パラメータ
+	 * @param array $keys キーリスト
+	 * @param string $formKey フォームキー
+	 * @param array $def デフォルトパラメータ
+	 * @param int $saveKjFlg セッション保存フラグ
+	 * @return array パラメータ
 	 */
 	protected function getParams($keys,$formKey,$def,$saveKjFlg){
 
@@ -1110,12 +1218,12 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * POST,GET,SESSION,デフォルトのいずれかからパラメータを取得する。
-	 * @param  $key	パラメータのキー
-	 * @param  $formKey	フォームキー
-	 * @param  $ses		セッションパラメータ
-	 * @param  $def		デフォルトパラメータ
+	 * @param string $key パラメータのキー
+	 * @param string $formKey フォームキー
+	 * @param array $ses セッションパラメータ
+	 * @param string $def デフォルトパラメータ
 	 *
-	 * @return パラメータ
+	 * @return array パラメータ
 	 */
 	protected function getParam($key,$formKey,&$ses,&$def){
 		$v=null;
@@ -1144,7 +1252,7 @@ class CrudBaseController extends AppController {
 	}
 	
 	
-	/*
+	/**
 	 * POST、ＧＥＴの順にキーに紐づく値を探して取得する。
 	 * 
 	 * @param string $key キー
@@ -1170,7 +1278,7 @@ class CrudBaseController extends AppController {
 	}
 	
 	
-	/*
+	/**
 	 * ＧＥＴ、POSTの順にキーに紐づく値を探して取得する。
 	 *
 	 * @param string $key キー
@@ -1197,8 +1305,8 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * キャメル記法に変換
-	 * @param  $str スネーク記法のコード
-	 * @return キャメル記法のコード
+	 * @param string $str スネーク記法のコード
+	 * @return string キャメル記法のコード
 	 */
 	protected function camelize($str) {
 		$str = strtr($str, '_', ' ');
@@ -1208,8 +1316,8 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * スネーク記法に変換
-	 * @param $str キャメル記法のコード
-	 * @return スネーク記法のコード
+	 * @param string $str キャメル記法のコード
+	 * @return string スネーク記法のコード
 	 */
 	protected function snakize($str) {
 		$str = preg_replace('/[A-Z]/', '_\0', $str);
@@ -1220,8 +1328,8 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * 巨大データ判定
-	 * @param $kjs 検索条件情報
-	 * @return 巨大データフラグ 0:通常データ  1:巨大データ
+	 * @param array $kjs 検索条件情報
+	 * @return int 巨大データフラグ 0:通常データ  1:巨大データ
 	 *
 	 */
 	private function checkBigDataFlg($kjs){
@@ -1260,7 +1368,7 @@ class CrudBaseController extends AppController {
 	 * 
 	 * @param array $big_data_fields 巨大データフィールド
 	 * @param array $active アクティブフィールドデータ
-	 * @return ソート後の巨大データフィールド
+	 * @return array ソート後の巨大データフィールド
 	 */
 	private function sortBigDataFields($big_data_fields,$active){
 
@@ -1283,10 +1391,11 @@ class CrudBaseController extends AppController {
 	/**
 	 * 検索条件情報からデフォルト検索JSONを取得する
 	 *
+	 * @note
 	 * デフォルト検索JSONはリセットボタンの処理に使われます。
 	 *
-	 * @param $noResets リセット対象外フィールドリスト<array> 省略可
-	 * @return デフォルト検索JSON
+	 * @param array $noResets リセット対象外フィールドリスト 省略可
+	 * @return string デフォルト検索JSON
 	 */
 	protected function getDefKjsJson($noResets=null){
 
@@ -1316,6 +1425,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * POSTからデータを取得
 	 *
+	 * @note
 	 * SQLインジェクションのサニタイズも行われます。
 	 * 編集画面の内部処理用です。
 	 */
@@ -1332,7 +1442,8 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * デフォルトエンティティを取得
-	 *
+	 * 
+	 * @note
 	 * 編集画面の内部処理用です。
 	 */
 	protected function getDefaultEntity(){
@@ -1350,6 +1461,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * 編集エンティティのキーリストを取得
 	 *
+	 * @note
 	 * 編集画面の内部処理用です。
 	 */
 	protected function getKeysForEdit(){
@@ -1368,6 +1480,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * POSTからエンティティを取得する。
 	 *
+	 * @note
 	 * 登録完了画面の内部処理用です。
 	 */
 	protected function getEntityFromPost(){
@@ -1384,11 +1497,12 @@ class CrudBaseController extends AppController {
 	/**
 	 * 更新関係のパラメータをエンティティにセット。
 	 *
+	 * @note
 	 * 登録完了画面の内部処理用です。
 	 *
-	 * @param $ent	エンティティ
-	 * @param $mode	モード new or edit
-	 * @return 更新関係をセットしたエンティティ
+	 * @param array $ent エンティティ
+	 * @param string $mode モード new or edit
+	 * @return array 更新関係をセットしたエンティティ
 	 */
 	protected function setUpdateInfo($ent,$mode){
 
@@ -1415,10 +1529,13 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * 拡張コピー　存在しないディテクトリも自動生成
+	 * 
+	 * @note
 	 * 日本語ファイルに対応
-	 * @param  $sourceFn コピー元ファイル名
-	 * @param $copyFn コピー先ファイル名 
-	 * @param $permission パーミッション（ファイルとフォルダの属性。デフォルトはすべて許可の777。8進数で指定する）
+	 * 
+	 * @param string $sourceFn コピー元ファイル名
+	 * @param string $copyFn コピー先ファイル名 
+	 * @param string $permission パーミッション（ファイルとフォルダの属性。デフォルトはすべて許可の777。8進数で指定する）
 	 */
 	protected function copyEx($sourceFn,$copyFn,$permission=0777){
 
@@ -1433,8 +1550,9 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * 日本語ディレクトリの存在チェック
-	 * @param  $dn	ディレクトリ名
-	 * @return boolean	true:存在	false:未存在
+	 * 
+	 * @param string $dn ディレクトリ名
+	 * @return boolean true:存在 , false:未存在
 	 */
 	protected function isDirEx($dn){
 		$dn=mb_convert_encoding($dn,'SJIS','UTF-8');
@@ -1542,7 +1660,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * 新バージョンであるかチェックする。
 	 * @param string $this_page_version 当ページバージョン
-	 * @return 新バージョンフラグ  0:バージョン変更なし   1:新バージョンに変更されている
+	 * @return int 新バージョンフラグ  0:バージョン変更なし   1:新バージョンに変更されている
 	 */
 	public function checkNewPageVersion($this_page_version){
 
@@ -1553,7 +1671,6 @@ class CrudBaseController extends AppController {
 
 		// セッションページバージョンがセッションに存在しない場合
 		if(empty($ses_page_version)){
-
 			// 当ページバージョンを新たにセッションに保存し、バージョン変更なしを表す"0"を返す。
 			$this->Session->write($sesKey,$this_page_version);
 			return 0;
@@ -1561,7 +1678,7 @@ class CrudBaseController extends AppController {
 
 		// セッションページバージョンがセッションに存在する場合
 		else{
-
+		    
 			// セッションページバージョンと当ページバージョンが一致する場合、バージョン変更なしを表す"0"を返す。
 			if($this_page_version == $ses_page_version){
 				return 0;
@@ -1569,11 +1686,11 @@ class CrudBaseController extends AppController {
 
 			// セッションページバージョンと当ページバージョンが異なる場合、新バージョンによる変更を表す"1"を返す。
 			else{
-				
 				$this->Session->write($sesKey,$this_page_version);
 				return 1;
 			}
 		}
+		
 	}
 
 
@@ -1585,9 +1702,9 @@ class CrudBaseController extends AppController {
 	 * 主要パラメータを単にリクエストで保持すると、常にそのパラメータを受け渡しをしなければならず不便である。
 	 * 当メソッドでは、主要パラメータをセッションで保持し、リクエストで主要パラメータを保持する必要がなくなる。
 	 * 
-	 * @param multi $mains 主要パラメータのキー。配列指定も可能。
+	 * @param string $mains 主要パラメータのキー。配列指定も可能。
 	 * @param array $kjs 検索条件情報
-	 * @param kjs( 検索条件情報)
+	 * @param array kjs( 検索条件情報)
 	 */
 	protected function setMainsToKjs($mains,$kjs){
 
@@ -1675,10 +1792,11 @@ class CrudBaseController extends AppController {
 
 	/**
 	 * アップロードファイルが存在すれば、アップロードファイル名をエンティティにセットする
+	 * 
 	 * @param array $files アップロードファイル情報($_FILESを指定する)
 	 * @param array $ent エンティティ
-	 * @param any $fnField ファイル名フィールド（複数あるときは配列指定可）
-	 * @return アップロードファイル名をセットしたエンティティ 
+	 * @param string $fnField ファイル名フィールド（複数あるときは配列指定可）
+	 * @return array アップロードファイル名をセットしたエンティティ 
 	 */
 	protected function setUploadFileValueToEntity($files,$ent,$fnField){
 
@@ -1739,7 +1857,7 @@ class CrudBaseController extends AppController {
 	 * 
 	 * @param array $param リクエストパラメータ
 	 * @param array $numProps 数値フィールドリスト： チェック対象のフィールドを配列で指定する
-	 * @return 指定したフィールドに紐づくパラメータの値のうち、一つでも数値でないものがあればfalseを返す。
+	 * @return bool 指定したフィールドに紐づくパラメータの値のうち、一つでも数値でないものがあればfalseを返す。
 	 */
 	protected function checkNumberParam($param,$numProps=array('id')){
 
@@ -1751,5 +1869,22 @@ class CrudBaseController extends AppController {
 		return true;
 	}
 
+	
+	
+	/**
+	 * 0以外の空判定
+	 *
+	 * @note
+	 * いくつかの空値のうち、0と'0'は空と判定しない。
+	 *
+	 * @param $value
+	 * @return int 判定結果 0:空でない , 1:空である
+	 */
+	protected function _empty0($value){
+	    if(empty($value) && $value!==0 && $value!=='0'){
+	        return 1;
+	    }
+	    return 0;
+	}
 
 }

@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-3-2
- * @version 2.1
+ * @date 2016-9-21 | 2018-3-13
+ * @version 2.1.1
  * 
  * @param object param
  *  - tbl_slt	CRUD対象テーブルセレクタ
@@ -91,6 +91,10 @@ class CrudBase extends CrudBaseBase{
 			this.rowExchangeAfter();
 		});
 		
+		// 行入替機能のボタン表示切替
+		var row_exc_flg = jQuery('#row_exc_flg').val();
+		this.rowExcBtnShow(row_exc_flg);
+		console.log('test=Ａ１1');//■■■□□□■■■□□□■■■□□□)
 		
 		// --------
 
@@ -609,13 +613,18 @@ class CrudBase extends CrudBaseBase{
 		this.rowExchange.showForm(btnElm);
 	}
 	
-	//■■■□□□■■■□□□■■■□□□■■■
-//	/**
-//	 * リアクティブ機能：TRからDIVへ反映
-//	 */
-//	reactTrToDiv(div_slt){
-//		this.react.trToDiv(div_slt);
-//	}
+	/**
+	 * 行入替ボタンの表示切替
+	 * @param int row_exc_flg 行入替機能フラグ 0:ボタン非表示 , 1:ボタン表示
+	 */
+	rowExcBtnShow(row_exc_flg){
+		
+		if(row_exc_flg == 1){
+			jQuery('.row_exc_btn').show();
+		}else{
+			jQuery('.row_exc_btn').hide();
+		}
+	}
 	
 
 }

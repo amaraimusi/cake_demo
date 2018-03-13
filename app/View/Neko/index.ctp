@@ -80,20 +80,12 @@ $this->assign('script', $this->Html->script(array(
 		echo "<div style='clear:both'></div>";
 		$this->CrudBase->inputKjLimit($kjs);
 		// --- End kj_input
-		$this->CrudBase->hiddenX('act_flg',1);
-		?>
-		<input id="page_no" type="hidden" value="<?php echo $pages['page_no'] ?>" />
-		<input id="limit" type="hidden" value="<?php echo $pages['limit'] ?>" />
-		<input id="sort" type="hidden" value="<?php echo $pages['sort'] ?>" />
-		<input id="sort_type" type="hidden" value="<?php echo $pages['sort_type'] ?>" />
 		
-		<input id="iniFlg" type="hidden" value="<?php echo $iniFlg ?>" />
-		<input id="crudType" type="hidden" value="<?php echo $crudType ?>" />
-		<input id="webroot" type="hidden" value="<?php echo $this->Html->webroot ?>" />
-		<input id="csh_json" type="hidden" value="<?php echo $csh_json ?>" />
-		<input id="bigDataFlg" type="hidden" value="<?php echo $bigDataFlg ?>" />
-		<div id="defKjsJson" style="display:none"><?php echo $defKjsJson ?></div>
-		<input id="debug_mode" type="hidden" value="<?php echo $debug_mode ?>" />
+		echo $this->element('CrudBase/crud_base_cmn_inp');
+		
+		?>
+
+		
 		
 		<?php 
 		
@@ -124,6 +116,8 @@ $this->assign('script', $this->Html->script(array(
 			<div class="line-middle"></div>
 			
 			<div class="line-right">
+				<a href="<?php echo $home_url; ?>" class="btn btn-info" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
+					<span class="glyphicon glyphicon-certificate"  ></span></a>
 				<?php 
 					// 新規入力ボタンを作成
 					$newBtnOption = array(
@@ -158,16 +152,7 @@ $this->assign('script', $this->Html->script(array(
 	<?php echo $pages['page_index_html'];//ページ目次 ?>
 </div>
 
-<div id="react_test1">
-	<div class="neko_name">XXX1</div>
-	<input type="text" name="neko_name" value="" /><br>
-	<div class="neko_name">XXX2</div>
-	<div class="neko_val">123</div>
-	<input type="text" name="neko_val" value="" /><br>
-	<div class="neko_val">123</div>
-	<input type="button" value="trToDiv" onclick="trToDiv('#react_test1')" />
-</div>
-<input type="button" value="自動保存テスト" class="btn btn-info" onclick="saveRequest()" />
+
 
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success">XX</div>
 <!-- 一覧テーブル -->
@@ -214,7 +199,7 @@ foreach($data as $i=>$ent){
 	// 行のボタン類
 	echo "<td><div class='btn-group'>";
 	$id = $ent['id'];
-	echo  "<input type='button' value='↑↓' onclick='rowExchangeShowForm(this)' class='btn btn-info btn-xs' />";
+	echo  "<input type='button' value='↑↓' onclick='rowExchangeShowForm(this)' class='row_exc_btn btn btn-info btn-xs' />";
 	$this->CrudBase->rowEditBtn($id);
 	$this->CrudBase->rowPreviewBtn($id);
 	$this->CrudBase->rowCopyBtn($id);

@@ -48,7 +48,7 @@ function resetKjs(exempts){
 	}
 	
 	//デフォルト検索条件JSONを取得およびパースする。
-	var defKjsJson=$('#defKjsJson').html();
+	var defKjsJson=$('#defKjsJson').val();
 	var defKjs=$.parseJSON(defKjsJson);
 	
 	for(var key in defKjs){

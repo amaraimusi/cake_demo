@@ -2503,7 +2503,7 @@ console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□�
 
 		// デフォルト検索条件が省略されている場合はHTMLの埋込JSONから取得する。
 		if(defKjs==null){
-			var defKjsJson = $('#defKjsJson').html();
+			var defKjsJson = $('#defKjsJson').val();
 			defKjs = JSON.parse(defKjsJson);
 		}
 
