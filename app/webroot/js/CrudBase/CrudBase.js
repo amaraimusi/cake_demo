@@ -157,13 +157,7 @@ class CrudBase extends CrudBaseBase{
 		// TR要素からエンティティを取得する
 		var ent = this.getEntityByTr(tr);
 
-		// ■■■□□□■■■□□□■■■□□□■■■
-//		// オプションからアップロードファイルディレクトリを取得する
-//		var upload_file_dir = null;
-//		if(option){
-//			upload_file_dir = option['upload_file_dir'];
-//		}
-
+		console.log('test=editShow');//■■■□□□■■■□□□■■■□□□)
 		// フォームに親要素内の各フィールド値をセットする。
 		this.setFieldsToForm('edit',ent,option);
 

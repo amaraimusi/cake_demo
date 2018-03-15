@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-2-12
- * @version 2.0 
+ * @date 2016-9-21 | 2018-3-16
+ * @version 2.1.1 
  * 
  * @param object param
  *  - tbl_slt	CRUD対象テーブルセレクタ
@@ -48,7 +48,6 @@ class CrudBaseBase{
 	 * 
 	 */
 	constructor(){
-console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□□)
 		this.param; 		// パラメータ
 		this.fieldData; 	// フィールドデータ
 		this.fieldHashTable;// フィールドハッシュテーブル key:フィールド名  val:列インデックス
@@ -63,27 +62,6 @@ console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□�
 		this.autoSave;		// 自動保存機能
 	}
 	
-	// ■■■□□□■■■□□□■■■□□□■■■
-//	/**
-//	 * コンテナのSetter。
-//	 * 
-//	 * @note コンテナ内のオブジェクトを当クラスのメンバへセットする。
-//	 * 
-//	 * @param container コンテナ
-//	 */
-//	setContainer(container){
-//		this.param = container.param; //  パラメータ
-//		this.fieldData = container.fieldData; //  フィールドデータ
-//		this.fieldHashTable = container.fieldHashTable; //  フィールドハッシュテーブル key:フィールド名  val:列インデックス
-//		this.formInfo = container.formInfo; //  フォーム情報
-//		this.defNiEnt = container.defNiEnt; //  デフォルト新規入力エンティティ
-//		this.formNewInp = container.formNewInp; // 新規入力フォーム
-//		this.formEdit = container.formEdit; // 編集フォーム
-//		this.formDelete = container.formDelete; // 削除フォーム
-//		this.showFormStrategy = container.showFormStrategy; //  入力フォーム表示ストラテジー
-//		this.react = container.react; // CrudBaseのリアクティブ機能クラス | CrudBaseReact.js
-//		
-//	}
 	
 	/**
 	 * コンテナのGetter
@@ -1591,11 +1569,13 @@ console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□�
 		}else if (bind_attr == 'name'){
 			option['dis_fil_flg'] = 0;
 		}
-		
+
 		// バインド要素リストにエンティティをセットする
 		for(var i in this.fieldData){
 			var field = this.fieldData[i].field;
+
 			if(ent[field] === undefined) continue;
+
 			var elms = bindElms[field];
 			for(var e_i in elms){
 				var elm = elms[e_i];
@@ -1612,6 +1592,8 @@ console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□�
 	 * @return object[s][n] バインド属性リスト  
 	 */
 	getBindElms(par,bind_attr){
+		
+		
 		var bindElms = {}; 
 		
 		if(!(par instanceof jQuery)){
@@ -1732,6 +1714,12 @@ console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□�
 				var opElm = option.par.find("[name='" + field + "'][value='" + val1 + "']");
 				if(opElm[0]){
 					opElm.prop("checked",true);
+				}else{
+					// 値が空である場合、ラジオボタンのすべての要素からチェックをはずす。
+					if(this._empty(val1)){
+						var radios = option.par.find("[name='" + field + "']");
+						radios.prop("checked",false);
+					}
 				}
 
 			}
