@@ -56,36 +56,37 @@ class Neko extends AppModel {
 	/**
 	 * ネコ画面の一覧に表示するデータを、ネコテーブルから取得します。
 	 * 
+	 * @note
 	 * 検索条件、ページ番号、表示件数、ソート情報からDB（ネコテーブル）を検索し、
 	 * 一覧に表示するデータを取得します。
 	 * 
-	 * @param $kjs 検索条件情報
-	 * @param $page_no ページ番号
-	 * @param $limit 表示件数
-	 * @param $findOrder ソート情報
-	 * @return ネコ画面一覧のデータ
+	 * @param array $kjs 検索条件情報
+	 * @param int $page_no ページ番号
+	 * @param int $limit 表示件数
+	 * @param string sort ソートフィールド
+	 * @param int sort_desc ソートタイプ 0:昇順 , 1:降順
+	 * @return array ネコ画面一覧のデータ
 	 */
-	public function findData($kjs,$page_no,$limit,$findOrder){
+	public function findData($kjs,$page_no,$limit,$sort_field,$sort_desc){
 
 		//条件を作成
 		$conditions=$this->createKjConditions($kjs);
-
-		//ORDERのデフォルトをセット
-		if(empty($findOrder)){
-			$findOrder='sort_no';
-		}
 		
+		// オフセットの組み立て
 		$offset=null;
-		if(!empty($limit)){
-			$offset=$page_no * $limit;
-		}
+		if(!empty($limit)) $offset = $page_no * $limit;
+		
+		// ORDER文の組み立て
+		$order = $sort_field;
+		if(empty($order)) $order='sort_no';
+		if(!empty($sort_desc)) $order .= ' DESC';
 		
 		$option=array(
-					'conditions' => $conditions,
-					'limit' =>$limit,
-					'offset'=>$offset,
-					'order' => $findOrder,
-				);
+            'conditions' => $conditions,
+            'limit' =>$limit,
+            'offset'=>$offset,
+            'order' => $order,
+        );
 		
 		//DBからデータを取得
 		$data = $this->find('all',$option);
@@ -108,11 +109,11 @@ class Neko extends AppModel {
 	 * 一覧データを取得する
 	 */
 	public function findData2(&$crudBaseData){
-	   
+
 		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$paginations = $crudBaseData['paginations'];//ページネーション情報
-		
-		$data = $this->findData($kjs,$paginations['page_no'],$paginations['limit'],$paginations['find_order']);
+		$pages = $crudBaseData['pages'];//ページネーション情報
+
+		$data = $this->findData($kjs,$pages['page_no'],$pages['limit'],$pages['sort_field'],$pages['sort_desc']);
 		
 		return $data;
 	}
@@ -138,8 +139,8 @@ class Neko extends AppModel {
 
 	/**
 	 * 検索条件情報からWHERE情報を作成。
-	 * @param  $kjs	検索条件情報
-	 * @return WHERE情報
+	 * @param array $kjs	検索条件情報
+	 * @return string WHERE情報
 	 */
 	private function createKjConditions($kjs){
 

@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.2.1";// setUploadFileValueToEntity
+	var $version = "2.3.0";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -70,7 +70,7 @@ class CrudBaseController extends AppController {
 	 * @return array
 	 * - kjs <array> 検索条件情報
 	 * - errMsg <string> 検索条件入力のエラーメッセージ
-	 * - paginations <array> ページネーション情報
+	 * - pages <array> ページネーション情報
 	 * - saveKjFlg <bool> 検索条件保存フラグ。true:検索条件を保存する, false:保存しない
 	 * - bigDataFlg <bool> true:一覧データ件数が500件を超える,false:500件以下。500件の制限はオーバーライドで変更可能。
 	 *
@@ -82,7 +82,6 @@ class CrudBaseController extends AppController {
 		$this->MainModel=ClassRegistry::init($name);
 		$this->main_model_name=$name;
 		$this->main_model_name_s=$this->snakize($name);
-
 		// POSTデータを取得
 		$postData = null;
 		if(isset($this->request->data[$name])){
@@ -162,29 +161,23 @@ class CrudBaseController extends AppController {
 			//再表示用の検索条件情報をSESSION,あるいはデフォルトからパラメータを取得する。
 			$kjs= $this->getKjsSD($name,$saveKjFlg);
 		}
-
+		
 		//検索ボタンが押された場合
-		$paginations=array();
+		$pages=array();
 		if(!empty($request['search'])){
-
-			//ページネーションパラメータを取得
-			$paginations=$this->getPageParamForSubmit($kjs,$saveKjFlg);
-
+		    
+		    //ページネーションパラメータを取得
+		    $pages = $this->getPageParamForSubmit($kjs,$saveKjFlg);
+		    
 		}else{
-			//ページネーション用パラメータを取得
-			$overData['limit']=$kjs['kj_limit'];
-			$paginations=$this->getPageParam($saveKjFlg,$overData);
-
+		    //ページネーション用パラメータを取得
+		    $overData['limit']=$kjs['kj_limit'];
+		    $pages=$this->getPageParam($saveKjFlg,$overData);
+		    
 		}
 
 		//CSV用にセッションセット
 		$this->Session->write($this->main_model_name_s.'_kjs',$kjs);
-
-		//limitとorder部分を作成
-		$this->PagenationForCake=new PagenationForCake();
-		$pageLO=$this->PagenationForCake->createLimitAndOrder($paginations);
-
-		$paginations=array_merge($paginations,$pageLO);
 
 		$bigDataFlg=$this->checkBigDataFlg($kjs);//巨大データ判定
 
@@ -228,7 +221,7 @@ class CrudBaseController extends AppController {
 		    'csh_json'=>$csh_json, // 列表示配列JSON     列表示切替機能用
 		    'bigDataFlg'=>$bigDataFlg, // 巨大データフラグ    画面に表示する行数が制限数（$big_data_limit）を超えるとONになる。
 		    'big_data_fields'=>$big_data_fields, // 巨大データ用のフィールド情報 (高速化のため列の種類は少なめ）
-			'paginations'=>$paginations, // ページネーションパラメータ
+		    'pages'=>$pages, // ページネーションパラメータ
 		    'act_flg'=>$act_flg, // アクティブフラグ    null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
 		    'crudType'=>$crudType, // CRUDタイプ 0:AjaxCrud.js型   1:submit型
 		    'iniFlg'=>$iniFlg, // 初期フラグ（非推奨）    URLクエリで指定する初期状態を表すフラグ
@@ -295,12 +288,12 @@ class CrudBaseController extends AppController {
 		}
 
 		// ソートアクションの判定
-		if(isset($getData['page_no']) && isset($getData['limit']) && isset($getData['sort'])){
+		if(isset($getData['page_no']) && isset($getData['limit']) && isset($getData['sort_field'])){
 			return 3; // ソート
 		}
 
 		// ページネーションアクションの判定
-		else if(isset($getData['page_no']) && isset($getData['limit']) && !isset($getData['sort'])){
+		else if(isset($getData['page_no']) && isset($getData['limit']) && !isset($getData['sort_field'])){
 			return 2; // ページネーション・アクション
 		}
 
@@ -512,9 +505,12 @@ class CrudBaseController extends AppController {
 	    $kjs = $crudBaseData['kjs'];
 		$data_count=$this->MainModel->findDataCnt($kjs); 
 
-		//ページ情報を取得する
-		$base_url=$this->webroot.$this->main_model_name_s; // 基本ＵＲＬ
-		$pages=$this->PagenationForCake->createPagenationData($data_count,$base_url , null,$this->table_fields,$kjs);
+		//ページネーション情報を取得する
+		$base_url = $this->webroot.$this->main_model_name_s; // 基本ＵＲＬ
+		$pages = $crudBaseData['pages'];
+		
+		$this->PagenationForCake = new PagenationForCake();
+		$pages = $this->PagenationForCake->createPagenationData($pages,$data_count,$base_url , null,$this->table_fields,$kjs);
 
 		$kjs_json = json_encode($kjs,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		
@@ -523,10 +519,8 @@ class CrudBaseController extends AppController {
 		
 		// 行入替機能フラグを取得する
 		$row_exc_flg = $this->getRowExcFlg($crudBaseData,$pages);
-		var_dump('$row_exc_flg＝'.$row_exc_flg);//■■■□□□■■■□□□■■■□□□)
-		
-		
-		$crudBaseData['pages'] = $pages; // ページ情報
+
+		$crudBaseData['pages'] = $pages; // ページネーション情報
 		$crudBaseData['data_count'] = $data_count; // 検索データ数
 		$crudBaseData['kjs_json'] = $kjs_json; // 検索条件ＪＳＯＮ
 		$crudBaseData['base_url'] = $base_url; // 基本ＵＲＬ
@@ -541,7 +535,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * ホームＵＲＬを作成する
 	 * @param array $crudBaseData
-	 * @param array $pages ページ情報
+	 * @param array $pages ページネーション情報
 	 * @param string $base_url 基本ＵＲＬ
 	 * @return string ホームＵＲＬ
 	 */
@@ -560,7 +554,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * 初期条件データを取得する
 	 * @param array $crudBaseData
-	 * @param array $pages ページ情報
+	 * @param array $pages ページネーション情報
 	 * @return array 初期条件データ
 	 */
 	private function getIniCnds(&$crudBaseData,&$pages){
@@ -605,7 +599,7 @@ class CrudBaseController extends AppController {
 	    $pages = $iniCnds['pages'];
 	    $kjs = $iniCnds['kjs'];
 	    
-	    $list = array('page_no','sort','sort_type');
+	    $list = array('page_no','sort_field','sort_desc');
 	    foreach($list as $field){
 	        $value = $iniCnds['pages'][$field];
 	        if(!empty($value) || $value === 0){
@@ -635,7 +629,7 @@ class CrudBaseController extends AppController {
 	/**
 	 * 行入替機能フラグを取得する
 	 * @param array $crudBaseData
-	 * @param array $pages ページ情報
+	 * @param array $pages ページネーション情報
 	 * @return int 行入替機能フラグ 1:ボタン表示 , 0:ボタン非表示
 	 */
 	private function getRowExcFlg(&$crudBaseData,&$pages){
@@ -657,16 +651,15 @@ class CrudBaseController extends AppController {
             if($this->_compare0($a_value, $i_value)){
                 continue;
             }else{
-                debug('$field=' . $field);//■■■□□□■■■□□□■■■□□□)
                 return 0;
             }
 
         }
 
-        // ページ情報のの初期データと現在データを比較する。
-	    $list = ['sort','sort_type'];
+        // ページネーション情報の初期データと現在データを比較する。
+	    $list = ['sort_field','sort_desc'];
 	    
-	    $iPages = $iniCnds['pages']; // 初期のページ情報
+	    $iPages = $iniCnds['pages']; // 初期のページネーション情報
 
 	    foreach( $list as $field){
 	        
@@ -680,7 +673,6 @@ class CrudBaseController extends AppController {
 	        if($this->_compare0($a_value, $i_value)){
 	            continue;
 	        }else{
-	            debug('$field=' . $field);//■■■□□□■■■□□□■■■□□□)
 	            return 0;
 	        }
 	    }
@@ -1095,43 +1087,43 @@ class CrudBaseController extends AppController {
 	 * @return array
 	 * - page_no <int> 現在のページ番号
 	 * - limit <int> 表示件数
-	 * - sort <string> ソートする列フィールド
-	 * - sort_type <int> 並び方向。 0:昇順 1:降順
+	 * - sort_field <string> ソートする列フィールド
+	 * - sort_desc <int> 並び方向。 0:昇順 1:降順
 	 */
 	protected function getPageParam($saveKjFlg,$overData){
 		//GETよりパラメータを取得する。
-		$pageParam=$this->params['url'];
+		$pages=$this->params['url'];
 
 		// 上書き
-		$pageParam=Hash::merge($pageParam,$overData);
+		$pages=Hash::merge($pages,$overData);
 
 		//空ならセッションから取得する。
-		if(empty($pageParam) && $saveKjFlg==true){
-			$pageParam=$this->Session->read($this->main_model_name.'_page_param');
+		if(empty($pages) && $saveKjFlg==true){
+			$pages=$this->Session->read($this->main_model_name.'_page_param');
 		}
 
 		$defs=$this->getDefKjs();//デフォルト情報を取得
 
 		//空ならデフォルトをセット
-		if(empty($pageParam['page_no'])){
-			$pageParam['page_no']=0;
+		if(empty($pages['page_no'])){
+			$pages['page_no']=0;
 		}
-		if(empty($pageParam['limit'])){
-			$pageParam['limit']=$defs['kj_limit'];
+		if(empty($pages['limit'])){
+			$pages['limit']=$defs['kj_limit'];
 		}
-		if(empty($pageParam['sort'])){
-			$pageParam['sort']=$this->defSortFeild;
+		if(empty($pages['sort_field'])){
+			$pages['sort_field']=$this->defSortFeild;
 		}
-		if(!isset($pageParam['sort_type'])){
-			$pageParam['sort_type']=$this->defSortType;//0:昇順 1:降順
+		if(!isset($pages['sort_desc'])){
+			$pages['sort_desc']=$this->defSortType;//0:昇順 1:降順
 		}
 
 		//セッションに詰める。
 		if($saveKjFlg==true){
-			$this->Session->write($this->main_model_name.'_page_param',$pageParam);//セッションへの書き込み
+			$this->Session->write($this->main_model_name.'_page_param',$pages);//セッションへの書き込み
 		}
 
-		return $pageParam;
+		return $pages;
 	}
 
 	/**
@@ -1143,29 +1135,42 @@ class CrudBaseController extends AppController {
 	 *
 	 * @param array $kjs 検索条件情報。kj_limitのみ利用する。
 	 * @param int $saveKjFlg セッション保存フラグ
-	 * @return array
+	 * @return array ページネーション情報
 	 * - page_no <int> ページ番号
 	 * - limit <int> 表示件数
 	 *
 	 */
 	protected function getPageParamForSubmit($kjs,$saveKjFlg){
-		$d=$this->params['url'];
-		$d['limit']=1000;
-		if(!empty($kjs['kj_limit'])){
-			$d['limit']=$kjs['kj_limit'];
+		$pages=$this->params['url'];
+		$defs=$this->getDefKjs();//デフォルト情報を取得
+
+		if(empty($pages['page_no'])){
+		    $pages['page_no']=0;
 		}
-		$d['page_no']=0;
+		
+		if(empty($pages['limit'])){
+		    if(empty($kjs['kj_limit'])){
+		        $pages['limit']=$kjs['kj_limit'];;
+		    }else{
+		        $pages['limit']=$defs['kj_limit'];
+		    }
+		}
+		if(empty($pages['sort_field'])){
+		    $pages['sort_field']=$this->defSortFeild;
+		}
+		if(!isset($pages['sort_desc'])){
+		    $pages['sort_desc']=$this->defSortType;//0:昇順 1:降順
+		}
+		
+		
 		if($saveKjFlg==true){
-			$this->Session->write($this->main_model_name.'_page_param',$d);//セッションへの書き込み
+			$this->Session->write($this->main_model_name.'_page_param',$pages);//セッションへの書き込み
 		}
-		return $d;
+		return $pages;
 	}
 
-
-
-
-
-	////////////共通処理///////////////////////////////////
+	
+	
 
 	/**
 	 * SESSION,あるいはデフォルトからパラメータを取得する。
