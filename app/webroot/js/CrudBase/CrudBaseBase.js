@@ -2871,20 +2871,14 @@ console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□�
 	 * 行入替後の処理
 	 */
 	rowExchangeAfter(){
-		
-		console.log('test=Ａ');//■■■□□□■■■□□□■■■□□□)
-		
+
 		var data = this.getDataFromTbl();// Htmlテーブルからデータを取得
 		
 		var page_no = jQuery("#page_no").val() * 1;
 		var limit = jQuery("#limit").val() * 1;
-		
-		console.log('page_no=' + page_no);//■■■□□□■■■□□□■■■□□□)
-		console.log('limit=' + limit);//■■■□□□■■■□□□■■■□□□)
-		
+
 		// データに順番をセットする
 		var sort_no = (page_no * limit) + 1;
-		console.log('sort_no=' + sort_no);//■■■□□□■■■□□□■■■□□□)
 		
 		for(var i in data){
 			var ent = data[i];

@@ -523,6 +523,7 @@ class CrudBaseController extends AppController {
 		
 		// 行入替機能フラグを取得する
 		$row_exc_flg = $this->getRowExcFlg($crudBaseData,$pages);
+		var_dump('$row_exc_flg＝'.$row_exc_flg);//■■■□□□■■■□□□■■■□□□)
 		
 		
 		$crudBaseData['pages'] = $pages; // ページ情報
@@ -635,7 +636,7 @@ class CrudBaseController extends AppController {
 	 * 行入替機能フラグを取得する
 	 * @param array $crudBaseData
 	 * @param array $pages ページ情報
-	 * @return int 行入替機能フラグ
+	 * @return int 行入替機能フラグ 1:ボタン表示 , 0:ボタン非表示
 	 */
 	private function getRowExcFlg(&$crudBaseData,&$pages){
 	    
@@ -647,26 +648,44 @@ class CrudBaseController extends AppController {
         $aKjs = $crudBaseData['kjs']; // 現在条件情報
         foreach($aKjs as $field => $a_value){
             
-            // 初期データの値が空である場合
-            if(empty($iKjs[$field])){
-                
-                // 再考察の必要あり
-                if($iKjs[$field] === 0 || $iKjs[$field] === '0'){
-                    if($iKjs[$field] != $a_value){
-                        return 0;
-                    }
-                }else{
-                    if(!$this->_empty($a_value)){
-                        return 0;
-                    }
-                }
+            if($field == 'kj_limit') continue;
+            
+            $i_value = null;
+            if(isset($iKjs[$field])) $i_value = $iKjs[$field];
+            
+            // ゼロ比較
+            if($this->_compare0($a_value, $i_value)){
+                continue;
             }else{
-                
+                debug('$field=' . $field);//■■■□□□■■■□□□■■■□□□)
+                return 0;
             }
+
         }
-        
+
+        // ページ情報のの初期データと現在データを比較する。
+	    $list = ['sort','sort_type'];
 	    
-	    return 1;
+	    $iPages = $iniCnds['pages']; // 初期のページ情報
+
+	    foreach( $list as $field){
+	        
+	        $a_value = null;
+	        if(isset($pages[$field])) $a_value = $pages[$field];
+	        
+	        $i_value = null;
+	        if(isset($iPages[$field])) $i_value = $iPages[$field];
+	        
+	        // ゼロ比較
+	        if($this->_compare0($a_value, $i_value)){
+	            continue;
+	        }else{
+	            debug('$field=' . $field);//■■■□□□■■■□□□■■■□□□)
+	            return 0;
+	        }
+	    }
+	    
+	    return 1; // 一致判定
 	    
 	}
 	
@@ -1885,6 +1904,70 @@ class CrudBaseController extends AppController {
 	        return 1;
 	    }
 	    return 0;
+	}
+	
+	
+	/**
+	 *	ゼロ比較
+	 *
+	 * @note
+	 * 比較用のカスタマイズ関数。
+	 * ただし、空の値の比較は0とそれ以外の空値（null,"",falseなど）で仕様が異なる。
+	 * 0とそれ以外の空値（null,"",falseなど）は不一致のみなす。
+	 * 0と'0'は一致と判定する。
+	 * null,'',falseのそれぞれの組み合わせは一致である。
+	 * bool型のtrueは数字の1と同じ扱い。（※通常、2や3でもtrueとするが、この関数では1だけがtrue扱い）
+	 * 1.0 , 1 , '1' など型が異なる数値を一致と判定する。
+	 *
+	 * @param $a_value
+	 * @param $b_value
+	 * @return bool false:不一致 , true:一致
+	 */
+	function _compare0($a_value,$b_value){
+	    if(empty($a_value) && empty($b_value)){
+	        if($a_value === 0 || $a_value === '0'){
+	            if($b_value === 0 || $b_value === '0'){
+	                return true;
+	            }else{
+	                return false;
+	            }
+	            
+	        }else{
+	            if($b_value === 0 || $b_value === '0'){
+	                return false;
+	            }else{
+	                return true;
+	            }
+	            
+	        }
+	        
+	    }else{
+	        
+	        if(gettype($a_value) == 'boolean'){
+	            if($a_value){
+	                $a_value = 1;
+	            }else{
+	                $a_value = 0;
+	            }
+	        }
+	        if(gettype($b_value) == 'boolean'){
+	            if($b_value){
+	                $b_value = 1;
+	            }else{
+	                $b_value = 0;
+	            }
+	        }
+	        
+	        
+	        if(is_numeric($a_value) && is_numeric($b_value)){
+	            if($a_value == $b_value) return true;
+	        }else{
+	            if($a_value === $b_value) return true;
+	            
+	        }
+	    }
+	    
+	    return false;
 	}
 
 }

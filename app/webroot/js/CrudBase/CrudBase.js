@@ -93,6 +93,7 @@ class CrudBase extends CrudBaseBase{
 		
 		// 行入替機能のボタン表示切替
 		var row_exc_flg = jQuery('#row_exc_flg').val();
+		console.log('row_exc_flg=' + row_exc_flg);//■■■□□□■■■□□□■■■□□□)
 		this.rowExcBtnShow(row_exc_flg);
 		console.log('test=Ａ１1');//■■■□□□■■■□□□■■■□□□)
 		
