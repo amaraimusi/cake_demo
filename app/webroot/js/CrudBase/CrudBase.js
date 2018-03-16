@@ -51,7 +51,6 @@ class CrudBase extends CrudBaseBase{
 	 * - flg
 	 */
 	constructor(param,fieldData){
-		console.log('OK6');//■■■□□□■■■□□□■■■□□□■■■)
 
 		super();
 		
@@ -93,9 +92,7 @@ class CrudBase extends CrudBaseBase{
 		
 		// 行入替機能のボタン表示切替
 		var row_exc_flg = jQuery('#row_exc_flg').val();
-		console.log('row_exc_flg=' + row_exc_flg);//■■■□□□■■■□□□■■■□□□)
 		this.rowExcBtnShow(row_exc_flg);
-		console.log('test=Ａ１1');//■■■□□□■■■□□□■■■□□□)
 		
 		// --------
 
@@ -157,7 +154,6 @@ class CrudBase extends CrudBaseBase{
 		// TR要素からエンティティを取得する
 		var ent = this.getEntityByTr(tr);
 
-		console.log('test=editShow');//■■■□□□■■■□□□■■■□□□)
 		// フォームに親要素内の各フィールド値をセットする。
 		this.setFieldsToForm('edit',ent,option);
 
@@ -209,13 +205,6 @@ class CrudBase extends CrudBaseBase{
 		var row_index = tr.index(); // 行番（インデックス）を取得する
 		this.setValueToFrom(form,'row_index',row_index);
 
-		// ■■■□□□■■■□□□■■■□□□■■■
-//		// オプションからアップロードファイルディレクトリを取得する
-//		var upload_file_dir = null;
-//		if(option){
-//			upload_file_dir = option['upload_file_dir'];
-//		}
-
 		// フォームにエンティティの値をセットする
 		this.setFieldsToForm('new_inp',ent,option);
 
@@ -254,13 +243,6 @@ class CrudBase extends CrudBaseBase{
 		var ent = this.getEntityByTr(tr);
 
 		var form = jQuery(info.slt);// 削除フォーム要素を取得
-
-		//■■■□□□■■■□□□■■■□□□■■■
-//		// オプションからアップロードファイルディレクトリを取得する
-//		var upload_file_dir = null;
-//		if(option){
-//			upload_file_dir = option['upload_file_dir'];
-//		}
 
 		// フォームに親要素内の各フィールド値をセットする。
 		this.setFieldsToForm('del',ent,option);

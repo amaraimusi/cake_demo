@@ -167,7 +167,8 @@ class CrudBaseController extends AppController {
 		if(!empty($request['search'])){
 		    
 		    //ページネーションパラメータを取得
-		    $pages = $this->getPageParamForSubmit($kjs,$saveKjFlg);
+		    $pages = $this->getPageParamForSubmit($kjs,$postData,$saveKjFlg);
+		    debug($pages);//■■■□□□■■■□□□■■■□□□)
 		    
 		}else{
 		    //ページネーション用パラメータを取得
@@ -1134,33 +1135,61 @@ class CrudBaseController extends AppController {
 	 * このメソッドはサブミット時の処理用です。
 	 *
 	 * @param array $kjs 検索条件情報。kj_limitのみ利用する。
+	 * @param $postData POST
 	 * @param int $saveKjFlg セッション保存フラグ
 	 * @return array ページネーション情報
 	 * - page_no <int> ページ番号
 	 * - limit <int> 表示件数
 	 *
 	 */
-	protected function getPageParamForSubmit($kjs,$saveKjFlg){
-		$pages=$this->params['url'];
+	protected function getPageParamForSubmit(&$kjs,&$postData,$saveKjFlg){
+	    
+        $pages =  array();
 		$defs=$this->getDefKjs();//デフォルト情報を取得
-
-		if(empty($pages['page_no'])){
-		    $pages['page_no']=0;
+		
+		if(isset($postData['page_no'])){
+		    $pages['page_no'] = $postData['page_no'];
+		}else{
+		    $pages['page_no'] = 0;
 		}
 		
-		if(empty($pages['limit'])){
-		    if(empty($kjs['kj_limit'])){
-		        $pages['limit']=$kjs['kj_limit'];;
-		    }else{
-		        $pages['limit']=$defs['kj_limit'];
-		    }
+		if(isset($postData['limit'])){
+		    $pages['limit'] = $postData['limit'];
+		}else{
+		    $pages['limit'] = $defs['kj_limit'];;
 		}
-		if(empty($pages['sort_field'])){
-		    $pages['sort_field']=$this->defSortFeild;
+		
+		if(isset($postData['sort_field'])){
+		    $pages['sort_field'] = $postData['sort_field'];
+		}else{
+		    $pages['sort_field'] = $this->defSortFeild;;
 		}
-		if(!isset($pages['sort_desc'])){
-		    $pages['sort_desc']=$this->defSortType;//0:昇順 1:降順
+		
+		if(isset($postData['sort_desc'])){
+		    $pages['sort_desc'] = $postData['sort_desc'];
+		}else{
+		    $pages['sort_desc'] = $this->defSortType;//0:昇順 1:降順;
 		}
+
+		
+		// ■■■□□□■■■□□□■■■□□□
+// 		if(empty($pages['page_no'])){
+// 		    $pages['page_no']=0;
+// 		}
+		
+// 		if(empty($pages['limit'])){
+// 		    if(empty($kjs['kj_limit'])){
+// 		        $pages['limit']=$kjs['kj_limit'];;
+// 		    }else{
+// 		        $pages['limit']=$defs['kj_limit'];
+// 		    }
+// 		}
+// 		if(empty($pages['sort_field'])){
+// 		    $pages['sort_field']=$this->defSortFeild;
+// 		}
+// 		if(!isset($pages['sort_desc'])){
+// 		    $pages['sort_desc']=$this->defSortType;//0:昇順 1:降順
+// 		}
 		
 		
 		if($saveKjFlg==true){
