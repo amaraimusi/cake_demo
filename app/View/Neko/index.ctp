@@ -154,7 +154,7 @@ $this->assign('script', $this->Html->script(array(
 
 
 
-<div id="crud_base_auto_save_msg" style="height:20px;" class="text-success">XX</div>
+<div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
 <!-- 一覧テーブル -->
 <table id="neko_tbl" border="1"  class="table table-striped table-bordered table-condensed">
 

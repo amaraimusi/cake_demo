@@ -2,7 +2,6 @@
 
 $this->CrudBase->hiddenX('act_flg',1);
 $this->CrudBase->hiddenX('page_no',$pages['page_no'] );
-$this->CrudBase->hiddenX('limit',$pages['limit'] );
 $this->CrudBase->hiddenX('sort_field',$pages['sort_field'] );
 $this->CrudBase->hiddenX('sort_desc',$pages['sort_desc'] );
 $this->CrudBase->hiddenX('iniFlg',$iniFlg );

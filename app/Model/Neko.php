@@ -62,19 +62,19 @@ class Neko extends AppModel {
 	 * 
 	 * @param array $kjs 検索条件情報
 	 * @param int $page_no ページ番号
-	 * @param int $limit 表示件数
+	 * @param int $row_limit 表示件数
 	 * @param string sort ソートフィールド
 	 * @param int sort_desc ソートタイプ 0:昇順 , 1:降順
 	 * @return array ネコ画面一覧のデータ
 	 */
-	public function findData($kjs,$page_no,$limit,$sort_field,$sort_desc){
+	public function findData($kjs,$page_no,$row_limit,$sort_field,$sort_desc){
 
 		//条件を作成
 		$conditions=$this->createKjConditions($kjs);
 		
 		// オフセットの組み立て
 		$offset=null;
-		if(!empty($limit)) $offset = $page_no * $limit;
+		if(!empty($row_limit)) $offset = $page_no * $row_limit;
 		
 		// ORDER文の組み立て
 		$order = $sort_field;
@@ -83,7 +83,7 @@ class Neko extends AppModel {
 		
 		$option=array(
             'conditions' => $conditions,
-            'limit' =>$limit,
+            'limit' =>$row_limit,
             'offset'=>$offset,
             'order' => $order,
         );
@@ -113,7 +113,7 @@ class Neko extends AppModel {
 		$kjs = $crudBaseData['kjs'];//検索条件情報
 		$pages = $crudBaseData['pages'];//ページネーション情報
 
-		$data = $this->findData($kjs,$pages['page_no'],$pages['limit'],$pages['sort_field'],$pages['sort_desc']);
+		$data = $this->findData($kjs,$pages['page_no'],$pages['row_limit'],$pages['sort_field'],$pages['sort_desc']);
 		
 		return $data;
 	}

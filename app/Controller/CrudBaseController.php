@@ -168,11 +168,10 @@ class CrudBaseController extends AppController {
 		    
 		    //ページネーションパラメータを取得
 		    $pages = $this->getPageParamForSubmit($kjs,$postData,$saveKjFlg);
-		    debug($pages);//■■■□□□■■■□□□■■■□□□)
-		    
+
 		}else{
 		    //ページネーション用パラメータを取得
-		    $overData['limit']=$kjs['kj_limit'];
+		    $overData['row_limit']=$kjs['row_limit'];
 		    $pages=$this->getPageParam($saveKjFlg,$overData);
 		    
 		}
@@ -289,12 +288,12 @@ class CrudBaseController extends AppController {
 		}
 
 		// ソートアクションの判定
-		if(isset($getData['page_no']) && isset($getData['limit']) && isset($getData['sort_field'])){
+		if(isset($getData['page_no']) && isset($getData['row_limit']) && isset($getData['sort_field'])){
 			return 3; // ソート
 		}
 
 		// ページネーションアクションの判定
-		else if(isset($getData['page_no']) && isset($getData['limit']) && !isset($getData['sort_field'])){
+		else if(isset($getData['page_no']) && isset($getData['row_limit']) && !isset($getData['sort_field'])){
 			return 2; // ページネーション・アクション
 		}
 
@@ -643,7 +642,7 @@ class CrudBaseController extends AppController {
         $aKjs = $crudBaseData['kjs']; // 現在条件情報
         foreach($aKjs as $field => $a_value){
             
-            if($field == 'kj_limit') continue;
+            if($field == 'row_limit') continue;
             
             $i_value = null;
             if(isset($iKjs[$field])) $i_value = $iKjs[$field];
@@ -1109,8 +1108,8 @@ class CrudBaseController extends AppController {
 		if(empty($pages['page_no'])){
 			$pages['page_no']=0;
 		}
-		if(empty($pages['limit'])){
-			$pages['limit']=$defs['kj_limit'];
+		if(empty($pages['row_limit'])){
+			$pages['row_limit']=$defs['row_limit'];
 		}
 		if(empty($pages['sort_field'])){
 			$pages['sort_field']=$this->defSortFeild;
@@ -1134,7 +1133,7 @@ class CrudBaseController extends AppController {
 	 * ついでにセッションへのページネーション情報を保存します。
 	 * このメソッドはサブミット時の処理用です。
 	 *
-	 * @param array $kjs 検索条件情報。kj_limitのみ利用する。
+	 * @param array $kjs 検索条件情報。row_limitのみ利用する。
 	 * @param $postData POST
 	 * @param int $saveKjFlg セッション保存フラグ
 	 * @return array ページネーション情報
@@ -1153,10 +1152,10 @@ class CrudBaseController extends AppController {
 		    $pages['page_no'] = 0;
 		}
 		
-		if(isset($postData['limit'])){
-		    $pages['limit'] = $postData['limit'];
+		if(isset($postData['row_limit'])){
+		    $pages['row_limit'] = $postData['row_limit'];
 		}else{
-		    $pages['limit'] = $defs['kj_limit'];;
+		    $pages['row_limit'] = $defs['row_limit'];;
 		}
 		
 		if(isset($postData['sort_field'])){
@@ -1170,27 +1169,6 @@ class CrudBaseController extends AppController {
 		}else{
 		    $pages['sort_desc'] = $this->defSortType;//0:昇順 1:降順;
 		}
-
-		
-		// ■■■□□□■■■□□□■■■□□□
-// 		if(empty($pages['page_no'])){
-// 		    $pages['page_no']=0;
-// 		}
-		
-// 		if(empty($pages['limit'])){
-// 		    if(empty($kjs['kj_limit'])){
-// 		        $pages['limit']=$kjs['kj_limit'];;
-// 		    }else{
-// 		        $pages['limit']=$defs['kj_limit'];
-// 		    }
-// 		}
-// 		if(empty($pages['sort_field'])){
-// 		    $pages['sort_field']=$this->defSortFeild;
-// 		}
-// 		if(!isset($pages['sort_desc'])){
-// 		    $pages['sort_desc']=$this->defSortType;//0:昇順 1:降順
-// 		}
-		
 		
 		if($saveKjFlg==true){
 			$this->Session->write($this->main_model_name.'_page_param',$pages);//セッションへの書き込み
@@ -1390,15 +1368,15 @@ class CrudBaseController extends AppController {
 		$bigDataFlg=0;//巨大データフラグ
 
 		//制限行数
-		$kj_limit=0;
-		if(empty($kjs['kj_limit'])){
+		$row_limit=0;
+		if(empty($kjs['row_limit'])){
 			return $bigDataFlg;
 		}else{
-			$kj_limit=$kjs['kj_limit'];
+			$row_limit=$kjs['row_limit'];
 		}
 
 		// 制限行数が巨大データ判定行数以上である場合
-		if($kj_limit >= $this->big_data_limit){
+		if($row_limit >= $this->big_data_limit){
 
 			App::uses('Sanitize', 'Utility');
 			$kjs = Sanitize::clean($kjs, array('encode' => false));

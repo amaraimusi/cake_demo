@@ -54,11 +54,11 @@ class PagenationForCake{
 		$pages['sorts']=$sorts;
 		$pages['page_no']=$pages['page_no'];//現在ページ
 		$pages['all_data_cnt']=$all_data_cnt;//全データ数
-		if(isset($pages['limit'])){
-		    $pages['all_page_cnt']=ceil($pages['all_data_cnt'] / $pages['limit']);//全ページ数
+		if(isset($pages['row_limit'])){
+		    $pages['all_page_cnt']=ceil($pages['all_data_cnt'] / $pages['row_limit']);//全ページ数
 		}else{
 			$pages['all_page_cnt']=1;
-			$pages['limit'] = $pages['all_data_cnt'];
+			$pages['row_limit'] = $pages['all_data_cnt'];
 		}
 		
 		return $pages;
@@ -97,10 +97,10 @@ class PagenationForCake{
 			$data['page_no']=Sanitize::escape($req['page_no']);//SQLインジェクションのサニタイズ
 		}
 
-		if(empty($req['limit'])){
-			$data['limit']=null;
+		if(empty($req['row_limit'])){
+			$data['row_limit']=null;
 		}else{
-			$data['limit']=Sanitize::escape($req['limit']);//SQLインジェクションのサニタイズ
+			$data['row_limit']=Sanitize::escape($req['row_limit']);//SQLインジェクションのサニタイズ
 		}
 
 		if(empty($req['sort_field'])){
@@ -121,14 +121,14 @@ class PagenationForCake{
 
 
 	//find用のlimitとorderを作成する。
-	private function _createFindLimit($page_no,$limit){
+	private function _createFindLimit($page_no,$row_limit){
 
-		if(!isset($limit)){
+		if(!isset($row_limit)){
 			return null;
 		}
 
-		$lm1=$page_no * $limit;
-		$findLimit=$lm1.','.$limit;
+		$lm1=$page_no * $row_limit;
+		$findLimit=$lm1.','.$row_limit;
 		return $findLimit;
 	}
 
@@ -149,15 +149,15 @@ class PagenationForCake{
 	private function _createIndexHtml2(&$pages,$all_data_cnt,$path,$params,$kjs_uq){
 
 		$page_no=$pages['page_no'];
-		$limit_cnt=$pages['limit'];
+		$row_limit_cnt=$pages['row_limit'];
 		
 		$midasi_cnt=30;
-		$params['limit']=$limit_cnt;
+		$params['row_limit']=$row_limit_cnt;
 		$params['sort_field']=$pages['sort_field'];
 		$params['sort_desc']=$pages['sort_desc'];
 
 		//ページ目次用のHTMLコードを生成する。
-		$res=$this->_createIndexHtml($page_no,$params,$all_data_cnt,$limit_cnt,$midasi_cnt,$path,$kjs_uq);
+		$res=$this->_createIndexHtml($page_no,$params,$all_data_cnt,$row_limit_cnt,$midasi_cnt,$path,$kjs_uq);
 
 		return $res;
 	}
@@ -167,19 +167,19 @@ class PagenationForCake{
 	 * @param int $page_no	現在のページ番号（０から開始）
 	 * @param array $params リンクのURLに付加するパラメータ（キー、値）
 	 * @param int $data_cnt データ数
-	 * @param int $limit_cnt 限界表示行数（最大表示行数）
+	 * @param int $row_limit_cnt 限界表示行数（最大表示行数）
 	 * @param int $midasi_cnt 表示する見出し数
 	 * @param string $kjs_uq 検索条件ＵＲＬクエリ文字列
 	 * @return array ページ目次用のHTMLコードデータ
 	 */
-	private function _createIndexHtml($page_no,$params,$data_cnt,$limit_cnt,$midasi_cnt=8,$pageName="list.php",$kjs_uq){
+	private function _createIndexHtml($page_no,$params,$data_cnt,$row_limit_cnt,$midasi_cnt=8,$pageName="list.php",$kjs_uq){
 
 		if($data_cnt==0) return null;
-		if(!isset($limit_cnt)) return null;
+		if(!isset($row_limit_cnt)) return null;
 		if(empty($pageName)) $pageName="list.php";
 		
 		//▼ページネーションを構成する総リンク数をカウントする。
-		$allMdCnt=ceil($data_cnt/$limit_cnt);
+		$allMdCnt=ceil($data_cnt/$row_limit_cnt);
 		$md2=$allMdCnt;
 		if($md2>$midasi_cnt){
 			$md2=$midasi_cnt;
@@ -287,16 +287,16 @@ class PagenationForCake{
 		$sort_field=$pages['sort_field'];
 		$sort_desc=$pages['sort_desc'];
 		$page_no=$pages['page_no'];
-		$limit=$pages['limit'];
+		$row_limit=$pages['row_limit'];
 
-		$sorts=$this->_createSorts($sort_field, $sort_desc, $fields, $page_no, $limit, $path, $params,$kjs_uq);
+		$sorts=$this->_createSorts($sort_field, $sort_desc, $fields, $page_no, $row_limit, $path, $params,$kjs_uq);
 
 		return $sorts;
 	}
 
 
 	//ソートリンクリストを作成
-	private function _createSorts($sort_field,$sort_desc,$fields,$page_no,$limit,$path,$params,$kjs_uq){
+	private function _createSorts($sort_field,$sort_desc,$fields,$page_no,$row_limit,$path,$params,$kjs_uq){
 
 		//その他パラメータコードを作成する。
 		$strParams='';
@@ -312,7 +312,7 @@ class PagenationForCake{
 		$data=null;
 		foreach($fields as $f=>$fName){
 			//リンクを組み立てる。
-			$url = "{$path}?page_no={$page_no}&limit={$limit}&sort_field={$f}&sort_desc=0{$strParams}&act_flg=3&{$kjs_uq}";
+			$url = "{$path}?page_no={$page_no}&limit={$row_limit}&sort_field={$f}&sort_desc=0{$strParams}&act_flg=3&{$kjs_uq}";
 			$link = "<a href='$url'>{$fName}</a>";
 
 			//リンクをフィールド名をキーにしてソートリンクリストにセット
@@ -333,7 +333,7 @@ class PagenationForCake{
 			}
 
 			//リンクを組み立てる。
-			$url = "{$path}?page_no={$page_no}&limit={$limit}&sort_field={$sort_field}&sort_desc={$revSortType}{$strParams}&act_flg=3&{$kjs_uq}";
+			$url = "{$path}?page_no={$page_no}&limit={$row_limit}&sort_field={$sort_field}&sort_desc={$revSortType}{$strParams}&act_flg=3&{$kjs_uq}";
 			$link = "<a href='$url'>{$fName}</a>";
 
 			//ソートリンクリストに現在ソートフィールドをキーにしてリンクをセットする。

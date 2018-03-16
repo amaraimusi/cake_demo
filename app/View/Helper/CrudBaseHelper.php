@@ -335,8 +335,8 @@ class CrudBaseHelper extends FormHelper {
 	 */	
 	public function inputKjLimit($kjs){
 		echo "<div class='kj_div'>\n";
-		echo $this->input($this->_mdl.'kj_limit', array(
-				'id' => 'kj_limit',
+		echo $this->input($this->_mdl.'row_limit', array(
+				'id' => 'row_limit',
 				'type' => 'select',
 				'options' => array(
 						5=>'5件表示',
@@ -347,7 +347,7 @@ class CrudBaseHelper extends FormHelper {
 						200=>'200件表示',
 						500=>'500件表示',
 				),
-				'default' => $kjs['kj_limit'],
+				'default' => $kjs['row_limit'],
 				'label' => false,
 				'style' => 'height:27px'
 		));
