@@ -1860,7 +1860,7 @@ class CrudBaseBase{
 		if(val1 == null) return val1;
 		
 		if(val1 == 1){
-			return '<span style="color:#b4b4b4;">無効</span>';
+			return '<span style="color:#b4b4b4;">削除</span>';
 		}else{
 			return '<span style="color:#23d6e4;">有効</span>';
 		}

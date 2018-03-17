@@ -204,6 +204,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->rowPreviewBtn($id);
 	$this->CrudBase->rowCopyBtn($id);
 	$this->CrudBase->rowDeleteBtn($id);
+	$this->CrudBase->rowEliminateBtn($id);// 抹消ボタン
 	echo "</div></td>";
 	
 	echo "</tr>";
@@ -345,7 +346,7 @@ foreach($data as $i=>$ent){
 			<label class="text-danger" for="note"></label>
 		</td></tr>
 
-		<tr><td>無効： </td><td>
+		<tr><td>削除： </td><td>
 			<input type="checkbox" name="delete_flg" class="valid"  />
 		</td></tr>
 		<!-- Start ajax_form_edit_end -->

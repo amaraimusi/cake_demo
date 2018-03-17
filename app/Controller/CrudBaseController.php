@@ -1806,7 +1806,7 @@ class CrudBaseController extends AppController {
 				$this->MainModel->switchDeleteFlg($ids,0,$update_user); // 有効化
 				break;
 			case 11:
-				$this->MainModel->switchDeleteFlg($ids,1,$update_user); // 無効化
+				$this->MainModel->switchDeleteFlg($ids,1,$update_user); // 削除化
 				break;
 			default:
 				return "'kind_no' is unknown value";

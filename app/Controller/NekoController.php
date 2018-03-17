@@ -251,7 +251,7 @@ class NekoController extends CrudBaseController {
 	 *
 	 * @note
 	 * Ajaxによる削除登録。
-	 * 物理削除でなく無効フラグをONにする方式。
+	 * 物理削除でなく削除フラグをONにする方式。
 	 */
 	public function ajax_delete(){
 		App::uses('Sanitize', 'Utility');
@@ -602,7 +602,7 @@ class NekoController extends CrudBaseController {
 				'clm_show'=>0,
 			),
 			'delete_flg'=>array(
-					'name'=>'無効フラグ',
+					'name'=>'削除フラグ',
 					'row_order'=>'Neko.delete_flg',
 					'clm_show'=>1,
 			),

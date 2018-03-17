@@ -7,12 +7,11 @@
 		'debug_mode'=>$debug_mode,
 	));
 	
+	$this->CrudBase->setKjs($kjs);
+	
 	$model_name_s = $this->CrudBase->getModelNameSnk();//スネーク記法モデル名
 ?>
 <!-- CrudBase共通 -->
-
-
-
 
 
 <div class="kj_div" style="margin-top:5px">

@@ -485,7 +485,7 @@ class CrudBase extends CrudBaseBase{
 					return;
 				}
 				
-				// 無効フラグがONである場合、削除中の行を一覧から隠す
+				// 削除フラグがONである場合、削除中の行を一覧から隠す
 				if(this.param['kj_delete_flg'] == 0 && ent['delete_flg']==1){
 					this._hideTr(index);// 削除中の行を一覧から隠す
 				}

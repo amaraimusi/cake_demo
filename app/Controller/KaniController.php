@@ -151,7 +151,7 @@ class KaniController extends CrudBaseController {
 		'Kani.kani_group'=>'カニ種別',
 		'Kani.kani_dt'=>'カニ日時',
 		'Kani.note'=>'備考',
-		'Kani.delete_flg'=>'無効フラグ',
+		'Kani.delete_flg'=>'削除フラグ',
 		'Kani.update_user'=>'更新者',
 		'Kani.ip_addr'=>'更新IPアドレス',
 		'Kani.created'=>'生成日時',

@@ -220,7 +220,7 @@
 			 		'type' => 'select',
 			 		'options' => array(
 			 				0=>'有効',
-			 				1=>'無効',
+			 				1=>'削除',
 			 		),
 			 		'empty' => 'すべて表示',
 			 		'default' => $kjs['kj_delete_flg'],

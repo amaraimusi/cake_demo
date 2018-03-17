@@ -46,7 +46,7 @@ class AppHelper extends Helper {
 				if($v==0){
 					$v="<span style='color:#23d6e4;'>有効</span>";
 				}elseif($ent['delete_flg']==1){
-					$v="<span style='color:#b4b4b4;'>無効</span>";
+					$v="<span style='color:#b4b4b4;'>削除</span>";
 				}
 				break;
 

@@ -20,11 +20,13 @@ class CrudBaseHelper extends FormHelper {
 	private $_mdl_snk=""; // モデル名（スネーク記法）
 	private $_dateTimeList=array(); // 日時選択肢リスト
 	private $param; // 各種パラメータ
+	private $kjs; // 検索条件情報
 	
 	// 列並びモード用
 	private $_clmSortTds = array(); // 列並用TD要素群
 	private $_clmSortMode = 0;		// 列並モード
 	private $_field_data;			// フィールドデータ
+	
 	
 	
 	/**
@@ -55,6 +57,15 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function setParam($param){
 		$this->param = $param;
+	}
+	
+	
+	/**
+	 * crudBaseDataのセッター
+	 * @param array $kjs 検索条件データ
+	 */
+	public function setKjs(&$kjs){
+	    $this->kjs = &$kjs;
 	}
 	
 	
@@ -314,7 +325,7 @@ class CrudBaseHelper extends FormHelper {
 			'options' => array(
 			    -1=>'すべて表示',
 				0=>'有効',
-				1=>'無効',
+				1=>'削除',
 			),
 			//'empty' => 'すべて表示',■■■□□□■■■□□□■■■□□□
 			'default' => $kjs['kj_delete_flg'],
@@ -699,7 +710,8 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * プロパティを日本円表記に変換する。
 	 * 
-	 * @param unknown $v プロパティ
+	 * @param string $v プロパティ
+	 * @return string 日本円表示の文字列
 	 */
 	public function propMoney($v){
 		if(!empty($v) || $v===0){
@@ -716,7 +728,6 @@ class CrudBaseHelper extends FormHelper {
 		
 		$v2 = $this->propMoney($v);
 		
-		//$td = "<td><span name='{$field}' style='display:none'>{$v}</span><span class='{$field}' >{$v2}</span></td>\n";//■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
@@ -731,7 +742,7 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * ノートなどの長文を冒頭だけ表示する
 	 *
-	 * @param unknown $v プロパティまたはエンティティ
+	 * @param string $v プロパティまたはエンティティ
 	 * @param string $field フィールド名
 	 * @param int $strLen 表示文字数（バイト）(省略時は無制限に文字表示）
 	 */
@@ -754,7 +765,6 @@ class CrudBaseHelper extends FormHelper {
 			$v2= str_replace('\\', '', $v2);
 		}
 
-		//$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";//■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
@@ -763,7 +773,7 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * ノートなどの長文を改行を含めてそのまま表示する
 	 *
-	 * @param unknown $v プロパティまたはエンティティ
+	 * @param string $v プロパティまたはエンティティ
 	 * @param string $field フィールド名
 	 */
 	public function tdNotePlain($v,$field=''){
@@ -821,14 +831,14 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * 削除フラグの表記を変換する
 	 * 
-	 * @param unknown $v 削除フラグ
+	 * @param string $v 削除フラグ
 	 */
 	public function propDeleteFlg($v){
 		
 		if($v==0){
 			$v="<span style='color:#23d6e4;'>有効</span>";
 		}elseif($v==1){
-			$v="<span style='color:#b4b4b4;'>無効</span>";
+			$v="<span style='color:#b4b4b4;'>削除</span>";
 		}
 		
 		return $v;
@@ -854,7 +864,7 @@ class CrudBaseHelper extends FormHelper {
 		
 		$this->setTd($td,$field);
 	}
-	public function tpDeleteFlg($v,$wamei='無効フラグ'){
+	public function tpDeleteFlg($v,$wamei='削除フラグ'){
 		$v = $this->propDeleteFlg($v);
 		
 		$this->tblPreview($v,$wamei);
@@ -917,7 +927,7 @@ class CrudBaseHelper extends FormHelper {
 	
 	/**
 	 * プロパティのプレビュー表示
-	 * @param unknown $v プロパティの値
+	 * @param string $v プロパティの値
 	 * @param string $wamei プロパティ和名
 	 */
 	public function tblPreview($v,$wamei){
@@ -1065,7 +1075,7 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	/**
-	 * 編集用の無効フラグチェックボックスを作成
+	 * 編集用の削除フラグチェックボックスを作成
 	 * @param array $ent エンティティ
 	 * @param string $mode モード    new:新規モード , edit:編集モード
 	 */
@@ -1074,7 +1084,7 @@ class CrudBaseHelper extends FormHelper {
 		
 		$wamei = "";
 		if($mode=='edit'){
-			$wamei = "無効";
+			$wamei = "削除";
 		}
 			
 		echo
@@ -1088,7 +1098,7 @@ class CrudBaseHelper extends FormHelper {
 					'type' => 'checkbox',
 					'label' => false,
 					'div' =>false,
-					'title' => '無効にすると表示されません。',
+					'title' => '削除にすると表示されません。',
 			));
 		}else{
 			echo $this->input('delete_flg', array('value' => $ent['delete_flg'],'type' => 'hidden',));
@@ -1113,7 +1123,7 @@ class CrudBaseHelper extends FormHelper {
 	public function rowEditBtn($id,$css_class=null,$onclick=null){
 
 		if(empty($css_class)){
-			$css_class='btn btn-warning btn-xs';
+			$css_class='btn btn-primary btn-xs';
 		}
 		
 		if(empty($onclick)){
@@ -1210,8 +1220,6 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	
-	
-	
 	/**
 	 * 行の削除ボタンを作成する
 	 * @param int $id ID
@@ -1219,32 +1227,45 @@ class CrudBaseHelper extends FormHelper {
 	 * @param $onclick 削除フォームを呼び出すjs関数（CRUDタイプがajax型である場合。省略可)
 	 */
 	public function rowDeleteBtn($id,$css_class=null,$onclick=null){
-		
-		
-		if(empty($css_class)){
-			$css_class='btn btn-danger btn-xs';
-		}
-		if(empty($onclick)){
-			$onclick="deleteShow(this);";
-		}
-		
-		
-		
+
+		if(empty($css_class)) $css_class='btn btn-warning btn-xs';
+		if(empty($onclick)) $onclick="deleteShow(this);"; 
 		$crudType = $this->param['crudType'];
 		
 		// CRUDタイプがajax型である場合
 		if(empty($crudType)){
-			echo "<input type='button' value='削除'  class='{$css_class}' onclick='{$onclick}' />";
-				
+			echo "<input type='button' value='削除'  class='{$css_class}' onclick='{$onclick}' />";	
 		}
-		
-		// CRUDタイプがsubmit型である場合は削除ボタンは作成しない。
-		else{
-			
-		}
-		
-		
-		
+
+	}
+	
+	
+	
+	
+	/**
+	 * 行の抹消ボタンを作成する
+	 * 
+	 * @note
+	 * 検索条件データの削除フラグが1(削除)でなければ抹消ボタンを表示しない。
+	 * 
+	 * @param int $id ID
+	 * @param string $css_class CSSスタイル（省略可）
+	 * @param $onclick 抹消フォームを呼び出すjs関数（CRUDタイプがajax型である場合。省略可)
+	 */
+	public function rowEliminateBtn($id,$css_class=null,$onclick=null){
+	    
+	    // 検索条件データの削除フラグが1(削除)でなければ抹消ボタンを表示しない。
+	    if($this->kjs['kj_delete_flg'] != 1) return;
+	    
+	    if(empty($css_class)) $css_class='btn btn-danger btn-xs';
+	    if(empty($onclick)) $onclick="eliminateShow(this);";
+	    $crudType = $this->param['crudType'];
+	    
+	    // CRUDタイプがajax型である場合
+	    if(empty($crudType)){
+	        echo "<input type='button' value='抹消'  class='{$css_class}' onclick='{$onclick}' title='データベースからも消去します。復元できません。' />";
+	    }
+	    
 	}
 	
 	
@@ -1340,7 +1361,7 @@ class CrudBaseHelper extends FormHelper {
 	 * 引数日付の週の週初め日付を取得する。
 	 * 週初めは日曜日とした場合。
 	 * @param $ymd
-	 * @return 週初め
+	 * @return DateTime 週初め
 	 */
 	private function getBeginningWeekDate($ymd) {
 			

@@ -116,12 +116,12 @@ class AppModel extends Model {
 	/**
 	 * 削除フラグを切り替える
 	 * @param array $ids IDリスト
-	 * @param $delete_flg 無効フラグ   0:有効  , 1:無効
-	 * @param $update_user 更新ユーザー
+	 * @param int $delete_flg 削除フラグ   0:有効  , 1:削除
+	 * @param string $update_user 更新ユーザー
 	 */
 	public function switchDeleteFlg($ids,$delete_flg,$update_user){
 	
-		// IDリストと無効フラグからデータを作成する
+		// IDリストと削除フラグからデータを作成する
 		$data = array();
 		foreach($ids as $id){
 			$ent = array(
