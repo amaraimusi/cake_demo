@@ -12,6 +12,9 @@
 
 .kj_div{
 	float:left;
+	display:inline-block;
+	width:auto;
+	height:auto;
 	margin-right:20px;
 	margin-top:4px;
 	margin-bottom:4px;

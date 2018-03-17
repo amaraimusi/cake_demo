@@ -42,7 +42,7 @@ class CrudBaseHelper extends FormHelper {
 	
 	/**
 	 * スネーク記法のモデル名を取得する
-	 * @return スネーク記法のモデル名
+	 * @return string スネーク記法のモデル名
 	 */
 	public function getModelNameSnk(){
 		return $this->_mdl_snk;
@@ -453,8 +453,7 @@ class CrudBaseHelper extends FormHelper {
 		//<!-- 数値範囲入力スライダー・noUiSlider -->
 		$detail_noui = $field.'_detail';
 		
-		
-		echo "<table class='nouislider_rap'><tr><td>";
+		echo "<div class='kj_div'><table><tr><td>";
 		echo "		<span class='nusr_label'><{$wamei}による範囲検索</span>&nbsp;";
 		echo "		<span id='{$field}_preview' class='nusr_preview'></span>";
 		echo "	</td></tr>";
@@ -491,7 +490,7 @@ class CrudBaseHelper extends FormHelper {
 			'title'=>$wamei.'による範囲検索',
 		));
 		
-		echo "	</div></td><td></td></tr></table>";
+		echo "	</div></td><td></td></tr></table></div>";
 		
 		
 	}
@@ -601,7 +600,7 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * idを詳細ページリンク付のコードに変換する
 	 *
-	 * @param unknown $v ID
+	 * @param string $v ID
 	 */
 	public function propId($v){
 		$this->_check1();
@@ -614,7 +613,7 @@ class CrudBaseHelper extends FormHelper {
 	
 	/**
 	 * ID用のTD用をを作成する
-	 * @param unknown $v 表示する値
+	 * @param string $v 表示する値
 	 * @param string $field フィールド名
 	 * @param array $option オプション
 	 *  - checkbox_name チェックボックス名プロパティ   このプロパティに値をセットすると、複数選択による一括処理用のチェックボックスが作成される。
@@ -656,7 +655,7 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * プロパティをリスト内の値に置き換える
 	 *
-	 * @param unknown $v プロパティ
+	 * @param string $v プロパティ
 	 * @param array $list リスト
 	 */
 	public function propList($v,$list){

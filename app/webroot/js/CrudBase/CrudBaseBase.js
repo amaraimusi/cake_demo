@@ -2863,7 +2863,7 @@ class CrudBaseBase{
 		var data = this.getDataFromTbl();// Htmlテーブルからデータを取得
 		
 		var page_no = jQuery("#page_no").val() * 1;
-		var limit = jQuery("#limit").val() * 1;
+		var limit = jQuery("#row_limit").val() * 1;
 
 		// データに順番をセットする
 		var sort_no = (page_no * limit) + 1;

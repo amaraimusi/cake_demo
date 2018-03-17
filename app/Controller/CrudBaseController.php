@@ -1146,11 +1146,7 @@ class CrudBaseController extends AppController {
         $pages =  array();
 		$defs=$this->getDefKjs();//デフォルト情報を取得
 		
-		if(isset($postData['page_no'])){
-		    $pages['page_no'] = $postData['page_no'];
-		}else{
-		    $pages['page_no'] = 0;
-		}
+		$pages['page_no'] = 0;
 		
 		if(isset($postData['row_limit'])){
 		    $pages['row_limit'] = $postData['row_limit'];
