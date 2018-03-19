@@ -275,6 +275,13 @@ function deleteReg(){
 	crudBase.deleteReg();
 }
 
+/**
+ * 抹消フォームの抹消ボタンアクション
+ */
+function eliminateReg(){
+	crudBase.eliminateReg();
+}
+
 
 /**
  * リアクティブ機能：TRからDIVへ反映

@@ -408,17 +408,27 @@ class CrudBaseBase{
 	 * - cbAfterReg Ajax通信後のコールバック
 	 * - wp_action :WPアクション	WordPressでは必須
 	 * - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
+	 * - eliminate_flg :抹消フラグ
 	 * @returns void
 	 */
 	_deleteRegBase(ent,row_index,delete_flg,option){
 
 		if(!ent['id']) throw new Error('Not id');
+		
+		// 抹消フラグ
+		var eliminate_flg = 0;
+		if(option['eliminate_flg']) eliminate_flg = option['eliminate_flg'];
+		
+		// フォーム種別を取得する
+		var form_type = 'delete';
+		if(eliminate_flg) form_type = 'eliminate';
+		
 		ent['delete_flg'] = delete_flg;
-		if(option) option = {};
+		if(option==null) option = {};
 		
 		// ファイルアップロード関連のエンティティをFormDataに追加する
 		var fd = new FormData();
-		fd.append( "form_type", 'delete' );
+		fd.append( "form_type",form_type);
 
 		// Ajax送信前のコールバックを実行する
 		var beforeCallBack = option['cbBeforeReg'];
@@ -426,7 +436,7 @@ class CrudBaseBase{
 
 			var bcRes = beforeCallBack(ent,fd);
 			if(bcRes['err']){
-				this._errShow(bcRes['err'],'delete');// エラーを表示
+				this._errShow(bcRes['err'],form_type);// エラーを表示
 				return;
 			}else if(bcRes['ent']){
 				ent = bcRes['ent'];
@@ -449,6 +459,8 @@ class CrudBaseBase{
 			}
 		}
 
+		if(eliminate_flg) fd.append('eliminate_flg',option['eliminate_flg']);
+		
 		jQuery.ajax({
 			type: "post",
 			url: this.param.delete_reg_url,
@@ -472,7 +484,7 @@ class CrudBaseBase{
 			if(!ent){return;}
 
 			// 削除フラグが0(有効)である場合、HTMLテーブルの行を削除する
-			if(this.param.kjs.kj_delete_flg === 0 || this.param.kjs.kj_delete_flg === '0'){
+			if(this.param.kjs.kj_delete_flg === 0 || this.param.kjs.kj_delete_flg === '0' || eliminate_flg == 1){
 				this._deleteRow(row_index);
 			}else{
 				
@@ -488,7 +500,7 @@ class CrudBaseBase{
 					}, 1);
 			}
 
-			this.closeForm('delete');// フォームを閉じる
+			this.closeForm(form_type);// フォームを閉じる
 
 		}).fail((jqXHR, statusText, errorThrown) => {
 			jQuery('#err').html(jqXHR.responseText);//詳細エラーの出力

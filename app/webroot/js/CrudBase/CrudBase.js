@@ -592,6 +592,33 @@ class CrudBase extends CrudBaseBase{
 	}
 
 
+
+	/**
+	 * 抹消登録
+	 * 
+	 * @param option オプション
+	 *  - caller_type 呼び出し元タイプ 0:抹消フォールから呼び出し（デフォ） , 1:直接呼出し , 
+	 *  - wp_action :WPアクション	WordPressでは必須
+	 *  - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
+	 *  - cbBeforeReg(ent) 抹消登録前に実行するコールバック
+	 *  - cbAfterReg(ent) 抹消登録後に実行するコールバック
+	 */
+	eliminateReg (option){
+
+		if(option == null) option = {};
+		var row_index = this.param.active_row_index; // アクティブ行インデックス
+		var ent = this._getEntByForm('eliminate');// 抹消フォームからエンティティを取得する
+		option['eliminate_flg'] = 1; // 抹消フラグをONにする
+		
+		console.log('eliminateReg');//■■■□□□■■■□□□■■■□□□)
+		
+		// 抹消を実行
+		var delete_flg = 1;
+		this._deleteRegBase(ent,row_index,delete_flg,option);
+
+	}
+
+
 	/**
 	 * フォームを閉じる
 	 * @parma string form_type new_inp:新規入力 edit:編集 delete:削除

@@ -251,7 +251,8 @@ class NekoController extends CrudBaseController {
 	 *
 	 * @note
 	 * Ajaxによる削除登録。
-	 * 物理削除でなく削除フラグをONにする方式。
+	 * 削除更新でだけでなく有効化に対応している。
+	 * また、DBから実際に削除する抹消にも対応している。
 	 */
 	public function ajax_delete(){
 		App::uses('Sanitize', 'Utility');
@@ -262,13 +263,21 @@ class NekoController extends CrudBaseController {
 		$json=$_POST['key1'];
 		$ent0 = json_decode($json,true);
 
+	   // 抹消フラグ
+	   $eliminate_flg = 0;
+	   if(isset($_POST['eliminate_flg'])) $eliminate_flg = $_POST['eliminate_flg'];
+	   
 		// 削除用のエンティティを取得する
 		$ent = $this->getEntForDelete($ent0['id']);
 		$ent['delete_flg'] = $ent0['delete_flg'];
 	
 		// エンティティをDB保存
 		$this->Neko->begin();
-		$ent = $this->Neko->saveEntity($ent);
+		if($eliminate_flg == 0){
+		    $ent = $this->Neko->saveEntity($ent); // 更新
+		}else{
+		    $this->Neko->delete($ent['id']); // 削除
+		}
 		$this->Neko->commit();//コミット
 	
 		$ent=Sanitize::clean($ent, array('encode' => true));//サニタイズ（XSS対策）
