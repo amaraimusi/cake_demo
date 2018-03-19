@@ -22,6 +22,7 @@
  *  - edit_form_slt	編集フォームセレクタ
  *  - new_form_slt	新規フォームセレクタ
  *  - delete_form_slt	削除フォームセレクタ
+ *  - eliminate_form_slt	抹消フォームセレクタ
  *  - contents_slt	コンテンツセレクタ	コンテンツ全体を表すセレクタでフォームの位置調整で利用する。省略時すると画面windowを基準に位置調整する。
  *  - edit_reg_url	編集登録サーバーURL
  *  - new_reg_url	新規登録サーバーURL
@@ -37,7 +38,7 @@
  *  - valid_msg_slt	バリデーションメッセージセレクタ
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない  1:フォームの外側をクリックすると自動的に閉じる（デフォルト）
  *  - ni_tr_place	新規入力追加場所フラグ 0:末尾 , 1:先頭
- *  - kj_delete_flg 検索条件削除フラグ
+ *  - kjs 検索条件情報
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
 
@@ -117,7 +118,7 @@ class CrudBaseBase{
 		var field = this._getFieldByNameOrClass(elm);
 
 		// ファイルアップロードのチェンジイベント
-		this._fileChangeEvent(e,field,'del');
+		this._fileChangeEvent(e,field,'delete');
 	};
 
 
@@ -295,38 +296,137 @@ class CrudBaseBase{
 		return add_row_index;
 
 	}
+	
+	
+	
+	
+	/**
+	 * 削除フォーム表示
+	 * 
+	 * @param elm 削除ボタン要素
+	 * @param option オプション（省略可）
+	 *  - upload_file_dirアップロードファイルディレクトリ
+	 *  - cbBeforeFormShow(tr,form,ent)   削除フォームを表示する前に実行するコールバック）
+	 * 
+	 */
+	deleteShow(elm,option){
+		
+		if(!(elm instanceof jQuery)) elm = jQuery(elm);
+
+		var tr = option['tr'];
+		if(tr==null) tr=jQuery(elm).parents('tr'); // 先祖をさかのぼりtr要素を取得する
+		
+		var info = this.formInfo['delete'];
+
+		info.show_flg=1; // 表示制御フラグを表示中にする
+
+		// TR要素からエンティティを取得する
+		var ent = this.getEntityByTr(tr);
+
+		var form = jQuery(info.slt);// 削除フォーム要素を取得
+
+		// フォームに親要素内の各フィールド値をセットする。
+		this.setFieldsToForm('delete',ent,option);
+		
+		// コールバックを実行する
+		var callback = option['cbBeforeFormShow'];
+		if(callback) callback(tr,form,ent);
+
+		// triggerElm要素の下付近に入力フォームを表示する。
+		this._showForm(form,elm,option);
+
+	}
+
+
+
+	/**
+	 * 削除登録
+	 * 
+	 * @param option オプション
+	 *  - caller_type 呼び出し元タイプ 0:削除フォールから呼び出し（デフォ） , 1:直接呼出し , 
+	 *  - wp_action :WPアクション	WordPressでは必須
+	 *  - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
+	 *  - cbBeforeReg(ent) 削除登録前に実行するコールバック
+	 *  - cbAfterReg(ent) 削除登録後に実行するコールバック
+	 */
+	deleteReg (option){
+
+		if(option == null) option = {};
+		if(option['caller_type']==null) option['caller_type'] = 0;
+	
+		var row_index = this.param.active_row_index; // アクティブ行インデックス
+
+		var ent;
+		if(option['caller_type'] == 0){
+			ent = this._getEntByForm('delete');// 削除フォームからエンティティを取得する
+		}else{
+			ent = this.getEntity(row_index);
+		}
+
+		// 削除を実行
+		var delete_flg = 1;
+		this._deleteRegBase(ent,row_index,delete_flg,option);
+
+	}
+
+
+
+	/**
+	 * 有効登録
+	 * 
+	 * @param option オプション
+	 *  - wp_action :WPアクション	WordPressでは必須
+	 *  - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
+	 *  - cbBeforeReg(ent) 有効登録前に実行するコールバック
+	 *  - cbAfterReg(ent) 有効登録後に実行するコールバック
+	 */
+	enabledReg (option){
+
+		if(option == null) option = {};
+		var row_index = this.param.active_row_index; // アクティブ行インデックス
+		var ent = this.getEntity(row_index);
+
+		// 有効を実行
+		var delete_flg = 0;
+		this._deleteRegBase(ent,row_index,delete_flg,option);
+
+	}
+	
+	
+	
 
 	/**
 	 * 基本的な削除機能
+	 * 
 	 * @param ent idを含むエンティティ
 	 * @param row_index 行番
-	 * @param beforeCallBack Ajax送信前(削除前）のコールバック（送信データを編集できる）
+	 * @param delete_flg 削除フラグ
+	 * @param cbBeforeReg Ajax送信前(削除前）のコールバック（送信データを編集できる）
 	 * @param afterCallBack 削除後に実行するコールバック関数（省略可）
 	 * @param option オプション
+	 * - cbBeforeReg Ajax通信前コールバック
+	 * - cbAfterReg Ajax通信後のコールバック
 	 * - wp_action :WPアクション	WordPressでは必須
 	 * - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
 	 * @returns void
 	 */
-	_deleteRegBase(ent,row_index,beforeCallBack,afterCallBack,option){
+	_deleteRegBase(ent,row_index,delete_flg,option){
 
-		if(!ent['id']){
-			throw new Error('Not id');
-		}
-
-		if(this._empty(option)){
-			option = {};
-		}
-
+		if(!ent['id']) throw new Error('Not id');
+		ent['delete_flg'] = delete_flg;
+		if(option) option = {};
+		
 		// ファイルアップロード関連のエンティティをFormDataに追加する
 		var fd = new FormData();
-		fd.append( "form_type", 'del' );
+		fd.append( "form_type", 'delete' );
 
 		// Ajax送信前のコールバックを実行する
+		var beforeCallBack = option['cbBeforeReg'];
 		if(beforeCallBack){
 
 			var bcRes = beforeCallBack(ent,fd);
 			if(bcRes['err']){
-				this._errShow(bcRes['err'],'del');// エラーを表示
+				this._errShow(bcRes['err'],'delete');// エラーを表示
 				return;
 			}else if(bcRes['ent']){
 				ent = bcRes['ent'];
@@ -371,16 +471,24 @@ class CrudBaseBase{
 
 			if(!ent){return;}
 
-			this._deleteRow(row_index); // 行番に紐づく行を削除する
+			// 削除フラグが0(有効)である場合、HTMLテーブルの行を削除する
+			if(this.param.kjs.kj_delete_flg === 0 || this.param.kjs.kj_delete_flg === '0'){
+				this._deleteRow(row_index);
+			}else{
+				
+				var tr = this.getTrInEditing();// 削除中の行要素を取得する
+				this._setEntityToEditTr(ent,tr);// TR要素にエンティティの値をセットする
+			}
 
 			// 登録後にコールバック関数を非同期で実行する
-			if(afterCallBack != null){
+			var afterCallBack = option['cbAfterReg'];
+			if(afterCallBack){
 				window.setTimeout(()=>{
 					afterCallBack(ent);
 					}, 1);
 			}
 
-			this.closeForm('del');// フォームを閉じる
+			this.closeForm('delete');// フォームを閉じる
 
 		}).fail((jqXHR, statusText, errorThrown) => {
 			jQuery('#err').html(jqXHR.responseText);//詳細エラーの出力
@@ -874,8 +982,50 @@ class CrudBaseBase{
 		// TR要素にエンティティをセットする
 		option['form_type'] = 'edit';
 		this.setEntityToTr(tr,ent,option);
+		
+		// ボタン群の表示切替
+		this._switchBtnsDisplay(tr,ent);
 
 	};
+	
+	/**
+	 * ボタン群の表示切替
+	 * @param tr 行要素
+	 * @param ent 行エンティティ
+	 */
+	_switchBtnsDisplay(tr,ent){
+		// 削除状態のボタン表示切替
+		if(ent['delete_flg'] == 1){
+			this._switchBtnDisp(tr,'.row_delete_btn',0);
+			this._switchBtnDisp(tr,'.row_enabled_btn',1);
+			this._switchBtnDisp(tr,'.row_eliminate_btn',1);
+		}
+		
+		// 有効状態のボタン表示切替
+		else{
+			this._switchBtnDisp(tr,'.row_delete_btn',1);
+			this._switchBtnDisp(tr,'.row_enabled_btn',0);
+			this._switchBtnDisp(tr,'.row_eliminate_btn',0);
+		}
+	}
+	
+	/**
+	 * ボタン表示切替
+	 * @param jQuery_Object tr 行要素
+	 * @param string btn_slt ボタン要素セレクタ
+	 * @param int show_flg 表示フラグ    0:非表示 , 1:表示
+	 */
+	_switchBtnDisp(tr,btn_slt,show_flg){
+		var btn = tr.find(btn_slt);
+		if(!btn[0]) return;
+		
+		if(show_flg){
+			btn.show();
+		}else{
+			btn.hide();
+		}
+	}
+	
 	
 	
 	/**
@@ -1062,6 +1212,19 @@ class CrudBaseBase{
 				form = jQuery('#' + this.param.delete_form_slt);
 			}
 			this.formDelete = form;
+
+		}else if(form_type=='eliminate'){
+
+			if(cache == 1){
+				if(this.formEliminate != null){
+					form = this.formEliminate;
+				}else{
+					form = jQuery('#' + this.param.eliminate_form_slt);
+				}
+			}else{
+				form = jQuery('#' + this.param.eliminate_form_slt);
+			}
+			this.formEliminate = form;
 
 		}else{
 			throw new Error('Uknown form_type!');
@@ -1294,6 +1457,11 @@ class CrudBaseBase{
 			param['delete_form_slt'] = 'ajax_crud_delete_form';
 		}
 
+		// 抹消フォームセレクタ
+		if(param['eliminate_form_slt'] == null){
+			param['eliminate_form_slt'] = 'ajax_crud_eliminate_form';
+		}
+
 		// コンテンツセレクタ
 		if(param['contents_slt'] == null){
 			param['contents_slt'] = null;
@@ -1384,17 +1552,12 @@ class CrudBaseBase{
 			param['disFilData'] = null;
 		}
 
-		// 検索条件削除フラグ
-		if(param['kj_delete_flg'] == null){
-			param['kj_delete_flg'] = null;
-		}else if(param['kj_delete_flg'] === ""){
-			param['kj_delete_flg'] = null;
-		}else{
-			param['kj_delete_flg'] = param['kj_delete_flg'] * 1;
+		// 検索条件情報
+		if(param['kjs'] == null){
+			param['kjs'] = null;
 		}
 		
 		return param;
-
 	}
 
 
@@ -1470,7 +1633,7 @@ class CrudBaseBase{
 	_initFileUpData(fieldData){
 
 		// フォーム名のリスト
-		var form_typeList = ['new_inp','edit','del'];
+		var form_typeList = ['new_inp','edit','delete'];
 
 		// ファイル要素系にのみ、ファイル要素情報をセットする。
 		for(var i in fieldData){
@@ -2243,13 +2406,25 @@ class CrudBaseBase{
 		// 削除フォーム情報の設定
 		var res = this._classifySlt(param['delete_form_slt']);
 		var deleteForm = jQuery(res['slt']);
-		formInfo['del'] = {
+		formInfo['delete'] = {
 			'xid':res['xid'],	// ID属性
 			'slt':res['slt'],	// フォーム要素のセレクタ
 			'show_flg':0,		// 表示制御フラグ（閉じるイベント制御用）
 			'form':deleteForm,	// フォーム要素
 		};
-		this._convertFormToDlg(formInfo['del']);// フォームをダイアログ化する。
+		this._convertFormToDlg(formInfo['delete']);// フォームをダイアログ化する。
+
+
+		// 抹消フォーム情報の設定
+		var res = this._classifySlt(param['eliminate_form_slt']);
+		var eliminateForm = jQuery(res['slt']);
+		formInfo['eliminate'] = {
+			'xid':res['xid'],	// ID属性
+			'slt':res['slt'],	// フォーム要素のセレクタ
+			'show_flg':0,		// 表示制御フラグ（閉じるイベント制御用）
+			'form':eliminateForm,	// フォーム要素
+		};
+		this._convertFormToDlg(formInfo['eliminate']);// フォームをダイアログ化する。
 
 		return formInfo;
 
@@ -2491,8 +2666,8 @@ class CrudBaseBase{
 
 		// デフォルト検索条件が省略されている場合はHTMLの埋込JSONから取得する。
 		if(defKjs==null){
-			var defKjsJson = $('#defKjsJson').val();
-			defKjs = JSON.parse(defKjsJson);
+			var def_kjs_json = $('#def_kjs_json').val();
+			defKjs = JSON.parse(def_kjs_json);
 		}
 
 		// 比較対象外フィールドマッピング

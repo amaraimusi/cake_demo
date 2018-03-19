@@ -24,7 +24,9 @@ var nusrNekoVal = new NoUiSliderRap();///ネコ数値の数値範囲入力スラ
  */
 function init(){
 	
-	var kj_delete_flg = jQuery('#kj_delete_flg').val();
+	// 検索条件情報を取得する
+	var kjs_json = jQuery('#kjs_json').val();
+	var kjs = jQuery.parseJSON(kjs_json);
 	
 	//AjaxによるCRUD
 	crudBase = new CrudBase({
@@ -33,7 +35,7 @@ function init(){
 			'new_reg_url':'neko/ajax_reg',
 			'delete_reg_url':'neko/ajax_delete',
 			'auto_save_url':'neko/auto_save',
-			'kj_delete_flg':kj_delete_flg,
+			'kjs':kjs,
 		});
 	
 	// ネコグループリストJSON
@@ -153,12 +155,31 @@ function copyShow(btnElm){
 	crudBase.copyShow(btnElm);
 }
 
+
 /**
- * 削除フォーム表示
+ * 削除アクション
  * @param btnElm ボタン要素
  */
-function deleteShow(btnElm){
-	crudBase.deleteShow(btnElm);
+function deleteAction(btnElm){
+	crudBase.deleteAction(btnElm);
+}
+
+
+/**
+ * 有効アクション
+ * @param btnElm ボタン要素
+ */
+function enabledAction(btnElm){
+	crudBase.enabledAction(btnElm);
+}
+
+
+/**
+ * 抹消フォーム表示
+ * @param btnElm ボタン要素
+ */
+function eliminateShow(btnElm){
+	crudBase.eliminateShow(btnElm);
 }
 
 /**
@@ -194,8 +215,8 @@ function resetKjs(exempts){
 	}
 	
 	//デフォルト検索条件JSONを取得およびパースする。
-	var defKjsJson=$('#defKjsJson').val();
-	var defKjs=$.parseJSON(defKjsJson);
+	var def_kjs_json=$('#def_kjs_json').val();
+	var defKjs=jQuery.parseJSON(def_kjs_json);
 	
 	for(var key in defKjs){
 		

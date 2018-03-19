@@ -206,7 +206,7 @@ class KaniController extends CrudBaseController {
     	$pages=$res['pages'];
     	
     	// リセット用に、検索条件情報からデフォルト検索JSONを取得する
-    	$defKjsJson=$this->getDefKjsJson();
+    	$def_kjs_json=$this->getDefKjsJson();
     	 
     	
     	//更新ユーザーを取得
@@ -226,7 +226,7 @@ class KaniController extends CrudBaseController {
     			'pages'=>$pages,
     			'errMsg'=>$errMsg,
     			'saveKjFlg'=>$saveKjFlg,
-    			'defKjsJson'=>$defKjsJson,
+    			'def_kjs_json'=>$def_kjs_json,
     			'update_user'=>$update_user,
     			'kaniGroupList'=>$kaniGroupList,
     			'kaniGroupJson'=>$kaniGroupJson,

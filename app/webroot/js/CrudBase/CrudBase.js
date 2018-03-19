@@ -68,7 +68,7 @@ class CrudBase extends CrudBaseBase{
 		// フィールドデータへフォーム内の要素情報をセットする
 		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'new_inp');
 		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'edit');
-		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'del');
+		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'delete');
 
 		// フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
 		this.fieldData = this._initFileUpData(this.fieldData);
@@ -223,34 +223,86 @@ class CrudBase extends CrudBaseBase{
 
 
 	/**
-	 * 削除フォーム表示
-	 * 
+	 * 削除アクション
 	 * @param elm 削除ボタン要素
+	 * @param option
+	 *  - upload_file_dirアップロードファイルディレクトリ
+	 *  - form_show_flg 削除フォーム表示フラグ 0:削除フォームを表示しない（デフォ） , 1:表示する
+	 *  - cbBeforeFormShow(tr,form,ent)   削除フォームを表示する前に実行するコールバック
+	 *  - cbBeforeReg(ent) 削除登録前に実行するコールバック
+	 *  - cbAfterReg(ent) 削除登録後に実行するコールバック
+	 */
+	deleteAction(elm,option){
+		
+		if(!(elm instanceof jQuery)) elm = jQuery(elm);
+
+		if(option == null) option = {};
+		if(option['form_show_flg'] == null) option['form_show_flg'] = 0;
+
+		var tr = elm.parents('tr'); // 先祖をさかのぼりtr要素を取得する
+		this.param.active_row_index = tr.index(); // 行番（インデックス）を取得する
+		
+		// 削除フォーム表示フラグが1(表示）であるなら、削除フォームを表示する
+		if(option['form_show_flg'] == 1){
+			option['tr'] = tr;
+			this.deleteShow(elm,option); // 削除フォーム表示
+		}else{
+			option['caller_type'] = 1; // 呼び出し元タイプ   1:直接呼出し
+			this.deleteReg(option); // 削除登録
+		}
+	}
+
+
+	/**
+	 * 有効アクション
+	 * @param elm 有効ボタン要素
+	 * @param option
+	 *  - cbBeforeReg(ent) 有効登録前に実行するコールバック
+	 *  - cbAfterReg(ent) 有効登録後に実行するコールバック
+	 */
+	enabledAction(elm,option){
+		
+		if(!(elm instanceof jQuery)) elm = jQuery(elm);
+
+		if(option == null) option = {};
+
+		var tr = elm.parents('tr'); // 先祖をさかのぼりtr要素を取得する
+		this.param.active_row_index = tr.index(); // 行番（インデックス）を取得する
+		
+		this.enabledReg(option); // 有効登録
+	}
+
+
+	/**
+	 * 抹消フォーム表示
+	 * 
+	 * @param elm 抹消ボタン要素
 	 * @param option オプション（省略可）
 	 *           -  upload_file_dirアップロードファイルディレクトリ
 	 * @param callBack フォームに一覧の行データを自動セットしたあとに呼び出されるコールバック関数(省略可）
 	 * 
 	 */
-	deleteShow(elm,option,callBack){
-		var tr=jQuery(elm).parents('tr'); // 先祖をさかのぼりtr要素を取得する
+	eliminateShow(elm,option,callBack){
+		
+		if(!(elm instanceof jQuery)) elm = jQuery(elm);
+		var tr = elm.parents('tr'); // 先祖をさかのぼりtr要素を取得する
+		
 		this.param.active_row_index = tr.index(); // 行番（インデックス）を取得する
 
-		var info = this.formInfo['del'];
+		var info = this.formInfo['eliminate'];
 
 		info.show_flg=1; // 表示制御フラグを表示中にする
 
 		// TR要素からエンティティを取得する
 		var ent = this.getEntityByTr(tr);
 
-		var form = jQuery(info.slt);// 削除フォーム要素を取得
+		var form = jQuery(info.slt);// 抹消フォーム要素を取得
 
 		// フォームに親要素内の各フィールド値をセットする。
-		this.setFieldsToForm('del',ent,option);
+		this.setFieldsToForm('eliminate',ent,option);
 
 		// コールバックを実行する
-		if(callBack){
-			callBack(tr,form,ent);
-		}
+		if(callBack) callBack(tr,form,ent);
 
 		// triggerElm要素の下付近に入力フォームを表示する。
 		this._showForm(form,elm,option);
@@ -522,44 +574,20 @@ class CrudBase extends CrudBaseBase{
 
 
 	/**
-	 * 削除登録
-	 * @param beforeCallBack Ajax送信前(削除前）のコールバック（送信データを編集できる）
-	 * @param afterCallBack Ajax送信後(削除後）のコールバック
-	 * @param option オプション
-	 * - wp_action :WPアクション	WordPressでは必須
-	 * - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
-	 */
-	deleteReg (beforeCallBack,afterCallBack,option){
-
-		var row_index = this.param.active_row_index; // アクティブ行インデックス
-
-		// 削除フォームからエンティティを取得する
-		var ent = this._getEntByForm('delete');
-
-		if(beforeCallBack){
-			beforeCallBack(ent);
-		}
-
-		// 削除を実行
-		this._deleteRegBase(ent,row_index,beforeCallBack,afterCallBack,option);
-
-	}
-
-
-
-	/**
 	 * 行番号を指定して削除登録を行う。
 	 * @param row_index 行番号
-	 * @param beforeCallBack Ajax送信前(削除前）のコールバック（送信データを編集できる）
-	 * @param afterCallBack Ajax送信後(削除後）のコールバック
+	 * @param option
+	 *  - cbBeforeReg(ent) 削除登録前に実行するコールバック
+	 *  - cbAfterReg(ent) 削除登録後に実行するコールバック
 	 */
-	deleteRegByRowIndex(row_index,beforeCallBack,afterCallBack){
+	deleteRegByRowIndex(row_index,option){
 
 		// HTMLテーブルから行番を指定してエンティティを取得する
 		var ent = this.getEntity(row_index);
 
 		// 削除を実行
-		this._deleteRegBase(ent,row_index,beforeCallBack,afterCallBack)
+		var delete_flg = 1;
+		this._deleteRegBase(ent,row_index,delete_flg,option)
 
 	}
 

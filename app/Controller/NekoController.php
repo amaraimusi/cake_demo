@@ -260,19 +260,18 @@ class NekoController extends CrudBaseController {
 	
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
-		$ent = json_decode($json,true);
+		$ent0 = json_decode($json,true);
 
 		// 削除用のエンティティを取得する
-		$ent = $this->getEntForDelete($ent['id']);
+		$ent = $this->getEntForDelete($ent0['id']);
+		$ent['delete_flg'] = $ent0['delete_flg'];
 	
 		// エンティティをDB保存
 		$this->Neko->begin();
 		$ent = $this->Neko->saveEntity($ent);
 		$this->Neko->commit();//コミット
 	
-	
 		$ent=Sanitize::clean($ent, array('encode' => true));//サニタイズ（XSS対策）
-	
 		$json_data=json_encode($ent);//JSONに変換
 	
 		return $json_data;

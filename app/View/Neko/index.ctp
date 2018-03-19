@@ -200,11 +200,12 @@ foreach($data as $i=>$ent){
 	echo "<td><div class='btn-group'>";
 	$id = $ent['id'];
 	echo  "<input type='button' value='↑↓' onclick='rowExchangeShowForm(this)' class='row_exc_btn btn btn-info btn-xs' />";
+	$this->CrudBase->rowDeleteBtn($ent); // 削除ボタン
+	$this->CrudBase->rowEnabledBtn($ent); // 有効ボタン
 	$this->CrudBase->rowEditBtn($id);
 	$this->CrudBase->rowPreviewBtn($id);
 	$this->CrudBase->rowCopyBtn($id);
-	$this->CrudBase->rowDeleteBtn($id);
-	$this->CrudBase->rowEliminateBtn($id);// 抹消ボタン
+	$this->CrudBase->rowEliminateBtn($ent);// 抹消ボタン
 	echo "</div></td>";
 	
 	echo "</tr>";
@@ -381,7 +382,7 @@ foreach($data as $i=>$ent){
 		<div class="pnl_head1">削除</div>
 		<div class="pnl_head2"></div>
 		<div class="pnl_head3">
-			<button type="button" class="btn btn-default btn-sm" onclick="closeForm('del')"><span class="glyphicon glyphicon-remove"></span></button>
+			<button type="button" class="btn btn-default btn-sm" onclick="closeForm('delete')"><span class="glyphicon glyphicon-remove"></span></button>
 		</div>
 	</div>
 	
@@ -411,6 +412,56 @@ foreach($data as $i=>$ent){
 	
 	<input type="button" value="更新情報" class="btn btn-default btn-xs" onclick="$('#ajax_crud_delete_form_update').toggle(300)" /><br>
 	<aside id="ajax_crud_delete_form_update" style="display:none">
+		更新日時: <span class="modified"></span><br>
+		生成日時: <span class="created"></span><br>
+		ユーザー名: <span class="update_user"></span><br>
+		IPアドレス: <span class="ip_addr"></span><br>
+		ユーザーエージェント: <span class="user_agent"></span><br>
+	</aside>
+	
+
+	</div><!-- panel-body -->
+</div>
+
+
+
+<!-- 抹消フォーム -->
+<div id="ajax_crud_eliminate_form" class="panel panel-danger">
+
+	<div class="panel-heading">
+		<div class="pnl_head1">抹消</div>
+		<div class="pnl_head2"></div>
+		<div class="pnl_head3">
+			<button type="button" class="btn btn-default btn-sm" onclick="closeForm('eliminate')"><span class="glyphicon glyphicon-remove"></span></button>
+		</div>
+	</div>
+	
+	<div class="panel-body" style="min-width:300px">
+	<table><tbody>
+
+		<!-- Start ajax_form_new -->
+		<tr><td>ID: </td><td>
+			<span class="id"></span>
+		</td></tr>
+		
+
+		<tr><td>ネコ名: </td><td>
+			<span class="neko_name"></span>
+		</td></tr>
+
+
+		<!-- Start ajax_form_end -->
+	</tbody></table>
+	<br>
+	
+
+	<button type="button"  onclick="eliminateReg();" class="btn btn-danger">
+		<span class="glyphicon glyphicon-remove"></span>　抹消する
+	</button>
+	<hr>
+	
+	<input type="button" value="更新情報" class="btn btn-default btn-xs" onclick="$('#ajax_crud_eliminate_form_update').toggle(300)" /><br>
+	<aside id="ajax_crud_eliminate_form_update" style="display:none">
 		更新日時: <span class="modified"></span><br>
 		生成日時: <span class="created"></span><br>
 		ユーザー名: <span class="update_user"></span><br>

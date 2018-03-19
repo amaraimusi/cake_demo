@@ -192,7 +192,7 @@ class CrudBaseController extends AppController {
 
 		}
 
-		$defKjsJson=$this->getDefKjsJson();// 検索条件情報からデフォルト検索情報JSONを取得する
+		$def_kjs_json=$this->getDefKjsJson();// 検索条件情報からデフォルト検索情報JSONを取得する
 
 		$debug_mode=Configure::read('debug');//デバッグモードを取得
 
@@ -207,11 +207,14 @@ class CrudBaseController extends AppController {
 		
 		// アクティブフラグをリクエストから取得する
 		$act_flg = $this->getValueFromPostGet('act_flg');
+		
+		$kjs_json = json_encode($kjs,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
 		$crudBaseData = array(
 		    'field_data'=>$active, // アクティブフィールドデータ
 		    'kjs'=>$kjs, // 検索条件情報
-		    'defKjsJson'=>$defKjsJson, // デフォルト検索情報JSON
+		    'kjs_json'=>$kjs_json, // 検索条件JSON
+		    'def_kjs_json'=>$def_kjs_json, // デフォルト検索情報JSON
 		    'errMsg'=>$errMsg, // エラーメッセージ
 		    'version'=>$this->version, // CrudBaseのバージョン
 		    'userInfo'=>$userInfo, // ユーザー情報
@@ -1437,9 +1440,9 @@ class CrudBaseController extends AppController {
 			}
 		}
 
-		$defKjsJson=json_encode($defKjs);//JSON化
+		$def_kjs_json=json_encode($defKjs);//JSON化
 
-		return $defKjsJson;
+		return $def_kjs_json;
 	}
 
 

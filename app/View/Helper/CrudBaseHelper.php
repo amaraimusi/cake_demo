@@ -327,7 +327,6 @@ class CrudBaseHelper extends FormHelper {
 				0=>'有効',
 				1=>'削除',
 			),
-			//'empty' => 'すべて表示',■■■□□□■■■□□□■■■□□□
 			'default' => $kjs['kj_delete_flg'],
 			'label' => false,
 		));
@@ -557,7 +556,6 @@ class CrudBaseHelper extends FormHelper {
 			$v = $v[$field];
 		}
 		
-		//$td = "<td><span class='{$field}' >{$v}</span></td>\n";■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}'  /><span class='{$field}' >{$v}</span></td>\n";
 		$this->setTd($td,$field);
 	}
@@ -575,7 +573,6 @@ class CrudBaseHelper extends FormHelper {
 		}
 		
 		$v = h($v);
-		//$td = "<td><span class='{$field}' >{$v}</span></td>\n";■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' >{$v}</span></td>\n";
 		$this->setTd($td,$field);
 	
@@ -591,7 +588,6 @@ class CrudBaseHelper extends FormHelper {
 		
 		$v = nl2br($v);// 改行置換
 		
-		//$td = "<td><span class='{$field}'>{$v}</span>\n";//■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v}</span>\n";
 		
 		$this->setTd($td,$field);
@@ -644,7 +640,6 @@ class CrudBaseHelper extends FormHelper {
 		
 		
 		// TD要素を組み立てる
-		//$td = "<td>{$cbHtml}<span class='{$field}' >{$v}</span></td>\n";■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td>{$cbHtml}<input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' >{$v}</span></td>\n";
 		
 		$this->setTd($td,$field);
@@ -689,7 +684,6 @@ class CrudBaseHelper extends FormHelper {
 		$v2 = $this->propList($v,$list);
 		$v2 = h($v2);
 		
-		//$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	
@@ -788,7 +782,6 @@ class CrudBaseHelper extends FormHelper {
 		
 		}
 
-		//$td = "<td><div class='{$field}' >{$v}</div>\n";■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><div class='{$field}' >{$v}</div></td>\n";
 		$this->setTd($td,$field);
 	}
@@ -859,7 +852,6 @@ class CrudBaseHelper extends FormHelper {
 		}
 		
 		$v2 = $this->propDeleteFlg($v);
-		//$td = "<td><span class='{$field}' style='display:none'>{$v}</span><span class='{$field}_display' >{$v2}</span></td>\n";// ■■■□□□■■■□□□■■■□□□■■■
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		
 		$this->setTd($td,$field);
@@ -905,13 +897,6 @@ class CrudBaseHelper extends FormHelper {
 			$orig_fp = $orig_dir_path.$fn.$dt;
 			
 		}
-		
-		//■■■□□□■■■□□□■■■□□□■■■
-// 		$td_html = "<td>".
-// 				"<a href='{$orig_fp}' data-lity='data-lity' />".
-// 				"<img src='{$thum_fp}' data-file-preview = '{$field}' class='{$field}_display' title='{$fn}' /></a>".
-// 				"<span class='{$field}' style='display:none'>{$fn}</span>".
-// 				"</td>";
 		
 		$td_html = "<td>".
 		  		"<input type='hidden' name='{$field}' value='{$fn}' />".
@@ -1123,7 +1108,7 @@ class CrudBaseHelper extends FormHelper {
 	public function rowEditBtn($id,$css_class=null,$onclick=null){
 
 		if(empty($css_class)){
-			$css_class='btn btn-primary btn-xs';
+			$css_class='row_edit_btn btn btn-primary btn-xs';
 		}
 		
 		if(empty($onclick)){
@@ -1157,7 +1142,7 @@ class CrudBaseHelper extends FormHelper {
 	public function rowCopyBtn($id,$css_class=null,$onclick=null){
 	    
 	    if(empty($css_class)){
-	        $css_class='btn btn-primary btn-xs';
+	        $css_class='row_copy_btn btn btn-primary btn-xs';
 	    }
 	    
 	    if(empty($onclick)){
@@ -1167,18 +1152,6 @@ class CrudBaseHelper extends FormHelper {
 	    $crudType = $this->param['crudType'];
 	    
 	    echo "<input type='button' value='複製'  class='{$css_class}' onclick='{$onclick}' />";
-	    
-	    // ■■■□□□■■■□□□■■■□□□■■■
-// 	    // CRUDタイプがajax型である場合
-// 	    if(empty($crudType)){
-// 	        echo "<input type='button' value='複製'  class='{$css_class}' onclick='{$onclick}' />";
-// 	    }
-	    
-// 	    // CRUDタイプがsubmit型である場合
-// 	    else{
-// 	        $url=$this->Html->webroot.$this->_mdl_snk.'/edit?id='.$id;
-// 	        echo "<a href='{$url}' class='{$css_class}'>複製</a>";
-// 	    }
 	    
 	}
 	
@@ -1195,7 +1168,7 @@ class CrudBaseHelper extends FormHelper {
 	public function rowPreviewBtn($id,$css_class=null){
 		
 		if(empty($css_class)){
-			$css_class='btn btn-info btn-xs';
+			$css_class='row_preview_btn btn btn-info btn-xs';
 		}
 		
 		
@@ -1226,17 +1199,55 @@ class CrudBaseHelper extends FormHelper {
 	 * @param string $css_class CSSスタイル（省略可）
 	 * @param $onclick 削除フォームを呼び出すjs関数（CRUDタイプがajax型である場合。省略可)
 	 */
-	public function rowDeleteBtn($id,$css_class=null,$onclick=null){
-
-		if(empty($css_class)) $css_class='btn btn-warning btn-xs';
-		if(empty($onclick)) $onclick="deleteShow(this);"; 
-		$crudType = $this->param['crudType'];
+	public function rowDeleteBtn(&$ent,$option=array()){
+	    
+	    $css_class = 'row_delete_btn btn btn-warning btn-xs';
+	    if(isset($option['css_class'])) $css_class = $option['css_class'];
+	    
+	    $onclick="deleteAction(this);";
+	    if(isset($option['onclick'])) $css_class = $option['onclick'];
+	    
+	    $crudType = $this->param['crudType'];
+	    
+	    // 検索条件データの削除フラグが0(有効)でなければ削除ボタンを表示しない。
+	    $style='';
+	    if($ent['delete_flg'] == 1) $style = "style='display:none'";
 		
 		// CRUDタイプがajax型である場合
 		if(empty($crudType)){
-			echo "<input type='button' value='削除'  class='{$css_class}' onclick='{$onclick}' />";	
+			echo "<input type='button' value='削除'  class='{$css_class}' onclick='{$onclick}' {$style} />";	
 		}
 
+	}
+	
+	
+	
+	
+	/**
+	 * 行の有効ボタンを作成する
+	 * @param int $id ID
+	 * @param string $css_class CSSスタイル（省略可）
+	 * @param $onclick 有効フォームを呼び出すjs関数（CRUDタイプがajax型である場合。省略可)
+	 */
+	public function rowEnabledBtn(&$ent,$option=array()){
+	    
+	    $css_class = 'row_enabled_btn btn btn-success btn-xs';
+	    if(isset($option['css_class'])) $css_class = $option['css_class'];
+	    
+	    $onclick="enabledAction(this);";
+	    if(isset($option['onclick'])) $css_class = $option['onclick'];
+	    
+	    $crudType = $this->param['crudType'];
+	    
+	    // 検索条件データの有効フラグが1(無効)でなければ有効ボタンを表示しない。
+	    $style='';
+	    if($ent['delete_flg'] != 1) $style = "style='display:none'";
+	    
+	    // CRUDタイプがajax型である場合
+	    if(empty($crudType)){
+	        echo "<input type='button' value='有効'  class='{$css_class}' onclick='{$onclick}' {$style} />";
+	    }
+	    
 	}
 	
 	
@@ -1248,22 +1259,29 @@ class CrudBaseHelper extends FormHelper {
 	 * @note
 	 * 検索条件データの削除フラグが1(削除)でなければ抹消ボタンを表示しない。
 	 * 
-	 * @param int $id ID
-	 * @param string $css_class CSSスタイル（省略可）
-	 * @param $onclick 抹消フォームを呼び出すjs関数（CRUDタイプがajax型である場合。省略可)
+	 * @param array $ent エンティティ
+	 * @param array $option
+	 *  - css_class CSSスタイル（省略可）
+	 *  - onclick 抹消フォームを呼び出すjs関数（CRUDタイプがajax型である場合。省略可)
 	 */
-	public function rowEliminateBtn($id,$css_class=null,$onclick=null){
+	public function rowEliminateBtn(&$ent,$option=array()){
 	    
-	    // 検索条件データの削除フラグが1(削除)でなければ抹消ボタンを表示しない。
-	    if($this->kjs['kj_delete_flg'] != 1) return;
+
 	    
-	    if(empty($css_class)) $css_class='btn btn-danger btn-xs';
-	    if(empty($onclick)) $onclick="eliminateShow(this);";
+	    $css_class = 'row_eliminate_btn btn btn-danger btn-xs';
+	    if(isset($option['css_class'])) $css_class = $option['css_class'];
+	    
+	    $onclick="eliminateShow(this);";
+	    if(isset($option['onclick'])) $css_class = $option['onclick'];
+
 	    $crudType = $this->param['crudType'];
+	    
+	    $style='';
+	    if($ent['delete_flg'] != 1) $style = "style='display:none'";
 	    
 	    // CRUDタイプがajax型である場合
 	    if(empty($crudType)){
-	        echo "<input type='button' value='抹消'  class='{$css_class}' onclick='{$onclick}' title='データベースからも消去します。復元できません。' />";
+	        echo "<input type='button' value='抹消'  class='{$css_class}' onclick='{$onclick}' {$style} title='データベースからも消去します。復元できません。' />";
 	    }
 	    
 	}

@@ -355,7 +355,7 @@
 	<div style="clear:both"></div>
 	<?php echo $this->Form->end()?>
 
-	<div id="defKjsJson" style="display:none"><?php echo $defKjsJson ?></div>
+	<div id="def_kjs_json" style="display:none"><?php echo $def_kjs_json ?></div>
 </div>
 
 <div id="check_new_record">
