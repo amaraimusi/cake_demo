@@ -893,6 +893,7 @@ class CrudBaseBase{
 	 * @param ent 行エンティティ
 	 * @param add_row_index 追加行インデックス :テーブル行の挿入場所。-1にすると末尾へ追加。-1がデフォルト。
 	 * @param option 拡張予定
+	 * @return jQuery_Object 新行要素
 	 */
 	_addTr(ent,add_row_index,option){
 
@@ -921,6 +922,8 @@ class CrudBaseBase{
 		// 新行要素にエンティティをセットする
 		option['form_type'] = 'new_inp';
 		this.setEntityToTr(newTr,ent,option);
+		
+		return newTr;
 
 	}
 
@@ -1449,9 +1452,19 @@ class CrudBaseBase{
 			param = {};
 		}
 
+		// 画面コード（スネーク記法）
+		if(param['src_code'] == null){
+			throw new Exception("'src_code' is empty!")
+		}
+
+		// 画面コード （キャメル）
+		if(param['src_code_c'] == null){
+			param['src_code_c'] = this._snakeToCamel(param.src_code);
+		}
+		
 		// CRUD対象テーブルセレクタ
 		if(param['tbl_slt'] == null){
-			param['tbl_slt'] = 'ajax_crud_tbl';
+			param['tbl_slt'] = param.src_code + '_tbl';
 		}
 
 		// 編集フォームセレクタ
@@ -1481,22 +1494,22 @@ class CrudBaseBase{
 
 		// 編集登録サーバーURL
 		if(param['edit_reg_url'] == null){
-			param['edit_reg_url'] = 'xxx';
+			param['edit_reg_url'] = param.src_code + '/ajax_reg';
 		}
 
 		// 新規登録サーバーURL
 		if(param['new_reg_url'] == null){
-			param['new_reg_url'] = 'xxx';
+			param['new_reg_url'] = param.src_code + '/ajax_reg';
 		}
 
 		// 削除登録サーバーURL
 		if(param['delete_reg_url'] == null){
-			param['delete_reg_url'] = 'xxx';
+			param['delete_reg_url'] = param.src_code + '/ajax_delete';
 		}
 
 		// 自動保存サーバーURL
 		if(param['auto_save_url'] == null){
-			param['auto_save_url'] = 'xxx';
+			param['auto_save_url'] = param.src_code + '/auto_save';
 		}
 		
 		// ファイルアップロードディレクトリ
@@ -3067,6 +3080,23 @@ class CrudBaseBase{
 		this.saveRequest(data,option);// 自動保存の依頼をする
 	}
 	
+	/**
+	 * スネーク記法をキャメル記法に変換する
+	 * (例) big_cat_test → BigCatTest
+	 */
+	_snakeToCamel(str){
+		//_+小文字を大文字にする(例:_a を A)
+		str = str.replace(/_./g,
+			(s) => {
+				return s.charAt(1).toUpperCase();
+			}
+		);
+
+		// 先頭を大文字化する
+		str = str.charAt(0).toUpperCase() + str.slice(1);
+		
+		return str;
+	};
 
 }
 

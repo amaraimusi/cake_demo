@@ -18,6 +18,8 @@
  * @version 2.1.1
  * 
  * @param object param
+ *  - src_code	画面コード（スネーク記法）
+ *  - src_code_c	画面コード（キャメル記法）
  *  - tbl_slt	CRUD対象テーブルセレクタ
  *  - edit_form_slt	編集フォームセレクタ
  *  - new_form_slt	新規フォームセレクタ
@@ -93,6 +95,14 @@ class CrudBase extends CrudBaseBase{
 		// 行入替機能のボタン表示切替
 		var row_exc_flg = jQuery('#row_exc_flg').val();
 		this.rowExcBtnShow(row_exc_flg);
+		
+		
+		// 列表示切替機能の初期化
+		this.csh=new ClmShowHide();//列表示切替
+		var csh_json = jQuery('#csh_json').val();
+		var iniClmData = JSON.parse(csh_json);//列表示配列  1:初期表示   0:初期非表示
+		var csh_unique_key = 'rkt_' + this.param.src_code + '_index'; // 画面別ユニークキー
+		this.csh.init('neko_tbl','clm_cbs',iniClmData,csh_unique_key);
 		
 		// --------
 
@@ -422,7 +432,10 @@ class CrudBase extends CrudBaseBase{
 				}
 
 				// 新しい行を作成する
-				this._addTr(ent,add_row_index);
+				var tr = this._addTr(ent,add_row_index);
+				
+				// ボタン群の表示切替
+				this._switchBtnsDisplay(tr,ent)
 
 				// 登録後にコールバック関数を非同期で実行する
 				if(afterCallBack != null){

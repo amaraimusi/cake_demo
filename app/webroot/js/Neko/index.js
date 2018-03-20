@@ -6,7 +6,6 @@ $(function() {
 
 
 var crudBase;//AjaxによるCRUD
-var csh=new ClmShowHide();//列表示切替
 var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複数選択による一括処理
 var nusrNekoVal = new NoUiSliderRap();///ネコ数値の数値範囲入力スライダー
 
@@ -30,11 +29,7 @@ function init(){
 	
 	//AjaxによるCRUD
 	crudBase = new CrudBase({
-			'tbl_slt':'neko_tbl',
-			'edit_reg_url':'neko/ajax_reg',
-			'new_reg_url':'neko/ajax_reg',
-			'delete_reg_url':'neko/ajax_delete',
-			'auto_save_url':'neko/auto_save',
+			'src_code':'neko', // 画面コード（スネーク記法)
 			'kjs':kjs,
 		});
 	
@@ -58,16 +53,10 @@ function init(){
 			
 	};
 	crudBase.setDisplayFilterData(disFilData);
-	
-	
-	// 列表示切替機能の初期化
-	var csh_json = $('#csh_json').val();
-	var iniClmData = JSON.parse(csh_json);//列表示配列  1:初期表示   0:初期非表示
-	csh.init('neko_tbl','clm_cbs',iniClmData,'rkt_neko_index');
 
 	//列並替変更フラグがON（列並べ替え実行）なら列表示切替情報をリセットする。
 	if(localStorage.getItem('clm_sort_chg_flg') == 1){
-		csh.reset();//列表示切替情報をリセット
+		this.crudBase.csh.reset();//列表示切替情報をリセット
 		localStorage.removeItem('clm_sort_chg_flg');
 	}
 	
