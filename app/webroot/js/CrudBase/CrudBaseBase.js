@@ -3097,6 +3097,23 @@ class CrudBaseBase{
 		
 		return str;
 	};
+	
+	
+	
+	
+	/**
+	 * 検索条件入力要素リストを取得する
+	 */
+	getKjElms(){
+		var kjElms = {};
+		jQuery('.kj_wrap').each((i,elm) => {
+			elm = jQuery(elm);
+			var field = elm.attr('data-field');
+			kjElms[field] = elm;
+		});
+		
+		return kjElms;
+	}
 
 }
 

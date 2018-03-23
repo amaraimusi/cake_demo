@@ -27,12 +27,12 @@
 	border:0px;
 	width:15px;
 	height:15px;
-	background-image: url('../img/icon/detail_toggle_btn_off.png') ;"
+	background-image: url('../../img/icon/detail_toggle_btn_off.png') ;"
 }
 
 .nusr_toggle_btn:hover{
     border:0px;
 	width:15px;
 	height:15px;
-	background-image: url('../img/icon/detail_toggle_btn_on.png') ;"
+	background-image: url('../../img/icon/detail_toggle_btn_on.png') ;"
 }

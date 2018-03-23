@@ -102,9 +102,13 @@ class CrudBase extends CrudBaseBase{
 		var csh_json = jQuery('#csh_json').val();
 		var iniClmData = JSON.parse(csh_json);//列表示配列  1:初期表示   0:初期非表示
 		var csh_unique_key = 'rkt_' + this.param.src_code + '_index'; // 画面別ユニークキー
-		this.csh.init('neko_tbl','clm_cbs',iniClmData,csh_unique_key);
+		this.csh.init(this.param.tbl_slt,'clm_cbs',iniClmData,csh_unique_key);
 		
 		// --------
+		var kjElms = this.getKjElms(); // 検索条件入力要素リストを取得する
+		this.cbGadgetKj = new CrudBaseGadgetKj(kjElms); // ガシェット管理クラス
+		this.cbGadgetKj.onGadgetsToElms();// 各検索入力要素にガシェットを組み込み
+		
 
 	}
 
@@ -669,6 +673,36 @@ class CrudBase extends CrudBaseBase{
 		}else{
 			jQuery('.row_exc_btn').hide();
 		}
+	}
+	
+	
+	/**
+	 * 検索条件をリセット
+	 * 
+	 * すべての検索条件入力フォームの値をデフォルトに戻します。
+	 * リセット対象外を指定することも可能です。
+	 * @param array exempts リセット対象外フィールド配列（省略可）
+	 */
+	resetKjs(exempts){
+		
+		if(exempts==null) exempts=[];
+		
+		//デフォルト検索条件JSONを取得およびパースする。
+		var def_kjs_json=$('#def_kjs_json').val();
+		var defKjs=jQuery.parseJSON(def_kjs_json);
+		
+		for(var key in defKjs){
+			
+			//リセット対象外でなければ、検索条件入力フォームをリセットする。
+			if(exempts.indexOf(key) < 0){
+				$('#' + key).val(defKjs[key]);
+			}
+			
+		}
+		
+		// 検索条件要素の各種ガシェットをリセットする
+		this.cbGadgetKj.reset();
+		
 	}
 	
 

@@ -4,7 +4,7 @@
 			'clm_show_hide',				//列表示切替
 			'ympicker_rap',					//年月ダイアログ
 			'nouislider.min',				//数値範囲入力スライダー・noUiSlider
-			'NoUiSliderRap',				//noUiSliderのラップ
+			'NoUiSliderWrap',				//noUiSliderのラップ
 			'CrudBase/index',				//CRUD共通
 			'Kani/index',			//当画面専用CSS
 	)));
@@ -15,7 +15,7 @@
 			'jquery.ui.ympicker',			//年月選択ダイアログ
 			'ympicker_rap',					//年月選択ダイアログのラップ
 			'nouislider.min',				//数値範囲入力スライダー・noUiSlider
-			'NoUiSliderRap',				//noUiSliderのラップクラス
+			'NoUiSliderWrap',				//noUiSliderのラップクラス
 			'CrudBase/index',				//CRUD共通
 			'CrudBase/LogForWorkerThread',	//ワーカー用ログ
 			'Kani/woker_thread',		//当画面専用のワーカースレッド（定期リロード）

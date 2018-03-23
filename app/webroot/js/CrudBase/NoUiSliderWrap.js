@@ -10,7 +10,7 @@
  * 
  * @date 2015-11-25 | 2018-3-9 v1とv2の両方が0であれば、両方を空文字にする。
  */
-var NoUiSliderRap = function(){
+var NoUiSliderWrap = function(){
 	
 	this.props;//プロパティ
 	this.slider;//スライダーオブジェクト

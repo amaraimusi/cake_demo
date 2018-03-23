@@ -51,7 +51,7 @@ class CrudBaseHelper extends FormHelper {
 	        'clm_show_hide',				// 列表示切替
 	        'ympicker_rap',					// 年月ダイアログ
 	        'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-	        'NoUiSliderRap',				// noUiSliderのラップ
+	        'CrudBase/NoUiSliderWrap',				// noUiSliderのラップ
 	        'CrudBase/index'				// CRUD indexページ共通
 	    );
 	}
@@ -66,10 +66,11 @@ class CrudBaseHelper extends FormHelper {
 	        'jquery.ui.ympicker',			// 年月選択ダイアログ
 	        'ympicker_rap',					// 年月選択ダイアログのラップ
 	        'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-	        'NoUiSliderRap',				// noUiSliderのラップ
+	        'CrudBase/NoUiSliderWrap',				// noUiSliderのラップ
 	        'CrudBase/CrudBaseBase.js?ver=1.0',
 	        'CrudBase/CrudBaseAutoSave.js?ver=1.0',
 	        'CrudBase/CrudBaseRowExchange.js?ver=1.2',
+	        'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
 	        'CrudBase/CrudBase.js?ver=2.0',
 	        'livipage',						// ページ内リンク先プレビュー
 	        'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
@@ -156,7 +157,7 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function inputKjId($kjs){
 
-		echo "<div class='kj_div'>\n";
+	    echo "<div class='kj_div kj_wrap' data-field='kj_id'>\n";
 		echo $this->input($this->_mdl.'kj_id', array(
 				'id' => 'kj_id',
 				'value' => $kjs['kj_id'],
@@ -194,7 +195,7 @@ class CrudBaseHelper extends FormHelper {
 			$maxlength = $this->getMaxlenIfCommonField($field,$maxlength);
 		}
 
-		echo "<div class='kj_div'>\n";
+		echo "<div class='kj_div kj_wrap' data-field='{$field}'>\n";
 		echo $this->input($this->_mdl.$field, array(
 				'id' => $field,
 				'value' => $kjs[$field],
@@ -238,9 +239,11 @@ class CrudBaseHelper extends FormHelper {
 	
 
 		echo $this->input($this->_mdl.$field, array(
-				'id' => $field,
-				'value' => $kjs[$field],
-				'type' => 'hidden',
+            'id' => $field,
+            'value' => $kjs[$field],
+            'type' => 'hidden',
+		    'data-field' => $field,
+		    'class' => 'kj_wrap',
 		));
 		
 	}
@@ -265,7 +268,7 @@ class CrudBaseHelper extends FormHelper {
 			$title = $wamei."で検索";
 		}
 		
-		echo "<div class='kj_div'>\n";
+		echo "<div class='kj_div kj_wrap' data-field='{$field}'>\n";
 		echo $this->input($this->_mdl.$field, array(
 				'id' => $field,
 				'type' => 'select',
@@ -329,7 +332,7 @@ class CrudBaseHelper extends FormHelper {
 			$list = $this->getDateTimeList();
 		}
 	
-		echo "<div class='kj_div'>\n";
+		echo "<div class='kj_div kj_wrap' data-field='{$field}' >\n";
 		echo $this->input($this->_mdl.$field, array(
 				'id' => $field,
 				'type' => 'select',
@@ -354,7 +357,7 @@ class CrudBaseHelper extends FormHelper {
 	 * 
 	 */	
 	public function inputKjDeleteFlg($kjs){
-		echo "<div class='kj_div'>\n";
+	    echo "<div class='kj_div kj_wrap' data-field='kj_delete_flg'>\n";
 		echo $this->input($this->_mdl.'kj_delete_flg', array(
 			'id' => 'kj_delete_flg',
 			'type' => 'select',
@@ -380,7 +383,7 @@ class CrudBaseHelper extends FormHelper {
 	 * 
 	 */	
 	public function inputKjLimit($kjs){
-		echo "<div class='kj_div'>\n";
+	    echo "<div class='kj_div kj_wrap' data-field='row_limit'>\n";
 		echo $this->input($this->_mdl.'row_limit', array(
 				'id' => 'row_limit',
 				'type' => 'select',
@@ -429,6 +432,7 @@ class CrudBaseHelper extends FormHelper {
 			$kj_ym_value=date('Y/m',strtotime($kj_ym_value));
 		}
 		
+		echo "<div class='kj_div kj_wrap' data-field='{$field}' data-gadget='datepicker'>";
 		echo "<div class='kj_div' style='margin-right:2px'>";
 		echo $this->input($kj_date_ym, array(
 				'id' => $kj_date_ym,
@@ -475,7 +479,7 @@ class CrudBaseHelper extends FormHelper {
 				'title'=>'入力日以前を検索',
 		));
 		echo "</div>";
-		
+		echo "</div>";
 
 		
 	}
@@ -499,7 +503,8 @@ class CrudBaseHelper extends FormHelper {
 		//<!-- 数値範囲入力スライダー・noUiSlider -->
 		$detail_noui = $field.'_detail';
 		
-		echo "<div class='kj_div'><table><tr><td>";
+		echo "<div class='kj_div kj_wrap' data-field='{$field}' data-gadget='nouislider'><table><tr><td>";// ■■■□□□■■■□□□■■■□□□
+		//echo "<table class='kj_wrap' data-field='{$field}' data-gadget='nouislider'><tr><td>";
 		echo "		<span class='nusr_label'><{$wamei}による範囲検索</span>&nbsp;";
 		echo "		<span id='{$field}_preview' class='nusr_preview'></span>";
 		echo "	</td></tr>";
@@ -536,6 +541,7 @@ class CrudBaseHelper extends FormHelper {
 			'title'=>$wamei.'による範囲検索',
 		));
 		
+		//echo "	</div></td><td></td></tr></table>";// ■■■□□□■■■□□□■■■□□□
 		echo "	</div></td><td></td></tr></table></div>";
 		
 		
@@ -557,7 +563,7 @@ class CrudBaseHelper extends FormHelper {
 			return;
 		}
 		
-		echo "<div class='kj_div' style='margin-top:4px;'>";
+		echo "<div class='kj_div kj_wrap' data-field='saveKjFlg' style='margin-top:4px;'>";
 		echo $this->input($this->_mdl."saveKjFlg",array(
 				'type'=>'checkbox',
 				'value' => 1,

@@ -76,12 +76,17 @@ class CrudBaseController extends AppController {
 	 *
 	 */
 	protected function indexBefore($name,$request=null){
+	    
 
 		if(empty($request)) $request = $this->request->data;
 
 		$this->MainModel=ClassRegistry::init($name);
 		$this->main_model_name=$name;
 		$this->main_model_name_s=$this->snakize($name);
+		
+		// ■■■□□□■■■□□□■■■□□□
+		//$crudBaseData = $this->Session->read($this->main_model_name_s.'_crud_base_data');
+		
 		// POSTデータを取得
 		$postData = null;
 		if(isset($this->request->data[$name])){
@@ -129,7 +134,6 @@ class CrudBaseController extends AppController {
 
 		//フィールドデータが画面コントローラで定義されている場合、以下の処理を行う。
 		if(!empty($this->field_data)){
-
 			$res=$this->exe_field_data($this->field_data,$this->main_model_name_s);//フィールドデータに関する処理
 			$this->table_fields=$res['table_fields'];
 			$this->field_data=$res['field_data'];
@@ -176,9 +180,6 @@ class CrudBaseController extends AppController {
 		    
 		}
 
-		//CSV用にセッションセット
-		$this->Session->write($this->main_model_name_s.'_kjs',$kjs);
-
 		$bigDataFlg=$this->checkBigDataFlg($kjs);//巨大データ判定
 
 		//巨大データフィールドデータを取得
@@ -210,6 +211,12 @@ class CrudBaseController extends AppController {
 		
 		$kjs_json = json_encode($kjs,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
+		
+		
+		// セッションへセット（CSVエクスポートで利用）
+		$this->Session->write($this->main_model_name_s.'_kjs',$kjs);
+		
+		//$crudBaseData['']
 		$crudBaseData = array(
 		    'field_data'=>$active, // アクティブフィールドデータ
 		    'kjs'=>$kjs, // 検索条件情報
@@ -413,6 +420,8 @@ class CrudBaseController extends AppController {
 		$csv_ses_key=$page_code.'_kjs';//CSV用のセッションキー
 		$mains_ses_key = $page_code.'_mains_cb';//主要パラメータのセッションキー
 		$ini_cnds_ses_key = $page_code.'_ini_cnds';// 初期条件データのセッションキー
+		
+		
 
 		$this->Session->delete($fd_ses_key);
 		$this->Session->delete($tf_ses_key);
@@ -531,6 +540,19 @@ class CrudBaseController extends AppController {
 		$crudBaseData['row_exc_flg'] = $row_exc_flg; // 行入替機能フラグ  0:行入替ボタンは非表示 , 1:表示
 		
 
+		$this->Session->write($this->main_model_name_s.'_pages',$pages);
+		
+		//■■■□□□■■■□□□■■■□□□
+// 		$crud_base_data_size = sizeof($crudBaseData);
+// 		debug('$crud_base_data_size='.$crud_base_data_size);//■■■□□□■■■□□□■■■□□□)
+
+		
+
+// 		$cb_json = $json = json_encode($crudBaseData,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
+// 		$len = mb_strlen($cb_json);
+// 		debug($len);//■■■□□□■■■□□□■■■□□□)
+//		$this->Session->write($this->main_model_name_s.'_crud_base_data',$crudBaseData);
+		
 		return $crudBaseData;
 	}
 
@@ -1007,6 +1029,17 @@ class CrudBaseController extends AppController {
 		return $kjs;
 
 	}
+	
+	// ■■■□□□■■■□□□■■■□□□
+// 	/**
+// 	 * セッションからページネーション情報を取得する
+// 	 * @return array ページネーション情報
+// 	 */
+// 	protected function getPagesFromSession(){
+	    
+// 	    $pages = $this->Session->read($this->main_model_name_s.'_pages');
+// 	    return $pages;
+// 	}
 
 	/**
 	 * 検索条件キーリストを取得
@@ -1102,7 +1135,7 @@ class CrudBaseController extends AppController {
 
 		//空ならセッションから取得する。
 		if(empty($pages) && $saveKjFlg==true){
-			$pages=$this->Session->read($this->main_model_name.'_page_param');
+			$pages=$this->Session->read($this->main_model_name_s.'_page_param');
 		}
 
 		$defs=$this->getDefKjs();//デフォルト情報を取得
@@ -1123,11 +1156,22 @@ class CrudBaseController extends AppController {
 
 		//セッションに詰める。
 		if($saveKjFlg==true){
-			$this->Session->write($this->main_model_name.'_page_param',$pages);//セッションへの書き込み
+			$this->Session->write($this->main_model_name_s.'_page_param',$pages);//セッションへの書き込み
+			debug($this->main_model_name_s.'_page_param');//■■■□□□■■■□□□■■■□□□)
 		}
 
 		return $pages;
 	}
+	
+	
+// 	/**■■■□□□■■■□□□■■■□□□
+// 	 * セッションからページネーション情報を取得する
+// 	 * @return array ページネーション情報
+// 	 */
+// 	protected function getPagesFromSession(){
+// 	    $pages=$this->Session->read($this->main_model_name.'_page_param');
+// 	    return $pages;
+// 	}
 
 	/**
 	 * サブミット時用のページネーション情報を取得

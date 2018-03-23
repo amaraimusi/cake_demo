@@ -7,7 +7,7 @@ $(function() {
 
 var crudBase;//AjaxによるCRUD
 var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複数選択による一括処理
-var nusrNekoVal = new NoUiSliderRap();///ネコ数値の数値範囲入力スライダー
+//var nusrNekoVal = new NoUiSliderWrap();///ネコ数値の数値範囲入力スライダー■■■□□□■■■□□□■■■□□□
 
 /**
  *  ネコ画面の初期化
@@ -76,17 +76,7 @@ function init(){
 
 	// 年月選択により月初日、月末日らのテキストボックスを連動させる。
 	ympicker_tukishomatu('kj_neko_date_ym','kj_neko_date1','kj_neko_date2');
-	
-	//noUiSliderの初期化（数値範囲入力スライダー）
-	nusrNekoVal.init(nusrNekoVal,{
-			'slider':'#neko_val_slider',
-			'tb1':'#kj_neko_val1',
-			'tb2':'#kj_neko_val2',
-			'value_preview':'#neko_val_preview',
-			'step':5,
-			'min':0,
-			'max':200,
-		});
+
 	
 	
 	// 一覧のチェックボックス複数選択による一括処理
@@ -199,27 +189,7 @@ function closeForm(form_type){
  */
 function resetKjs(exempts){
 	
-	if(exempts==null){
-		exempts=[];
-	}
-	
-	//デフォルト検索条件JSONを取得およびパースする。
-	var def_kjs_json=$('#def_kjs_json').val();
-	var defKjs=jQuery.parseJSON(def_kjs_json);
-	
-	for(var key in defKjs){
-		
-		//リセット対象外でなければ、検索条件入力フォームをリセットする。
-		if(exempts.indexOf(key) < 0){
-			$('#' + key).val(defKjs[key]);
-		}
-		
-	}
-	
-	// --- Start ex2
-	//数値範囲入力スライダー・noUiSliderの再表示(nouislider_rap.js)
-	nusrNekoVal.reload();
-	// --- End ex2
+	crudBase.resetKjs(exempts);
 	
 }
 

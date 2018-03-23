@@ -18,9 +18,7 @@ $(function(){
 function errShowDetail(){
 	
 	// エラー要素および詳細要素が存在しなければ、処理をしません。
-	if(!$('#err')[0] || !$('#detail_div')[0]){
-		return;
-	}
+	if(!$('#err')[0] || !$('#detail_div')[0]) return;
 	
 	// エラーメッセージが空でない場合、詳細要素を表示します。
 	var msg = $('#err').html();

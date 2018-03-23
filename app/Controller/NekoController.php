@@ -393,12 +393,19 @@ class NekoController extends CrudBaseController {
 	private function getDataForDownload(){
 		 
 		
-		//セッションから読取
-		$kjs=$this->Session->read('neko_kjs');
-		
-		
+        //セッションから検索条件情報を取得
+        $kjs=$this->Session->read('neko_kjs');
+        
+        // セッションからページネーション情報を取得
+        $pages = $this->Session->read('neko_pages');
+
+        $page_no = 0;
+        $row_limit = 100000;
+        $sort_field = $pages['sort_field'];
+        $sort_desc = $pages['sort_desc'];
+
 		//DBからデータ取得
-		$data=$this->Neko->findData($kjs,null,null,null);
+	   $data=$this->Neko->findData($kjs,$page_no,$row_limit,$sort_field,$sort_desc);
 		if(empty($data)){
 			return array();
 		}
@@ -441,23 +448,23 @@ class NekoController extends CrudBaseController {
 		/// 検索条件情報の定義
 		$this->kensakuJoken=array(
 		
-				array('name'=>'kj_id','def'=>null),
-				array('name'=>'kj_neko_val1','def'=>null),
-				array('name'=>'kj_neko_val2','def'=>null),
-				array('name'=>'kj_neko_name','def'=>null),
-				array('name'=>'kj_neko_date_ym','def'=>null),
-				array('name'=>'kj_neko_date1','def'=>null),
-				array('name'=>'kj_neko_date2','def'=>null),
-				array('name'=>'kj_neko_group','def'=>null),
-				array('name'=>'kj_neko_dt','def'=>null),
-				array('name'=>'kj_note','def'=>null),
-				array('name'=>'kj_sort_no','def'=>null),
-				array('name'=>'kj_delete_flg','def'=>0),
-				array('name'=>'kj_update_user','def'=>null),
-				array('name'=>'kj_ip_addr','def'=>null),
-				array('name'=>'kj_created','def'=>null),
-				array('name'=>'kj_modified','def'=>null),
-				array('name'=>'row_limit','def'=>50),
+			array('name'=>'kj_id','def'=>null),
+			array('name'=>'kj_neko_val1','def'=>null),
+			array('name'=>'kj_neko_val2','def'=>null),
+			array('name'=>'kj_neko_name','def'=>null),
+		    array('name'=>'kj_neko_date_ym','def'=>null),
+			array('name'=>'kj_neko_date1','def'=>null),
+			array('name'=>'kj_neko_date2','def'=>null),
+			array('name'=>'kj_neko_group','def'=>null),
+			array('name'=>'kj_neko_dt','def'=>null),
+			array('name'=>'kj_note','def'=>null),
+			array('name'=>'kj_sort_no','def'=>null),
+			array('name'=>'kj_delete_flg','def'=>0),
+			array('name'=>'kj_update_user','def'=>null),
+			array('name'=>'kj_ip_addr','def'=>null),
+			array('name'=>'kj_created','def'=>null),
+			array('name'=>'kj_modified','def'=>null),
+			array('name'=>'row_limit','def'=>50),
 					
 		);
 		

@@ -8,7 +8,7 @@ $(function() {
 
 
 /// カニ数値の数値範囲入力スライダー
-var nusrKaniVal = new NoUiSliderRap();
+var nusrKaniVal = new NoUiSliderWrap();
 
 /// 列表示切替機能
 var clmShowHide=new ClmShowHide();
