@@ -7,7 +7,6 @@ $(function() {
 
 var crudBase;//AjaxによるCRUD
 var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複数選択による一括処理
-//var nusrNekoVal = new NoUiSliderWrap();///ネコ数値の数値範囲入力スライダー■■■□□□■■■□□□■■■□□□
 
 /**
  *  ネコ画面の初期化
@@ -59,33 +58,12 @@ function init(){
 		this.crudBase.csh.reset();//列表示切替情報をリセット
 		localStorage.removeItem('clm_sort_chg_flg');
 	}
-	
-	
-	// --- Start js_index_date
-	
-	//jQuery UIカレンダーを日本語化する(Layouts/default.js)
-	datepicker_ja();
-	
-	//日付系の検索入力フォームにJQueryカレンダーを組み込む。
-	$("#kj_neko_date1").datepicker({
-		dateFormat:'yy-mm-dd'
-	});
-	$("#kj_neko_date2").datepicker({
-		dateFormat:'yy-mm-dd'
-	});
 
-	// 年月選択により月初日、月末日らのテキストボックスを連動させる。
-	ympicker_tukishomatu('kj_neko_date_ym','kj_neko_date1','kj_neko_date2');
-
-	
-	
 	// 一覧のチェックボックス複数選択による一括処理
 	pwms = new ProcessWithMultiSelection({
 		'tbl_slt':'#neko_tbl',
 		'ajax_url':'neko/ajax_pwms',
 			});
-	// --- End js_index_date
-	
 
 	// 新規入力フォームのinput要素にEnterキー押下イベントを組み込む。
 	$('#ajax_crud_new_inp_form input').keypress(function(e){

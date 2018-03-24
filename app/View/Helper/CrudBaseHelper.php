@@ -66,7 +66,8 @@ class CrudBaseHelper extends FormHelper {
 	        'jquery.ui.ympicker',			// 年月選択ダイアログ
 	        'ympicker_rap',					// 年月選択ダイアログのラップ
 	        'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-	        'CrudBase/NoUiSliderWrap',				// noUiSliderのラップ
+	        'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ
+	        'CrudBase/YmpickerWrap',		// 年月ピッカーのラッパークラス
 	        'CrudBase/CrudBaseBase.js?ver=1.0',
 	        'CrudBase/CrudBaseAutoSave.js?ver=1.0',
 	        'CrudBase/CrudBaseRowExchange.js?ver=1.2',
@@ -413,13 +414,13 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	/**
-	 * 検索用の年月入力フォームを作成
+	 * 月・日付範囲検索
 	 * 
 	 * @param array $kjs 検索条件データ
 	 * @param string $field フィールド名
 	 * @param string $wamei フィールド和名
 	 */
-	public function inputKjNengetu($kjs,$field,$wamei){
+	public function inputKjMoDateRng($kjs,$field,$wamei){
 
 
 		$kj_date_ym = $field.'_ym';
@@ -432,7 +433,7 @@ class CrudBaseHelper extends FormHelper {
 			$kj_ym_value=date('Y/m',strtotime($kj_ym_value));
 		}
 		
-		echo "<div class='kj_div kj_wrap' data-field='{$field}' data-gadget='datepicker'>";
+		echo "<div class='kj_div kj_wrap' data-field='{$field}' data-gadget='mo_date_rng'>";
 		echo "<div class='kj_div' style='margin-right:2px'>";
 		echo $this->input($kj_date_ym, array(
 				'id' => $kj_date_ym,
@@ -503,8 +504,7 @@ class CrudBaseHelper extends FormHelper {
 		//<!-- 数値範囲入力スライダー・noUiSlider -->
 		$detail_noui = $field.'_detail';
 		
-		echo "<div class='kj_div kj_wrap' data-field='{$field}' data-gadget='nouislider'><table><tr><td>";// ■■■□□□■■■□□□■■■□□□
-		//echo "<table class='kj_wrap' data-field='{$field}' data-gadget='nouislider'><tr><td>";
+		echo "<div class='kj_div kj_wrap' data-field='{$field}' data-gadget='nouislider'><table><tr><td>";
 		echo "		<span class='nusr_label'><{$wamei}による範囲検索</span>&nbsp;";
 		echo "		<span id='{$field}_preview' class='nusr_preview'></span>";
 		echo "	</td></tr>";
@@ -541,7 +541,6 @@ class CrudBaseHelper extends FormHelper {
 			'title'=>$wamei.'による範囲検索',
 		));
 		
-		//echo "	</div></td><td></td></tr></table>";// ■■■□□□■■■□□□■■■□□□
 		echo "	</div></td><td></td></tr></table></div>";
 		
 		

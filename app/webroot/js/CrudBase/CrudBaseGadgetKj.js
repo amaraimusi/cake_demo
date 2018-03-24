@@ -9,6 +9,7 @@ class CrudBaseGadgetKj{
 	constructor(kjElms){
 		this.kjElms = kjElms; // 検索条件要素リスト
 		this.gadgets; // ガジェットオブジェクトリスト
+		this.ympickerWrap; // 年月ピッカーのラッパークラス <YmpickerWrap.js>
 	}
 	
 	
@@ -28,8 +29,14 @@ class CrudBaseGadgetKj{
 			
 			if(gadgets[gadget_name] == null) gadgets[gadget_name] = {};
 
+			// NOスライダー
 			if(gadget_name == 'nouislider'){
 				gadgets[gadget_name][field] = this._initNouislider(field,kjElm);
+			}
+			
+			// 月・日付範囲検索
+			else if(gadget_name == 'mo_date_rng'){
+				gadgets[gadget_name][field] = this._initMoDateRng(field,kjElm);
 			}
 
 		}
@@ -66,6 +73,36 @@ class CrudBaseGadgetKj{
 		return noUiSlider;
 	}
 	
+	
+	
+	/**
+	 * 月・日付範囲機能を組み込む
+	 * @param string field フィールド
+	 */
+	_initMoDateRng(field){
+		
+		var tb_ym_id = field + '_ym';
+		var tb_m_start_id = field + '1';
+		var tb_m_ent_id = field + '2';
+		
+		//日付系の検索入力フォームにJQueryカレンダーを組み込む。
+		$('#' + tb_m_start_id).datepicker({
+			dateFormat:'yy-mm-dd'
+		});
+		$('#' + tb_m_ent_id).datepicker({
+			dateFormat:'yy-mm-dd'
+		});
+		
+		if(!this.ympickerWrap) this.ympickerWrap = new YmpickerWrap();// 年月ピッカーのラッパークラス
+
+		// 年月選択により月初日、月末日らのテキストボックスを連動させる。
+		this.ympickerWrap.tukishomatu(tb_ym_id,tb_m_start_id,tb_m_ent_id);
+
+		return null;
+	}
+	
+	
+	
 	/**
 	 * フィールドから「kj_」部分を除去する
 	 * @param string field フィールド
@@ -96,7 +133,7 @@ class CrudBaseGadgetKj{
 			var nouisliderList = this.gadgets['nouislider'];
 			for(var i in nouisliderList){
 				var nouislider = nouisliderList[i];
-				console.log('test=Ａ６');//■■■□□□■■■□□□■■■□□□)
+				
 				nouislider.reload();//数値範囲入力スライダー・noUiSliderの再表示(nouislider_rap.js)
 			}
 		}

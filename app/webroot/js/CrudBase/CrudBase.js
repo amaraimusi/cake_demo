@@ -104,10 +104,12 @@ class CrudBase extends CrudBaseBase{
 		var csh_unique_key = 'rkt_' + this.param.src_code + '_index'; // 画面別ユニークキー
 		this.csh.init(this.param.tbl_slt,'clm_cbs',iniClmData,csh_unique_key);
 		
-		// --------
+		// 検索条件入力要素にガシェットを組み込む
 		var kjElms = this.getKjElms(); // 検索条件入力要素リストを取得する
 		this.cbGadgetKj = new CrudBaseGadgetKj(kjElms); // ガシェット管理クラス
 		this.cbGadgetKj.onGadgetsToElms();// 各検索入力要素にガシェットを組み込み
+		
+		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
 		
 
 	}
@@ -626,8 +628,6 @@ class CrudBase extends CrudBaseBase{
 		var row_index = this.param.active_row_index; // アクティブ行インデックス
 		var ent = this._getEntByForm('eliminate');// 抹消フォームからエンティティを取得する
 		option['eliminate_flg'] = 1; // 抹消フラグをONにする
-		
-		console.log('eliminateReg');//■■■□□□■■■□□□■■■□□□)
 		
 		// 抹消を実行
 		var delete_flg = 1;
