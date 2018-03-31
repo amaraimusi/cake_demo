@@ -49,6 +49,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		$this->CrudBase->inputKjId($kjs); 
 		$this->CrudBase->inputKjNouislider($kjs,'neko_val','ネコ数値'); 
 		$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
+		//$this->CrudBase->inputKjDateTime($kjs,'kj_neko_dt','ネコ日時',150);// ■■■□□□■■■□□□■■■□□□
 		$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
 		$this->CrudBase->inputKjText($kjs,'kj_note','備考',200,'部分一致検索'); 
 		$this->CrudBase->inputKjHidden($kjs,'kj_sort_no');

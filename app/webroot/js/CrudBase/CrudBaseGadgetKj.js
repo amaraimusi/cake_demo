@@ -1,6 +1,11 @@
 /**
  * CrudBaseガシェット管理クラス（検索条件の入力要素用）
  * 
+ * @note
+ * 下記のモジュール群に依存している。
+ * - NoUiSliderWrap NOスライダー
+ * - YmpickerWrap.js 年月ピッカーのラッパー
+ * 
  * @date 2018-3-23
  * @version 1.0
  */
@@ -31,13 +36,20 @@ class CrudBaseGadgetKj{
 
 			// NOスライダー
 			if(gadget_name == 'nouislider'){
-				gadgets[gadget_name][field] = this._initNouislider(field,kjElm);
+				gadgets[gadget_name][field] = this._initNouislider(field);
 			}
 			
 			// 月・日付範囲検索
 			else if(gadget_name == 'mo_date_rng'){
-				gadgets[gadget_name][field] = this._initMoDateRng(field,kjElm);
+				gadgets[gadget_name][field] = this._initMoDateRng(field);
 			}
+			
+			// 日時ピッカー
+			else if(gadget_name == 'datetimepicker'){
+				gadgets[gadget_name][field] = this._initDateTimePicker(field);
+			}
+			
+			
 
 		}
 		this.gadgets = gadgets;
@@ -46,9 +58,8 @@ class CrudBaseGadgetKj{
 	/**
 	 * Noスライダーを検索条件要素に組み込む
 	 * @param string field フィールド
-	 * @param jQuery_Object kjElm 検索条件要素
 	 */
-	_initNouislider(field,kjElm){
+	_initNouislider(field){
 		
 		field = this._removeKjHash(field); // フィールドから「kj_」部分を除去する
 		
@@ -97,6 +108,21 @@ class CrudBaseGadgetKj{
 
 		// 年月選択により月初日、月末日らのテキストボックスを連動させる。
 		this.ympickerWrap.tukishomatu(tb_ym_id,tb_m_start_id,tb_m_ent_id);
+
+		return null;
+	}
+	
+	
+	
+	/**
+	 * 日時ピッカー機能を組み込む
+	 * @param string field フィールド
+	 */
+	_initDateTimePicker(field){
+		
+		jQuery('#' + field).datetimepicker({
+			format:'Y-m-d H:i',
+		});
 
 		return null;
 	}

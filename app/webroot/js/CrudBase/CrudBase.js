@@ -110,7 +110,7 @@ class CrudBase extends CrudBaseBase{
 		this.cbGadgetKj.onGadgetsToElms();// 各検索入力要素にガシェットを組み込み
 		
 		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
-		
+		jQuery.datetimepicker.setLocale('ja');// 日時ピッカーを日本語化<jquery.datetimepicker.full.min.js>
 
 	}
 

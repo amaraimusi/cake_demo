@@ -48,8 +48,9 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function getCssList(){
 	    return array(
+	        'jquery.datetimepicker.min',   // 日時ピッカー
 	        'clm_show_hide',				// 列表示切替
-	        'ympicker_rap',					// 年月ダイアログ
+	        'YmpickerWrap',					// 年月ピッカーのラッパー
 	        'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
 	        'CrudBase/NoUiSliderWrap',				// noUiSliderのラップ
 	        'CrudBase/index'				// CRUD indexページ共通
@@ -64,8 +65,8 @@ class CrudBaseHelper extends FormHelper {
 	        'clm_show_hide',				// 列表示切替
 	        'date_ex',						// 日付関連関数集
 	        'jquery.ui.ympicker',			// 年月選択ダイアログ
-	        'ympicker_rap',					// 年月選択ダイアログのラップ
 	        'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
+	        'jquery.datetimepicker.full.min',// 日時ピッカー
 	        'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ
 	        'CrudBase/YmpickerWrap',		// 年月ピッカーのラッパークラス
 	        'CrudBase/CrudBaseBase.js?ver=1.0',
@@ -294,6 +295,42 @@ class CrudBaseHelper extends FormHelper {
 	public function inputKjModified($kjs){
 	
 		$this->inputKjDateTimeA($kjs,'kj_modified','更新日時');
+	}
+	
+	
+	/**
+	 * 検索用の日時入力フォームを作成
+	 *
+	 * @param array $kjs 検索条件データ
+	 * @param string $field フィールド名
+	 * @param string $wamei フィールド和名
+	 * @param int $width 入力フォームの横幅（省略可）
+	 * @param string $title ツールチップメッセージ（省略可）
+	 * @param int $maxlength 最大文字数(共通フィールドは設定不要）
+	 */
+	public function inputKjDateTime($kjs,$field,$wamei,$width=200,$title=null,$maxlength=255){
+	    
+	    if($title==null){
+	        $title = $wamei."で検索";
+	    }
+	    
+	    // maxlengthがデフォルト値のままなら、共通フィールド用のmaxlength属性値を取得する
+	    if($maxlength==255){
+	        $maxlength = $this->getMaxlenIfCommonField($field,$maxlength);
+	    }
+	    
+	    echo "<div class='kj_div kj_wrap' data-field='{$field}' data-gadget='datetimepicker' >\n";
+	    echo $this->input($this->_mdl.$field, array(
+	        'id' => $field,
+	        'value' => $kjs[$field],
+	        'type' => 'text',
+	        'label' => false,
+	        'placeholder' => $wamei,
+	        'style'=>"width:{$width}px",
+	        'title'=>$title,
+	        'maxlength'=>$maxlength,
+	    ));
+	    echo "</div>\n";
 	}
 
 	
