@@ -248,5 +248,18 @@ function saveRequest(){
 }
 
 
-
+/**
+ * セッションをクリアする
+ * 
+ * @note
+ * ついでに列表示切替機能も初期化する
+ * 
+ */
+function session_clear(){
+	
+	// 列表示切替機能を初期化
+	crudBase.csh.reset();
+	
+	location.href = '?ini=1&sc=1';
+}
 

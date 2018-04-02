@@ -130,20 +130,7 @@ function toggleSvg(svg_fn,svg_slt){
 
 
 
-/**
- * セッションをクリアする
- * 
- * @note
- * ついでに列表示切替機能も初期化する
- * 
- */
-function session_clear(){
-	
-	// 列表示切替機能を初期化
-	csh.reset();
-	
-	location.href = '?ini=1&sc=1';
-}
+
 
 /**
  * 行データによるリンク

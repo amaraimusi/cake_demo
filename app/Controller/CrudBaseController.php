@@ -76,17 +76,13 @@ class CrudBaseController extends AppController {
 	 *
 	 */
 	protected function indexBefore($name,$request=null){
-	    
 
 		if(empty($request)) $request = $this->request->data;
 
 		$this->MainModel=ClassRegistry::init($name);
 		$this->main_model_name=$name;
 		$this->main_model_name_s=$this->snakize($name);
-		
-		// ■■■□□□■■■□□□■■■□□□
-		//$crudBaseData = $this->Session->read($this->main_model_name_s.'_crud_base_data');
-		
+
 		// POSTデータを取得
 		$postData = null;
 		if(isset($this->request->data[$name])){
@@ -498,6 +494,7 @@ class CrudBaseController extends AppController {
 	 * @return array 列表示配列
 	 */
 	private function exstractClmShowHideArray($field_data){
+
 		$csh_ary=array();
 		if(!empty($field_data)){
 			$csh_ary=Hash::extract($field_data, 'active.{n}.clm_show');
@@ -541,18 +538,7 @@ class CrudBaseController extends AppController {
 		
 
 		$this->Session->write($this->main_model_name_s.'_pages',$pages);
-		
-		//■■■□□□■■■□□□■■■□□□
-// 		$crud_base_data_size = sizeof($crudBaseData);
-// 		debug('$crud_base_data_size='.$crud_base_data_size);//■■■□□□■■■□□□■■■□□□)
 
-		
-
-// 		$cb_json = $json = json_encode($crudBaseData,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-// 		$len = mb_strlen($cb_json);
-// 		debug($len);//■■■□□□■■■□□□■■■□□□)
-//		$this->Session->write($this->main_model_name_s.'_crud_base_data',$crudBaseData);
-		
 		return $crudBaseData;
 	}
 
@@ -1029,17 +1015,7 @@ class CrudBaseController extends AppController {
 		return $kjs;
 
 	}
-	
-	// ■■■□□□■■■□□□■■■□□□
-// 	/**
-// 	 * セッションからページネーション情報を取得する
-// 	 * @return array ページネーション情報
-// 	 */
-// 	protected function getPagesFromSession(){
-	    
-// 	    $pages = $this->Session->read($this->main_model_name_s.'_pages');
-// 	    return $pages;
-// 	}
+
 
 	/**
 	 * 検索条件キーリストを取得
@@ -1157,21 +1133,11 @@ class CrudBaseController extends AppController {
 		//セッションに詰める。
 		if($saveKjFlg==true){
 			$this->Session->write($this->main_model_name_s.'_page_param',$pages);//セッションへの書き込み
-			debug($this->main_model_name_s.'_page_param');//■■■□□□■■■□□□■■■□□□)
 		}
 
 		return $pages;
 	}
-	
-	
-// 	/**■■■□□□■■■□□□■■■□□□
-// 	 * セッションからページネーション情報を取得する
-// 	 * @return array ページネーション情報
-// 	 */
-// 	protected function getPagesFromSession(){
-// 	    $pages=$this->Session->read($this->main_model_name.'_page_param');
-// 	    return $pages;
-// 	}
+
 
 	/**
 	 * サブミット時用のページネーション情報を取得
