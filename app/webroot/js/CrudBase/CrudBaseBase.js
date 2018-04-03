@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-3-16
- * @version 2.1.1 
+ * @date 2016-9-21 | 2018-4-3
+ * @version 2.1.2
  * 
  * @param object param
  *  - tbl_slt	CRUD対象テーブルセレクタ
@@ -1989,6 +1989,12 @@ class CrudBaseBase{
 			res.xss = 0;
 			break;
 			
+		case 'flg':
+
+			res.val1 = this.disFilFlg(val1,field,filEnt.option);// 表示フィルター・フラグ
+			res.xss = 0;
+			break;
+			
 		case 'money':
 
 			res.val1 = this.disFilMoney(val1,field,filEnt.option);// 表示フィルター・金額
@@ -2051,6 +2057,25 @@ class CrudBaseBase{
 			return '<span style="color:#b4b4b4;">削除</span>';
 		}else{
 			return '<span style="color:#23d6e4;">有効</span>';
+		}
+
+	}
+	
+	/**
+	 * 表示フィルター・フラグ
+	 * @param val1 フィルターをかける値
+	 * @param field フィールド
+	 * @param option 
+	 * 
+	 */
+	disFilFlg(val1,field,option){
+
+		if(val1 == null) return val1;
+		
+		if(val1 == 1){
+			return '<span style="color:#23d6e4;">有効</span>';
+		}else{
+			return '<span style="color:#b4b4b4;">無効</span>';
 		}
 
 	}

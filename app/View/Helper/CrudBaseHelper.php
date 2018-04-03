@@ -415,6 +415,34 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	/**
+	 * 検索用のフラグフォームを作成
+	 *
+	 * @param array $kjs 検索条件データ
+	 * @param string $field フィールド名
+	 * @param string $wamei フィールド和名
+	 *
+	 */
+	public function inputKjFlg($kjs,$field,$wamei){
+	    echo "<div class='kj_div kj_wrap' data-field='{$field}'>\n";
+	    echo $this->input($this->_mdl.$field, array(
+	        'id' => $field,
+	        'type' => 'select',
+	        'options' => array(
+	            -1=>'すべて表示',
+	            0=>'無効',
+	            1=>'有効',
+	        ),
+	        'default' => $kjs[$field],
+	        'label' => false,
+	    ));
+	    echo "</div>\n";
+	}
+	
+	
+	
+	
+	
+	/**
 	 * 検索用の表示件数セレクトを作成
 	 *
 	 * @param array $kjs 検索条件データ
@@ -916,6 +944,24 @@ class CrudBaseHelper extends FormHelper {
 	}
 	
 	
+	
+	/**
+	 * フラグの表記を変換する
+	 *
+	 * @param string $v 削除フラグ
+	 */
+	public function propFlg($v){
+	    
+	    if($v==0){
+	        $v="<span style='color:#b4b4b4;'>無効</span>";
+	    }elseif($v==1){
+	        $v="<span style='color:#23d6e4;'>有効</span>";
+	    }
+	    
+	    return $v;
+	}
+	
+	
 	public function tdAdd($html,$field){
 		$this->setTd($html,$field);
 	}
@@ -939,6 +985,28 @@ class CrudBaseHelper extends FormHelper {
 		
 		$this->tblPreview($v,$wamei);
 
+	}
+	
+	
+	public function tdFlg($v,$field=''){
+	    
+	    if(is_array($v)){
+	        $v = $v[$field];
+	    }
+	    if(empty($v)){
+	        $v = 0;
+	    }
+	    
+	    $v2 = $this->propFlg($v);
+	    $td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
+	    
+	    $this->setTd($td,$field);
+	}
+	public function tpFlg($v,$wamei='削除フラグ'){
+	    $v = $this->propFlg($v);
+	    
+	    $this->tblPreview($v,$wamei);
+	    
 	}
 	
 	
