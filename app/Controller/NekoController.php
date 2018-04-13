@@ -75,8 +75,10 @@ class NekoController extends CrudBaseController {
 		// CrudBase共通処理（後）
 		$crudBaseData = $this->indexAfter($crudBaseData);//indexアクションの共通後処理
 		
+		// CBBXS-1007
 		$nekoGroupList = array(1=>'ペルシャ',2=>'ボンベイ',3=>'三毛',4=>'シャム',5=>'雉トラ',6=>'スフィンクス');
 		$neko_group_json = json_encode($nekoGroupList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
+		// CBBXS
 		
 		$this->set($crudBaseData);
 		$this->set(array(
@@ -448,6 +450,8 @@ class NekoController extends CrudBaseController {
 		/// 検索条件情報の定義
 		$this->kensakuJoken=array(
 		
+			// CBBXS-1000
+			
 			array('name'=>'kj_id','def'=>null),
 			array('name'=>'kj_neko_val1','def'=>null),
 			array('name'=>'kj_neko_val2','def'=>null),
@@ -465,7 +469,8 @@ class NekoController extends CrudBaseController {
 			array('name'=>'kj_created','def'=>null),
 			array('name'=>'kj_modified','def'=>null),
 			array('name'=>'row_limit','def'=>50),
-					
+			
+			// CBBXE
 		);
 		
 		
@@ -474,7 +479,9 @@ class NekoController extends CrudBaseController {
 		
 		/// 検索条件のバリデーション
 		$this->kjs_validate=array(
-		
+				
+				// CBBXS-1001
+				
 				'kj_id' => array(
 						'naturalNumber'=>array(
 								'rule' => array('naturalNumber', true),
@@ -567,6 +574,8 @@ class NekoController extends CrudBaseController {
 								'allowEmpty' => true
 						),
 				),
+				
+				// CBBXE
 		);
 		
 		
@@ -576,6 +585,7 @@ class NekoController extends CrudBaseController {
 		///フィールドデータ
 		$this->field_data = array('def'=>array(
 		
+			// CBBXS-1002
 			'id'=>array(
 					'name'=>'ID',//HTMLテーブルの列名
 					'row_order'=>'Neko.id',//SQLでの並び替えコード
@@ -641,6 +651,7 @@ class NekoController extends CrudBaseController {
 					'row_order'=>'Neko.modified',
 					'clm_show'=>1,
 			),
+			// CBBXE
 		));
 
 		// 列並び順をセットする
@@ -651,83 +662,9 @@ class NekoController extends CrudBaseController {
 		}
 		unset($fEnt);
 
-
-		
-//■■■□□□■■■□□□■■■□□□■■■		
-// 		/// 編集エンティティ定義
-// 		$this->entity_info=array(
-		
-// 				array('name'=>'id','def'=>null),
-// 				array('name'=>'neko_val','def'=>null),
-// 				array('name'=>'neko_name','def'=>null),
-// 				array('name'=>'neko_date','def'=>null),
-// 				array('name'=>'neko_group','def'=>null),
-// 				array('name'=>'neko_dt','def'=>null),
-// 				array('name'=>'note','def'=>null),
-// 				array('name'=>'delete_flg','def'=>0),
-		
-		
-// 		);
-		
-		
-		
-		
-		//■■■□□□■■■□□□■■■□□□■■■
-// 		/// 編集用バリデーション
-// 		$this->edit_validate=array(
-
-// 				'neko_val' => array(
-// 						'custom'=>array(
-// 								'rule' => array( 'custom', '/^[-]?[0-9]+?$/' ),
-// 								'message' => 'ネコ数値は整数を入力してください。',
-// 								'allowEmpty' => true
-// 						),
-// 				),
-					
-// 				'neko_name'=> array(
-// 						'maxLength'=>array(
-// 								'rule' => array('maxLength', 255),
-// 								'message' => 'ネコ名前は255文字以内で入力してください',
-// 								'allowEmpty' => true
-// 						),
-// 				),
-					
-// 				'neko_date'=> array(
-// 						'rule' => array( 'date', 'ymd'),
-// 						'message' => 'ネコ日は日付形式【yyyy-mm-dd】で入力してください。',
-// 						'allowEmpty' => true
-// 				),
-					
-// 				'neko_dt'=> array(
-// 						'rule' => array( 'datetime', 'ymd'),
-// 						'message' => 'ネコ日時は日時形式【yyyy-mm-dd h:i:s】で入力してください。',
-// 						'allowEmpty' => true
-// 				),
-					
-// 				'note'=> array(
-// 						'maxLength'=>array(
-// 								'rule' => array('maxLength', 255),
-// 								'message' => '備考は255文字以内で入力してください',
-// 								'allowEmpty' => true
-// 						),
-// 				),
-
-// 		);
-		
-		
-		
-		
 		 
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 
 
 }

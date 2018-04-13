@@ -38,6 +38,7 @@ function init(){
 
 	// 表示フィルターデータの定義とセット
 	var disFilData = {
+			// CBBXS-1008
 			'neko_val':{
 				'fil_type':'money',
 				'option':{'currency':'&yen;'}
@@ -49,6 +50,7 @@ function init(){
 			'delete_flg':{
 				'fil_type':'delete_flg',
 			},
+			// CBBXE
 			
 	};
 	crudBase.setDisplayFilterData(disFilData);

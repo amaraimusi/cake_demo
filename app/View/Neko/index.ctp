@@ -43,25 +43,24 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		
 		<?php 
 		
-		// --- Start kj_input
+		// --- CBBXS-1004
 		$this->CrudBase->inputKjText($kjs,'kj_neko_name','ネコ名前',300);
 		$this->CrudBase->inputKjMoDateRng($kjs,'kj_neko_date','ネコ日付');
-		$this->CrudBase->inputKjId($kjs); 
 		$this->CrudBase->inputKjNouislider($kjs,'neko_val','ネコ数値'); 
 		$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
 		//$this->CrudBase->inputKjDateTime($kjs,'kj_neko_dt','ネコ日時',150);// ■■■□□□■■■□□□■■■□□□
 		$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
 		$this->CrudBase->inputKjText($kjs,'kj_note','備考',200,'部分一致検索'); 
+		
+		$this->CrudBase->inputKjId($kjs); 
 		$this->CrudBase->inputKjHidden($kjs,'kj_sort_no');
 		$this->CrudBase->inputKjDeleteFlg($kjs);
-		echo "<div style='clear:both'></div>";
 		$this->CrudBase->inputKjText($kjs,'kj_update_user','更新者',150);
 		$this->CrudBase->inputKjText($kjs,'kj_ip_addr','更新IPアドレス',200);
 		$this->CrudBase->inputKjCreated($kjs);
 		$this->CrudBase->inputKjModified($kjs);
-		echo "<div style='clear:both'></div>";
 		$this->CrudBase->inputKjLimit($kjs);
-		// --- End kj_input
+		// --- CBBXE
 		
 		echo $this->element('CrudBase/crud_base_cmn_inp');
 		
@@ -160,7 +159,7 @@ $this->CrudBase->startClmSortMode($field_data);
 foreach($data as $i=>$ent){
 
 	echo "<tr id=i{$ent['id']}>";
-	// --- Start field_table
+	// CBBXS-1005
 	$this->CrudBase->tdId($ent,'id',array('checkbox_name'=>'pwms'));
 	$this->CrudBase->tdMoney($ent,'neko_val');
 	$this->CrudBase->tdStr($ent,'neko_name');
@@ -174,7 +173,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdPlain($ent,'ip_addr');
 	$this->CrudBase->tdPlain($ent,'created');
 	$this->CrudBase->tdPlain($ent,'modified');
-	// --- End field_table
+	// CBBXE
 	
 	$this->CrudBase->tdsEchoForClmSort();// 列並に合わせてTD要素群を出力する
 	
@@ -219,7 +218,7 @@ foreach($data as $i=>$ent){
 	</div>
 	<table><tbody>
 
-		<!-- Start ajax_form_new_start -->
+		<!-- CBBXS-1006 -->
 		<tr><td>ネコ数値: </td><td>
 			<input type="text" name="neko_val" class="valid" value=""  pattern="^[0-9]+$" maxlength="11" title="数値を入力してください" />
 			<label class="text-danger" for="neko_val"></label>
@@ -257,7 +256,7 @@ foreach($data as $i=>$ent){
 			<textarea name="note"  cols="30" rows="4" maxlength="1000" title="1000文字以内で入力してください"></textarea>
 			<label class="text-danger" for="note"></label>
 		</td></tr>
-		<!-- Start ajax_form_new_end -->
+		<!-- CBBXE -->
 	</tbody></table>
 	
 
@@ -287,7 +286,7 @@ foreach($data as $i=>$ent){
 	<div class="err text-danger"></div>
 	<table><tbody>
 
-		<!-- Start ajax_form_edit_start -->
+		<!-- CBBXS-1007 -->
 		<tr><td>ID: </td><td>
 			<span class="id"></span>
 		</td></tr>
@@ -332,7 +331,7 @@ foreach($data as $i=>$ent){
 		<tr><td>削除： </td><td>
 			<input type="checkbox" name="delete_flg" class="valid"  />
 		</td></tr>
-		<!-- Start ajax_form_edit_end -->
+		<!-- CBBXE -->
 	</tbody></table>
 	
 	
@@ -471,7 +470,6 @@ foreach($data as $i=>$ent){
 	<h2>ヘルプ</h2>
 
 	<?php echo $this->element('CrudBase/crud_base_help');?>
-
 
 </div>
 

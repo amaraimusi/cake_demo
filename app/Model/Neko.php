@@ -146,7 +146,7 @@ class Neko extends AppModel {
 
 		$cnds=null;
 		
-		// --- Start kjConditions
+		// CBBSX-1003
 		
 		if(!empty($kjs['kj_id'])){
 			$cnds[]="Neko.id = {$kjs['kj_id']}";
@@ -222,7 +222,7 @@ class Neko extends AppModel {
 			$cnds[]="Neko.modified >= '{$kj_modified}'";
 		}
 		
-		// --- End kjConditions
+		// CBBXE
 		
 		$cnd=null;
 		if(!empty($cnds)){
