@@ -239,9 +239,19 @@ class Neko extends AppModel {
 	 * ネコエンティティをネコテーブルに保存します。
 	 *
 	 * @param array $ent ネコエンティティ
+	 * @param array $option オプション
+	 *  - ni_tr_place 新規入力追加場所フラグ 0:末尾 , 1:先頭
 	 * @return array ネコエンティティ（saveメソッドのレスポンス）
 	 */
-	public function saveEntity($ent){
+	public function saveEntity($ent,$option=array()){
+		
+		if(empty($ent['id'])){
+			if(empty($option['ni_tr_place'])){
+				$ent['sort_no'] = $this->getLastSortNo(); // 末尾順番を取得する
+			}else{
+				$ent['sort_no'] = $this->getFirstSortNo(); // 先頭順番を取得する
+			}
+		}
 
 		//DBに登録('atomic' => false　トランザクションなし）
 		$ent = $this->save($ent, array('atomic' => false,'validate'=>false));
@@ -257,8 +267,34 @@ class Neko extends AppModel {
 
 		return $ent;
 	}
+	
+	/**
+	 * 末尾順番を取得する
+	 * @return int 末尾順番
+	 */
+	private function getLastSortNo(){
+		$sql = "SELECT MAX(sort_no) as max_sort_no FROM nekos WHERE delete_flg=0";
+		$data = $this->query($sql);
+		$max_sort_no = 0;
+		if(!empty($data[0][0]['max_sort_no'])) $max_sort_no = $data[0][0]['max_sort_no'];
+		$last_sort_no = $max_sort_no + 1;
+		return $last_sort_no;
+	}
+	
+	/**
+	 * 先頭順番を取得する
+	 * @return int 先頭順番
+	 */
+	private function getFirstSortNo(){
+		$sql = "SELECT MIN(sort_no) as min_sort_no FROM nekos WHERE delete_flg=0";
+		$data = $this->query($sql);
+		$min_sort_no = 0;
+		if(!empty($data[0][0]['min_sort_no'])) $min_sort_no = $data[0][0]['min_sort_no'];
+		$first_sort_no = $min_sort_no - 1;
+		return $first_sort_no;
+	}
 
-
+	
 
 
 	/**

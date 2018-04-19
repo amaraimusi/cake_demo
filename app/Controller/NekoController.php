@@ -78,7 +78,7 @@ class NekoController extends CrudBaseController {
 		// CBBXS-1007
 		$nekoGroupList = array(1=>'ペルシャ',2=>'ボンベイ',3=>'三毛',4=>'シャム',5=>'雉トラ',6=>'スフィンクス');
 		$neko_group_json = json_encode($nekoGroupList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-		// CBBXS
+		// CBBXE 1007
 		
 		$this->set($crudBaseData);
 		$this->set(array(
@@ -203,12 +203,15 @@ class NekoController extends CrudBaseController {
 		App::uses('Sanitize', 'Utility');
 	
 		$this->autoRender = false;//ビュー(ctp)を使わない。
-	
+
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
 		$ent = json_decode($json,true);
-	
-	
+		
+		// 登録パラメータ
+		$reg_param_json = $_POST['reg_param_json'];
+		$regParam = json_decode($reg_param_json,true);
+
 		// アップロードファイルが存在すればエンティティにセットする。
 		$upload_file = null;
 		if(!empty($_FILES["upload_file"])){
@@ -222,7 +225,9 @@ class NekoController extends CrudBaseController {
 	
 		// エンティティをDB保存
 		$this->Neko->begin();
-		$ent = $this->Neko->saveEntity($ent);
+		$option = array();
+		if(isset($regParam['ni_tr_place'])) $option['ni_tr_place'] = $regParam['ni_tr_place'];
+		$ent = $this->Neko->saveEntity($ent,$option);
 		$this->Neko->commit();//コミット
 
 		if(!empty($upload_file)){
@@ -444,14 +449,17 @@ class NekoController extends CrudBaseController {
 	private function initCrudBase(){
 
 		
+		// CBBXS-3001 
+		$xxx=0;
 		
+		// CBBXE
 		
 		
 		/// 検索条件情報の定義
 		$this->kensakuJoken=array(
 		
-			// CBBXS-1000
-			
+			// CBBXS-1000 
+
 			array('name'=>'kj_id','def'=>null),
 			array('name'=>'kj_neko_val1','def'=>null),
 			array('name'=>'kj_neko_val2','def'=>null),

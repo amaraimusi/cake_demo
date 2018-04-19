@@ -342,14 +342,9 @@ class CrudBase extends CrudBaseBase{
 
 		// バリデーション
 		var res = this._validationCheckForm('new_inp');
-		if(res == false){
-			return;
-		}
+		if(res == false) return;
 
-		if(this._empty(option)){
-			option = {};
-		}
-
+		if(this._empty(option)) option = {};
 
 		// フィールドデータからファイルアップロード要素であるフィールドリストを抽出する
 		var fuEnts = this._extractFuEnt(this.fieldData,'new_inp');
@@ -385,20 +380,22 @@ class CrudBase extends CrudBaseBase{
 		var json = JSON.stringify(ent);//データをJSON文字列にする。
 		fd.append( "key1", json );
 
+		
+		var regParam = {}; // 登録パラメータ
+		
 		// WordPressの場合
 		if(option['wp_action']){
-			fd.append('action',option['wp_action']);
-
-			if(option['wp_nonce']){
-				fd.append('nonce',option['wp_nonce']);
-			}
-
+			regParam['action'] = option['wp_action'];
+			if(option['wp_nonce']) regParam['nonce'] = option['wp_nonce'];
 		}
 
-		// フォーム種別を取得してFDにセット
-		var form_type = this.getValueFromForm(form,'form_type');
-
-		fd.append( "form_type", form_type );
+		// 登録パラメータにセット
+		var form_type = this.getValueFromForm(form,'form_type');// フォーム種別
+		regParam['form_type'] = form_type;
+		regParam['ni_tr_place'] = this.param.ni_tr_place;// 新規入力追加場所フラグ
+	
+		var reg_param_json = JSON.stringify(regParam);
+		fd.append('reg_param_json',reg_param_json);
 
 		// 諸パラメータから追加行インデックスを決定する
 		var add_row_index = this._decAddRowIndex(form,form_type,option);
@@ -477,13 +474,9 @@ class CrudBase extends CrudBaseBase{
 	editReg(beforeCallBack,afterCallBack,option){
 		// バリデーション
 		var res = this._validationCheckForm('edit');
-		if(res == false){
-			return;
-		}
+		if(res == false) return;
 
-		if(this._empty(option)){
-			option = {};
-		}
+		if(this._empty(option)) option = {};
 
 		// アクティブ行インデックスを取得する
 		var index = this.param.active_row_index; 
@@ -513,20 +506,25 @@ class CrudBase extends CrudBaseBase{
 			}
 		}
 
+		var regParam = {}; // 登録パラメータ
+		
 		var json = JSON.stringify(ent);//データをJSON文字列にする。
 		fd.append( "key1", json );
 
 		// WordPressの場合
 		if(option['wp_action']){
-			fd.append('action',option['wp_action']);
-
-			if(option['wp_nonce']){
-				fd.append('nonce',option['wp_nonce']);
-			}
+			regParam['action'] = option['wp_action'];
+			if(option['wp_nonce']) regParam['nonce'] = option['wp_nonce'];
 		}
 
-		fd.append( "form_type", 'edit' );
+		// 登録パラメータにセット
+		var form_type = this.getValueFromForm(form,'form_type');// フォーム種別
+		regParam['form_type'] = 'edit';
+		
+		var reg_param_json = JSON.stringify(regParam);
+		fd.append('reg_param_json',reg_param_json);
 
+		
 		jQuery.ajax({
 			type: "post",
 			url: this.param.edit_reg_url,

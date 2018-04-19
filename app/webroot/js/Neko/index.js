@@ -30,6 +30,7 @@ function init(){
 	crudBase = new CrudBase({
 			'src_code':'neko', // 画面コード（スネーク記法)
 			'kjs':kjs,
+			'ni_tr_place':1,
 		});
 	
 	// ネコグループリストJSON
