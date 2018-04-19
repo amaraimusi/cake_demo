@@ -3,13 +3,10 @@ App::uses('Model', 'Model');
 App::uses('CrudBase', 'Model');
 
 /**
- * ネコのモデルクラス
+ * ネコのCakePHPモデルクラス
  *
- * ネコ画面用のDB関連メソッドを定義しています。
- * ネコテーブルと関連付けられています。
- *
- * @date 2015-9-16	新規作成
- * @author k-uehara
+ * @date 2015-9-16 | 2018-4-2-
+ * @version 3.0
  *
  */
 class Neko extends AppModel {
@@ -245,11 +242,14 @@ class Neko extends AppModel {
 	 */
 	public function saveEntity($ent,$option=array()){
 		
+		
+		// 新規入力であるなら新しい順番をエンティティにセットする。
 		if(empty($ent['id'])){
+			if(empty($this->CrudBase)) $this->CrudBase = new CrudBase();
 			if(empty($option['ni_tr_place'])){
-				$ent['sort_no'] = $this->getLastSortNo(); // 末尾順番を取得する
+				$ent['sort_no'] = $this->CrudBase->getLastSortNo($this,'nekos'); // 末尾順番を取得する
 			}else{
-				$ent['sort_no'] = $this->getFirstSortNo(); // 先頭順番を取得する
+				$ent['sort_no'] = $this->CrudBase->getFirstSortNo($this,'nekos'); // 先頭順番を取得する
 			}
 		}
 
@@ -266,32 +266,6 @@ class Neko extends AppModel {
 		if(empty($ent['delete_flg'])) $ent['delete_flg'] = 0;
 
 		return $ent;
-	}
-	
-	/**
-	 * 末尾順番を取得する
-	 * @return int 末尾順番
-	 */
-	private function getLastSortNo(){
-		$sql = "SELECT MAX(sort_no) as max_sort_no FROM nekos WHERE delete_flg=0";
-		$data = $this->query($sql);
-		$max_sort_no = 0;
-		if(!empty($data[0][0]['max_sort_no'])) $max_sort_no = $data[0][0]['max_sort_no'];
-		$last_sort_no = $max_sort_no + 1;
-		return $last_sort_no;
-	}
-	
-	/**
-	 * 先頭順番を取得する
-	 * @return int 先頭順番
-	 */
-	private function getFirstSortNo(){
-		$sql = "SELECT MIN(sort_no) as min_sort_no FROM nekos WHERE delete_flg=0";
-		$data = $this->query($sql);
-		$min_sort_no = 0;
-		if(!empty($data[0][0]['min_sort_no'])) $min_sort_no = $data[0][0]['min_sort_no'];
-		$first_sort_no = $min_sort_no - 1;
-		return $first_sort_no;
 	}
 
 	
@@ -324,173 +298,6 @@ class Neko extends AppModel {
 		$cnt=$data[0]['cnt'];
 		return $cnt;
 	}
-	
-	// ■■■□□□■■■□□□■■■□□□
-// 	/**
-// 	 * 文字列から適切な日時のフォーマットを取得する
-// 	 *
-// 	 * @param string $str 日付文字列
-// 	 * @param $format =  string フォーマット
-// 	 * @param $option
-// 	 *  - time＿priority 時刻優先フラグ    0:日付フォーマットを優先取得 , 1:時刻フォーマットを優先取得
-// 	 *  - mysql_format_flg MySQLフォーマットフラグ 0:PHP型の日時フォーマット , 1:MySQL型の日時フォーマット
-// 	 */
-// 	protected function getDateFormatFromString($str,$option=array()){
-	    
-// 	    $time＿priority = 0;
-// 	    if(!empty($option['time＿priority'])) $time＿priority = $option['time＿priority'];
-	    
-// 	    $mysql_format_flg = 0;
-// 	    if(!empty($option['mysql_format_flg'])) $mysql_format_flg = $option['mysql_format_flg'];
-	    
-// 	    debug('$str＝'.$str);//■■■□□□■■■□□□■■■□□□)
-	    
-// 	    $format = '';
-	    
-// 	    if(preg_match('/^\d+$/', $str)){
-	        
-// 	        $len = strlen($str);
-// 	        if($len == 14){
-// 	            $format =  'Y-m-d H:i:s';
-// 	        }else if($len == 8){
-// 	            $format =  'Y-m-d';
-// 	        }else if($len == 6){
-// 	            if($time＿priority == 0){
-// 	                $format =  'Y-m-d';
-// 	            }else{
-// 	                $format =  'H:i:s';
-// 	            }
-	            
-// 	        }else if($len == 4){
-// 	            if($time＿priority == 0){
-// 	                if(preg_match('/^20\d[2](\/|-)([0-9]{1,2})/', $str)){
-// 	                    $format =  'Y';
-// 	                }else{
-// 	                    $format =  'm-d';
-// 	                }
-// 	            }else{
-// 	                $format =  'H:i';
-// 	            }
-// 	        }else if($len == 1 || $len == 2){
-// 	            if($time＿priority == 0){
-// 	                $format =  'd';
-// 	            }else{
-// 	                $format =  'h';
-// 	            }
-// 	        }
-// 	    }
-// 	    else if(preg_match('/^20\d[2](\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})/', $str)){
-// 	        debug('test=A2');//■■■□□□■■■□□□■■■□□□)
-// 	        $format =  'Y-m-d H:i:s';
-// 	    }
-// 	    else if(preg_match('/^20\d[2](\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2})/', $str)){
-// 	        debug('test=A2ー1');//■■■□□□■■■□□□■■■□□□)
-// 	        $format =  'Y-m-d H:i';
-// 	    }
-// 	    else if(preg_match('/^20\d[2](\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) ([0-9]{1,2})/', $str)){
-// 	        $format =  'Y-m-d H';
-// 	    }
-// 	    else if(preg_match('/^20\d[2](\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})/', $str)){
-// 	        $format =  'Y-m-d';
-// 	    }
-// 	    else if(preg_match('/^20\d[2](\/|-)([0-9]{1,2})/', $str)){
-// 	        $format =  'Y-m';
-// 	    }
-// 	    else if(preg_match('/^20\d[2]/', $str)){
-// 	        $format =  'Y';
-// 	    }
-// 	    else if(preg_match('/([0-9]{1,2})(\/|-)([0-9]{1,2})/', $str)){
-// 	        debug('test=A2－２');//■■■□□□■■■□□□■■■□□□)
-// 	        $format =  'm-d';
-// 	    }
-// 	    else if(preg_match('/([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})/', $str)){
-// 	        $format =  'H:i:s';
-// 	    }
-// 	    else if(preg_match('/([0-9]{1,2}):([0-9]{1,2})/', $str)){
-// 	        $format =  'H:i';
-// 	    }
-	    
-	    
-// 	    if(!empty($mysql_format_flg) && !empty($format)){
-// 	        $format2='';
-// 	        $ary = str_split($format);
-// 	        for($i=0;$i<count($ary);$i++){
-// 	            if($i % 2==0){
-// 	                $format2 .= '%' . $ary[$i];
-// 	            }else{
-// 	                $format2 .= $ary[$i];
-// 	            }
-// 	        }
-// 	        $format = $format2;
-// 	    }
-// 	    debug('$format='.$format);//■■■□□□■■■□□□■■■□□□)
-// 	    return $format;
-	    
-// 	}
-	
-	
-// 	/**
-// 	 * 文字列から適切な日時のフォーマットを取得する
-// 	 *
-// 	 * @param string $str 日付文字列
-// 	 * @param $option
-// 	 *  - time＿priority 時刻優先フラグ    0:日付フォーマットを優先取得 , 1:時刻フォーマットを優先取得
-// 	 * @return string フォーマット
-// 	 */
-// 	protected function convNumStr2date($str,$option = array()){
-	    
-// 	    if(empty($str)) return $str;
-// 	    if(!preg_match('/^\d+$/', $str)) return null;
-	    
-// 	    $ary = str_split($str, 2);
-// 	    $len = strlen($str);
-// 	    if($len == 14){
-	        
-// 	        // Y-m-d H:i:s
-// 	        return "{$ary[0]}{$ary[1]}-{$ary[2]}-{$ary[3]} {$ary[4]}:{$ary[5]}:{$ary[6]}";
-// 	    }else if($len == 8){
-// 	        // Y-m-d
-// 	        return "{$ary[0]}{$ary[1]}-{$ary[2]}-{$ary[3]}";
-	        
-	        
-// 	    }else if($len == 6){
-// 	        if($time＿priority == 0){
-// 	            if(preg_match('/^20\d[2](\/|-)([0-9]{1,2})/', $str)){
-// 	                // Y-m-d
-// 	                return "{$ary[0]}{$ary[1]}-{$ary[2]}";
-// 	            }else{
-// 	                // Y-m-d
-// 	                return "20{$ary[0]}-{$ary[1]}-{$ary[2]}";
-// 	            }
-// 	        }else{
-// 	            // H:i:s
-// 	            return "{$ary[0]}:{$ary[1]}:{$ary[2]}";
-// 	        }
-	        
-// 	    }else if($len == 4){
-// 	        if($time＿priority == 0){
-// 	            if(preg_match('/^20/', $str)){
-// 	                // Y
-// 	                return "{$ary[0]}{$ary[1]}";
-// 	            }else{
-// 	                // m-d
-// 	                return "{$ary[0]}-{$ary[1]}";
-// 	            }
-// 	        }else{
-// 	            // H:i
-// 	            return "{$ary[0]}:{$ary[1]}:00";
-// 	        }
-// 	    }else if($len == 1 || $len == 2){
-// 	        if($time＿priority == 0){
-// 	            return "{$ary[0]}";
-// 	        }else{
-// 	            return "{$ary[0]}:00:00";
-// 	        }
-// 	    }
-	    
-	    
-// 	    return null;
-// 	}
 
 
 }

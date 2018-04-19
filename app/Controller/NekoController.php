@@ -5,11 +5,11 @@ App::uses('PagenationForCake', 'Vendor/Wacg');
 /**
  * ネコ
  * 
- * ネコ画面ではネコ一覧を検索閲覧、および編集ができます。
+ * @note
+ * ネコ画面ではネコ一覧を検索閲覧、編集など多くのことができます。
  * 
- * 
- * @date 2015-9-16	新規作成
- * @author k-uehara
+ * @date 2015-9-16 | 2018-4-20 
+ * @version 3.0
  *
  */
 class NekoController extends CrudBaseController {

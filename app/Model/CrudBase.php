@@ -3,8 +3,8 @@
 /**
  * CrudBaseのロジッククラス
  * 
- * @version 2.0
- * @date 2016-1-21 | 2018-3-28
+ * @version 2.1
+ * @date 2016-1-21 | 2018-4-20
  * 
  */
 class CrudBase{
@@ -329,6 +329,36 @@ class CrudBase{
 	        $str2 = str_replace($key, $v, $str2);
 	    }
 	    return $str2;
+	}
+	
+	/**
+	 * 末尾順番を取得する
+	 * @param Model $model モデル
+	 * @param string $tbl_name テーブル名
+	 * @return int 末尾順番
+	 */
+	public function getLastSortNo(&$model,$tbl_name){
+		$sql = "SELECT MAX(sort_no) as max_sort_no FROM {$tbl_name} WHERE delete_flg=0";
+		$data = $model->query($sql);
+		$max_sort_no = 0;
+		if(!empty($data[0][0]['max_sort_no'])) $max_sort_no = $data[0][0]['max_sort_no'];
+		$last_sort_no = $max_sort_no + 1;
+		return $last_sort_no;
+	}
+	
+	/**
+	 * 先頭順番を取得する
+	 * @param Model $model モデル
+	 * @param string $tbl_name テーブル名
+	 * @return int 先頭順番
+	 */
+	public function getFirstSortNo(&$model,$tbl_name){
+		$sql = "SELECT MIN(sort_no) as min_sort_no FROM {$tbl_name} WHERE delete_flg=0";
+		$data = $model->query($sql);
+		$min_sort_no = 0;
+		if(!empty($data[0][0]['min_sort_no'])) $min_sort_no = $data[0][0]['min_sort_no'];
+		$first_sort_no = $min_sort_no - 1;
+		return $first_sort_no;
 	}
 
 }
