@@ -15,7 +15,7 @@
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
  * @date 2016-9-21 | 2018-4-20
- * @version 2.2.0
+ * @version 2.2.1
  * 
  * @param object param
  *  - src_code	画面コード（スネーク記法）
@@ -518,7 +518,6 @@ class CrudBase extends CrudBaseBase{
 		}
 
 		// 登録パラメータにセット
-		var form_type = this.getValueFromForm(form,'form_type');// フォーム種別
 		regParam['form_type'] = 'edit';
 		
 		var reg_param_json = JSON.stringify(regParam);
