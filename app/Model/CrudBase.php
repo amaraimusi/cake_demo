@@ -3,7 +3,7 @@
 /**
  * CrudBaseのロジッククラス
  * 
- * @version 2.1
+ * @version 2.1.1
  * @date 2016-1-21 | 2018-4-20
  * 
  */
@@ -334,10 +334,10 @@ class CrudBase{
 	/**
 	 * 末尾順番を取得する
 	 * @param Model $model モデル
-	 * @param string $tbl_name テーブル名
 	 * @return int 末尾順番
 	 */
-	public function getLastSortNo(&$model,$tbl_name){
+	public function getLastSortNo(&$model){
+		$tbl_name = $model->useTable;
 		$sql = "SELECT MAX(sort_no) as max_sort_no FROM {$tbl_name} WHERE delete_flg=0";
 		$data = $model->query($sql);
 		$max_sort_no = 0;
@@ -349,10 +349,10 @@ class CrudBase{
 	/**
 	 * 先頭順番を取得する
 	 * @param Model $model モデル
-	 * @param string $tbl_name テーブル名
 	 * @return int 先頭順番
 	 */
-	public function getFirstSortNo(&$model,$tbl_name){
+	public function getFirstSortNo(&$model){
+		$tbl_name = $model->useTable;
 		$sql = "SELECT MIN(sort_no) as min_sort_no FROM {$tbl_name} WHERE delete_flg=0";
 		$data = $model->query($sql);
 		$min_sort_no = 0;

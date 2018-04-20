@@ -5,8 +5,8 @@ App::uses('CrudBase', 'Model');
 /**
  * ネコのCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-4-2-
- * @version 3.0
+ * @date 2015-9-16 | 2018-4-20
+ * @version 3.0.1
  *
  */
 class Neko extends AppModel {
@@ -247,9 +247,9 @@ class Neko extends AppModel {
 		if(empty($ent['id'])){
 			if(empty($this->CrudBase)) $this->CrudBase = new CrudBase();
 			if(empty($option['ni_tr_place'])){
-				$ent['sort_no'] = $this->CrudBase->getLastSortNo($this,'nekos'); // 末尾順番を取得する
+				$ent['sort_no'] = $this->CrudBase->getLastSortNo($this); // 末尾順番を取得する
 			}else{
-				$ent['sort_no'] = $this->CrudBase->getFirstSortNo($this,'nekos'); // 先頭順番を取得する
+				$ent['sort_no'] = $this->CrudBase->getFirstSortNo($this); // 先頭順番を取得する
 			}
 		}
 
