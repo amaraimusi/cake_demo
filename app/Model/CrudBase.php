@@ -3,8 +3,8 @@
 /**
  * CrudBaseのロジッククラス
  * 
- * @version 2.1.2
- * @date 2016-1-21 | 2018-4-21
+ * @version 2.1.3
+ * @date 2016-1-21 | 2018-4-22
  * 
  */
 class CrudBase{
@@ -408,6 +408,60 @@ class CrudBase{
 		}else{
 			// 何もしない
 		}
+	}
+	
+	/**
+	 * スネークケースにキャメルケースから変換
+	 * @param string $str キャメルケース
+	 * @return string スネークケース
+	 */
+	public function snakize($str) {
+		$str = preg_replace('/[A-Z]/', '_\0', $str);
+		$str = strtolower($str);
+		return ltrim($str, '_');
+	}
+	
+	/**
+	 * キャメルケースにスネークケースから変換する
+	 *
+	 * 先頭も大文字になる。
+	 *
+	 * @param string $str スネークケースの文字列
+	 * @return string キャメルケースの文字列
+	 */
+	public function camelize($str) {
+		$str = strtr($str, '_', ' ');
+		$str = ucwords($str);
+		return str_replace(' ', '', $str);
+	}
+	
+	/**
+	 * ローワーキャメルケースに変換する
+	 *
+	 * @note
+	 * ローワーキャメルケースは先頭の一文字が小文字のキャメルケース。
+	 *
+	 * @param string $str スネーク記法、またはキャメル記法の文字列
+	 * @return string ローワーキャメルケースの文字列
+	 */
+	public function lowerCamelize($str){
+		
+		if(empty($str)) return $str;
+		
+		// 先頭の一文字が小文字である場合、一旦キャメルケースに変換する。
+		$h_str = substr($str,0,1);
+		if(ctype_lower($h_str)){
+			// キャメルケースに変換する
+			$str = strtr($str, '_', ' ');
+			$str = ucwords($str);
+			$str = str_replace(' ', '', $str);
+		}
+		
+		// 先頭の一文字を小文字に変換する。
+		$str = lcfirst($str);
+		
+		return $str;
+		
 	}
 
 }

@@ -44,7 +44,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<?php 
 		
 		// --- CBBXS-1004
-		$this->CrudBase->inputKjText($kjs,'kj_neko_name','ネコ名前',300);
+		$this->CrudBase->inputKjText($kjs,'kj_neko_name','ネコ名前');
 		$this->CrudBase->inputKjMoDateRng($kjs,'kj_neko_date','ネコ日付');
 		$this->CrudBase->inputKjNouislider($kjs,'neko_val','ネコ数値'); 
 		$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 

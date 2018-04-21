@@ -153,7 +153,7 @@ class Neko extends AppModel {
 		
 		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
 		
-		// CBBSX-1003
+		// CBBXS-1003
 		
 		if(!empty($kjs['kj_id'])){
 			$cnds[]="Neko.id = {$kjs['kj_id']}";
@@ -184,12 +184,9 @@ class Neko extends AppModel {
 		}
 		
 		if(!empty($kjs['kj_neko_dt'])){
-		    
-		    if(empty($this->CrudBase)) $this->CrudBase = new CrudBase();
-		    $kj_neko_dt = $kjs['kj_neko_dt'];
-		    $dtInfo = $this->CrudBase->guessDatetimeInfo($kj_neko_dt);
-		    $cnds[]="DATE_FORMAT(Neko.neko_dt,'{$dtInfo['format_mysql_a']}') = DATE_FORMAT('{$dtInfo['datetime_b']}','{$dtInfo['format_mysql_a']}')";
-		   
+			$kj_neko_dt = $kjs['kj_neko_dt'];
+			$dtInfo = $this->CrudBase->guessDatetimeInfo($kj_neko_dt);
+			$cnds[]="DATE_FORMAT(Neko.neko_dt,'{$dtInfo['format_mysql_a']}') = DATE_FORMAT('{$dtInfo['datetime_b']}','{$dtInfo['format_mysql_a']}')";
 		}
 
 		if(!empty($kjs['kj_note'])){
