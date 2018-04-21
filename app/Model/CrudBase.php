@@ -3,8 +3,8 @@
 /**
  * CrudBaseのロジッククラス
  * 
- * @version 2.1.1
- * @date 2016-1-21 | 2018-4-20
+ * @version 2.1.2
+ * @date 2016-1-21 | 2018-4-21
  * 
  */
 class CrudBase{
@@ -359,6 +359,55 @@ class CrudBase{
 		if(!empty($data[0][0]['min_sort_no'])) $min_sort_no = $data[0][0]['min_sort_no'];
 		$first_sort_no = $min_sort_no - 1;
 		return $first_sort_no;
+	}
+	
+	
+	/**
+	 * SQLインジェクションサニタイズ
+	 *
+	 * @note
+	 * SQLインジェクション対策のためデータをサニタイズする。
+	 * 高速化のため、引数は参照（ポインタ）にしている。
+	 *
+	 * @param any サニタイズデコード対象のデータ | 値および配列を指定
+	 * @return void
+	 */
+	public function sql_sanitize(&$data){
+		
+		if(is_array($data)){
+			foreach($data as &$val){
+				$this->sql_sanitize($val);
+			}
+			unset($val);
+		}elseif(gettype($data)=='string'){
+			$data = addslashes($data);// SQLインジェクション のサニタイズ
+		}else{
+			// 何もしない
+		}
+	}
+	
+	/**
+	 * SQLサニタイズデコード
+	 *
+	 * @note
+	 * SQLインジェクションでサニタイズしたデータを元に戻す。
+	 * 高速化のため、引数は参照（ポインタ）にしている。
+	 *
+	 * @param any サニタイズデコード対象のデータ | 値および配列を指定
+	 * @return void
+	 */
+	public function sql_sanitize_decode(&$data){
+		
+		if(is_array($data)){
+			foreach($data as &$val){
+				$this->sql_sanitize_decode($val);
+			}
+			unset($val);
+		}elseif(gettype($data)=='string'){
+			$data = stripslashes($data);
+		}else{
+			// 何もしない
+		}
 	}
 
 }

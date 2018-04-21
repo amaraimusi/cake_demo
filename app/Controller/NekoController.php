@@ -311,11 +311,9 @@ class NekoController extends CrudBaseController {
 		
 		$data = json_decode($json,true);//JSON文字を配列に戻す
 		
-		$data = Sanitize::clean($data, array('encode' => false));
-		
 		// データ保存
 		$this->Neko->begin();
-		$this->Neko->saveAll($data);
+		$this->Neko->saveAll($data); // まとめて保存。内部でSQLサニタイズされる。
 		$this->Neko->commit();
 
 		$res = array('success');

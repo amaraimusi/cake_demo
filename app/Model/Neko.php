@@ -5,8 +5,8 @@ App::uses('CrudBase', 'Model');
 /**
  * ネコのCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-4-20
- * @version 3.0.1
+ * @date 2015-9-16 | 2018-4-21
+ * @version 3.0.2
  *
  */
 class Neko extends AppModel {
@@ -18,6 +18,14 @@ class Neko extends AppModel {
 
 	/// バリデーションはコントローラクラスで定義
 	public $validate = null;
+	
+	
+	public function __construct() {
+		parent::__construct();
+		
+		// CrudBaseロジッククラスの生成
+		if(empty($this->CrudBase)) $this->CrudBase = new CrudBase();
+	}
 	
 	/**
 	 * ネコエンティティを取得
@@ -143,6 +151,8 @@ class Neko extends AppModel {
 
 		$cnds=null;
 		
+		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
+		
 		// CBBSX-1003
 		
 		if(!empty($kjs['kj_id'])){
@@ -253,7 +263,7 @@ class Neko extends AppModel {
 			}
 		}
 
-		//DBに登録('atomic' => false　トランザクションなし）
+		//DBに登録('atomic' => false　トランザクションなし。saveでSQLサニタイズされる）
 		$ent = $this->save($ent, array('atomic' => false,'validate'=>false));
 
 		//DBからエンティティを取得
