@@ -8,8 +8,8 @@ App::uses('FormHelper', 'View/Helper');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.5.9
- * @date 2016-7-27 | 2017-3-29
+ * @version 1.6.0
+ * @date 2016-7-27 | 2017-4-22
  * @author k-uehara
  *
  */
@@ -865,7 +865,7 @@ class CrudBaseHelper extends FormHelper {
 			$v2= str_replace('\\', '', $v2);
 		}
 
-		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
+		$td = "<td><input type='hidden' name='{$field}' value='{$v2}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
 	
@@ -1630,7 +1630,7 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * シンプルなSELECT要素を作成
 	 * @param string $name SELECTのname属性
-	 * @param primitive $value 初期値
+	 * @param string $value 初期値
 	 * @param array $list 選択肢
 	 * @param array $option オプション  要素の属性情報
 	 * @param array $empty 未選択状態に表示する選択肢名。nullをセットすると未選択項目は表示しない
@@ -1679,7 +1679,7 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * シンプルなCHECKBOX要素を作成
 	 * @param string $name CHECKBOXのname属性
-	 * @param primitive $value 初期値
+	 * @param string $value 初期値
 	 * @param array $option オプション  要素の属性情報
 	 * 
 	 */
@@ -1707,7 +1707,7 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * 配列型用RADIO要素を作成
 	 * @param string $name RADIOのname属性
-	 * @param primitive $value 初期値
+	 * @param string $value 初期値
 	 * @param array $list 選択肢
 	 * @param array $option オプション  要素の属性情報
 	 * 
@@ -1752,7 +1752,7 @@ class CrudBaseHelper extends FormHelper {
 	/**
 	 * グループ分類SELECT要素を作成する
 	 * @param int $x_name name属性
-	 * @param any $value 初期の値
+	 * @param string $value 初期の値
 	 * @param array $grpList グループ分類リスト
 	 * 	- グループ分類リストの構造例
 	 * 	(int) 17 => array(

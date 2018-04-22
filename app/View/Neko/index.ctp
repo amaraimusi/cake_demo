@@ -59,8 +59,9 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		$this->CrudBase->inputKjText($kjs,'kj_ip_addr','更新IPアドレス',200);
 		$this->CrudBase->inputKjCreated($kjs);
 		$this->CrudBase->inputKjModified($kjs);
-		$this->CrudBase->inputKjLimit($kjs);
 		// --- CBBXE
+		
+		$this->CrudBase->inputKjLimit($kjs);
 		
 		echo $this->element('CrudBase/crud_base_cmn_inp');
 		
