@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-4-3
- * @version 2.1.2
+ * @date 2016-9-21 | 2018-4-22 XSSサニタイズをツリー構造に対応
+ * @version 2.1.3
  * 
  * @param object param
  *  - tbl_slt	CRUD対象テーブルセレクタ
@@ -1076,14 +1076,24 @@ class CrudBaseBase{
 	 * @param ent エンティティ
 	 * @param option
 	 *  - form_type フォーム種別 new_inp,edit,del
+	 *  - xss_flg XSSサニタイズフラグ 0:実行しない , 1:実行する(デフォ）
 	 */
 	setEntityToTr(tr,ent,option){
 
 		if(ent==null) return;
 		
+		// XSSサニタイズ
+		var xss_flg = 1;
+		if(option['xss_flg'] != null) xss_flg = option['xss_flg'];
+		
+		if(xss_flg == 1){
+			ent = this._xssSanitaizeEncode(ent);
+		}
+		
+		
 		this.entToBinds(tr,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
 		this.entToBinds(tr,ent,'name',option);// エンティティをname属性バインド要素群へセットする
-	};
+	}
 
 	_nl2brEx(v){
 		if(v == null || v == '' || v=='0'){
@@ -2863,24 +2873,77 @@ class CrudBaseBase{
 		return res;
 	}
 
-
-	//XSSサニタイズエンコード
-	_xssSanitaizeEncode(str){
-		if(typeof str == 'string'){
-			return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace('/&/','&amp;');;
-		}else{
-			return str;
+	/**
+	 * XSSサニタイズ
+	 * 
+	 * @note
+	 * 「<」と「>」のみサニタイズする
+	 * 
+	 * @param any data サニタイズ対象データ | 値および配列を指定
+	 * @returns サニタイズ後のデータ
+	 */
+	_xssSanitaizeEncode(data){
+		if(typeof data == 'object'){
+			for(var i in data){
+				data[i] = this._xssSanitaizeEncode(data[i]);
+			}
+			return data;
+		}
+		
+		else if(typeof data == 'string'){
+			return data.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		}
+		
+		else{
+			return data;
 		}
 	}
-
-	//XSSサニタイズデコード
-	_xssSanitaizeDecode(str){
-		if(typeof str == 'string'){
-			return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-		}else{
-			return str;
+	
+	
+	/**
+	 * XSSサニタイズ・デコード
+	 * 
+	 * @note
+	 * 「<」と「>」のサニタイズ化を元に戻す
+	 * 
+	 * @param any data サニタイズ対象データ | 値および配列を指定
+	 * @returns サニタイズ後のデータ
+	 */
+	_xssSanitaizeDecode(data){
+		if(typeof data == 'object'){
+			for(var i in data){
+				data[i] = this._xssSanitaizeDecode(data[i]);
+			}
+			return data;
+		}
+		
+		else if(typeof data == 'string'){
+			return data.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+		}
+		
+		else{
+			return data;
 		}
 	}
+	
+	// ■■■□□□■■■□□□■■■□□□　XSS関連でバグが起きないようなら、削除しみそーれ。
+//	//XSSサニタイズエンコード
+//	_xssSanitaizeEncode(str){
+//		if(typeof str == 'string'){
+//			return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace('/&/','&amp;');;
+//		}else{
+//			return str;
+//		}
+//	}
+//
+//	//XSSサニタイズデコード
+//	_xssSanitaizeDecode(str){
+//		if(typeof str == 'string'){
+//			return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+//		}else{
+//			return str;
+//		}
+//	}
 
 	// 改行をBRタグに変換
 	_nl2br(str) {

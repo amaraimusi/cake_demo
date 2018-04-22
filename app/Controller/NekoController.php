@@ -75,17 +75,19 @@ class NekoController extends CrudBaseController {
 		// CrudBase共通処理（後）
 		$crudBaseData = $this->indexAfter($crudBaseData);//indexアクションの共通後処理
 		
-		// CBBXS-1007
-		$nekoGroupList = array(1=>'ペルシャ',2=>'ボンベイ',3=>'三毛',4=>'シャム',5=>'雉トラ',6=>'スフィンクス');
+		// CBBXS-1020
+		$nekoGroupList = $this->Neko->getNekoGroupList();
 		$neko_group_json = json_encode($nekoGroupList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-		// CBBXE 1007
+		$this->set(array('nekoGroupList' => $nekoGroupList,'neko_group_json' => $neko_group_json));
+		// CBBXE
 		
 		$this->set($crudBaseData);
 		$this->set(array(
 			'title_for_layout'=>'ネコ',
 			'data'=> $data,
-			'nekoGroupList' => $nekoGroupList,
-			'neko_group_json' => $neko_group_json,
+				// ■■■□□□■■■□□□■■■□□□
+// 			'nekoGroupList' => $nekoGroupList,
+// 			'neko_group_json' => $neko_group_json,
 		));
 		
 		//当画面系の共通セット

@@ -69,7 +69,7 @@ class CrudBaseHelper extends FormHelper {
 	        'jquery.datetimepicker.full.min',// 日時ピッカー
 	        'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ
 	        'CrudBase/YmpickerWrap',		// 年月ピッカーのラッパークラス
-	        'CrudBase/CrudBaseBase.js?ver=1.0',
+	        'CrudBase/CrudBaseBase.js?ver=2.3.1',
 	        'CrudBase/CrudBaseAutoSave.js?ver=1.0',
 	        'CrudBase/CrudBaseRowExchange.js?ver=1.2',
 	        'CrudBase/CrudBaseGadgetKj.js?ver=1.0',

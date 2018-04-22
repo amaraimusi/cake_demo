@@ -305,6 +305,38 @@ class Neko extends AppModel {
 		$cnt=$data[0]['cnt'];
 		return $cnt;
 	}
+	
+	
+	// CBBXS-1021
+	
+	/**
+	 * 猫種別リストをDBから取得する
+	 */
+	public function getNekoGroupList(){
+		if(empty($this->NekoGroup)){
+			App::uses('NekoGroup','Model');
+			$this->NekoGroup=ClassRegistry::init('NekoGroup');
+		}
+		$fields=array('id','neko_group_name');//SELECT情報
+		$conditions=array("delete_flg = 0");//WHERE情報
+		$order=array('sort_no');//ORDER情報
+		$option=array(
+				'fields'=>$fields,
+				'conditions'=>$conditions,
+				'order'=>$order,
+		);
+
+		$data=$this->NekoGroup->find('all',$option); // DBから取得
+		
+		// 構造変換
+		if(!empty($data)){
+			$data = Hash::combine($data, '{n}.NekoGroup.id','{n}.NekoGroup.neko_group_name');
+		}
+		
+		return $data;
+	}
+	
+	// CBBXE
 
 
 }

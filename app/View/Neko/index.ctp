@@ -235,16 +235,8 @@ foreach($data as $i=>$ent){
 			<label class="text-danger" for="neko_date"></label>
 		</td></tr>
 
-		<tr><td>ネコグループ: </td><td>
-			<select name="neko_group" required title="必須入力です">
-				<option value="">-- ネコ種別 --</option>
-				<option value="1">ペルシャ</option>
-				<option value="2">ボンベイ</option>
-				<option value="3">三毛</option>
-				<option value="4">シャム</option>
-				<option value="5">雉トラ</option>
-				<option value="6">スフィンクス</option>
-			</select>
+		<tr><td>ネコ種別: </td><td>
+			<?php $this->CrudBase->selectX('neko_group',null,$nekoGroupList,null);?>
 			<label class="text-danger" for="neko_group"></label>
 		</td></tr>
 
@@ -307,16 +299,9 @@ foreach($data as $i=>$ent){
 			<label class="text-danger" for="neko_date"></label>
 		</td></tr>
 
-		<tr><td>ネコグループ: </td><td>
-			<div>
-				<label><input type="radio" name="neko_group" value="1" />ペルシャ</label>
-				<label><input type="radio" name="neko_group" value="2" />ボンベイ</label>
-				<label><input type="radio" name="neko_group" value="3" />三毛</label>
-				<label><input type="radio" name="neko_group" value="4" />シャム</label>
-				<label><input type="radio" name="neko_group" value="5" />雉トラ</label>
-				<label><input type="radio" name="neko_group" value="6" />スフィンクス</label>
-				<label for="neko_group" ></label>
-			</div>
+		<tr><td>ネコ種別: </td><td>
+			<?php $this->CrudBase->selectX('neko_group',null,$nekoGroupList,null);?>
+			<label class="text-danger" for="neko_group"></label>
 		</td></tr>
 
 		<tr><td>ネコ日時: </td><td>
