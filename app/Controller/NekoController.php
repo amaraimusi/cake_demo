@@ -8,8 +8,8 @@ App::uses('PagenationForCake', 'Vendor/Wacg');
  * @note
  * ネコ画面ではネコ一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2018-4-20 
- * @version 3.0
+ * @date 2015-9-16 | 2018-4-25 削除のバグを主末井
+ * @version 3.0.1
  *
  */
 class NekoController extends CrudBaseController {
@@ -266,11 +266,15 @@ class NekoController extends CrudBaseController {
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
 		$ent0 = json_decode($json,true);
+		
+		// 登録パラメータ
+		$reg_param_json = $_POST['reg_param_json'];
+		$regParam = json_decode($reg_param_json,true);
 
-	   // 抹消フラグ
-	   $eliminate_flg = 0;
-	   if(isset($_POST['eliminate_flg'])) $eliminate_flg = $_POST['eliminate_flg'];
-	   
+		// 抹消フラグ
+		$eliminate_flg = 0;
+		if(isset($regParam['eliminate_flg'])) $eliminate_flg = $regParam['eliminate_flg'];
+		
 		// 削除用のエンティティを取得する
 		$ent = $this->getEntForDelete($ent0['id']);
 		$ent['delete_flg'] = $ent0['delete_flg'];
@@ -278,7 +282,7 @@ class NekoController extends CrudBaseController {
 		// エンティティをDB保存
 		$this->Neko->begin();
 		if($eliminate_flg == 0){
-		    $ent = $this->Neko->saveEntity($ent); // 更新
+			$ent = $this->Neko->saveEntity($ent,$regParam); // 更新
 		}else{
 		    $this->Neko->delete($ent['id']); // 削除
 		}

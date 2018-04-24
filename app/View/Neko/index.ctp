@@ -30,111 +30,65 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 <div id="err" class="text-danger"><?php echo $errMsg;?></div>
 
 
+<div id="func_btns" >
+	<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default">
+		<span class="glyphicon glyphicon-cog"></span></button>
+	<a href="<?php echo $home_url; ?>" class="btn btn-info" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
+		<span class="glyphicon glyphicon-certificate"  ></span></a>
+	<?php $this->CrudBase->newBtn();// 新規入力ボタンを作成 ?>
+</div>
+<div style="clear:both"></div>
+
+
 <!-- 検索条件入力フォーム -->
-<div style="margin-top:5px">
+<?php echo $this->Form->create('Neko', array('url' => true )); ?>
+<div style="clear:both"></div>
+
+<div id="detail_div" style="display:none">
+	
 	<?php 
-		echo $this->Form->create('Neko', array('url' => true ));
+	
+	// --- CBBXS-1004
+	$this->CrudBase->inputKjText($kjs,'kj_neko_name','ネコ名前');
+	$this->CrudBase->inputKjMoDateRng($kjs,'kj_neko_date','ネコ日付');
+	$this->CrudBase->inputKjNouislider($kjs,'neko_val','ネコ数値'); 
+	$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
+	//$this->CrudBase->inputKjDateTime($kjs,'kj_neko_dt','ネコ日時',150);
+	$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
+	$this->CrudBase->inputKjText($kjs,'kj_note','備考',200,'部分一致検索'); 
+	
+	$this->CrudBase->inputKjId($kjs); 
+	$this->CrudBase->inputKjHidden($kjs,'kj_sort_no');
+	$this->CrudBase->inputKjDeleteFlg($kjs);
+	$this->CrudBase->inputKjText($kjs,'kj_update_user','更新者',150);
+	$this->CrudBase->inputKjText($kjs,'kj_ip_addr','更新IPアドレス',200);
+	$this->CrudBase->inputKjCreated($kjs);
+	$this->CrudBase->inputKjModified($kjs);
+	// --- CBBXE
+	
+	$this->CrudBase->inputKjLimit($kjs);
+	echo $this->element('CrudBase/crud_base_cmn_inp');
+
+	echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));
+	
+	echo $this->element('CrudBase/crud_base_index');
+	
+	$csv_dl_url = $this->html->webroot . 'neko/csv_download';
+	$this->CrudBase->makeCsvBtns($csv_dl_url);
 	?>
 
-	
-	<div style="clear:both"></div>
-	
-	<div id="detail_div" style="display:none">
-		
-		<?php 
-		
-		// --- CBBXS-1004
-		$this->CrudBase->inputKjText($kjs,'kj_neko_name','ネコ名前');
-		$this->CrudBase->inputKjMoDateRng($kjs,'kj_neko_date','ネコ日付');
-		$this->CrudBase->inputKjNouislider($kjs,'neko_val','ネコ数値'); 
-		$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
-		//$this->CrudBase->inputKjDateTime($kjs,'kj_neko_dt','ネコ日時',150);// ■■■□□□■■■□□□■■■□□□
-		$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
-		$this->CrudBase->inputKjText($kjs,'kj_note','備考',200,'部分一致検索'); 
-		
-		$this->CrudBase->inputKjId($kjs); 
-		$this->CrudBase->inputKjHidden($kjs,'kj_sort_no');
-		$this->CrudBase->inputKjDeleteFlg($kjs);
-		$this->CrudBase->inputKjText($kjs,'kj_update_user','更新者',150);
-		$this->CrudBase->inputKjText($kjs,'kj_ip_addr','更新IPアドレス',200);
-		$this->CrudBase->inputKjCreated($kjs);
-		$this->CrudBase->inputKjModified($kjs);
-		// --- CBBXE
-		
-		$this->CrudBase->inputKjLimit($kjs);
-		
-		echo $this->element('CrudBase/crud_base_cmn_inp');
-		
-		?>
+</div><!-- detail_div -->
+<?php echo $this->Form->end()?>
 
-		
-		
-		<?php 
-		
-		echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));
-		
-		echo $this->element('CrudBase/crud_base_index');
-		
-		$csv_dl_url = $this->html->webroot . 'neko/csv_download';
-		$this->CrudBase->makeCsvBtns($csv_dl_url);
-		?>
-	
 
-	<div style="margin-top:40px">
-		
+<div style="margin-top:8px;">
+	<div style="display:inline-block">
+		<?php echo $pages['page_index_html'];//ページ目次 ?>
 	</div>
-
-	</div><!-- detail_div -->
-
-	<div id="func_btns" >
-		
-			<div class="line-left">
-				<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default btn-sm">
-					<span class="glyphicon glyphicon-cog"></span>
-				</button>
-
-			</div>
-			
-			<div class="line-middle"></div>
-			
-			<div class="line-right">
-				<a href="<?php echo $home_url; ?>" class="btn btn-info" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
-					<span class="glyphicon glyphicon-certificate"  ></span></a>
-				<?php 
-					// 新規入力ボタンを作成
-					$newBtnOption = array(
-							'scene'=>'<span class="glyphicon glyphicon-plus"></span>追加'
-					);
-					$this->CrudBase->newBtn($newBtnOption);
-				?>
-
-			</div>
-
-
-
-	</div>
-	<div style="clear:both"></div>
-	<?php echo $this->Form->end()?>
-
-	
+	<div style="display:inline-block">件数:<?php echo $data_count ?></div>
+	<div style="display:inline-block">
+		<a href="#help_lists" class="livipage btn btn-info btn-xs" title="ヘルプ"><span class="glyphicon glyphicon-question-sign"></span></a></div>
 </div>
-
-
-<br />
-
-<div id="total_div">
-	<table><tr>
-		<td>件数:<?php echo $data_count ?></td>
-		<td><a href="#help_lists" class="livipage btn btn-info btn-xs" title="ヘルプ"><span class="glyphicon glyphicon-question-sign"></span></a></td>
-	</tr></table>
-</div>
-
-
-<div style="margin-bottom:5px">
-	<?php echo $pages['page_index_html'];//ページ目次 ?>
-</div>
-
-
 
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
 <!-- 一覧テーブル -->

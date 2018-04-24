@@ -115,14 +115,10 @@ class CrudBaseHelper extends FormHelper {
 	 * - onclick onclickイベントにセットするJS関数（CRUDタイプがajax型である場合のみ有効)
 	 * - display_name ボタンの表示名
 	 */
-	public function newBtn($option){
-	
-		if(empty($option)){
-			$option = array();
-		}
+	public function newBtn($option = array()){
 		
 		if(empty($option['class'])){
-			$option['class'] = 'btn btn-warning btn-sm';
+			$option['class'] = 'btn btn-warning';
 		}
 		
 		if(empty($option['onclick'])){

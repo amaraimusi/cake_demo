@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-4-22 XSSサニタイズをツリー構造に対応
- * @version 2.1.3
+ * @date 2016-9-21 | 2018-4-24 削除のバグを修正
+ * @version 2.1.4
  * 
  * @param object param
  *  - tbl_slt	CRUD対象テーブルセレクタ
@@ -428,8 +428,19 @@ class CrudBaseBase{
 		
 		// ファイルアップロード関連のエンティティをFormDataに追加する
 		var fd = new FormData();
-		fd.append( "form_type",form_type);
+		
 
+		// 登録パラメータに各種値をセット
+		var regParam = {}; // 登録パラメータ
+		regParam['form_type'] = form_type; // フォーム種別
+		if(option['wp_action']){// WordPress関連
+			regParam['action'] = option['wp_action'];
+			if(option['wp_nonce']) regParam['nonce'] = option['wp_nonce'];
+		}
+		if(eliminate_flg) regParam['eliminate_flg'] = eliminate_flg; // 抹消フラグ
+		var reg_param_json = JSON.stringify(regParam);
+		fd.append('reg_param_json',reg_param_json);
+		
 		// Ajax送信前のコールバックを実行する
 		var beforeCallBack = option['cbBeforeReg'];
 		if(beforeCallBack){
@@ -449,17 +460,8 @@ class CrudBaseBase{
 		var json = JSON.stringify(ent);//データをJSON文字列にする。
 		fd.append( "key1", json );
 
-		// WordPressの場合
-		if(option['wp_action']){
 
-			fd.append('action',option['wp_action']);
 
-			if(option['wp_nonce']){
-				fd.append('nonce',option['wp_nonce']);
-			}
-		}
-
-		if(eliminate_flg) fd.append('eliminate_flg',option['eliminate_flg']);
 		
 		jQuery.ajax({
 			type: "post",
