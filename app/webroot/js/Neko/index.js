@@ -33,9 +33,7 @@ function init(){
 			'ni_tr_place':1,
 		});
 	
-	// ネコグループリストJSON
-	var neko_group_json = jQuery('#neko_group_json').val();
-	var nekoGroupList = JSON.parse(neko_group_json);
+
 
 	// 表示フィルターデータの定義とセット
 	var disFilData = {
@@ -44,16 +42,21 @@ function init(){
 				'fil_type':'money',
 				'option':{'currency':'&yen;'}
 			},
-			'neko_group':{
-				'fil_type':'select',
-				'option':{'list':nekoGroupList}
-			},
 			'delete_flg':{
 				'fil_type':'delete_flg',
 			},
 			// CBBXE
 			
 	};
+	
+	// CBBXS-1023
+	// ネコグループリストJSON
+	var neko_group_json = jQuery('#neko_group_json').val();
+	var nekoGroupList = JSON.parse(neko_group_json);
+	disFilData['neko_group'] ={'fil_type':'select','option':{'list':nekoGroupList}};
+	// CBBXE
+
+	
 	crudBase.setDisplayFilterData(disFilData);
 
 	//列並替変更フラグがON（列並べ替え実行）なら列表示切替情報をリセットする。
@@ -83,7 +86,11 @@ function init(){
 	});
 	
 	
-
+	// 日付カレンダーのセット
+	// SBBXS-1030
+	$("#new_inp_neko_date").datepicker({dateFormat:'yy-mm-dd'});
+	$("#edit_neko_date").datepicker({dateFormat:'yy-mm-dd'});
+	// SBBXE
 	
 	// ■■■□□□■■■□□□■■■□□□■■■
 //	// CSVインポートの初期化  <CrudBase/index.js>

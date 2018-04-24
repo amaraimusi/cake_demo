@@ -5,8 +5,8 @@ App::uses('CrudBase', 'Model');
 /**
  * ネコのCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-4-21
- * @version 3.0.2
+ * @date 2015-9-16 | 2018-4-24 複製したとき、順番はそのまま
+ * @version 3.0.3
  *
  */
 class Neko extends AppModel {
@@ -244,21 +244,21 @@ class Neko extends AppModel {
 	 *
 	 * @param array $ent ネコエンティティ
 	 * @param array $option オプション
+	 *  - form_type フォーム種別  new_inp:新規入力 , copy:複製 , edit:編集
 	 *  - ni_tr_place 新規入力追加場所フラグ 0:末尾 , 1:先頭
 	 * @return array ネコエンティティ（saveメソッドのレスポンス）
 	 */
 	public function saveEntity($ent,$option=array()){
-		
-		
+
 		// 新規入力であるなら新しい順番をエンティティにセットする。
-		if(empty($ent['id'])){
-			if(empty($this->CrudBase)) $this->CrudBase = new CrudBase();
+		if($option['form_type']=='new_inp' ){
 			if(empty($option['ni_tr_place'])){
 				$ent['sort_no'] = $this->CrudBase->getLastSortNo($this); // 末尾順番を取得する
 			}else{
 				$ent['sort_no'] = $this->CrudBase->getFirstSortNo($this); // 先頭順番を取得する
 			}
 		}
+		
 
 		//DBに登録('atomic' => false　トランザクションなし。saveでSQLサニタイズされる）
 		$ent = $this->save($ent, array('atomic' => false,'validate'=>false));

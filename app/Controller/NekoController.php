@@ -85,9 +85,6 @@ class NekoController extends CrudBaseController {
 		$this->set(array(
 			'title_for_layout'=>'ネコ',
 			'data'=> $data,
-				// ■■■□□□■■■□□□■■■□□□
-// 			'nekoGroupList' => $nekoGroupList,
-// 			'neko_group_json' => $neko_group_json,
 		));
 		
 		//当画面系の共通セット
@@ -227,9 +224,7 @@ class NekoController extends CrudBaseController {
 	
 		// エンティティをDB保存
 		$this->Neko->begin();
-		$option = array();
-		if(isset($regParam['ni_tr_place'])) $option['ni_tr_place'] = $regParam['ni_tr_place'];
-		$ent = $this->Neko->saveEntity($ent,$option);
+		$ent = $this->Neko->saveEntity($ent,$regParam);
 		$this->Neko->commit();//コミット
 
 		if(!empty($upload_file)){

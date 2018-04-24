@@ -231,7 +231,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ日付: </td><td>
-			<input type="text" name="neko_date" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+			<input id="new_inp_neko_date" type="text" name="neko_date" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
 			<label class="text-danger" for="neko_date"></label>
 		</td></tr>
 
@@ -295,7 +295,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ日付: </td><td>
-			<input type="text" name="neko_date" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+			<input id="edit_neko_date" type="text" name="neko_date" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
 			<label class="text-danger" for="neko_date"></label>
 		</td></tr>
 
@@ -445,7 +445,10 @@ foreach($data as $i=>$ent){
 
 <!-- 埋め込みJSON -->
 <div style="display:none">
+	
+	<!-- CBBXS-1022 -->
 	<input id="neko_group_json" type="hidden" value='<?php echo $neko_group_json; ?>' />
+	<!-- CBBXE -->
 </div>
 
 
