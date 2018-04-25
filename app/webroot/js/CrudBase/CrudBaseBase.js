@@ -1593,9 +1593,28 @@ class CrudBaseBase{
 		if(param['kjs'] == null){
 			param['kjs'] = null;
 		}
+
+		// デバイスタイプ
+		if(param['device_type'] == null){
+			param['device_type'] = this.judgDeviceType(); // デバイスタイプ（PC/SP）の判定
+		}
 		
 		return param;
 	}
+	
+	
+	/**
+	 * デバイスタイプ（PC/SP）の判定
+	 * @return string デバイスタイプ pc,sp
+	 */
+	judgDeviceType(){
+		var device = 'pc';
+		if (screen.width <= 480) {
+			device = 'sp';
+		}
+		return device;
+	}
+	
 
 
 	/**
@@ -2237,13 +2256,17 @@ class CrudBaseBase{
 	 */
 	_showForm(form,triggerElm,option){
 
-		if(option == null){
-			option = {};
-		}
+		if(option == null) option = {};
+		
+		console.log('test=device_type');//■■■□□□■■■□□□■■■□□□)
+		console.log(this.param['device_type']);//■■■□□□■■■□□□■■■□□□)
 
-		// フォーム位置フラグ
+		// フォーム位置フラグをセットする。SP(スマホ）である場合は、max(横幅いっぱい）とする。
 		if(option['form_position'] == null){
 			option['form_position'] = this.param.form_position;
+			if(this.param['device_type']=='sp'){
+				option['form_position'] = 'max';
+			}
 		}
 
 		// 入力フォームストラテジーの使用
@@ -2291,8 +2314,7 @@ class CrudBaseBase{
 
 		// フォーム位置Yをセット
 		var trigger_height = triggerElm.outerHeight();
-		var tt_top=top + trigger_height;
-
+		var tt_top = top + trigger_height;
 
 		var tt_left=0;// フォーム初期位置X
 		var full_w = ww; // コンテンツのフル横幅
@@ -2330,7 +2352,8 @@ class CrudBaseBase{
 
 		case 'max':
 
-			form_width = full_w;
+			var  adjust_v = 2; // 調整値。 左右のborderの幅
+			form_width = full_w - adjust_v;
 
 			break;
 
