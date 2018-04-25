@@ -234,13 +234,11 @@ foreach($data as $i=>$ent){
 	<table><tbody>
 
 		<!-- CBBXS-1007 -->
-		<tr><td>ID: </td><td>
-			<span class="id"></span>
-		</td></tr>
+		<tr><td>ID: <span class="id"></span></td><td></td></tr>
 		
 		<tr><td>ネコ数値: </td><td>
 			<input type="text" name="neko_val" class="valid" value=""  pattern="^[0-9]+$" maxlength="11" title="数値を入力してください" />
-			<label class="text-danger" for="neko_val"></label>
+			<label class="text-danger" for="neko_val" ></label>
 		</td></tr>
 
 		<tr><td>ネコ名: </td><td>
@@ -268,9 +266,8 @@ foreach($data as $i=>$ent){
 			<label class="text-danger" for="note"></label>
 		</td></tr>
 
-		<tr><td>削除： </td><td>
-			<input type="checkbox" name="delete_flg" class="valid"  />
-		</td></tr>
+		<tr><td>削除：<input type="checkbox" name="delete_flg" class="valid"  /> </td><td></td></tr>
+		
 		<!-- CBBXE -->
 	</tbody></table>
 	

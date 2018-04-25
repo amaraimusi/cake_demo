@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-4-25 PC/SPの判定
- * @version 2.1.5
+ * @date 2016-9-21 | 2018-4-26 テーブル型入力フォームをＳＰ版に対応させる。
+ * @version 2.1.6
  * 
  * @param object param
  *  - tbl_slt	CRUD対象テーブルセレクタ
@@ -803,6 +803,7 @@ class CrudBaseBase{
 			var label = form.find("[for='" + field + "']");
 			if(label[0]){
 				label.html("");
+				label.hide();
 			}
 		}
 	}
@@ -860,6 +861,7 @@ class CrudBaseBase{
 			}else{
 				label.attr('class','text-danger');
 				label.html(title);
+				label.show();
 			}
 
 		}catch( e ){
@@ -2258,16 +2260,21 @@ class CrudBaseBase{
 
 		if(option == null) option = {};
 		
-		console.log('test=device_type');//■■■□□□■■■□□□■■■□□□)
-		console.log(this.param['device_type']);//■■■□□□■■■□□□■■■□□□)
-
 		// フォーム位置フラグをセットする。SP(スマホ）である場合は、max(横幅いっぱい）とする。
 		if(option['form_position'] == null){
 			option['form_position'] = this.param.form_position;
-			if(this.param['device_type']=='sp'){
+			if(this.param.device_type=='sp'){
 				option['form_position'] = 'max';
 			}
 		}
+		
+		// SPである場合、ＳＰ版のスタイルを適用する
+		if(this.param.device_type == 'sp'){
+			var tblElm = form.find('table');
+			tblElm.addClass('tbl_sp'); // ＳＰ版スタイルを適用
+			tblElm.find('label').hide(); // レイアウトが崩れるのでlabel要素を隠す
+		}
+		
 
 		// 入力フォームストラテジーの使用
 		if(option['use_show_form_strategy'] == null){

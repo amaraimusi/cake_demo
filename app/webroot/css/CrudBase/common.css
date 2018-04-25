@@ -164,3 +164,34 @@ border-radius: 35px;
 	color:#de5347;
 }
 
+
+/* テーブル型入力フォームのＳＰ版（スマホ） */
+.tbl_sp{
+	display:block;
+	width:100%;
+}
+.tbl_sp thead{
+	display:none;
+}
+.tbl_sp tbody{
+	display:block;
+	width:100%;
+}
+.tbl_sp tr{
+	display:block;
+	width:100%;
+}
+.tbl_sp td{
+	display:block;
+	width:100%;
+}
+.tbl_sp  td:last-child{
+	padding-bottom:6px;
+}
+.tbl_sp input[type="text"]{
+	width:100%;
+}
+.tbl_sp textarea{
+	width:100%;
+}
+
