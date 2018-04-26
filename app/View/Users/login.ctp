@@ -2,29 +2,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <?php echo $this->Html->charset(); ?>
-    <title>login</title>
-    <?php echo $this->Html->css(array('bootstrap.min', 'bootstrap-responsive.min', 'style')); ?>
-    <?php echo $this->Html->script(array('bootstrap', 'smoothScroll', 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js')); ?>
-    <style type="text/css">
-        body {
-            padding-top: 60px;
-            padding-bottom: 40px;
-        }
-        .sidebar-nav {
-            padding: 9px 0;
-        }
-    </style>
-<body data-spy="scroll">
-    <div class="container">
+	<?php echo $this->Html->charset("utf-8"); ?>
+	<title>
+		<?php echo $title_for_layout; ?>
+	</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<?php
+		echo $this->Html->meta('icon');
 
-	<div>
-	デモ用のシステムです。以下のアカウントでログインできます。<br>
-	ユーザー名:test<br>
-	パスワード:test<br>
-	</div>
-<div class="well" style="width: 200px">
+		echo $this->Html->css(array(
+			'bootstrap.min',
+			'bootstrap-theme.min',
+			'jquery-ui.min',
+			'Layouts/default',
+			'CrudBase/common',
+		));
 
+
+		echo $this->Html->script(array(
+			'jquery-2.1.4.min',
+			'bootstrap.min',
+			'jquery-ui.min',
+			'Layouts/default',
+			));
+		
+		echo $this->fetch('meta');
+		echo $this->fetch('css');
+		echo $this->fetch('script');
+	?>
+
+
+</head>
+
+<body>
+<div class="container">
+
+
+<div class="well" style="width: 200px;margin-left : auto ; margin-right : auto ;">
+	<h2>ログイン</h2>
     <?php
     echo $this->Form->create('User', array(
         'inputDefaults' => array('label' => false, 'div' => false, 'legend' => false),
@@ -49,8 +66,9 @@
     echo $this->Form->submit('login', array('div' => false, 'class' => 'btn btn-primary'));
     echo $this->Form->end();
     ?>
-</div>
+</div><!-- well -->
+</div><!-- container -->
 
-    </div>
+
 </body>
 </html>

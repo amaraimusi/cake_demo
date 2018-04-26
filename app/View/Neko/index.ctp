@@ -133,17 +133,20 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdsEchoForClmSort();// 列並に合わせてTD要素群を出力する
 	
 	// 行のボタン類
-	echo "<td><div class='btn-group'>";
+	echo "<td><div class='btn-group' style='display:inline-block'>";
 	$id = $ent['id'];
 	echo  "<input type='button' value='↑↓' onclick='rowExchangeShowForm(this)' class='row_exc_btn btn btn-info btn-xs' />";
-	$this->CrudBase->rowDeleteBtn($ent); // 削除ボタン
-	$this->CrudBase->rowEnabledBtn($ent); // 有効ボタン
 	$this->CrudBase->rowEditBtn($id);
 	$this->CrudBase->rowPreviewBtn($id);
 	$this->CrudBase->rowCopyBtn($id);
+	echo "</div>&nbsp;";
+	echo "<div style='display:inline-block'>";
+	$this->CrudBase->rowDeleteBtn($ent); // 削除ボタン
+	$this->CrudBase->rowEnabledBtn($ent); // 有効ボタン
+	echo "&nbsp;";
 	$this->CrudBase->rowEliminateBtn($ent);// 抹消ボタン
-	echo "</div></td>";
-	
+	echo "</div>";
+	echo "</td>";
 	echo "</tr>";
 }
 
