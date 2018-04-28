@@ -8,8 +8,8 @@ App::uses('FormHelper', 'View/Helper');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.6.0
- * @date 2016-7-27 | 2017-4-22
+ * @version 1.6.1
+ * @date 2016-7-27 | 2017-4-28 tdNoteのバグを修正
  * @author k-uehara
  *
  */
@@ -115,10 +115,14 @@ class CrudBaseHelper extends FormHelper {
 	 * - onclick onclickイベントにセットするJS関数（CRUDタイプがajax型である場合のみ有効)
 	 * - display_name ボタンの表示名
 	 */
-	public function newBtn($option = array()){
+	public function newBtn($option){
+	
+		if(empty($option)){
+			$option = array();
+		}
 		
 		if(empty($option['class'])){
-			$option['class'] = 'btn btn-warning';
+			$option['class'] = 'btn btn-warning btn-sm';
 		}
 		
 		if(empty($option['onclick'])){
@@ -842,7 +846,7 @@ class CrudBaseHelper extends FormHelper {
 	 * @param string $field フィールド名
 	 * @param int $strLen 表示文字数（バイト）(省略時は無制限に文字表示）
 	 */
-	public function tdNote($v,$field='',$strLen = 30){
+	public function tdNote($v,$field='',$str_len = null){
 		
 		if(is_array($v)){
 			$v = $v[$field];
@@ -852,16 +856,20 @@ class CrudBaseHelper extends FormHelper {
 		$v2="";
 		if(!empty($v)){
 			$v = h($v);
-			if(mb_strlen($v) > $strLen){
-				$v2=mb_strimwidth($v, 0, $strLen, "...");
-			}else{
+			if($str_len === null){
 				$v2 = $v;
+			}else{
+				if(mb_strlen($v) > $str_len){
+					$v2=mb_strimwidth($v, 0, $str_len, "...");
+				}else{
+					$v2 = $v;
+				}
 			}
 			$v2= str_replace('\\r\\n', ' ', $v2);
 			$v2= str_replace('\\', '', $v2);
 		}
 
-		$td = "<td><input type='hidden' name='{$field}' value='{$v2}' /><span class='{$field}'>{$v2}</span></td>\n";
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
 	

@@ -475,9 +475,10 @@ class NekoController extends CrudBaseController {
 			array('name'=>'kj_ip_addr','def'=>null),
 			array('name'=>'kj_created','def'=>null),
 			array('name'=>'kj_modified','def'=>null),
-			array('name'=>'row_limit','def'=>50),
-			
 			// CBBXE
+			
+			array('name'=>'row_limit','def'=>50),
+				
 		);
 		
 		
