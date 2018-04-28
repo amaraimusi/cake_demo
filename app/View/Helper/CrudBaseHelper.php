@@ -8,7 +8,7 @@ App::uses('FormHelper', 'View/Helper');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.6.1
+ * @version 1.6.2
  * @date 2016-7-27 | 2017-4-28 tdNoteのバグを修正
  * @author k-uehara
  *
@@ -115,7 +115,7 @@ class CrudBaseHelper extends FormHelper {
 	 * - onclick onclickイベントにセットするJS関数（CRUDタイプがajax型である場合のみ有効)
 	 * - display_name ボタンの表示名
 	 */
-	public function newBtn($option){
+	public function newBtn($option = null){
 	
 		if(empty($option)){
 			$option = array();
