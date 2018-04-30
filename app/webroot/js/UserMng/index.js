@@ -9,7 +9,7 @@ var crudBase;//AjaxによるCRUD
 var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複数選択による一括処理
 
 /**
- *  ネコ画面の初期化
+ *  ユーザー管理画面の初期化
  * 
   * ◇主に以下の処理を行う。
  * - 日付系の検索入力フォームにJQueryカレンダーを組み込む
@@ -28,7 +28,7 @@ function init(){
 	
 	//AjaxによるCRUD
 	crudBase = new CrudBase({
-			'src_code':'neko', // 画面コード（スネーク記法)
+			'src_code':'user_mng', // 画面コード（スネーク記法)
 			'kjs':kjs,
 			'ni_tr_place':1,
 		});
@@ -38,22 +38,17 @@ function init(){
 	// 表示フィルターデータの定義とセット
 	var disFilData = {
 			// CBBXS-1008
-			'neko_val':{
-				'fil_type':'money',
-				'option':{'currency':'&yen;'}
-			},
-			'delete_flg':{
-				'fil_type':'delete_flg',
-			},
+
 			// CBBXE
 			
 	};
 	
 	// CBBXS-1023
-	// ネコグループリストJSON
-	var neko_group_json = jQuery('#neko_group_json').val();
-	var nekoGroupList = JSON.parse(neko_group_json);
-	disFilData['neko_group'] ={'fil_type':'select','option':{'list':nekoGroupList}};
+	// 権限リストJSON
+	var role_json = jQuery('#role_json').val();
+	var roleList = JSON.parse(role_json);
+	disFilData['role'] ={'fil_type':'select','option':{'list':roleList}};
+
 	// CBBXE
 
 	
@@ -67,8 +62,8 @@ function init(){
 
 	// 一覧のチェックボックス複数選択による一括処理
 	pwms = new ProcessWithMultiSelection({
-		'tbl_slt':'#neko_tbl',
-		'ajax_url':'neko/ajax_pwms',
+		'tbl_slt':'#user_mng_tbl',
+		'ajax_url':'user_mng/ajax_pwms',
 			});
 
 	// 新規入力フォームのinput要素にEnterキー押下イベントを組み込む。
@@ -88,13 +83,12 @@ function init(){
 	
 	// 日付カレンダーのセット
 	// CBBXS-1030
-	$("#new_inp_neko_date").datepicker({dateFormat:'yy-mm-dd'});
-	$("#edit_neko_date").datepicker({dateFormat:'yy-mm-dd'});
+
 	// CBBXE
 	
 	// ■■■□□□■■■□□□■■■□□□■■■
 //	// CSVインポートの初期化  <CrudBase/index.js>
-//	initCsvImportFu('neko/csv_fu');
+//	initCsvImportFu('user_mng/csv_fu');
 	
 }
 
@@ -112,6 +106,15 @@ function newInpShow(btnElm){
  */
 function editShow(btnElm){
 	crudBase.editShow(btnElm);
+	
+	// パスワード変更ボタンを表示
+	jQuery("#chg_pw_btn").show();
+	
+	// パスワードテキストボックスを中身をクリアしｔから表示する
+	var epTxtElm = jQuery("#edit_password");
+	epTxtElm.val('');
+	epTxtElm.hide();
+	
 }
 
 /**
@@ -190,7 +193,7 @@ function resetKjs(exempts){
 function moveClmSorter(){
 	
 	//列並替画面に遷移する <CrudBase:index.js>
-	moveClmSorterBase('neko');
+	moveClmSorterBase('user_mng');
 	
 }
 
@@ -271,5 +274,17 @@ function session_clear(){
 	crudBase.csh.reset();
 	
 	location.href = '?ini=1&sc=1';
+}
+
+/**
+ * パスワード変更ボタンをクリック
+ */
+function chgPwBtnClick(){
+	jQuery("#chg_pw_btn").hide();
+	
+	// パスワードテキストボックスを中身をクリアしｔから表示する
+	var epTxtElm = jQuery("#edit_password");
+	epTxtElm.val('');
+	epTxtElm.show();
 }
 

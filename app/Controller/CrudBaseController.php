@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.3.0";
+	var $version = "2.3.1";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -736,6 +736,16 @@ class CrudBaseController extends AppController {
 		}
 
 		return $authority;
+	}
+	
+	/**
+	 * 権限リストを取得する
+	 * @return array 権限リスト
+	 */
+	protected function getRoleList(){
+		$data = $this->getAuthorityData();
+		$roleList = Hash::combine($data, '{s}.name','{s}.wamei');
+		return $roleList;
 	}
 
 	/**
