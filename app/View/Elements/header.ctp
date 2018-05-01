@@ -32,15 +32,15 @@
 			</ul>
 
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="#">
-					<?php 
-						$update_user="";
-						if(!empty($userInfo)){
-							$update_user = $userInfo['update_user'];
-						}
-						echo $update_user;
-					?>
-				</a></li>
+				<li class="top_menu_pull" style="z-index:2;">
+				<?php if(!empty($userInfo)){
+					echo "<a href='#'>{$userInfo['username']}</a>";
+					echo "<ul>";
+					echo "<li>{$userInfo['authority']['wamei']}</li>";
+					echo "</ul>";
+				} ?>
+
+				
 				<li><?php echo $this->Html->link('ログアウト', '/users/logout'); ?></li>
 			</ul>
 		</div>
