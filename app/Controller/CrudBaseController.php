@@ -11,13 +11,15 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.3.1";
+	var $version = "2.3.2";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
 
 	///デフォルトソートタイプ
 	var $defSortType=0;//0:昇順 1:降順
+	
+	public $userInfo = array(); // ユーザー情報
 
 	///検索条件のセッション保存フラグ
 	public $kj_session_flg = false;
@@ -201,6 +203,7 @@ class CrudBaseController extends AppController {
 
 		// ユーザー情報を取得する
 		$userInfo = $this->getUserInfo();
+		$this->userInfo = $userInfo;
 		
 		// アクティブフラグをリクエストから取得する
 		$act_flg = $this->getValueFromPostGet('act_flg');
@@ -714,20 +717,20 @@ class CrudBaseController extends AppController {
 			$userInfo['role'] = 'oparator';
 		}
 
-		// 権力データを取得してセットする
+		// 権限データを取得してセットする
 		$userInfo['authority'] = $this->getAuthority($userInfo['role']);
 
 		return $userInfo;
 	}
 
 	/**
-	 * 権限に紐づく権力エンティティを取得する
+	 * 権限に紐づく権限エンティティを取得する
 	 * @param string $role 権限
-	 * @return array 権力エンティティ
+	 * @return array 権限エンティティ
 	 */
 	protected function getAuthority($role){
 
-		// 権力データを取得する
+		// 権限データを取得する
 		$authorityData = $this->getAuthorityData();
 
 		$authority = array();
@@ -743,14 +746,29 @@ class CrudBaseController extends AppController {
 	 * @return array 権限リスト
 	 */
 	protected function getRoleList(){
+		
+		$role = $this->userInfo['authority']['name'];
 		$data = $this->getAuthorityData();
-		$roleList = Hash::combine($data, '{s}.name','{s}.wamei');
+		$roleList = array(); // 権限リスト
+		if($role == 'master'){
+			$roleList = Hash::combine($data, '{s}.name','{s}.wamei');
+		}else{
+			$level = $this->userInfo['authority']['level'];
+			foreach($data as $ent){
+				if($level > $ent['level']){
+					$name = $ent['level'];
+					$wamei = $ent['wamei'];
+					$roleList[$name] = $wamei;
+				}
+			}
+		}
+
 		return $roleList;
 	}
 
 	/**
-	 * 権力データを取得する
-	 * @return array 権力データ
+	 * 権限データを取得する
+	 * @return array 権限データ
 	 */
 	protected function getAuthorityData(){
 		$data=array(

@@ -182,7 +182,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>権限: </td><td>
-			<?php $this->CrudBase->selectX('role',null,$roleList,null);?>
+			<?php $this->CrudBase->selectX('role',null,$roleList);?>
 			<label class="text-danger" for="role"></label>
 		</td></tr>
 
@@ -233,7 +233,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>権限: </td><td>
-			<?php $this->CrudBase->selectX('role',null,$roleList,null);?>
+			<?php $this->CrudBase->selectX('role',null,$roleList);?>
 			<label class="text-danger" for="role"></label>
 		</td></tr>
 

@@ -9,8 +9,19 @@
 		  </button>
 		</div>
 		<div class="navbar-collapse collapse" id="navbar-main">
+<?php 
 
+?>
 			<ul class="nav navbar-nav ">
+				<?php 
+				// ユーザー権限が管理者以上であるなら「ユーザー管理」画面へのリンクを表示する
+				if(!empty($userInfo['authority']['level'])){
+					$level = $userInfo['authority']['level'];
+					if($level >= 30){
+						echo "<li><a href='user_mng'>ユーザー管理</a></li>";
+					}
+				}
+				?>
 				<li class="top_menu_pull" style="z-index:2;">
 					<a href="#" >設定</a>
 					<ul>

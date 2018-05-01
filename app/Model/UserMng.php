@@ -22,6 +22,8 @@ class UserMng extends AppModel {
 	/// バリデーションはコントローラクラスで定義
 	public $validate = null;
 	
+	public $permRoles = array(); // 許可権限リスト
+	
 	
 	public function __construct() {
 		parent::__construct();
@@ -192,6 +194,10 @@ class UserMng extends AppModel {
 			$kj_modified=$kjs['kj_modified'].' 00:00:00';
 			$cnds[]="UserMng.modified >= '{$kj_modified}'";
 		}
+		if(!empty($this->permRoles)){
+			$perm_roles_c = "'".implode("','",$this->permRoles)."'";
+			$cnds[]="UserMng.role IN({$perm_roles_c})";
+		}
 
 		// CBBXE
 		
@@ -273,37 +279,13 @@ class UserMng extends AppModel {
 		return $cnt;
 	}
 	
-	
-	// CBBXS-1021
-	// ■■■□□□■■■□□□■■■□□□
-// 	/**
-// 	 * 権限リストをDBから取得する
-// 	 */
-// 	public function getRoleList(){
-// 		if(empty($this->Role)){
-// 			App::uses('Role','Model');
-// 			$this->Role=ClassRegistry::init('Role');
-// 		}
-// 		$fields=array('id','role_name');//SELECT情報
-// 		$conditions=array("delete_flg = 0");//WHERE情報
-// 		$order=array('sort_no');//ORDER情報
-// 		$option=array(
-// 				'fields'=>$fields,
-// 				'conditions'=>$conditions,
-// 				'order'=>$order,
-// 		);
-
-// 		$data=$this->Role->find('all',$option); // DBから取得
-		
-// 		// 構造変換
-// 		if(!empty($data)){
-// 			$data = Hash::combine($data, '{n}.Role.id','{n}.Role.role_name');
-// 		}
-		
-// 		return $data;
-// 	}
-
-	// CBBXE
+	/**
+	 * 許可権限リストのセッター
+	 * @param array $permRoles 権限レベル
+	 */
+	public function setPermRoles($permRoles){
+		$this->permRoles = $permRoles;
+	}
 
 
 }

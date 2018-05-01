@@ -66,9 +66,14 @@ class UserMngController extends CrudBaseController {
 	 */
 	public function index() {
 		
-        // CrudBase共通処理（前）
+		// CrudBase共通処理（前）
 		$crudBaseData = $this->indexBefore('UserMng');//indexアクションの共通先処理(CrudBaseController)
 		
+		$userInfo = $crudBaseData['userInfo']; // ユーザー情報
+		$authData = $this->getAuthorityData(); // 権限データを取得
+		$permRoles = $this->makePermRoles($userInfo,$authData); // 許可権限リストを作成
+		$this->UserMng->setPermRoles($permRoles);
+
 		//一覧データを取得
 		$data = $this->UserMng->findData2($crudBaseData);
 
@@ -94,6 +99,31 @@ class UserMngController extends CrudBaseController {
 		$this->setCommon();
 
 
+	}
+	
+	/**
+	 * 許可権限リストを作成
+	 * @param array $userInfo ユーザー情報
+	 * @param array $authData 権限データ
+	 * @return array 許可権限リスト
+	 */
+	private function makePermRoles($userInfo,$authData){
+
+		$permRoles = array(); // 許可権限リスト
+		$role = $userInfo['authority']['name']; // 権限名
+		if($role == 'master'){
+			$permRoles = array_keys($authData);
+		}else{
+			$level = $userInfo['authority']['level']; // 権限レベル
+			foreach($authData as $aEnt){
+				if($aEnt['level'] < $level){
+					$permRoles[] = $aEnt['name'];
+				}
+			}
+		}
+		
+		return $permRoles;
+		
 	}
 
 	/**
@@ -580,7 +610,7 @@ class UserMngController extends CrudBaseController {
 			'password'=>array(
 					'name'=>'パスワード',
 					'row_order'=>'UserMng.password',
-					'clm_show'=>1,
+					'clm_show'=>0,
 			),
 			'role'=>array(
 					'name'=>'権限',
@@ -590,32 +620,32 @@ class UserMngController extends CrudBaseController {
 			'sort_no'=>array(
 					'name'=>'順番',
 					'row_order'=>'UserMng.sort_no',
-					'clm_show'=>1,
+					'clm_show'=>0,
 			),
 			'delete_flg'=>array(
 					'name'=>'削除フラグ',
 					'row_order'=>'UserMng.delete_flg',
-					'clm_show'=>1,
+					'clm_show'=>0,
 			),
 			'update_user'=>array(
 					'name'=>'更新ユーザー',
 					'row_order'=>'UserMng.update_user',
-					'clm_show'=>1,
+					'clm_show'=>0,
 			),
 			'ip_addr'=>array(
 					'name'=>'更新IPアドレス',
 					'row_order'=>'UserMng.ip_addr',
-					'clm_show'=>1,
+					'clm_show'=>0,
 			),
 			'created'=>array(
 					'name'=>'作成日時',
 					'row_order'=>'UserMng.created',
-					'clm_show'=>1,
+					'clm_show'=>0,
 			),
 			'modified'=>array(
 					'name'=>'更新日時',
 					'row_order'=>'UserMng.modified',
-					'clm_show'=>1,
+					'clm_show'=>0,
 			),
 
 			// CBBXE
