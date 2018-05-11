@@ -47,6 +47,7 @@ if (!defined('APP_DIR')) {
 	define('APP_DIR', basename(dirname(dirname(__FILE__))));
 }
 
+
 /**
  * The absolute path to the "cake" directory, WITHOUT a trailing DS.
  *
@@ -62,16 +63,16 @@ if (!defined('APP_DIR')) {
  * /lib/Cake/Console/Templates/skel/webroot/index.php
  */
 
-
-switch($_SERVER['SERVER_NAME']) {
-	case 'localhost':
-		define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
-		break;
-	default:
-		define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib-2.8.5');
-		break;
-}
-//define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
+// ■■■□□□■■■□□□■■■□□□
+// switch($_SERVER['SERVER_NAME']) {
+// 	case 'localhost':
+// 		define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
+// 		break;
+// 	default:
+// 		define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib-2.8.5');
+// 		break;
+// }
+define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
 /**
  * Editing below this line should NOT be necessary.
  * Change at your own risk.
