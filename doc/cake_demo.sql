@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 2018 年 5 朁E01 日 14:41
+-- Generation Time: 2018 年 5 朁E11 日 09:00
 -- サーバのバージョン： 10.1.30-MariaDB
 -- PHP Version: 7.1.14
 
@@ -198,9 +198,10 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `password`, `role`, `sort_no`, `delete_flg`, `update_user`, `ip_addr`, `created`, `modified`) VALUES
 (1, 'yagi', 'f997247b8e456437055c20d681c3e7a15c5b6c35', 'oparator', 0, 0, 'kani', '::1', NULL, '2018-05-01 21:36:52'),
-(2, 'buta', '9a7af9f15cba9e523300b934ef378dec8a7de567', 'admin', 0, 0, 'kani', '::1', '2014-06-30 07:58:30', '2018-05-01 21:37:13'),
-(3, 'kani', '22c64e8cae41d8c922827cb1ff9de23605c31f87', 'master', 0, 0, 'kani', '::1', '2014-06-30 08:24:48', '2018-05-01 21:37:25'),
-(4, 'kamakiri', 'e35a4768f8f60ceee01c96dbaef2217158aea2de', 'client', -1, 0, 'kani', '::1', '2018-05-01 21:38:35', '2018-05-01 21:38:35');
+(2, 'buta', 'f84873b9689d4f255c8e0fe0ebcc4084bba12778', 'developer', 0, 0, 'kani', '::1', '2014-06-30 07:58:30', '2018-05-11 15:52:48'),
+(3, 'kani', '10a4ef08902e5fa61ec06a003b48be8c526c08c3', 'master', 0, 0, 'buta', '::1', '2014-06-30 08:24:48', '2018-05-11 15:52:24'),
+(4, 'kamakiri', 'e35a4768f8f60ceee01c96dbaef2217158aea2de', 'client', -1, 0, 'kani', '::1', '2018-05-01 21:38:35', '2018-05-01 21:38:35'),
+(5, 'kame', 'f72ab3eb5cce6f6c7e69504c91b50de689772b0f', 'admin', -2, 0, 'kani', '::1', '2018-05-11 15:53:11', '2018-05-11 15:53:11');
 
 --
 -- Indexes for dumped tables
@@ -256,7 +257,7 @@ ALTER TABLE `neko_groups`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID', AUTO_INCREMENT=5;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID', AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
