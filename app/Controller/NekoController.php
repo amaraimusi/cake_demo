@@ -138,7 +138,8 @@ class NekoController extends CrudBaseController {
 	 * 
 	 */
 	public function edit() {
-
+		
+		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		$res=$this->edit_before('Neko');
 		$ent=$res['ent'];
 
@@ -159,6 +160,7 @@ class NekoController extends CrudBaseController {
 	 * 入力エラーがある場合は、入力画面へ、エラーメッセージと共にリダイレクトで戻ります。
 	 */
 	public function reg(){
+		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		$res=$this->reg_before('Neko');
 		$ent=$res['ent'];
 		
@@ -202,6 +204,7 @@ class NekoController extends CrudBaseController {
 		App::uses('Sanitize', 'Utility');
 	
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
@@ -262,6 +265,7 @@ class NekoController extends CrudBaseController {
 		App::uses('Sanitize', 'Utility');
 	
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 	
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
@@ -305,6 +309,7 @@ class NekoController extends CrudBaseController {
 	public function auto_save(){
 		
 		App::uses('Sanitize', 'Utility');
+		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
@@ -335,6 +340,7 @@ class NekoController extends CrudBaseController {
 	 */
 	public function csv_fu(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
 		$this->csv_fu_base($this->Neko,array('id','neko_val','neko_name','neko_date','neko_group','neko_dt','note','sort_no'));
 		
