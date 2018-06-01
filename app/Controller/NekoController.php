@@ -50,6 +50,8 @@ class NekoController extends CrudBaseController {
 
 
 	public function beforeFilter() {
+		
+		$this->Auth->allow(); // 認証と未認証の両方に対応したページする。
 	
 		parent::beforeFilter();
 	
@@ -66,7 +68,7 @@ class NekoController extends CrudBaseController {
 	 */
 	public function index() {
 		
-        // CrudBase共通処理（前）
+		// CrudBase共通処理（前）
 		$crudBaseData = $this->indexBefore('Neko');//indexアクションの共通先処理(CrudBaseController)
 		
 		//一覧データを取得
@@ -80,6 +82,15 @@ class NekoController extends CrudBaseController {
 		$neko_group_json = json_encode($nekoGroupList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		$this->set(array('nekoGroupList' => $nekoGroupList,'neko_group_json' => $neko_group_json));
 		// CBBXE
+		
+		// ■■■□□□■■■□□□■■■□□□テスト
+		App::uses('DbExport','Vendor/Wacg');
+		App::uses('DaoForCake','Model');
+		$dao = new DaoForCake();
+		$dbExp = new DbExport();
+		$dbExp->test($dao);
+		
+	
 		
 		$this->set($crudBaseData);
 		$this->set(array(
