@@ -30,12 +30,21 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 <div id="err" class="text-danger"><?php echo $errMsg;?></div>
 
 
-<div id="func_btns" >
+<div id="func_btns" class="btn-group" >
 	<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default">
 		<span class="glyphicon glyphicon-cog"></span></button>
+		
 	<a href="<?php echo $home_url; ?>" class="btn btn-info" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
 		<span class="glyphicon glyphicon-certificate"  ></span></a>
-	<?php $this->CrudBase->newBtn();// 新規入力ボタンを作成 ?>
+		
+	<button id="table_transform_tbl_mode" type="button" class="btn btn-default" onclick="tableTransform(0)" style="display:none">
+		<span class="glyphicon glyphicon-th" title="一覧テーブルの変形・テーブルモード"></span></button>
+		
+	<button id="table_transform_div_mode" type="button" class="btn btn-default" onclick="tableTransform(1)" >
+		<span class="glyphicon glyphicon-th-large" title="一覧テーブルの変形・区分モード"></span></button>
+		
+	<button type="button" class="btn btn-warning" onclick="newInpShow(this);">
+		<span class="glyphicon glyphicon-plus-sign" title="新規入力"></span></button>
 </div>
 <div style="clear:both"></div>
 

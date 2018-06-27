@@ -273,3 +273,21 @@ function session_clear(){
 	location.href = '?ini=1&sc=1';
 }
 
+/**
+ * テーブル変形
+ * @param mode_no モード番号  0:テーブルモード , 1:区分モード
+ * @returns
+ */
+function tableTransform(mode_no){
+
+	if(mode_no == 1){
+		jQuery("#neko_tbl").addClass('table_transform');
+		jQuery("#table_transform_tbl_mode").show();
+		jQuery("#table_transform_div_mode").hide();
+	}else{
+		jQuery("#neko_tbl").removeClass('table_transform');
+		jQuery("#table_transform_tbl_mode").hide();
+		jQuery("#table_transform_div_mode").show();
+	}
+}
+
