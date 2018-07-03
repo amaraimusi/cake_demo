@@ -91,9 +91,10 @@ class CrudBaseBase{
 	 * ファイルアップロードのチェンジイベント(新規入力用）
 	 */
 	_fileChangeEventNewInp(e){
-		var elm = jQuery(this);
-		var field = this._getFieldByNameOrClass(elm);
 
+		var elm = jQuery(e.currentTarget);
+		var field = this._getFieldByNameOrClass(elm);
+		
 		// ファイルアップロードのチェンジイベント
 		this._fileChangeEvent(e,field,'new_inp');
 	};
@@ -103,7 +104,8 @@ class CrudBaseBase{
 	 * ファイルアップロードのチェンジイベント(編集用）
 	 */
 	_fileChangeEventEdit(e){
-		var elm = jQuery(this);
+
+		var elm = jQuery(e.currentTarget);
 		var field = this._getFieldByNameOrClass(elm);
 
 		// ファイルアップロードのチェンジイベント
@@ -114,7 +116,8 @@ class CrudBaseBase{
 	 * ファイルアップロードのチェンジイベント(削除用）
 	 */
 	_fileChangeEventDel(e){
-		var elm = jQuery(this);
+
+		var elm = jQuery(e.currentTarget);
 		var field = this._getFieldByNameOrClass(elm);
 
 		// ファイルアップロードのチェンジイベント
@@ -165,7 +168,7 @@ class CrudBaseBase{
 				var form = this.getForm(form_type);
 
 				//画像プレビュー要素を取得。（なければ作成）
-				imgElm = this._getPreviewImgElm(form,field,inp_ent);
+				var imgElm = this._getPreviewImgElm(form,field,inp_ent);
 
 				// A thumbnail image preview.
 				imgElm.attr('src',reader.result);
@@ -1713,11 +1716,20 @@ class CrudBaseBase{
 
 					// イベントリスナを登録する
 					if(form_type == 'new_inp'){
-						ent.elm.change(this._fileChangeEventNewInp);
+						ent.elm.change(e => {
+							this._fileChangeEventNewInp(e);
+						});
+						
 					}else if(form_type == 'edit'){
-						ent.elm.change(this._fileChangeEventEdit);
+						ent.elm.change(e => {
+							this._fileChangeEventEdit(e);
+						});
+
 					}else{
-						ent.elm.change(this._fileChangeEventDel);
+						ent.elm.change(e => {
+							this._fileChangeEventDel(e);
+						});
+
 					}
 				}
 			}
@@ -1725,6 +1737,7 @@ class CrudBaseBase{
 
 		return fieldData;
 	}
+
 
 
 	/**
@@ -2137,6 +2150,10 @@ class CrudBaseBase{
 
 	// アップロードファイル要素用の入力フォームセッター
 	_setToFormForFile(form_type,form,field,v,upload_dp){
+		
+		console.log('field＝' + field);//■■■□□□■■■□□□■■■□□□)
+		console.log('ｖ＝' + v);//■■■□□□■■■□□□■■■□□□)
+		console.log('upload_dp＝' + upload_dp);//■■■□□□■■■□□□■■■□□□)
 
 		// 入力要素エンティティを取得する
 		var ent = this._getFieldEntByField(field);

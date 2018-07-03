@@ -78,6 +78,7 @@ class CrudBaseHelper extends FormHelper {
 			'livipage',						// ページ内リンク先プレビュー
 			'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
 			'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
+			'CrudBase/AjaxLoginWithCake.js?ver=1.0', // CakePHPによるAjax認証
 			'CrudBase/index'				// CRUD indexページ共通
 		);
 	}

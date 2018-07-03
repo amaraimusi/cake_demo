@@ -8,9 +8,6 @@ class UsersController extends AppController {
     }
 
 	public function login() {
-
-
-
 	    if ($this->request->is('post')) {
 	        if ($this->Auth->login()) {
 	            $this->redirect($this->Auth->redirect());
@@ -22,7 +19,8 @@ class UsersController extends AppController {
 	}
 
 	public function logout() {
-
+		$this->log('test3');//■■■□□□■■■□□□■■■□□□
+		$this->log($this->Auth->logout());//■■■□□□■■■□□□■■■□□□)
 	    $this->redirect($this->Auth->logout());
 	}
 

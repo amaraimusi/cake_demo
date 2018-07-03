@@ -16,11 +16,16 @@ var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複
  * - 列表示切替機能の組み込み
  * - 数値範囲系の検索入力フォームに数値範囲入力スライダーを組み込む
  * 
- * @version 1.2
- * @date 2015-9-16 | 2016-12-14
+ * @version 1.2.1
+ * @date 2015-9-16 | 2018-7-2
  * @author k-uehara
  */
 function init(){
+	
+	// CakePHPによるAjax認証
+	var alwc = new AjaxLoginWithCake();
+	var alwcParam = {'btn_type':0,'form_slt':'#ajax_login_with_cake'}
+	alwc.loginCheckEx(alwcParam);
 	
 	// 検索条件情報を取得する
 	var kjs_json = jQuery('#kjs_json').val();

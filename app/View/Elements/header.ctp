@@ -43,9 +43,9 @@
 					echo "<li>{$wamei}</li>";
 					echo "</ul>";
 				} ?>
-
+				</li>
 				
-				<li><?php echo $this->Html->link('ログアウト', '/users/logout'); ?></li>
+				<li id="ajax_login_with_cake"></li><!-- ログイン or ログアウト 　AjaxLoginWithCake.js　-->
 			</ul>
 		</div>
 	  </div>

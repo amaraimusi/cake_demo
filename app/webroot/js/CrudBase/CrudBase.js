@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-4-20
- * @version 2.2.1
+ * @date 2016-9-21 | 2018-7-1
+ * @version 2.2.2
  * 
  * @param object param
  *  - src_code	画面コード（スネーク記法）
@@ -539,7 +539,7 @@ class CrudBase extends CrudBaseBase{
 				var ent =jQuery.parseJSON(str_json);//パース
 
 			}catch(e){
-				alert('エラー');
+				alert('エラー:' + str_json);
 				console.log(str_json);
 				jQuery("#err").html(str_json);
 			}

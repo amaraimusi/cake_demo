@@ -50,8 +50,11 @@ class NekoController extends CrudBaseController {
 
 
 	public function beforeFilter() {
-		
-		$this->Auth->allow(); // 認証と未認証の両方に対応したページする。
+
+		// 未ログイン中である場合、未認証モードの扱いでページ表示する。
+		if(empty($this->Auth->user())){
+			$this->Auth->allow(); // 未認証モードとしてページ表示を許可する。
+		}
 	
 		parent::beforeFilter();
 	
@@ -83,12 +86,12 @@ class NekoController extends CrudBaseController {
 		$this->set(array('nekoGroupList' => $nekoGroupList,'neko_group_json' => $neko_group_json));
 		// CBBXE
 		
-		// ■■■□□□■■■□□□■■■□□□テスト
-		App::uses('DbExport','Vendor/Wacg');
-		App::uses('DaoForCake','Model');
-		$dao = new DaoForCake();
-		$dbExp = new DbExport();
-		$dbExp->test($dao);
+// 		// ■■■□□□■■■□□□■■■□□□テスト
+// 		App::uses('DbExport','Vendor/Wacg');
+// 		App::uses('DaoForCake','Model');
+// 		$dao = new DaoForCake();
+// 		$dbExp = new DbExport();
+// 		$dbExp->test($dao);
 		
 	
 		
@@ -139,67 +142,69 @@ class NekoController extends CrudBaseController {
 
 
 
-	/**
-	 * 入力画面
-	 * 
-	 * 入力フォームにて値の入力が可能です。バリデーション機能を実装しています。
-	 * 
-	 * URLクエリにidが付属する場合は編集モードになります。
-	 * idがない場合は新規入力モードになります。
-	 * 
-	 */
-	public function edit() {
+// 	/**
+// 	 * 入力画面
+// 	 * 
+// 	 * 入力フォームにて値の入力が可能です。バリデーション機能を実装しています。
+// 	 * 
+// 	 * URLクエリにidが付属する場合は編集モードになります。
+// 	 * idがない場合は新規入力モードになります。
+// 	 * 
+// 	 */
+// 	public function edit() {
 		
-		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
-		$res=$this->edit_before('Neko');
-		$ent=$res['ent'];
+// 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
+// 		$res=$this->edit_before('Neko');
+// 		$ent=$res['ent'];
 
-		$this->set(array(
-				'title_for_layout'=>'ネコ・編集',
-				'ent'=>$ent,
-		));
+// 		$this->set(array(
+// 				'title_for_layout'=>'ネコ・編集',
+// 				'ent'=>$ent,
+// 		));
 		
-		//当画面系の共通セット
-		$this->setCommon();
+// 		//当画面系の共通セット
+// 		$this->setCommon();
 
-	}
+// 	}
 	
-	 /**
-	 * 登録完了画面
-	 * 
-	 * 入力画面の更新ボタンを押し、DB更新に成功した場合、この画面に遷移します。
-	 * 入力エラーがある場合は、入力画面へ、エラーメッセージと共にリダイレクトで戻ります。
-	 */
-	public function reg(){
-		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
-		$res=$this->reg_before('Neko');
-		$ent=$res['ent'];
+// 	 /**
+// 	 * 登録完了画面
+// 	 * 
+// 	 * 入力画面の更新ボタンを押し、DB更新に成功した場合、この画面に遷移します。
+// 	 * 入力エラーがある場合は、入力画面へ、エラーメッセージと共にリダイレクトで戻ります。
+// 	 */
+// 	public function reg(){
 		
-		$regMsg="<p id='reg_msg'>更新しました。</p>";
-
-		//オリジナルバリデーション■■■□□□■■■□□□■■■□□□
-		//$xFlg=$this->validNeko();
-		$xFlg=true;
-		if($xFlg==false){
-			//エラーメッセージと一緒に編集画面へ、リダイレクトで戻る。
-			$this->errBackToEdit("オリジナルバリデーションのエラー");
-		}
 		
-		//★DB保存
-		$this->Neko->begin();//トランザクション開始
-		$ent=$this->Neko->saveEntity($ent);//登録
-		$this->Neko->commit();//コミット
-
-		$this->set(array(
-				'title_for_layout'=>'ネコ・登録完了',
-				'ent'=>$ent,
-				'regMsg'=>$regMsg,
-		));
+// 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
+// 		$res=$this->reg_before('Neko');
+// 		$ent=$res['ent'];
 		
-		//当画面系の共通セット
-		$this->setCommon();
+// 		$regMsg="<p id='reg_msg'>更新しました。</p>";
 
-	}
+// 		//オリジナルバリデーション■■■□□□■■■□□□■■■□□□
+// 		//$xFlg=$this->validNeko();
+// 		$xFlg=true;
+// 		if($xFlg==false){
+// 			//エラーメッセージと一緒に編集画面へ、リダイレクトで戻る。
+// 			$this->errBackToEdit("オリジナルバリデーションのエラー");
+// 		}
+		
+// 		//★DB保存
+// 		$this->Neko->begin();//トランザクション開始
+// 		$ent=$this->Neko->saveEntity($ent);//登録
+// 		$this->Neko->commit();//コミット
+
+// 		$this->set(array(
+// 				'title_for_layout'=>'ネコ・登録完了',
+// 				'ent'=>$ent,
+// 				'regMsg'=>$regMsg,
+// 		));
+		
+// 		//当画面系の共通セット
+// 		$this->setCommon();
+
+// 	}
 	
 	
 	
@@ -213,10 +218,19 @@ class NekoController extends CrudBaseController {
 	 */
 	public function ajax_reg(){
 		App::uses('Sanitize', 'Utility');
-	
+		
 		$this->autoRender = false;//ビュー(ctp)を使わない。
-		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
-
+		
+// 		// 認証中でなければエラー
+// 		if(empty($this->Auth->user())){
+// 			return 'Error:login is needed.';// 認証中でなければエラー
+// 		}
+		
+		// 未ログインかつローカルでないなら、エラーアラートを返す。
+		if(empty($this->Auth->user()) && $_SERVER['SERVER_NAME']!='localhost'){
+			return '一般公開モードでは編集登録はできません。';
+		}
+		
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
 		$ent = json_decode($json,true);
@@ -231,7 +245,11 @@ class NekoController extends CrudBaseController {
 			$upload_file = $_FILES["upload_file"]["name"];
 			$ent['neko_fn'] = $upload_file;
 		}
-	
+		
+		// ファイルアップロード制御
+		App::uses('FileUploadK','Vendor/Wacg/FileUploadK');
+		$fileUploadK = new FileUploadK($_FILES,array(),null);
+		$fileUploadK->workAllAtOnce();
 	
 		// 更新ユーザーなど共通フィールドをセットする。
 		$ent = $this->setCommonToEntity($ent);
@@ -353,7 +371,7 @@ class NekoController extends CrudBaseController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
-		$this->csv_fu_base($this->Neko,array('id','neko_val','neko_name','neko_date','neko_group','neko_dt','note','sort_no'));
+		$this->csv_fu_base($this->Neko,array('id','neko_val','neko_name','neko_date','neko_group','neko_dt','img_fn','note','sort_no'));
 		
 	}
 	
@@ -485,6 +503,7 @@ class NekoController extends CrudBaseController {
 			array('name'=>'kj_neko_date2','def'=>null),
 			array('name'=>'kj_neko_group','def'=>null),
 			array('name'=>'kj_neko_dt','def'=>null),
+			array('name'=>'kj_img_fn','def'=>null),
 			array('name'=>'kj_note','def'=>null),
 			array('name'=>'kj_sort_no','def'=>null),
 			array('name'=>'kj_delete_flg','def'=>0),
@@ -639,6 +658,11 @@ class NekoController extends CrudBaseController {
 			'neko_dt'=>array(
 					'name'=>'ネコ日時',
 					'row_order'=>'Neko.neko_dt',
+					'clm_show'=>1,
+			),
+			'img_fn'=>array(
+					'name'=>'画像ファイル名',
+					'row_order'=>'Neko.img_fn',
 					'clm_show'=>1,
 			),
 			'note'=>array(

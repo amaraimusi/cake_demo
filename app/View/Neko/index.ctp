@@ -17,14 +17,14 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 <h2>ネコ</h2>
 
-ネコの検索閲覧および編集する画面です。<br>
-<br>
 
 <?php
 	$this->Html->addCrumb("トップ",'/');
 	$this->Html->addCrumb("ネコ");
 	echo $this->Html->getCrumbs(" > ");
 ?>
+
+
 
 <?php echo $this->element('CrudBase/crud_base_new_page_version');?>
 <div id="err" class="text-danger"><?php echo $errMsg;?></div>
@@ -38,10 +38,10 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<span class="glyphicon glyphicon-certificate"  ></span></a>
 		
 	<button id="table_transform_tbl_mode" type="button" class="btn btn-default" onclick="tableTransform(0)" style="display:none">
-		<span class="glyphicon glyphicon-th" title="一覧テーブルの変形・テーブルモード"></span></button>
+		<span class="glyphicon glyphicon-th" title="一覧の変形・テーブルモード"></span></button>
 		
 	<button id="table_transform_div_mode" type="button" class="btn btn-default" onclick="tableTransform(1)" >
-		<span class="glyphicon glyphicon-th-large" title="一覧テーブルの変形・区分モード"></span></button>
+		<span class="glyphicon glyphicon-th-large" title="一覧の変形・区分モード"></span></button>
 		
 	<button type="button" class="btn btn-warning" onclick="newInpShow(this);">
 		<span class="glyphicon glyphicon-plus-sign" title="新規入力"></span></button>
@@ -64,6 +64,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 	$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
 	//$this->CrudBase->inputKjDateTime($kjs,'kj_neko_dt','ネコ日時',150);
 	$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
+	$this->CrudBase->inputKjText($kjs,'kj_img_fn','ネコ名前',200);
 	$this->CrudBase->inputKjText($kjs,'kj_note','備考',200,'部分一致検索'); 
 	
 	$this->CrudBase->inputKjId($kjs); 
@@ -130,6 +131,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdList($ent,'neko_group',$nekoGroupList);
 	$this->CrudBase->tdPlain($ent,'neko_date');
 	$this->CrudBase->tdPlain($ent,'neko_dt');
+	$this->CrudBase->tdPlain($ent,'img_fn');
 	$this->CrudBase->tdNote($ent,'note');
 	$this->CrudBase->tdPlain($ent,'sort_no');
 	$this->CrudBase->tdDeleteFlg($ent,'delete_flg');
@@ -211,6 +213,12 @@ foreach($data as $i=>$ent){
 			<label class="text-danger" for="neko_dt"></label>
 		</td></tr>
 
+		<tr><td>画像ファイル名: </td><td>
+			<input id="img_fn" type="file" name="img_fn" accept="image/*" class="valid" required title="必須入力です" />
+			<label class="text-danger" for="img_fn"></label>
+	 		<div class="overlap_msg text-danger" ></div>
+		</td></tr>
+
 		<tr><td>備考： </td><td>
 			<textarea name="note"  cols="30" rows="4" maxlength="1000" title="1000文字以内で入力してください"></textarea>
 			<label class="text-danger" for="note"></label>
@@ -273,6 +281,12 @@ foreach($data as $i=>$ent){
 			<label class="text-danger" for="neko_dt"></label>
 		</td></tr>
 
+		<tr><td>画像ファイル名: </td><td>
+			<input id="img_fn" type="file" name="img_fn" accept="image/*" class="valid" required title="必須入力です" />
+			<label class="text-danger" for="img_fn"></label>
+	 		<div class="overlap_msg text-danger" ></div>
+		</td></tr>
+
 		<tr><td>備考： </td><td>
 			<textarea name="note"  cols="30" rows="4" maxlength="1000" title="1000文字以内で入力してください"></textarea>
 			<label class="text-danger" for="note"></label>
@@ -327,6 +341,11 @@ foreach($data as $i=>$ent){
 
 		<tr><td>ネコ名: </td><td>
 			<span class="neko_name"></span>
+		</td></tr>
+		
+		<tr><td>画像ファイル: </td><td>
+			<label for="img_fn"></label><br>
+			<img src="" class="img_fn" width="80" height="80" ></img>
 		</td></tr>
 
 

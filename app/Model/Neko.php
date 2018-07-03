@@ -190,6 +190,10 @@ class Neko extends AppModel {
 			$dtInfo = $this->CrudBase->guessDatetimeInfo($kj_neko_dt);
 			$cnds[]="DATE_FORMAT(Neko.neko_dt,'{$dtInfo['format_mysql_a']}') = DATE_FORMAT('{$dtInfo['datetime_b']}','{$dtInfo['format_mysql_a']}')";
 		}
+		
+		if(!empty($kjs['kj_img_fn'])){
+			$cnds[]="Neko.img_fn = '{$kjs['kj_img_fn']}'";
+		}
 
 		if(!empty($kjs['kj_note'])){
 			$cnds[]="Neko.note LIKE '%{$kjs['kj_note']}%'";
