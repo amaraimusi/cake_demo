@@ -1,15 +1,19 @@
 <?php
 class ImgFileUpload extends FileUploadBase{
 
+
 	/**
 	 * 一括作業
-	 * @param array $files $_FILES
-	 * @param array $param パラメータ
+	 * {@inheritDoc}
+	 * @see FileUploadBase::workAllAtOnce()
 	 */
 	public function workAllAtOnce($files = null,$param = null){
 		
 		// ファイルチェック
 		$errs = $this->checkFile();
+		
+		$res = array('errs'=>$errs);
+		return $res;
 	}
 	
 	/**
@@ -18,12 +22,14 @@ class ImgFileUpload extends FileUploadBase{
 	public function checkFile(){
 		// アップロードファイルのバリデーションを行い、エラーがあればエラーリストに追加する。
 		$upFileValid = new UploadFileValidation();
+		$suppData = $this->param['suppData']; // 補足データ
+		debug('test=$suppData');//■■■□□□■■■□□□■■■□□□)
+		debug($suppData);//■■■□□□■■■□□□■■■□□□)
+		$errs = $upFileValid->checkFiles($this->files,array('png','jpg','jpeg'),array('image/png','image/jpeg'),$suppData);
+
+		return $errs;
 		
-		var_dump('test=');//■■■□□□■■■□□□■■■□□□)
-// 		$uf_err = $upFileValid->checkFiles($_FILES,array('png','jpg','jpeg'),array('image/png','image/jpeg'),'背景画像ファイル');
-// 		if(!empty($uf_err)){
-// 			$errs = array_merge($errs,$uf_err);
-// 		}
+		
 	}
 	
 	/**

@@ -20,10 +20,15 @@ class UploadFileValidation{
 	 * - mime_check_flg: MIMEチェックフラグ: 0:MIMEチェックしない    1（デフォルト):MIMEチェックを行う
 	 * @return エラー情報。 正常である場合はnullを返す
 	 */
-	public function checkFiles($files,$permitExts,$permitMimes,$option){
+	public function checkFiles($files,$permitExts,$permitMimes,$suppData){
+		
+		
+// ■■■□□□■■■□□□■■■□□□
+// 		// オプションのプロパティが未セットなら初期値をセットする
+// 		$option = $this->setOptionIfEmpty($option);
 
-		// オプションのプロパティが未セットなら初期値をセットする
-		$option = $this->setOptionIfEmpty($option);
+		// 補足データをデータ型に整型する。
+		$suppData = $this->formattingSuppData($suppData,$files);
 		
 		$wamei = $option['wamei'];
 		
@@ -84,18 +89,18 @@ class UploadFileValidation{
 		
 		// ファイル名が空でないか？
 		if($fn == "" || $fn == null){
-			return $wamei."ファイル名が空です。";
+			return $wamei.":ファイル名が空です。";
 			
 		}
 		
 		// 一時ファイル名が空でないか？
 		if(empty($fileData['tmp_name'])){
-			return $wamei."ファイルが空です。";
+			return $wamei.":ファイルが空です。";
 		}
 		
 		// ファイル名に不正文字が含まれていないかチェックする
 		if(preg_match('/;|<|>|%|\$|\.\/|\\\\/', 'xxx.png')){
-			return $wamei."ファイル名に不正記号が含まれています。";
+			return $wamei.":ファイル名に不正記号が含まれています。";
 		}
 		
 		// ファイル名から拡張子を取得する。
@@ -103,19 +108,19 @@ class UploadFileValidation{
 		
 		// 拡張子が空でないか？
 		if($ext1 == "" || $ext1 == null){
-			return $wamei."ファイル名に拡張子がありません。ファイル名【" . $fn . "】";
+			return $wamei.":ファイル名に拡張子がありません。ファイル名【" . $fn . "】";
 		}
 		
 		// ファイルサイズが0であるかチェックする。
 		if(empty($fileData['size'])){
-			return $wamei."ファイルサイズが0です。ファイル名【" . $fn . "】";
+			return $wamei.":ファイルサイズが0です。ファイル名【" . $fn . "】";
 		}
 		
 		$ext1 = mb_strtolower($ext1);
 		
  		// 許可拡張子リストに存在する拡張子であるか？
 		if(in_array($ext1,$permitExts)==0){
-			return $wamei."無効の拡張子です。【" . $fn . "】";
+			return $wamei.":無効の拡張子です。【" . $fn . "】";
 		}
 		
 		
@@ -127,12 +132,12 @@ class UploadFileValidation{
 			
 			// MIMEが空でないか？
 			if($mime_type == "" || $mime_type == null){
-				return $wamei."MIMEタイプが空です。";
+				return $wamei.":MIMEタイプが空です。";
 			}
 			
 			// 許可拡張子リストに存在する拡張子であるか？
 			if(in_array($mime_type,$permitMimes)==0){
-				return $wamei."無効のMIMEタイプです。【" . $mime_type . "】";
+				return $wamei.":無効のMIMEタイプです。【" . $mime_type . "】";
 			}
 			
 		}
@@ -142,31 +147,93 @@ class UploadFileValidation{
 		
 	}
 	
+	/**
+	 * 補足データをデータ型に整型する。
+	 * @param $suppData 補足データ(空、文字列型、エンティティ型、データ型）
+	 * @return array データ型の補足データ
+	 */
+	private function formattingSuppData($suppData,&$files){
+		
+		// データ構造タイプ(Data structure type)を取得。  0:空 , 1:プリミティブ型 ,2:エンティティ型 , 3:データ型
+		$d_struct_type = $this->getDataStructureType($suppData);
+		
+		// アップロードファイル件数を・・・
+		$f_cnt = $this->getFileCount($files);
+		
+		switch ($d_struct_type) {
+			case 0:
+// 			;
+			
+// 			ファイル件数分だけ処理を繰り返す
+// 			エンティティに下記をセット
+// 			wamei＝ファイル & index+1
+// 			mime_check_flg =1
+// 			データにエンティティを追加
+			break;
+			
+			default:
+				;
+			break;
+		}
+
+		
+	}
+	
 	
 	/**
-	 * オプションのプロパティが未セットなら初期値をセットする
-	 * @param array $option オプション
-	 * @return array オプション
+	 * データ構造タイプを取得する。
+	 *
+	 * @note
+	 * データ構造タイプは4種類(0:空 , 1:プリミティブ型 ,2:エンティティ型 , 3:データ型)
+	 *
+	 * @param $value
+	 * @return int データ構造タイプ
 	 */
-	private function setOptionIfEmpty($option){
-		if(empty($option)){
-			$option = array();
-		}else if(!is_array($option)){
-			$wamei = $option;
-			$option = array('wamei'=>$wamei);
-		}
+	private function getDataStructureType($data){
+		if($data === null) return 0; // 空
 		
-		if(empty($option['wamei'])){
-			$option['wamei'] = ' : ';
+		if(is_array($data)){
+			if(count($data) == 0){
+				return 2; // エンティティ型
+			}else{
+				$first = reset($data); // $first→猫
+				if(is_array($first)){
+					return 3; // データ型
+				}else{
+					return 2; // エンティティ型
+				}
+			}
 		}
+		return 1; // プリミティブ型
 		
-		if(!isset($option['mime_check_flg'])){
-			$option['mime_check_flg'] = 1;
-		}
-		
-		return $option;
-
 	}
+	
+	
+	// ■■■□□□■■■□□□■■■□□□
+// 	/**
+// 	 * オプションのプロパティが未セットなら初期値をセットする
+// 	 * @param array $option オプション
+// 	 * @return array オプション
+// 	 */
+// 	private function setOptionIfEmpty($option){
+// 		if(empty($option)){
+// 			$option = array();
+// 		}else if(!is_array($option)){
+// 			$wamei = $option;
+// 			$option = array('wamei'=>$wamei);
+// 		}
+		
+// 		if(empty($option['wamei'])){
+// 			$option['wamei'] = ' : ';
+// 		}
+		
+// 		if(!isset($option['mime_check_flg'])){
+// 			$option['mime_check_flg'] = 1;
+// 		}
+		
+// 		return $option;
+
+// 	}
 	
 	
 	

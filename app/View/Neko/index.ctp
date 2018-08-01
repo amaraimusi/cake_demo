@@ -214,7 +214,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>画像ファイル名: </td><td>
-			<input id="img_fn" type="file" name="img_fn" accept="image/*" class="valid" required title="必須入力です" />
+			<input id="img_fn" type="file" name="img_fn" accept="image/*"  />
 			<label class="text-danger" for="img_fn"></label>
 	 		<div class="overlap_msg text-danger" ></div>
 		</td></tr>
@@ -282,7 +282,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>画像ファイル名: </td><td>
-			<input id="img_fn" type="file" name="img_fn" accept="image/*" class="valid" required title="必須入力です" />
+			<input id="img_fn" type="file" name="img_fn" accept="image/*"  />
 			<label class="text-danger" for="img_fn"></label>
 	 		<div class="overlap_msg text-danger" ></div>
 		</td></tr>

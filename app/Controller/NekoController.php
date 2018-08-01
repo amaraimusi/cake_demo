@@ -218,8 +218,8 @@ class NekoController extends CrudBaseController {
 	 */
 	public function ajax_reg(){
 		App::uses('Sanitize', 'Utility');
-		
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		$errs = array(); // エラーリスト
 		
 // 		// 認証中でなければエラー
 // 		if(empty($this->Auth->user())){
@@ -248,8 +248,11 @@ class NekoController extends CrudBaseController {
 		
 		// ファイルアップロード制御
 		App::uses('FileUploadK','Vendor/Wacg/FileUploadK');
-		$fileUploadK = new FileUploadK($_FILES,array(),null);
-		$fileUploadK->workAllAtOnce();
+		$fuParam['suppData'] = [['wamei'=>'画像ファイル1','mime_check_flg'=>1]];
+		$fileUploadK = new FileUploadK($_FILES,$fuParam);
+		$fuRes = $fileUploadK->workAllAtOnce();
+		$errs = Hash::merge($errs,$fuRes['errs']);
+		
 	
 		// 更新ユーザーなど共通フィールドをセットする。
 		$ent = $this->setCommonToEntity($ent);
@@ -270,6 +273,10 @@ class NekoController extends CrudBaseController {
 	
 	
 		}
+		
+		if($errs) $ent['err'] = implode("','",$errs); // フォームに表示するエラー文字列をセット
+
+		
 
 		$json_data=json_encode($ent,true);//JSONに変換
 	

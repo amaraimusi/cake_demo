@@ -44,6 +44,18 @@ class FileUploadK{
 	 * 一括作業
 	 * @param array $files $_FILES
 	 * @param array $param パラメータ
+	 * - suppData 補足データ（Supplementary Data | 補足エンティティの配列 | 省略可）
+	 *    構造 suppData = [{'wamei','mime_check_flg'},{...}];
+	 *    補足エンティティ
+	 *     - wamei:和名   エラーメッセージなどに用いる
+	 *     - mime_check_flg: MIMEチェックフラグ: 0:MIMEチェックしない    1（デフォルト):MIMEチェックを行う
+	 *
+	 * @return $res
+	 *  - errs エラーリスト
+	 *
+	 * @note
+	 *  補足データ(suppData)の構造
+	 *  suppData = [{'wamei','mime_check_flg'},{...}];
 	 */
 	public function workAllAtOnce($files = array(),$param = array()){
 		return $this->composit->workAllAtOnce($files,$param);

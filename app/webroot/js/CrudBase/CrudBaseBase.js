@@ -15,7 +15,7 @@
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
  * @date 2016-9-21 | 2018-4-26 テーブル型入力フォームをＳＰ版に対応させる。
- * @version 2.1.6
+ * @version 2.1.7
  * 
  * @param object param
  *  - tbl_slt	CRUD対象テーブルセレクタ
@@ -1576,7 +1576,7 @@ class CrudBaseBase{
 
 		// 自動閉フラグ
 		if(param['auto_close_flg'] == null){
-			param['auto_close_flg'] = 1;
+			param['auto_close_flg'] = 0;
 		}
 
 		// 新規入力追加場所フラグ
