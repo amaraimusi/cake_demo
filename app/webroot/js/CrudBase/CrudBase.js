@@ -85,8 +85,40 @@ class CrudBase{
 		// 自動保存機能の初期化
 		this.autoSave = new CrudBaseAutoSave(this);
 		
+		// 行入替機能・コンポーネント
+		this.rowExchange = this._factoryCrudBaseRowExchange();
+
+		// 列表示切替機能・コンポーネント
+		this.csh = this._factoryClmShowHide(); 
+
+		// ガジェット・コンポーネント
+		this.cbGadgetKj = this._factoryCrudBaseGadgetKj(); 
+
+		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
+		jQuery.datetimepicker.setLocale('ja');// 日時ピッカーを日本語化<jquery.datetimepicker.full.min.js>
+
+	}
+	
+	
+	/**
+	 * 行入替機能・コンポーネントのファクトリーメソッド
+	 * @reutrn CrudBaseRowExchange 行入替機能・コンポーネント
+	 */
+	_factoryCrudBaseRowExchange(){
+		var rowExchange;
+		
+		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+		var t = typeof CrudBaseRowExchange;
+		if(t == null || t == 'undefined'){
+			// 「空」実装
+			rowExchange = {
+					'showForm':function(){},
+			}
+			return rowExchange
+		}
+		
 		// 行入替機能の初期化
-		this.rowExchange = new CrudBaseRowExchange(this,null,()=>{
+		rowExchange = new CrudBaseRowExchange(this,null,()=>{
 			this.rowExchangeAfter();
 		});
 		
@@ -94,19 +126,33 @@ class CrudBase{
 		var row_exc_flg = jQuery('#row_exc_flg').val();
 		this.rowExcBtnShow(row_exc_flg);
 		
+		return rowExchange;
+	}
+	
+	/**
+	 * 列表示切替機能・コンポーネントのファクトリーメソッド
+	 * @return ClmShowHide 列表示切替機能・コンポーネント
+	 */
+	_factoryClmShowHide(){
+		
+		var csh;
+		
+		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+		var t = typeof ClmShowHide;
+		if(t == null || t == 'undefined'){
+			// 「空」実装
+			csh = {}
+			return csh
+		}
 		
 		// 列表示切替機能の初期化
-		this.csh=new ClmShowHide();//列表示切替
+		csh=new ClmShowHide();//列表示切替
 		var csh_json = jQuery('#csh_json').val();
 		var iniClmData = JSON.parse(csh_json);//列表示配列  1:初期表示   0:初期非表示
 		var csh_unique_key = 'rkt_' + this.param.src_code + '_index'; // 画面別ユニークキー
-		this.csh.init(this.param.tbl_slt,'clm_cbs',iniClmData,csh_unique_key);
+		csh.init(this.param.tbl_slt,'clm_cbs',iniClmData,csh_unique_key);
+		return csh;
 		
-		this.cbGadgetKj = this._factoryCrudBaseGadgetKj('CrudBaseGadgetKj'); // ガジェット・コンポーネント
-
-		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
-		jQuery.datetimepicker.setLocale('ja');// 日時ピッカーを日本語化<jquery.datetimepicker.full.min.js>
-
 	}
 
 
@@ -1746,6 +1792,7 @@ class CrudBase{
 	setEntityToTr(tr,ent,option){
 
 		if(ent==null) return;
+		if(option == null) option = {};
 		
 		// XSSサニタイズ
 		var xss_flg = 1;

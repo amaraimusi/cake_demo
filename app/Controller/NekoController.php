@@ -343,11 +343,11 @@ class NekoController extends CrudBaseController {
 	* 
 	*/
 	public function auto_save(){
+		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		App::uses('Sanitize', 'Utility');
 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
-		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		$json=$_POST['key1'];
 		
