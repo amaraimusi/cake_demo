@@ -48,13 +48,14 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function getCssList(){
 		return array(
-			'jquery.datetimepicker.min',		// 日時ピッカー
-			'clm_show_hide',					// 列表示切替
-			'YmpickerWrap',						// 年月ピッカーのラッパー
-			'nouislider.min',					// 数値範囲入力スライダー・noUiSlider
-			'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ
-			'CrudBase/table_transform.css?ver=1.0',	// テーブル変形
-			'CrudBase/index'					// CRUD indexページ共通
+				'jquery.datetimepicker.min',		// 日時ピッカー
+				'clm_show_hide',					// 列表示切替
+				'YmpickerWrap',						// 年月ピッカーのラッパー
+				'nouislider.min',					// 数値範囲入力スライダー・noUiSlider
+				'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ
+				'CrudBase/table_transform.css?ver=1.0',	// テーブル変形
+				'CrudBase/FileUploadK.css?ver=1.0',	
+				'CrudBase/index'					// CRUD indexページ共通
 		);
 	}
 	
@@ -63,23 +64,23 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function getJsList(){
 		return array(
-			'clm_show_hide',				// 列表示切替
-			'date_ex',						// 日付関連関数集
-			'jquery.ui.ympicker',			// 年月選択ダイアログ
-			'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-			'jquery.datetimepicker.full.min',// 日時ピッカー
-			'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ
-			'CrudBase/YmpickerWrap',		// 年月ピッカーのラッパークラス
-			'CrudBase/CrudBaseBase.js?ver=2.3.1',
-			'CrudBase/CrudBaseAutoSave.js?ver=1.0',
-			'CrudBase/CrudBaseRowExchange.js?ver=1.2',
-			'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
-			'CrudBase/CrudBase.js?ver=2.0',
-			'livipage',						// ページ内リンク先プレビュー
-			'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
-			'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
-			'CrudBase/AjaxLoginWithCake.js?ver=1.0', // CakePHPによるAjax認証
-			'CrudBase/index'				// CRUD indexページ共通
+				'clm_show_hide',				// 列表示切替
+				'date_ex',						// 日付関連関数集
+				'jquery.ui.ympicker',			// 年月選択ダイアログ
+				'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
+				'jquery.datetimepicker.full.min',// 日時ピッカー
+				'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ
+				'CrudBase/YmpickerWrap',		// 年月ピッカーのラッパークラス
+				'CrudBase/CrudBaseAutoSave.js?ver=1.0',
+				'CrudBase/CrudBaseRowExchange.js?ver=1.2',
+				'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
+				'CrudBase/FileUploadK.js?ver=1.0',
+				'CrudBase/CrudBase.js?ver=2.0',
+				'livipage',						// ページ内リンク先プレビュー
+				'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
+				'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
+				'CrudBase/AjaxLoginWithCake.js?ver=1.0', // CakePHPによるAjax認証
+				'CrudBase/index'				// CRUD indexページ共通
 		);
 	}
 	
