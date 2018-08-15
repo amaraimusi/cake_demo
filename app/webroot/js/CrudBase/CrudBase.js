@@ -32,11 +32,6 @@
  *  - form_position	フォーム位置 auto:自動, left:左側表示, center:中央表示, right:右側表示,max:横幅いっぱい
  *  - form_width	フォーム横幅	数値で指定。未指定（null)である場合、autoと同様になる。ただしform_positionがmaxなら横幅最大になる。
  *  - form_height	フォーム縦幅	上記と同じ
- *  - file_uploads	ファイルアップロードデータ
- *  - upload_file_dir	アップロードファイルディレクトリ
- *  - preview_img_width		プレビュー画像・横幅
- *  - preview_img_height	プレビュー画像・縦幅
- *  - callback_after_file_change(e,field,form_type,fileName)	ファイルチェンジ後のコールバック
  *  - form_z_index	重なり順序(cssのz-indexと同じ)
  *  - valid_msg_slt	バリデーションメッセージセレクタ
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない（デフォルト）  1:フォームの外側をクリックすると自動的に閉じる
@@ -70,9 +65,6 @@ class CrudBase{
 		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'edit');
 		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'delete');
 
-		// フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
-		this.fieldData = this._initFileUpData(this.fieldData);
-
 		// フィールドハッシュテーブルをフィールドデータから生成する。
 		this.fieldHashTable = this._createFieldHashTable(this.fieldData);
 
@@ -82,21 +74,48 @@ class CrudBase{
 		// テーブルオブジェクト
 		this.tbl = jQuery('#' + this.param.tbl_slt);
 		
-		// 自動保存機能の初期化
-		this.autoSave = new CrudBaseAutoSave(this);
-		
+		// 自動保存機能・コンポーネント
+		this.autoSave = this._factoryCrudBaseAutoSave(); 
+
 		// 行入替機能・コンポーネント
 		this.rowExchange = this._factoryCrudBaseRowExchange();
 
 		// 列表示切替機能・コンポーネント
 		this.csh = this._factoryClmShowHide(); 
 
-		// ガジェット・コンポーネント
-		this.cbGadgetKj = this._factoryCrudBaseGadgetKj(); 
+		// ガジェット・コンポーネント（カレンダー、数値スライダー）★★★■■■□□□■■■□□□■■■□□□
+//		this.cbGadgetKj = this._factoryCrudBaseGadgetKj(); 
 
-		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
-		jQuery.datetimepicker.setLocale('ja');// 日時ピッカーを日本語化<jquery.datetimepicker.full.min.js>
-
+		// 拡張ファイルアップロード・コンポーネント
+		this.fileUploadK = this._factoryFileUploadK();
+		
+		this.fueIdCash; // file要素のid属性データ（キャッシュ）
+		
+	}
+	
+	
+	/**
+	 * 自動保存機能・コンポーネントのファクトリーメソッド
+	 * @return CrudBaseAutoSave 自動保存機能・コンポーネント
+	 */
+	_factoryCrudBaseAutoSave(){
+		var autoSave;
+		
+		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+		var t = typeof CrudBaseAutoSave;
+		if(t == null || t == 'undefined'){
+			// 「空」実装
+			autoSave = {
+					'saveRequest':function(){},
+			}
+			return autoSave
+		}
+		
+		// 自動保存機能の初期化
+		autoSave = new CrudBaseAutoSave(this);
+		
+		return autoSave;
+		
 	}
 	
 	
@@ -178,9 +197,105 @@ class CrudBase{
 		var kjElms = this.getKjElms(); // 検索条件入力要素リストを取得する
 		cbGadgetKj = new CrudBaseGadgetKj(kjElms); // ガシェット管理クラス
 		cbGadgetKj.onGadgetsToElms();// 各検索入力要素にガシェットを組み込み
+		
+		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
+		jQuery.datetimepicker.setLocale('ja');// 日時ピッカーを日本語化<jquery.datetimepicker.full.min.js>
+
 		return cbGadgetKj;
 
 	}
+	
+
+
+	/**
+	 * 拡張ファイルアップロード・コンポーネントのファクトリーメソッド
+	 * @return FileUploadK 拡張ファイルアップロード・コンポーネント
+	 */
+	_factoryFileUploadK(){
+		var fileUploadK;
+
+		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+		var t = typeof FileUploadK;
+		if(t == null || t == 'undefined'){
+			// 「空」実装
+			fileUploadK = {
+					'addEvent':function(){},
+					'getFileParams':function(){},
+					'uploadByAjax':function(){},
+					'getFileNames()':function(){},
+			}
+			return fileUploadK
+		}
+		
+		// フォームからfile要素のid属性
+		var nFuIds = this._getFueIds('new_inp');
+		var eFuIds = this._getFueIds('edit');
+		var fuIds = nFuIds.concat(eFuIds);// 配列結合
+		
+		// 拡張ファイルアップロードクラスの生成
+		fileUploadK = new FileUploadK({
+			'prog_slt':'#prog1',
+			'err_slt':'#err',
+			'valid_ext':'image',
+			'img_width':120,
+			'img_height':120,
+			});
+		
+		// file要素を拡張
+		for(var i in fuIds){
+			var fue_id = fuIds[i];
+			fileUploadK.addEvent(fue_id);
+		}
+		
+		return fileUploadK;
+		
+		
+	}
+	
+	
+	/**
+	 * 新規入力フォームからfile要素のid属性
+	 * @param string form_type フォーム種別
+	 * @param object option
+	 *  - cash_flg キャッシュフラグ 0:キャッシュから取得しない , 1 キャッシュから取得する（デフォルト）
+	 * @return array fueIds:file要素のid属性リスト
+	 */
+	_getFueIds(form_type,option){
+		
+		if(option == null) option = {};
+		if(option['cash_flg'] == null) option['cash_flg'] = 1;
+		
+		// キャッシュがあるならそれを返す。
+		if(option['cash_flg'] == 1 && this.fueIdCash){
+			if(this.fueIdCash[form_type] != null){
+				return this.fueIdCash[form_type];
+			}
+		}
+		
+		var fuIds = []; // id属性リスト
+		for(var i in this.fieldData){
+			var fEnt = this.fieldData[i];
+			var inp_key = 'inp_' + form_type;
+			if(fEnt[inp_key] == null) continue;
+			var inp = fEnt[inp_key];
+			
+			if(inp['type_name'] == null) continue;
+			if(inp['type_name'] != 'file') continue;
+			if(inp['elm'] == null) continue;
+			
+			var elm = inp['elm'];
+			var xid = elm.attr('id');
+			
+			fuIds.push(xid);
+		}
+		
+		// キャッシュとして保存する。
+		if(this.fueIdCash == null) this.fueIdCash = {};
+		this.fueIdCash[form_type] = fuIds;
+		
+		return fuIds;
+	}
+	
 
 
 	/**
@@ -220,10 +335,13 @@ class CrudBase{
 	 * 
 	 * @param elm 編集ボタン要素
 	 * @param option オプション（省略可）
-	 *           -  upload_file_dirアップロードファイルディレクトリ
+	 *  -upload_dp アップロードファイルディレクトリ
+	 *  -upload_dp_cb(upload_dp,data) アップロードディレクトリコールバック
 	 * @param callBack フォームに一覧の行データを自動セットしたあとに呼び出されるコールバック関数(省略可）
 	 */
 	editShow(elm,option,callBack){
+		
+		if(option == null) option = {};
 
 		var tr=jQuery(elm).parents('tr'); // 先祖をさかのぼりtr要素を取得する
 		this.param.active_row_index = tr.index(); // 行番（インデックス）を取得する
@@ -791,171 +909,172 @@ class CrudBase{
 		return container;
 	}
 
-	/**
-	 * ファイルアップロードのチェンジイベント(新規入力用）
-	 */
-	_fileChangeEventNewInp(e){
-
-		var elm = jQuery(e.currentTarget);
-		var field = this._getFieldByNameOrClass(elm);
-		
-		// ファイルアップロードのチェンジイベント
-		this._fileChangeEvent(e,field,'new_inp');
-	};
-
-
-	/**
-	 * ファイルアップロードのチェンジイベント(編集用）
-	 */
-	_fileChangeEventEdit(e){
-
-		var elm = jQuery(e.currentTarget);
-		var field = this._getFieldByNameOrClass(elm);
-
-		// ファイルアップロードのチェンジイベント
-		this._fileChangeEvent(e,field,'edit');
-	};
-
-	/**
-	 * ファイルアップロードのチェンジイベント(削除用）
-	 */
-	_fileChangeEventDel(e){
-
-		var elm = jQuery(e.currentTarget);
-		var field = this._getFieldByNameOrClass(elm);
-
-		// ファイルアップロードのチェンジイベント
-		this._fileChangeEvent(e,field,'delete');
-	};
+	// ■■■□□□■■■□□□■■■□□□
+//	/**
+//	 * ファイルアップロードのチェンジイベント(新規入力用）
+//	 */
+//	_fileChangeEventNewInp(e){
+//
+//		var elm = jQuery(e.currentTarget);
+//		var field = this._getFieldByNameOrClass(elm);
+//		
+//		// ファイルアップロードのチェンジイベント
+//		this._fileChangeEvent(e,field,'new_inp');
+//	};
 
 
-	/**
-	 * ファイルアップロードのチェンジイベント
-	 * @param e イベント
-	 * @param field フィールド
-	 * @param form_type フォーム種別
-	 */
-	_fileChangeEvent(e,field,form_type){
+//	/**
+//	 * ファイルアップロードのチェンジイベント(編集用）
+//	 */
+//	_fileChangeEventEdit(e){
+//
+//		var elm = jQuery(e.currentTarget);
+//		var field = this._getFieldByNameOrClass(elm);
+//
+//		// ファイルアップロードのチェンジイベント
+//		this._fileChangeEvent(e,field,'edit');
+//	};
 
-		// エンティティおよび入力要素エンティティを取得する
-		var ent = this._getFieldEntByField(field);
-		var inpKey = 'inp_' + form_type;
-		var inp_ent = ent[inpKey];
-
-		// イベントハンドラをファイルアップロードデータにセットする。（登録系の処理で用いる）
-		inp_ent.evt = e;
-
-		// --- ▽▽▽ サムネイルを表示する処理
-
-		// Get a file object from event.
-		var files = e.target.files;
-		var oFile = files[0];
-
-		if(oFile==null){
-			return;
-		}
-
-		// Converting from a file object to a data url scheme.Conversion process by the asynchronous.
-		var reader = new FileReader();
-		reader.readAsDataURL(oFile);
-
-		// After conversion of the event.
-		reader.onload = (evt) => {
-
-			// accept属性を取得する
-			var accept = inp_ent.accept;
-
-			// accept属性が空もしくは画像系であるかチェックする
-			if (accept == '' || accept.indexOf('image') >= 0){
-
-				// フォーム種別からフォーム要素を取得する
-				var form = this.getForm(form_type);
-
-				//画像プレビュー要素を取得。（なければ作成）
-				var imgElm = this._getPreviewImgElm(form,field,inp_ent);
-
-				// A thumbnail image preview.
-				imgElm.attr('src',reader.result);
-
-			} 
-
-		}
-
-		// ファイルチェンジ後のコールバックを実行する
-		if(this.param.callback_after_file_change){
-			var fileName = oFile.name;
-			this.param.callback_after_file_change(e,field,form_type,fileName);
-		}
-
-	}
-
-	/**
-	 * 画像プレビュー要素を取得。（なければ作成）
-	 * @param form フォーム要素のオブジェクト
-	 * @param field ﾌｨｰﾙﾄﾞ名
-	 * @param inp_ent 入力要素の情報
-	 * @return 画像プレビュー要素
-	 */
-	_getPreviewImgElm(form,field,inp_ent){
-
-		// 画像プレビュー要素を取得する
-		var imgElm = form.find("[data-file-preview='" + field + "']");
-		if(!imgElm[0]){
-			imgElm = this._old__getPreviewImgElm(inp_ent);// 旧：画像プレビュー要素を取得。（なければ作成）
-		}
-
-		return imgElm;
-	}
-
-	/**
-	 * 旧：画像プレビュー要素を取得。（なければ作成）
-	 * @param inp_ent 入力要素の情報
-	 * @return 画像プレビュー要素
-	 */
-	_old__getPreviewImgElm(inp_ent){
-
-		var fileElm = inp_ent.elm;
-
-		var preview_slt = inp_ent.preview_slt;
-
-		var imgElm = jQuery('#' + preview_slt);
-		if(!imgElm[0]){
-			var preview_img_html = "<div class='upload_img_iuapj'><img id='" + preview_slt +"'/></div>";
-			fileElm.after(preview_img_html);
-			imgElm=jQuery('#' + preview_slt);
-
-			imgElm.attr({
-				'width':this.param.preview_img_width,
-				'height':this.param.preview_img_height,
-
-			});
-
-		}else{
-			imgElm.show();
-		}
-		return imgElm;
-	}
+//	/**
+//	 * ファイルアップロードのチェンジイベント(削除用）
+//	 */
+//	_fileChangeEventDel(e){
+//
+//		var elm = jQuery(e.currentTarget);
+//		var field = this._getFieldByNameOrClass(elm);
+//
+//		// ファイルアップロードのチェンジイベント
+//		this._fileChangeEvent(e,field,'delete');
+//	};
 
 
-	// オーディオプレビュー要素を取得。（なければ作成）
-	_getPreviewAdoElm(inp_ent,fp){
+//	/**
+//	 * ファイルアップロードのチェンジイベント
+//	 * @param e イベント
+//	 * @param field フィールド
+//	 * @param form_type フォーム種別
+//	 */
+//	_fileChangeEvent(e,field,form_type){
+//
+//		// エンティティおよび入力要素エンティティを取得する
+//		var ent = this._getFieldEntByField(field);
+//		var inpKey = 'inp_' + form_type;
+//		var inp_ent = ent[inpKey];
+//
+//		// イベントハンドラをファイルアップロードデータにセットする。（登録系の処理で用いる）
+//		inp_ent.evt = e;
+//
+//		// --- ▽▽▽ サムネイルを表示する処理
+//
+//		// Get a file object from event.
+//		var files = e.target.files;
+//		var oFile = files[0];
+//
+//		if(oFile==null){
+//			return;
+//		}
+//
+//		// Converting from a file object to a data url scheme.Conversion process by the asynchronous.
+//		var reader = new FileReader();
+//		reader.readAsDataURL(oFile);
+//
+//		// After conversion of the event.
+//		reader.onload = (evt) => {
+//
+//			// accept属性を取得する
+//			var accept = inp_ent.accept;
+//
+//			// accept属性が空もしくは画像系であるかチェックする
+//			if (accept == '' || accept.indexOf('image') >= 0){
+//
+//				// フォーム種別からフォーム要素を取得する
+//				var form = this.getForm(form_type);
+//
+//				//画像プレビュー要素を取得。（なければ作成）
+//				var imgElm = this._getPreviewImgElm(form,field,inp_ent);
+//
+//				// A thumbnail image preview.
+//				imgElm.attr('src',reader.result);
+//
+//			} 
+//
+//		}
+//
+//		// ファイルチェンジ後のコールバックを実行する
+//		if(this.param.callback_after_file_change){
+//			var fileName = oFile.name;
+//			this.param.callback_after_file_change(e,field,form_type,fileName);
+//		}
+//
+//	}
 
-		var fileElm = inp_ent.elm;
-
-		var preview_slt = inp_ent.preview_slt;
-
-		var adoElm = jQuery('#' + preview_slt);
-		if(!adoElm[0]){
-
-			var preview_ado_html = "<div class='upload_ado_iuapj'><audio id='" + preview_slt +"' src=" + fp + " controls>" +
-					"<p>音声を再生するには、audioタグをサポートしたブラウザが必要です。</p></audio></div>";
-			fileElm.after(preview_ado_html);
-
-		}else{
-			adoElm.show();
-		}
-		return adoElm;
-	}
+//	/**
+//	 * 画像プレビュー要素を取得。（なければ作成）
+//	 * @param form フォーム要素のオブジェクト
+//	 * @param field ﾌｨｰﾙﾄﾞ名
+//	 * @param inp_ent 入力要素の情報
+//	 * @return 画像プレビュー要素
+//	 */
+//	_getPreviewImgElm(form,field,inp_ent){
+//
+//		// 画像プレビュー要素を取得する
+//		var imgElm = form.find("[data-file-preview='" + field + "']");
+//		if(!imgElm[0]){
+//			imgElm = this._old__getPreviewImgElm(inp_ent);// 旧：画像プレビュー要素を取得。（なければ作成）
+//		}
+//
+//		return imgElm;
+//	}
+//
+//	/**
+//	 * 旧：画像プレビュー要素を取得。（なければ作成）
+//	 * @param inp_ent 入力要素の情報
+//	 * @return 画像プレビュー要素
+//	 */
+//	_old__getPreviewImgElm(inp_ent){
+//
+//		var fileElm = inp_ent.elm;
+//
+//		var preview_slt = inp_ent.preview_slt;
+//
+//		var imgElm = jQuery('#' + preview_slt);
+//		if(!imgElm[0]){
+//			var preview_img_html = "<div class='upload_img_iuapj'><img id='" + preview_slt +"'/></div>";
+//			fileElm.after(preview_img_html);
+//			imgElm=jQuery('#' + preview_slt);
+//
+//			imgElm.attr({
+//				'width':this.param.preview_img_width,
+//				'height':this.param.preview_img_height,
+//
+//			});
+//
+//		}else{
+//			imgElm.show();
+//		}
+//		return imgElm;
+//	}
+//
+//
+//	// オーディオプレビュー要素を取得。（なければ作成）
+//	_getPreviewAdoElm(inp_ent,fp){
+//
+//		var fileElm = inp_ent.elm;
+//
+//		var preview_slt = inp_ent.preview_slt;
+//
+//		var adoElm = jQuery('#' + preview_slt);
+//		if(!adoElm[0]){
+//
+//			var preview_ado_html = "<div class='upload_ado_iuapj'><audio id='" + preview_slt +"' src=" + fp + " controls>" +
+//					"<p>音声を再生するには、audioタグをサポートしたブラウザが必要です。</p></audio></div>";
+//			fileElm.after(preview_ado_html);
+//
+//		}else{
+//			adoElm.show();
+//		}
+//		return adoElm;
+//	}
 
 
 	/**
@@ -1991,8 +2110,13 @@ class CrudBase{
 
 			if(typ=='file'){
 
-				// アップロードファイル系である場合、ひもづいているlabel要素から値を取得する。
-				v = this._getValFromLabel(form,f);
+				var fue_id = inp.attr('id');
+				if(this.fileUploadK){
+					// file要素のidを指定してファイル名を取得する。
+					var fns = this.fileUploadK.getFileNames(fue_id);
+					if(fns[0] != null) v = fns[0];
+				}
+				
 			}
 
 			else if(typ=='checkbox'){
@@ -2259,15 +2383,16 @@ class CrudBase{
 			param['form_position'] = 'auto';
 		}
 
-		// プレビュー画像・横幅
-		if(param['preview_img_width'] == null){
-			param['preview_img_width'] = 80;
-		}
-
-		// プレビュー画像・縦幅
-		if(param['preview_img_height'] == null){
-			param['preview_img_height'] = 80;
-		}
+		// ■■■□□□■■■□□□■■■□□□
+//		// プレビュー画像・横幅
+//		if(param['preview_img_width'] == null){
+//			param['preview_img_width'] = 80;
+//		}
+//
+//		// プレビュー画像・縦幅
+//		if(param['preview_img_height'] == null){
+//			param['preview_img_height'] = 80;
+//		}
 
 		// フォームの前面深度(z-index)
 		if(param['form_z_index'] == null){
@@ -2391,78 +2516,78 @@ class CrudBase{
 		return fieldData;
 	}
 
+// ■■■□□□■■■□□□■■■□□□
+//	/**
+//	 * フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
+//	 * @param fieldData フィールドデータ
+//	 */
+//	_initFileUpData(fieldData){
+//
+//		// フォーム名のリスト
+//		var form_typeList = ['new_inp','edit','delete'];
+//
+//		// ファイル要素系にのみ、ファイル要素情報をセットする。
+//		for(var i in fieldData){
+//			var f_ent = fieldData[i];
+//
+//			for(var ft_i = 0 ; ft_i < form_typeList.length ; ft_i++){
+//				var form_type = form_typeList[ft_i];
+//				var key = 'inp_' + form_type;
+//
+//				if(!f_ent[key]){
+//					continue;
+//				}
+//				var ent = f_ent[key];
+//
+//				if(ent.type_name == 'file'){
+//
+//					// ファイル要素情報を入力要素エンティティにセットする
+//					ent = this._setFileUploadEntity(f_ent.field,ent);
+//
+//					// イベントリスナを登録する
+//					if(form_type == 'new_inp'){
+//						ent.elm.change(e => {
+//							this._fileChangeEventNewInp(e);
+//						});
+//						
+//					}else if(form_type == 'edit'){
+//						ent.elm.change(e => {
+//							this._fileChangeEventEdit(e);
+//						});
+//
+//					}else{
+//						ent.elm.change(e => {
+//							this._fileChangeEventDel(e);
+//						});
+//
+//					}
+//				}
+//			}
+//		}
+//
+//		return fieldData;
+//	}
 
-	/**
-	 * フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
-	 * @param fieldData フィールドデータ
-	 */
-	_initFileUpData(fieldData){
-
-		// フォーム名のリスト
-		var form_typeList = ['new_inp','edit','delete'];
-
-		// ファイル要素系にのみ、ファイル要素情報をセットする。
-		for(var i in fieldData){
-			var f_ent = fieldData[i];
-
-			for(var ft_i = 0 ; ft_i < form_typeList.length ; ft_i++){
-				var form_type = form_typeList[ft_i];
-				var key = 'inp_' + form_type;
-
-				if(!f_ent[key]){
-					continue;
-				}
-				var ent = f_ent[key];
-
-				if(ent.type_name == 'file'){
-
-					// ファイル要素情報を入力要素エンティティにセットする
-					ent = this._setFileUploadEntity(f_ent.field,ent);
-
-					// イベントリスナを登録する
-					if(form_type == 'new_inp'){
-						ent.elm.change(e => {
-							this._fileChangeEventNewInp(e);
-						});
-						
-					}else if(form_type == 'edit'){
-						ent.elm.change(e => {
-							this._fileChangeEventEdit(e);
-						});
-
-					}else{
-						ent.elm.change(e => {
-							this._fileChangeEventDel(e);
-						});
-
-					}
-				}
-			}
-		}
-
-		return fieldData;
-	}
 
 
-
-	/**
-	 * ファイル要素情報を入力要素エンティティにセットする
-	 * @param field フィールド名
-	 * @param ent 入力要素エンティティ（type=file)
-	 * @return 入力要素エンティティ
-	 */
-	_setFileUploadEntity(field,ent){
-
-		// プレビュー要素
-		var preview_slt = field + '_preview';
-
-		ent['evt'] = null;
-		ent['file_name'] = null;
-		ent['file_path'] = this.param.upload_dp;
-		ent['preview_slt'] = preview_slt;
-
-		return ent;
-	}
+//	/**
+//	 * ファイル要素情報を入力要素エンティティにセットする
+//	 * @param field フィールド名
+//	 * @param ent 入力要素エンティティ（type=file)
+//	 * @return 入力要素エンティティ
+//	 */
+//	_setFileUploadEntity(field,ent){
+//
+//		// プレビュー要素
+//		var preview_slt = field + '_preview';
+//
+//		ent['evt'] = null;
+//		ent['file_name'] = null;
+//		ent['file_path'] = this.param.upload_dp;
+//		ent['preview_slt'] = preview_slt;
+//
+//		return ent;
+//	}
 	
 	
 	
@@ -2572,6 +2697,7 @@ class CrudBase{
 	 * @param object ent エンティティ
 	 * @param option 省略可
 	 *  - upload_dp アップロードファイルディレクトリ
+	 *  - upload_dp_cb アップロードディレクトリ・コールバック
 	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
 	 */
 	setFieldsToForm(form_type,ent,option){
@@ -2579,10 +2705,8 @@ class CrudBase{
 		var form = this.getForm(form_type);// フォーム要素を取得
 		
 		if(option==null) option = {};
-		option = {
-				'par':form,
-				'form_type':form_type,
-		}
+		option['par'] = form;
+		option['form_type'] = form_type;
 		
 		this.entToBinds(form,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
 		this.entToBinds(form,ent,'name',option);// エンティティをname属性バインド要素群へセットする
@@ -2599,6 +2723,7 @@ class CrudBase{
 	 *  - par 親要素(jQuery object)
 	 *  - form_type フォーム種別
 	 *  - upload_dp アップロードディレクトリパス
+	 *  - upload_dp_cb アップロードディレクトリ・コールバック
 	 *  - xss サニタイズフラグ 0:サニタイズしない , 1:xssサニタイズを施す（デフォルト）
 	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
 	 *  - dis_fil_flg 表示フィルター適用フラグ 0:OFF(デフォルト) , 1:ON
@@ -2636,7 +2761,7 @@ class CrudBase{
 			if(typ=='file'){
 
 				// アップロードファイル要素用の入力フォームセッター
-				this._setToFormForFile(option.form_type,option.par,field,val1,option.upload_dp);
+				this._setToFormForFile(option.form_type,option.par,field,val1,option);
 
 			}
 
@@ -2853,46 +2978,52 @@ class CrudBase{
 	}
 	
 
-	// アップロードファイル要素用の入力フォームセッター
-	_setToFormForFile(form_type,form,field,v,upload_dp){
-		
-		console.log('field＝' + field);//■■■□□□■■■□□□■■■□□□)
-		console.log('ｖ＝' + v);//■■■□□□■■■□□□■■■□□□)
-		console.log('upload_dp＝' + upload_dp);//■■■□□□■■■□□□■■■□□□)
+	/**
+	 * アップロードファイル要素用の入力フォームセッター
+	 * @param string form_type フォーム種別
+	 * @param jQuery form フォーム要素
+	 * @param string field フィールド
+	 * @param variant v 値
+	 * @param object option editShow(),newInpShowからのoption 
+	 */
+	_setToFormForFile(form_type,form,field,v,option){
 
-		// 入力要素エンティティを取得する
-		var ent = this._getFieldEntByField(field);
-
-		var inp_ent = ent['inp_' + form_type];
-
-		// アップロードファイル要素をクリアする
-		var inpElm = inp_ent.elm;
-		inpElm.val("");
-
-		if(!upload_dp){
-			upload_dp = inp_ent.file_path;
-		}
-		var fp = upload_dp + v;
-
-		var accept = inp_ent.accept;
-
-		// acceptが画像系である場合、画像プレビューを表示
-		if(accept.indexOf('image') >= 0 ){
-
-			var imgElm = this._getPreviewImgElm(form,field,inp_ent);
-
-			if(!this._empty(v)){
-				imgElm.attr('src',fp);
+		// フィールドに紐づくfile要素のid属性を取得する
+		var fue_id = null; // file要素のid属性
+		for(var i in this.fieldData){
+			var fEnt = this.fieldData[i];
+			if(fEnt.field == field){
+				var inp = fEnt['inp_' + form_type];
+				if(inp == null) break;
+				if(inp['elm'] == null) break;
+				var elm = inp['elm'];
+				fue_id = elm.attr('id');
+				break;
 			}
-
 		}
-
-		// acceptがオーディオ系である場合、オーディオプレビューを表示
-		else if(accept.indexOf('audio') >= 0){
-			var adoElm = this._getPreviewAdoElm(inp_ent,fp);
+		
+		// アップロードディレクトリ
+		var upload_dp = '';
+		if(option['upload_dp']) upload_dp = option['upload_dp'];
+		
+		// アップロードディレクトリコールバックを実行
+		if(option['upload_dp_cb']){
+			var data = {
+					'form_type':form_type,
+					'field':field,
+					'value':v,
+					'fieldData':this.fieldData
+			}
+			upload_dp = option.upload_dp_cb(upload_dp,data);
 		}
-
-		this._setLabel(form,field,v);// ラベル要素へセット
+		
+		// プレビュー
+		var fp = '';
+		if(v){
+			fp = upload_dp + v;
+		}
+		this.fileUploadK.setFilePaths(fue_id,fp);
+		
 	}
 
 	/**
@@ -2905,68 +3036,69 @@ class CrudBase{
 		return ent;
 	}
 
-	/**
-	 * 入力要素エンティティを取得する
-	 * @param field フィールド
-	 * @param form_type フォーム種別
-	 * @return 入力要素エンティティ
-	 */
-	_getInpEnt(field,form_type){
-		var index = this.fieldHashTable[field];
-		var ent = this.fieldData[index];
-		var inp_ent;
-		var inp_key = 'inp_' + form_type;
-		if(ent[inp_key]){
-			inp_ent = ent[inp_key];
-		}
-		return inp_ent;
-	}
+// ■■■□□□■■■□□□■■■□□□
+//	/**
+//	 * 入力要素エンティティを取得する
+//	 * @param field フィールド
+//	 * @param form_type フォーム種別
+//	 * @return 入力要素エンティティ
+//	 */
+//	_getInpEnt(field,form_type){
+//		var index = this.fieldHashTable[field];
+//		var ent = this.fieldData[index];
+//		var inp_ent;
+//		var inp_key = 'inp_' + form_type;
+//		if(ent[inp_key]){
+//			inp_ent = ent[inp_key];
+//		}
+//		return inp_ent;
+//	}
+
+// ■■■□□□■■■□□□■■■□□□
+//	// IMG要素用の入力フォームセッター
+//	_setToFormForImg(form_type,form,imgElm,field,v,upload_dp){
+//
+//		// 入力エンティティを取得する
+//		var inp_ent = this._getInpEnt(field,form_type)
+//
+//		if(!upload_dp){
+//			upload_dp = inp_ent.file_path;
+//		}
+//		var fp = upload_dp + v;
+//		imgElm.attr('src',fp);
+//
+//		this._setLabel(form,field,v);// ラベル要素へセット
+//
+//	}
+//
+//	// オーディオ要素用の入力フォームセッター
+//	_setToFormForAdo(form_type,form,adoElm,field,v,upload_dp){
+//
+//		// 入力エンティティを取得する
+//		var inp_ent = this._getInpEnt(field,form_type)
+//
+//		if(!upload_dp){
+//			upload_dp = inp_ent.file_path;
+//		}
+//		var fp = upload_dp + v;
+//		adoElm.attr('src',fp);
+//
+//		this._setLabel(form,field,v);// ラベル要素へセット
+//	}
 
 
-	// IMG要素用の入力フォームセッター
-	_setToFormForImg(form_type,form,imgElm,field,v,upload_dp){
-
-		// 入力エンティティを取得する
-		var inp_ent = this._getInpEnt(field,form_type)
-
-		if(!upload_dp){
-			upload_dp = inp_ent.file_path;
-		}
-		var fp = upload_dp + v;
-		imgElm.attr('src',fp);
-
-		this._setLabel(form,field,v);// ラベル要素へセット
-
-	}
-
-	// オーディオ要素用の入力フォームセッター
-	_setToFormForAdo(form_type,form,adoElm,field,v,upload_dp){
-
-		// 入力エンティティを取得する
-		var inp_ent = this._getInpEnt(field,form_type)
-
-		if(!upload_dp){
-			upload_dp = inp_ent.file_path;
-		}
-		var fp = upload_dp + v;
-		adoElm.attr('src',fp);
-
-		this._setLabel(form,field,v);// ラベル要素へセット
-	}
-
-
-	/**
-	 * ラベル要素へセット
-	 * @param object form フォーム要素オブジェクト
-	 * @param string field フィールド名
-	 * @param v ラベルにセットする値
-	 */
-	_setLabel(form,field,v){
-		var label = form.find("[for='" + field + "']");
-		if(label){
-			label.html(v);
-		}
-	};
+//	/**
+//	 * ラベル要素へセット
+//	 * @param object form フォーム要素オブジェクト
+//	 * @param string field フィールド名
+//	 * @param v ラベルにセットする値
+//	 */
+//	_setLabel(form,field,v){
+//		var label = form.find("[for='" + field + "']");
+//		if(label){
+//			label.html(v);
+//		}
+//	};
 
 
 	/**
@@ -3007,8 +3139,8 @@ class CrudBase{
 		if(this.param.auto_close_flg == 0){
 			this.param.form_z_index ++;
 			// ※ z_indexの最大値は32bit整数,あるいは64bit整数の最大値である。
-
 			form.css('z-index',this.param.form_z_index);
+
 		}
 
 		form.show();
@@ -3382,85 +3514,6 @@ class CrudBase{
 	}
 
 
-// ■■■□□□■■■□□□■■■□□□resetがなぜか２つある。
-//	/**
-//	 * 検索リセット
-//	 * @param resetBtnElm 検索ボタン要素
-//	 * @param <jquery object> formElm 検索入力フォーム (省略可)
-//	 * @param option オプション (省略可)
-//	 * @param outFields 対象外フィールド（例 ['kj_xxx','kj_yyy'] )
-//	 */
-//	resetKjs(resetBtnElm,formElm,option,outFields){
-//
-//		// 検索ボタン要素をjQueryオブジェクトに変換する
-//		var btnElm; // 検索ボタン要素
-//		if(resetBtnElm instanceof jQuery){
-//			btnElm = resetBtnElm;
-//		}else{
-//			btnElm = jQuery(resetBtnElm);
-//		}
-//
-//		// オプションの初期セット
-//		if(option == null){
-//			option = {};
-//		}
-//		if(this._empty(option['form_slt'])){
-//			option['form_slt'] = '.form_kjs';
-//		}
-//		if(this._empty(option['inp_slt'])){
-//			option['inp_slt'] = '.kjs_inp';
-//		}
-//		if(this._empty(option['def_slt'])){
-//			option['def_slt'] = '.def_kjs_json';
-//		}
-//
-//		// 対象外ハッシュの作成
-//		var outs = {};
-//		if(!this._empty(outFields)){
-//			for(var i in outFields){
-//				var f = outFields[i];
-//				outs[f] = 1;
-//			}
-//		}
-//
-//		// form要素が空なら生成する
-//		if(!formElm){
-//			var form_slt = option['form_slt'];
-//			formElm = btnElm.parents(form_slt);
-//		}
-//
-//		// デフォルト検索条件JSONを取得する。空なら処理抜け。
-//		var def_kjs_json = formElm.find(option['def_slt']).val();
-//		if(this._empty(def_kjs_json)) return;
-//		var protoDefKjs = JSON.parse(def_kjs_json);
-//
-//		// デフォルト検索条件データの構造変換
-//		var defKjs = {};
-//		for(var i in protoDefKjs){
-//			var ent = protoDefKjs[i];
-//			defKjs[ent.name] = ent.def;
-//		}
-//
-//		// form要素内の入力要素群をループする。
-//		var inp_slt =  option['inp_slt'];
-//		formElm.find(inp_slt).each((i,elm)=>{
-//
-//			// 要素から選択値を取得する
-//			var kjsElm = jQuery(elm);
-//
-//			// 選択値が空でない場合（0も空ではない扱い）
-//			var field = kjsElm.attr('name'); // 要素のname属性から検索条件フィールドを取得する
-//
-//			// デフォルト検索条件を要素にセットする
-//			if(defKjs[field]!==null && outs[field]==null){
-//				kjsElm.val(defKjs[field]);
-//			}
-//
-//		});
-//
-//	}
-
-
 
 	/**
 	 * 現在の検索条件がデフォルトの検索条件を比較し、検索初期状態であるかチェックする。
@@ -3680,24 +3733,6 @@ class CrudBase{
 		}
 	}
 	
-	// ■■■□□□■■■□□□■■■□□□　XSS関連でバグが起きないようなら、削除しみそーれ。
-//	//XSSサニタイズエンコード
-//	_xssSanitaizeEncode(str){
-//		if(typeof str == 'string'){
-//			return str.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace('/&/','&amp;');;
-//		}else{
-//			return str;
-//		}
-//	}
-//
-//	//XSSサニタイズデコード
-//	_xssSanitaizeDecode(str){
-//		if(typeof str == 'string'){
-//			return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-//		}else{
-//			return str;
-//		}
-//	}
 
 	// 改行をBRタグに変換
 	_nl2br(str) {

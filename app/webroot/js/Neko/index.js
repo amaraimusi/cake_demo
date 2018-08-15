@@ -116,7 +116,19 @@ function newInpShow(btnElm){
  * @param btnElm ボタン要素
  */
 function editShow(btnElm){
-	crudBase.editShow(btnElm);
+	
+	var option = {
+		'upload_dp':'rsc',
+		'upload_dp_cb':uploadDpCb,
+	};
+	crudBase.editShow(btnElm,option);
+}
+
+function uploadDpCb(upload_dp,data){
+
+	upload_dp = upload_dp + '/' + data.field + '/';
+	
+	return upload_dp;
 }
 
 /**

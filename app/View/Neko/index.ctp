@@ -214,9 +214,9 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>画像ファイル名: </td><td>
-			<input id="img_fn" type="file" name="img_fn" accept="image/*"  />
-			<label class="text-danger" for="img_fn"></label>
-	 		<div class="overlap_msg text-danger" ></div>
+			<label for="img_fn_n" class="fuk_label" style="width:200px;height:240px;">
+				<input type="file" id="img_fn_n" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)" />
+			</label>
 		</td></tr>
 
 		<tr><td>備考： </td><td>
@@ -237,7 +237,7 @@ foreach($data as $i=>$ent){
 
 
 <!-- 編集フォーム -->
-<div id="ajax_crud_edit_form" class="panel panel-primary">
+<div id="ajax_crud_edit_form" class="panel panel-primary" >
 
 	<div class="panel-heading">
 		<div class="pnl_head1">編集</div>
@@ -282,9 +282,11 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>画像ファイル名: </td><td>
-			<input id="img_fn" type="file" name="img_fn" accept="image/*"  />
-			<label class="text-danger" for="img_fn"></label>
-	 		<div class="overlap_msg text-danger" ></div>
+		
+			<label for="img_fn_e" class="fuk_label" style="width:200px;height:240px;">
+				<input type="file" id="img_fn_e" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)" />
+			</label>
+
 		</td></tr>
 
 		<tr><td>備考： </td><td>

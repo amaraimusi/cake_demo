@@ -221,6 +221,8 @@ class NekoController extends CrudBaseController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		$errs = array(); // エラーリスト
 		
+		// ■■■□□□■■■□□□■■■□□□
+		//debug($_POST);//■■■□□□■■■□□□■■■□□□)
 // 		// 認証中でなければエラー
 // 		if(empty($this->Auth->user())){
 // 			return 'Error:login is needed.';// 認証中でなければエラー
@@ -239,19 +241,19 @@ class NekoController extends CrudBaseController {
 		$reg_param_json = $_POST['reg_param_json'];
 		$regParam = json_decode($reg_param_json,true);
 
-		// アップロードファイルが存在すればエンティティにセットする。
-		$upload_file = null;
-		if(!empty($_FILES["upload_file"])){
-			$upload_file = $_FILES["upload_file"]["name"];
-			$ent['neko_fn'] = $upload_file;
-		}
+// 		// アップロードファイルが存在すればエンティティにセットする。
+// 		$upload_file = null;
+// 		if(!empty($_FILES["upload_file"])){
+// 			$upload_file = $_FILES["upload_file"]["name"];
+// 			$ent['neko_fn'] = $upload_file;
+// 		}
 		
-		// ファイルアップロード制御
-		App::uses('FileUploadK','Vendor/Wacg/FileUploadK');
-		$fuParam['suppData'] = [['wamei'=>'画像ファイル1','mime_check_flg'=>1]];
-		$fileUploadK = new FileUploadK($_FILES,$fuParam);
-		$fuRes = $fileUploadK->workAllAtOnce();
-		$errs = Hash::merge($errs,$fuRes['errs']);
+// 		// ファイルアップロード制御
+// 		App::uses('FileUploadK','Vendor/Wacg/FileUploadK');
+// 		$fuParam['suppData'] = [['wamei'=>'画像ファイル1','mime_check_flg'=>1]];
+// 		$fileUploadK = new FileUploadK($_FILES,$fuParam);
+// 		$fuRes = $fileUploadK->workAllAtOnce();
+// 		$errs = Hash::merge($errs,$fuRes['errs']);
 		
 	
 		// 更新ユーザーなど共通フィールドをセットする。

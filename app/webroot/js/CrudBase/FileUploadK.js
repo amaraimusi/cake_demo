@@ -9,13 +9,16 @@
  * 複数のファイルをアップロードできる。
  * 複数のファイルアップロード要素に対応。
  * 進捗バーの表示
+ * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.0
- * @date 2018-7-6 | 2018-8-7
+ * @version 1.2.0
+ * @date 2018-7-6 | 2018-8-14
  * @history 
  *  - 2018-7-6 新規作成
  *  - 2018-8-7 リリース
+ *  - 2018-8-11 ver 1.1
+ *  - 2018-8-14 ver 1.2.0 ファイルの初期表示
  * 
  */
 class FileUploadK{
@@ -31,6 +34,8 @@ class FileUploadK{
 	 * - prog_slt 進捗バー要素のセレクタ
 	 * - err_slt  エラー要素のセレクタ
 	 * - first_msg_text 初期メッセージテキスト
+	 * - img_width プレビュー画像サイスX　（画像ファイルのみ影響）
+	 * - img_height プレビュー画像サイスY
 	 * - adf    補足データフラグリスト (Ancillary Data Flgs)
 	 *     - fn_flg ファイル名・表示フラグ (デフォ:1 以下同じ)
 	 *     - size_flg 容量・表示フラグ
@@ -52,7 +57,9 @@ class FileUploadK{
 		
 		this.param = this._setParamIfEmpty(param);
 		
-		this.unit = jQuery(param.unit_slt);
+		this.unit = jQuery(this.param.unit_slt);
+		
+		this.cbAsynsEnd; // 複数非同期・全終了後コールバック・データ
 		
 	}
 
@@ -62,13 +69,9 @@ class FileUploadK{
 	 */
 	_setParamIfEmpty(param){
 		
-		if(param == null){
-			throw new Error("Please set 'ajax_url' in 'param");
-		}
+		if(param == null) param = {};
 		
-		if(param['ajax_url'] == null){
-			throw new Error("Please set 'ajax_url' in 'param");
-		}
+		if(param['ajax_url'] == null) param['ajax_url'] = null;
 		
 		if(param['style_flg'] == null) param['style_flg'] = 1;
 		
@@ -79,6 +82,9 @@ class FileUploadK{
 		if(param['first_msg_text'] == null) param['first_msg_text'] = '';
 		
 		if(param['valid_mime_flg'] == null) param['valid_mime_flg'] = 0;
+		
+		if(param['img_width'] == null) param['img_width'] = null;
+		if(param['img_height'] == null) param['img_height'] = null;
 		
 		// 補足データフラグリスト
 		if(param['adf'] == null){
@@ -110,8 +116,13 @@ class FileUploadK{
 	 * @param fue_id ファイルアップロード要素のid属性
 	 * @param option 
 	 *  - valid_ext バリデーション拡張子(詳細はconstructor()の引数を参照）
+	 *  - pacb プレビュー後コールバック関数
+	 *  - img_width プレビュー画像サイスX　（画像ファイルのみ影響）
+	 *  - img_height プレビュー画像サイスY
 	 */
 	addEvent(fue_id,option){
+		
+		if(option == null) option = {};
 		
 		// ファイルアップロード要素の親ラベル（DnD要素）を取得する
 		var parLabel = this._getElement(fue_id,'label');
@@ -136,7 +147,7 @@ class FileUploadK{
 			// ボックスデータにアップロードファイル情報を追加
 			var files = evt.dataTransfer.files; 
 			this.box[fue_id]['files'] = files;
-			this._preview(fue_id); // プレビュー表示
+			this._preview(fue_id,'files',option); // プレビュー表示
 			
 		},false);
 		// ドラッグオーバーイベントを発動させないようにする。
@@ -152,7 +163,7 @@ class FileUploadK{
 			var files = e.target.files; // ファイルオブジェクト配列を取得（配列要素数は選択したファイル数を表す）
 			if(files == null || files.length == 0) return;// ファイル件数が0件なら処理抜け
 			this.box[fue_id]['files'] = files;
-			this._preview(fue_id); // プレビュー表示
+			this._preview(fue_id,'files',option); // プレビュー表示
 			
 		});
 		
@@ -161,6 +172,91 @@ class FileUploadK{
 		clearBtn.click((e) => {
 			this._clearBtnClick(e);
 		});
+	}
+	
+	
+	/**
+	 * file要素にファイルパスをセットする
+	 * @param string fue_id file要素のid
+	 * @param array fps ファイルパスリスト（ ファイル名一つを文字列指定可）
+	 * @param object option addEventのoptionと同じ
+	 */
+	setFilePaths(fue_id,fps,option){
+		
+		if(option == null) option = {};
+		
+		this._clearBtnAction(fue_id); // クリアボタンアクション
+		
+		if(fps == null || fps == '' || fps == 0) return;
+		if(typeof fps == 'string') fps = [fps];
+		
+		var bData = [];
+		
+		// 複数非同期・全終了後コールバック・初期化
+		this._cbAsynsEndInit(fps.length,()=>{
+			//複数非同期・全終了後コールバック
+			
+			// プレビュー表示
+			this.box[fue_id]['bData'] = bData;
+			this._preview(fue_id,'blob',option);
+
+		});
+
+		// ファイルをXHRでプリロードする
+		for(var i in fps){
+			var fp = fps[i];
+			this._preloadByXhr(fp,bData);
+		}
+	}
+	
+	/**
+	 * XHRによってファイルをプリロードする Preloaded by XHR
+	 * @param string fp ファイルパス
+	 * @param array bData BLOB関連データ
+	 */
+	_preloadByXhr(fp,bData){
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', fp, true);
+		xhr.responseType = 'blob';
+		xhr.onload = (e) => {
+			
+			// プリロードのonloadイベント処理： ファイル関連情報をbDataにセットする。
+			this._xhrOnload(e,xhr,bData);
+
+		};
+		xhr.send();
+	}
+	
+	/**
+	 * プリロードのonloadイベント処理： ファイル関連情報をbDataにセットする。
+	 * @param object e onloadイベント
+	 * @param XMLHttpRequest xhr
+	 * @param array bData BLOB関連データ
+	 */
+	_xhrOnload(e,xhr,bData){
+		// Blobを取得する
+		var blob = e.target.response;
+		
+		var r_url = e.target.responseURL;
+		var fn = this._stringRightRev(r_url,'/');
+
+		var mime_type = xhr.getResponseHeader("Content-Type");
+		var size = xhr.getResponseHeader("Content-Length");
+		var server = xhr.getResponseHeader("server");
+		var modified = xhr.getResponseHeader("Last-Modified");
+		
+		var bEnt = {
+				'fn':fn,
+				'mime_type':mime_type,
+				'size':size,
+				'modified':modified,
+				'blob':blob
+		};
+		
+		bData.push(bEnt);
+
+		// 複数非同期・全終了後コールバック・アクション
+		this._cbAsynsEndAction('exe1');
 	}
 	
 	
@@ -206,11 +302,30 @@ class FileUploadK{
 	
 	/**
 	 * プレビュー表示
-	 * @param fue_id ファイルアップロード要素のid属性
+	 * @param string fue_id ファイルアップロード要素のid属性
+	 * @param bin_type 'files' or 'blob'
+	 * @param object option オプション（addEventメソッドの引数と同じ）
+	 *  -  BLOBフラグ ファイル初期表示から呼び出し時はtrue
 	 */
-	_preview(fue_id){
+	_preview(fue_id,bin_type,option){
 
-		var files = this.box[fue_id]['files'];
+		var files = null;
+		var bData = null;
+		var fileData = [];
+		if(bin_type == 'files'){
+
+			// filesからファイル名などのファイルデータを取得する
+			var files = this.box[fue_id]['files'];
+			fileData = this._getFileDataFromFiles(files);
+			
+		}else if(bin_type == 'blob'){
+			
+			// BLOBの関連データからファイルデータを取得する
+			bData = this.box[fue_id]['bData'];
+			fileData = this._getFileDataFromBData(bData);
+		}else{
+			throw new Error("Unknown 'bin_type'");
+		}
 		
 		// 親ラベル要素を内部要素に合わせてフィットさせるため幅をautoにする。
 		var parLbl = this._getElement(fue_id,'label');
@@ -224,12 +339,8 @@ class FileUploadK{
 		var clearBtnW = this._getElement(fue_id,'clear_btn_w');
 		clearBtnW.show();
 		
-		// filesからファイル名などのファイルデータを取得する
-		var fileData = this._getFileDataFromFiles(files);
-		
 		// バリデーション確認
 		fileData = this._validCheck(fue_id,fileData); 
-		
 		this.box[fue_id]['fileData'] = fileData;
 		
 		var preview_html = ''; // プレビューHTML
@@ -237,13 +348,13 @@ class FileUploadK{
 		// ファイルユニットHTMLを作成して、プレビューHTMLに連結する。
 		for(var i in fileData){
 			var fEnt = fileData[i];
-			preview_html += this._makeFileUnitHtml(fue_id,fEnt); 
+			preview_html += this._makeFileUnitHtml(fue_id,fEnt,option); 
 		}
 		
 		// プレビュー区分要素にプレビューHTMLをセットする。
 		var prvElm = this._getElement(fue_id,'preview');
 		if(prvElm[0]) prvElm.html(preview_html);
-		
+
 		// リソースプレビュー要素を取得する。リソースプレビュー要素はプレビュー区分要素内に複数存在するDIV要素群のこと。
 		var rpElms = {}; // リソースプレビュー要素リスト
 		prvElm.children('div').each((i,elm)=>{
@@ -251,25 +362,76 @@ class FileUploadK{
 			var rpElm = elm.find('.fuk_rp');
 			if(rpElm[0]){
 				rpElms[i] = rpElm;
+				
 			}else{
 				rpElms[i] = null;
 			}
 		});
+		
+		// ファイルデータのフィルタリング：0サイズとバリデーションエラーのエンティティを取り除く。
+		fileData = this._filteringFileData(fileData,rpElms);
+		
+		if(bin_type == 'files'){
+		
+			// プレビュー後コールバックアクションの初期化
+			if(option['pacb'] == null) option['pacb'] = null;
+			this._cbAsynsEndInit(fileData.length,option['pacb']);
+		
+			// リソース（画像など）をリソースプレビュー要素に表示させる。（非同期処理あり）
+			for(var i in fileData){
 	
-		// リソース（画像など）をリソースプレビュー要素に表示させる。（非同期処理あり）
+				var fEnt = fileData[i];
+				var index = fEnt.index;
+				var file = files[index];
+				
+				// リソース（ファイル）のレンダリングを行い、リソースプレビュー要素に画像などを表示する。
+				this._setupRender(file,rpElms,index);
+	
+			}
+			
+			this._cbAsynsEndAction('exe2'); // プレビュー後コールバックアクション：制御と実行2
+		
+		}else if(bin_type == 'blob'){
+			
+			// リソース（画像など）をリソースプレビュー要素に表示させる。
+			for(var i in fileData){
+	
+				var fEnt = fileData[i];
+				var index = fEnt.index;
+				var blob = bData[index]['blob'];
+				var blob_url = window.URL.createObjectURL(blob);
+				var rpElm = rpElms[index];
+				rpElm.attr('src',blob_url);
+	
+			}
+			
+			this._cbAsynsEndAction('exe2'); // プレビュー後コールバックアクション：制御と実行2
+		}
+	}
+	
+	/**
+	 * ファイルデータのフィルタリング：0サイズとバリデーションエラーのエンティティを取り除く。
+	 * @param array fileData ファイルデータ
+	 * @param array rpElms リソースプレビュー要素リスト
+	 * @return array フィルタリング後のファイルデータ
+	 */
+	_filteringFileData(fileData,rpElms){
+		var fileData2 = [];
+		
 		for(var i in fileData){
 			if(rpElms[i]==null) continue;
 			var fEnt = fileData[i];
-			var file = files[i];
 
 			if(fEnt.err_flg == true) continue;
-			if(file.size == null) continue;
+			if(fEnt.size == null || fEnt.size == 0) continue;
 			
-			// リソース（ファイル）のレンダリングを行い、リソースプレビュー要素に画像などを表示する。
-			this._setupRender(file,rpElms,i);
+			fEnt['index'] = i;
+			
+			fileData2.push(fEnt);
 
 		}
 		
+		return fileData2;
 	}
 	
 	
@@ -288,7 +450,8 @@ class FileUploadK{
 
 			var rpElm = rpElms[i];
 			rpElm.attr('src',reader.result);
-
+			
+			this._cbAsynsEndAction('exe1'); // プレビュー後コールバックアクション：制御と実行1
 		}
 	}
 	
@@ -354,6 +517,65 @@ class FileUploadK{
 		
 	}
 	
+	
+	/**
+	 * bDataからファイル名などのファイルデータを取得する
+	 * 
+	 * @note
+	 * サイズ0のファイルデータは取得しない。
+	 * 
+	 * @param array アップロードファイルリスト
+	 * @return array ファイルデータ
+	 */
+	_getFileDataFromBData(bData){
+		
+		var fileData = []; // ファイルデータ
+		
+		for(var i in bData){
+			var bEnt = bData[i];
+			if(bEnt.size == null || bEnt == 0) continue;
+			var fEnt = {};
+			
+			// MIME
+			fEnt['mime'] = bEnt.mime_type;
+			
+			// MIMEからファイル種別を判別する。
+			var file_type = '';
+			if(fEnt.mime != null){
+				if(fEnt.mime.indexOf('image') >= 0) file_type = 'image';
+				if(fEnt.mime.indexOf('audio') >= 0) file_type = 'audio';
+			}
+			fEnt['file_type'] = file_type;
+			
+			// ファイル名
+			fEnt['fn'] = bEnt.fn;
+			
+			// サイズ
+			fEnt['size'] = bEnt.size;
+			
+			// 単位表示付きサイズ
+			var size_str = 0; // サイズ（ファイル容量）
+			if(bEnt.size != null) size_str = bEnt.size;
+			if(!isNaN(size_str)){
+				size_str = this._convSizeUnit(size_str); // 単位付き表示に変換
+			}
+			fEnt['size_str'] = size_str;
+			
+			// 更新日
+			var modified = ''; 
+			if(bEnt.modified != null){
+				modified = new Date(modified).toLocaleString();
+			}
+			fEnt['modified'] = modified;
+			
+			fileData.push(fEnt);
+
+		}
+		
+		return fileData;
+		
+	}
+	
 	/**
 	 * バリデーション確認
 	 * @param string fue_id ファイルアプロード要素のID属性値
@@ -365,8 +587,19 @@ class FileUploadK{
 		var validData = this.box[fue_id]['validData']; // バリデーションデータ
 		var validExts = validData.validExts; // バリデーション拡張子リスト
 
+		// バリデーション実行フラグ
+		var valid_flg = true;
+		if(validExts == null || validExts == 0) valid_flg = false;
+
 		for(var i in fileData){
 			var fEnt = fileData[i];
+			
+			// バリデーション実行フラグがOFFならチェックをしない。
+			if(valid_flg == false){
+				fEnt['err_flg'] = false;
+				continue;
+			}
+			
 			var fn = fEnt.fn;
 			var ext = this._getExtension(fEnt.fn);// ファイル名から拡張子を取得する。
 			
@@ -437,9 +670,10 @@ class FileUploadK{
 	 * ファイルユニットHTML
 	 * @param int fue_if FU要素ID
 	 * @param array fEnt ファイルエンティティ
+	 * @param object option オプション（addEventメソッドの引数と同じ）
 	 * @return string プレビューユニットHTML
 	 */
-	_makeFileUnitHtml(fue_id,fEnt){
+	_makeFileUnitHtml(fue_id,fEnt,option){
 
 		var p_unit_html = ""; // プレビューユニットHTML
 		
@@ -449,10 +683,15 @@ class FileUploadK{
 			p_unit_html = "<div class='fuk_file_unit' >" + p_unit_html + '</div>';
 			return p_unit_html;
 		}
-
+		
+		// プレビュー画像サイズを取得
+		var imgSize = this._getImgSize(fue_id,option);
+		var label_width = imgSize.width;
+		var label_height = imgSize.height;
+		
 		// 画像要素と音楽要素の作成
 		if(fEnt.file_type == 'image'){
-			p_unit_html += "<img src='' class='fuk_rp' style='width:240px;height:160px;' />";
+			p_unit_html += "<img src='' class='fuk_rp' style='width:" + label_width + "px;height:" + label_height + "px;' />";
 		}else if(fEnt.file_type == 'audio'){
 			p_unit_html += "<audio src='' class='fuk_rp' controls />";
 		}
@@ -482,6 +721,40 @@ class FileUploadK{
 		
 	}
 	
+	/**
+	 * プレビュー画像サイズを取得
+	 * @return プレビュー画像サイズ
+	 */
+	_getImgSize(fue_id,option){
+		
+		var width = 0;
+		var height = 0;
+		
+		if(option['img_width']){
+			width = option['img_width'];
+		}else if(this.param['img_width']){
+			width = this.param['img_width'];
+		}else if(this.box[fue_id]['label_width']){
+			width = this.box[fue_id]['label_width'];
+		}else{
+			width = 160;
+		}
+		
+		if(option['img_height']){
+			height = option['img_height'];
+		}else if(this.param['img_height']){
+			height = this.param['img_height'];
+		}else if(this.box[fue_id]['label_height']){
+			height = this.box[fue_id]['label_height'];
+		}else{
+			height = 160;
+		}
+		
+		var imgSize ={'width':width,'height':height};
+		return imgSize;
+		
+	}
+	
 	
 	
 	
@@ -494,6 +767,15 @@ class FileUploadK{
 		var clickBtn = jQuery(e.currentTarget);
 		var fue_id = clickBtn.attr('data-fue-id');
 
+		this._clearBtnAction(fue_id);
+		
+	}
+	
+	/**
+	 * クリアボタンアクション
+	 * @param string fue_id file要素のid属性
+	 */
+	_clearBtnAction(fue_id){
 		// クリアボタンラッパー要素を隠す
 		var clearBtnW = this._getElement(fue_id,'clear_btn_w');
 		clearBtnW.hide();
@@ -516,8 +798,57 @@ class FileUploadK{
 		var parLabel = this._getElement(fue_id,'label');
 		parLabel.width(label_width);
 		parLabel.height(label_height);
+	}
+	
+	/**
+	 * 複数非同期・全終了後コールバック・初期化
+	 * @param int count 非同期処理の件数
+	 * @param function callback プレビュー後コールバック
+	 */
+	_cbAsynsEndInit(count,callback){
+
+		this.cbAsynsEndData = {
+			'index':0,
+			'count':count,
+			'callback':callback,
+		};
 		
 	}
+	
+	/**
+	 * 複数非同期・全終了後コールバック
+	 * @note
+	 * 複数の非同期処理がすべて終了したらコールバックを実行する。
+	 * 
+	 * @param string action アクションコード
+	 *  - exe1 非同期処理がすべて終了したらコールバック関数を実行する。
+	 *  - exe2 非同期処理が0件であるならコールバック関数を実行する。
+	 */
+	_cbAsynsEndAction(action){
+		switch (action) {
+		case 'exe1':
+
+			var cbAsynsEndData = this.cbAsynsEndData;
+			if(cbAsynsEndData.callback == null || cbAsynsEndData.count == 0) return;
+			if(cbAsynsEndData.index == cbAsynsEndData.count -1){
+				cbAsynsEndData.callback();
+			}else{
+				cbAsynsEndData.index ++;
+			}
+			break;
+
+		case 'exe2':
+
+			var cbAsynsEndData = this.cbAsynsEndData;
+			if(cbAsynsEndData.callback == null) return;
+			if(cbAsynsEndData.count == 0){
+				cbAsynsEndData.callback();
+			}
+			
+			break;
+		}
+	}
+	
 	
 	/**
 	 * AJAXによるアップロード
@@ -817,7 +1148,7 @@ class FileUploadK{
 				'validMimes':[],
 		}
 		
-		if (valid_ext == null || valid_ext == '') return valid;
+		if (valid_ext == null || valid_ext == '') return validData;
 		
 		var validExts = []; // バリデーション拡張子リスト
 		
@@ -889,6 +1220,35 @@ class FileUploadK{
 		
 		return validMimes;
 	}
+	
+	
+	/**
+	 * ファイル名リストを取得
+	 * @param int fue_id ファイル要素のID属性値（省略可）
+	 * @return array ファイル名リスト
+	 */
+	getFileNames(fue_id){
+		
+		var fns = [];
+		if(fue_id == null){
+			for(var fue_id in this.box){
+				var fileData = this.box[fue_id]['fileData'];
+				for(var i in fileData){
+					var fEnt = fileData[i];
+					fns.push(fEnt.fn);
+				}
+			}
+		}else{
+			var fileData = this.box[fue_id]['fileData'];
+			for(var i in fileData){
+				var fEnt = fileData[i];
+				fns.push(fEnt.fn);
+			}
+		}
+		return fns;
+	}
+	
+	
 	
 	/**
 	 * MIMEマッピングデータを取得
@@ -996,6 +1356,22 @@ class FileUploadK{
 		}else{
 			return data;
 		}
+	}
+	
+	/**
+	 * 文字列を右側から印文字を検索し、右側の文字を切り出す。
+	 * @param s 対象文字列
+	 * @param mark 印文字
+	 * @return 印文字から右側の文字列
+	 */
+	_stringRightRev(s,mark){
+		if (s==null || s==""){
+			return s;
+		}
+		
+		var a=s.lastIndexOf(mark);
+		var s2=s.substring(a+mark.length,s.length);
+		return s2;
 	}
 	
 

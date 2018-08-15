@@ -1,4 +1,7 @@
-
+.fuk_label{
+	display:'inline-block';
+	background-color:#d0dfef;
+}
 
 .fuk .fuk_first_msg {
 	font-size:1em;
@@ -11,6 +14,7 @@
 	padding:5px;
 	font-size:0.8em;
 	font-weight:normal;
+	border:solid 1px #a8c5e1;
 }
 
 .fuk .fuk_file_unit label{
