@@ -8,8 +8,8 @@
  * png,jpeg,gifに対応している。
  * MIMEタイプではなく、拡張子からファイルを分類している。(MIMEタイプではバグが発生する）
  * 
- * @date 2016-11-1 | 2017-4-13
- * @version 1.3 
+ * @date 2016-11-1 | 2018-8-21 $thum_height=nullの時のバグを修正
+ * @version 1.3.1
  * @author k-uehara
  *
  */
@@ -55,8 +55,8 @@ class ThumbnailEx{
 			$thum_width = $orig_width * ( $thum_height / $orig_height);
 		}
 		
-		if($orig_height==null){
-			$orig_height = $orig_height * ( $thum_width / $orig_width);
+		if($thum_height==null){
+			$thum_height = $orig_height * ( $thum_width / $orig_width);
 		}
 		
 		
@@ -74,8 +74,6 @@ class ThumbnailEx{
 			throw new Exception("拡張子「{$ext}」は被対応です。");
 		}
 		
-		
-	
 		// サムネイル画像のresourceオブジェクトを取得
 		$thumImg = imagecreatetruecolor($thum_width, $thum_height);
 		

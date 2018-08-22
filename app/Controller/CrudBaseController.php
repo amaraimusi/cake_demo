@@ -53,6 +53,9 @@ class CrudBaseController extends AppController {
 	
 	// バージョン情報
 	public $verInfo = array();
+	
+	public $components = ['CbFileUpload']; // ファイルアップロードコンポーネント [CakePHPの機能]
+	
 
 	// -- ▽ 内部処理用
 	private $m_kj_keys;//検索条件キーリスト
@@ -61,7 +64,8 @@ class CrudBaseController extends AppController {
 	private $m_edit_defs;//編集エンティティのデフォルト値
 	private $main_model_name=null;//対応付けるモデルの名称。（例→AnimalX)
 	private $main_model_name_s=null;//モデル名のスネーク記法番(例→animal_x)
-
+	
+	
 	/**
 	 * indexアクションの共通処理
 	 *
@@ -167,15 +171,15 @@ class CrudBaseController extends AppController {
 		//検索ボタンが押された場合
 		$pages=array();
 		if(!empty($request['search'])){
-		    
-		    //ページネーションパラメータを取得
-		    $pages = $this->getPageParamForSubmit($kjs,$postData,$saveKjFlg);
+			
+			//ページネーションパラメータを取得
+			$pages = $this->getPageParamForSubmit($kjs,$postData,$saveKjFlg);
 
 		}else{
-		    //ページネーション用パラメータを取得
-		    $overData['row_limit']=$kjs['row_limit'];
-		    $pages=$this->getPageParam($saveKjFlg,$overData);
-		    
+			//ページネーション用パラメータを取得
+			$overData['row_limit']=$kjs['row_limit'];
+			$pages=$this->getPageParam($saveKjFlg,$overData);
+			
 		}
 
 		$bigDataFlg=$this->checkBigDataFlg($kjs);//巨大データ判定
@@ -559,13 +563,13 @@ class CrudBaseController extends AppController {
 	 */
 	private function makeHomeUrl(&$crudBaseData,&$pages,$base_url){
 
-	    // 初期条件データを取得する
-	    $iniCnds = $this->getIniCnds($crudBaseData,$pages);
+		// 初期条件データを取得する
+		$iniCnds = $this->getIniCnds($crudBaseData,$pages);
 
-	    //　‎初期条件データからURLを作成
-	    $home_url = $this->makeHomeUrlByIniCnds($iniCnds,$base_url);
+		//　‎初期条件データからURLを作成
+		$home_url = $this->makeHomeUrlByIniCnds($iniCnds,$base_url);
 
-        return $home_url;
+		return $home_url;
 
 	}
 	
@@ -576,33 +580,33 @@ class CrudBaseController extends AppController {
 	 * @return array 初期条件データ
 	 */
 	private function getIniCnds(&$crudBaseData,&$pages){
-	    
-	    $iniCnds = null; // 初期条件データ
-	    $ses_key = $this->main_model_name_s.'_ini_cnds';
-	    
-	    //アクションフラグが空である場合
-	    if(empty($crudBaseData['act_flg'])){
-	        
-	        // 初期条件データにセットする
-	        $iniCnds = array('kjs' => $crudBaseData['kjs'],'pages'=>$pages);
-	        
-	        // ‎セッションにデータをセット
-	        $this->Session->write($ses_key,$iniCnds);
-	        
-	    }
-	    else{
-	        // 	    セッションにデータが存在する場合
-	        $iniCnds = $this->Session->read($ses_key);
-	        
-	        if(empty($iniCnds)){
-	            
-	            $iniCnds = array('kjs' => $crudBaseData['kjs'],'pages'=>$pages);
-	            $this->Session->write($ses_key,$iniCnds);
-	        }
-	        
-	    }
-	    
-	    return $iniCnds;
+		
+		$iniCnds = null; // 初期条件データ
+		$ses_key = $this->main_model_name_s.'_ini_cnds';
+		
+		//アクションフラグが空である場合
+		if(empty($crudBaseData['act_flg'])){
+			
+			// 初期条件データにセットする
+			$iniCnds = array('kjs' => $crudBaseData['kjs'],'pages'=>$pages);
+			
+			// ‎セッションにデータをセット
+			$this->Session->write($ses_key,$iniCnds);
+			
+		}
+		else{
+			// 		セッションにデータが存在する場合
+			$iniCnds = $this->Session->read($ses_key);
+			
+			if(empty($iniCnds)){
+				
+				$iniCnds = array('kjs' => $crudBaseData['kjs'],'pages'=>$pages);
+				$this->Session->write($ses_key,$iniCnds);
+			}
+			
+		}
+		
+		return $iniCnds;
 	}
 	
 	/**
@@ -612,35 +616,35 @@ class CrudBaseController extends AppController {
 	 * @return string ホームURL
 	*/
 	private function makeHomeUrlByIniCnds($iniCnds,$base_url){
-	    
-	    $query_str = "";
-	    $pages = $iniCnds['pages'];
-	    $kjs = $iniCnds['kjs'];
-	    
-	    $list = array('page_no','sort_field','sort_desc');
-	    foreach($list as $field){
-	        $value = $iniCnds['pages'][$field];
-	        if(!empty($value) || $value === 0){
-	            $value = urlencode($value);// URLエンコード
-	            $query_str .= "&{$field}={$value}";
-	        }
-	    }
-	    
-	    foreach($iniCnds['kjs'] as $field => $value){
-	        if(!empty($value) || $value===0){
-	            $value = urlencode($value);
-	            $query_str .= "&{$field}={$value}";
-	        }
-	    }
-	    
-	    $home_url = $base_url;
-	    if(!empty($query_str)){
-	        $query_str = mb_substr($query_str,1); // 先頭の一文字を削る(&を削る）
-	        $home_url = $home_url . '?' . $query_str;
-	    }
-	    
-	    return $home_url;
-	    
+		
+		$query_str = "";
+		$pages = $iniCnds['pages'];
+		$kjs = $iniCnds['kjs'];
+		
+		$list = array('page_no','sort_field','sort_desc');
+		foreach($list as $field){
+			$value = $iniCnds['pages'][$field];
+			if(!empty($value) || $value === 0){
+				$value = urlencode($value);// URLエンコード
+				$query_str .= "&{$field}={$value}";
+			}
+		}
+		
+		foreach($iniCnds['kjs'] as $field => $value){
+			if(!empty($value) || $value===0){
+				$value = urlencode($value);
+				$query_str .= "&{$field}={$value}";
+			}
+		}
+		
+		$home_url = $base_url;
+		if(!empty($query_str)){
+			$query_str = mb_substr($query_str,1); // 先頭の一文字を削る(&を削る）
+			$home_url = $home_url . '?' . $query_str;
+		}
+		
+		return $home_url;
+		
 	}
 	
 	
@@ -651,52 +655,52 @@ class CrudBaseController extends AppController {
 	 * @return int 行入替機能フラグ 1:ボタン表示 , 0:ボタン非表示
 	 */
 	private function getRowExcFlg(&$crudBaseData,&$pages){
-	    
-	    // 初期条件データを取得する
-	    $iniCnds = $this->getIniCnds($crudBaseData,$pages);
-	    
-        // 検索条件情報の初期データと現在データを比較する。
-        $iKjs = $iniCnds['kjs']; // 初期の検索条件情報
-        $aKjs = $crudBaseData['kjs']; // 現在条件情報
-        foreach($aKjs as $field => $a_value){
-            
-            if($field == 'row_limit') continue;
-            
-            $i_value = null;
-            if(isset($iKjs[$field])) $i_value = $iKjs[$field];
-            
-            // ゼロ比較
-            if($this->_compare0($a_value, $i_value)){
-                continue;
-            }else{
-                return 0;
-            }
+		
+		// 初期条件データを取得する
+		$iniCnds = $this->getIniCnds($crudBaseData,$pages);
+		
+		// 検索条件情報の初期データと現在データを比較する。
+		$iKjs = $iniCnds['kjs']; // 初期の検索条件情報
+		$aKjs = $crudBaseData['kjs']; // 現在条件情報
+		foreach($aKjs as $field => $a_value){
+			
+			if($field == 'row_limit') continue;
+			
+			$i_value = null;
+			if(isset($iKjs[$field])) $i_value = $iKjs[$field];
+			
+			// ゼロ比較
+			if($this->_compare0($a_value, $i_value)){
+				continue;
+			}else{
+				return 0;
+			}
 
-        }
+		}
 
-        // ページネーション情報の初期データと現在データを比較する。
-	    $list = ['sort_field','sort_desc'];
-	    
-	    $iPages = $iniCnds['pages']; // 初期のページネーション情報
+		// ページネーション情報の初期データと現在データを比較する。
+		$list = ['sort_field','sort_desc'];
+		
+		$iPages = $iniCnds['pages']; // 初期のページネーション情報
 
-	    foreach( $list as $field){
-	        
-	        $a_value = null;
-	        if(isset($pages[$field])) $a_value = $pages[$field];
-	        
-	        $i_value = null;
-	        if(isset($iPages[$field])) $i_value = $iPages[$field];
-	        
-	        // ゼロ比較
-	        if($this->_compare0($a_value, $i_value)){
-	            continue;
-	        }else{
-	            return 0;
-	        }
-	    }
-	    
-	    return 1; // 一致判定
-	    
+		foreach( $list as $field){
+			
+			$a_value = null;
+			if(isset($pages[$field])) $a_value = $pages[$field];
+			
+			$i_value = null;
+			if(isset($iPages[$field])) $i_value = $iPages[$field];
+			
+			// ゼロ比較
+			if($this->_compare0($a_value, $i_value)){
+				continue;
+			}else{
+				return 0;
+			}
+		}
+		
+		return 1; // 一致判定
+		
 	}
 	
 
@@ -1187,28 +1191,28 @@ class CrudBaseController extends AppController {
 	 *
 	 */
 	protected function getPageParamForSubmit(&$kjs,&$postData,$saveKjFlg){
-	    
-        $pages =  array();
+		
+		$pages =  array();
 		$defs=$this->getDefKjs();//デフォルト情報を取得
 		
 		$pages['page_no'] = 0;
 		
 		if(isset($postData['row_limit'])){
-		    $pages['row_limit'] = $postData['row_limit'];
+			$pages['row_limit'] = $postData['row_limit'];
 		}else{
-		    $pages['row_limit'] = $defs['row_limit'];;
+			$pages['row_limit'] = $defs['row_limit'];;
 		}
 		
 		if(isset($postData['sort_field'])){
-		    $pages['sort_field'] = $postData['sort_field'];
+			$pages['sort_field'] = $postData['sort_field'];
 		}else{
-		    $pages['sort_field'] = $this->defSortFeild;;
+			$pages['sort_field'] = $this->defSortFeild;;
 		}
 		
 		if(isset($postData['sort_desc'])){
-		    $pages['sort_desc'] = $postData['sort_desc'];
+			$pages['sort_desc'] = $postData['sort_desc'];
 		}else{
-		    $pages['sort_desc'] = $this->defSortType;//0:昇順 1:降順;
+			$pages['sort_desc'] = $this->defSortType;//0:昇順 1:降順;
 		}
 		
 		if($saveKjFlg==true){
@@ -1331,22 +1335,22 @@ class CrudBaseController extends AppController {
 	 * @return string リクエスト値
 	 */
 	protected function getValueFromPostGet($key){
-	    $value = null;
+		$value = null;
 
-	    //POSTからデータ取得を試みる。
-	    $model_name = $this->main_model_name;
-	    if(isset($this->request->data[$model_name][$key])){
-	        $value = $this->request->data[$model_name][$key];
-	        return $value;
-	    }
-	    
-	    //GETからデータ取得を試みる。
-	    if(isset($this->params['url'][$key])){
-	        $value = $this->params['url'][$key];
-	        return $value;
-	    }
-	    
-	    return $value;
+		//POSTからデータ取得を試みる。
+		$model_name = $this->main_model_name;
+		if(isset($this->request->data[$model_name][$key])){
+			$value = $this->request->data[$model_name][$key];
+			return $value;
+		}
+		
+		//GETからデータ取得を試みる。
+		if(isset($this->params['url'][$key])){
+			$value = $this->params['url'][$key];
+			return $value;
+		}
+		
+		return $value;
 	}
 	
 	
@@ -1357,22 +1361,22 @@ class CrudBaseController extends AppController {
 	 * @return string リクエスト値
 	 */
 	protected function getValueFromGetPost($key){
-	    $value = null;
-	    
-	    //GETからデータ取得を試みる。
-	    if(isset($this->params['url'][$key])){
-	        $value = $this->params['url'][$key];
-	        return $value;
-	    }
-	    
-	    //POSTからデータ取得を試みる。
-	    $model_name = $this->main_model_name;
-	    if(isset($this->request->data[$model_name][$key])){
-	        $value = $this->request->data[$model_name][$key];
-	        return $value;
-	    }
-	    
-	    return $value;
+		$value = null;
+		
+		//GETからデータ取得を試みる。
+		if(isset($this->params['url'][$key])){
+			$value = $this->params['url'][$key];
+			return $value;
+		}
+		
+		//POSTからデータ取得を試みる。
+		$model_name = $this->main_model_name;
+		if(isset($this->request->data[$model_name][$key])){
+			$value = $this->request->data[$model_name][$key];
+			return $value;
+		}
+		
+		return $value;
 	}
 
 	/**
@@ -1750,7 +1754,7 @@ class CrudBaseController extends AppController {
 
 		// セッションページバージョンがセッションに存在する場合
 		else{
-		    
+			
 			// セッションページバージョンと当ページバージョンが一致する場合、バージョン変更なしを表す"0"を返す。
 			if($this_page_version == $ses_page_version){
 				return 0;
@@ -1861,63 +1865,96 @@ class CrudBaseController extends AppController {
 		return 'success';
 	}
 
+// ■■■□□□■■■□□□■■■□□□
+// 	/**
+// 	 * アップロードファイルが存在すれば、アップロードファイル名をエンティティにセットする
+// 	 * 
+// 	 * @param array $files アップロードファイル情報($_FILESを指定する)
+// 	 * @param array $ent エンティティ
+// 	 * @param string $fnField ファイル名フィールド（複数あるときは配列指定可）
+// 	 * @return array アップロードファイル名をセットしたエンティティ 
+// 	 */
+// 	protected function setUploadFileValueToEntity($files,$ent,$fnField){
+
+// 		// ファイルフィールド名リストの初期セット
+// 		$fnFields = array(); // ファイルフィールド名リスト
+// 		if(is_array($fnField)){
+// 			$fnFields = $fnField;
+// 		}else{
+// 			$fnFields[] = $fnField;
+// 		}
+
+// 		// アップロードファイル情報が空ならエンティティから該当フィールドを除去して処理抜け
+// 		if(empty($files)){
+// 			foreach($fnFields as $fu_key){
+// 				unset($ent[$fu_key]);
+// 			}
+
+// 			return array(
+// 				'ent' => $ent,
+// 				'fuKeys' => array(),
+// 			);
+// 		}
+
+// 		$fuKeys = array();// アップロードファイル関連のキーリスト
+// 		foreach($fnFields as $fu_key){
+// 			if(empty($files[$fu_key])){
+// 				continue;
+// 			}
+// 			$fData = $files[$fu_key];
+
+// 			if(!empty($fData["name"]) && $fData["name"] != ''){
+// 				$fn = $fData["name"];
+// 				$ent[$fu_key] = $fn;
+// 				$fuKeys[] = $fu_key;
+// 			}
+
+// 			// アップロードするファイルがないなら、エンティティからアップロードファイルのフィールドを除去する。
+// 			else{
+// 				unset($ent[$fu_key]);
+// 			}
+// 		}
+
+// 		$res = array(
+// 				'ent' => $ent,
+// 				'fuKeys' => $fuKeys,
+// 		);
+
+// 		return $res;
+// 	}
 
 	/**
-	 * アップロードファイルが存在すれば、アップロードファイル名をエンティティにセットする
-	 * 
-	 * @param array $files アップロードファイル情報($_FILESを指定する)
-	 * @param array $ent エンティティ
-	 * @param string $fnField ファイル名フィールド（複数あるときは配列指定可）
-	 * @return array アップロードファイル名をセットしたエンティティ 
+	 * エンティティ中のアップロード系フィールドのファイル名を変換する。
+	 * @param array $ent 更新データのエンティティ
+	 * @param array $FILES $_FILES
+	 * @param option
+	 *  - fu_field アップロード系フィールド
+	 *  - 	id_flg ファイル名にidを表示(デフォ:true)
+	 *  - 	fn_flg ファイル名に元ファイル名を表示(デフォ:true)
+	 *  - 	date_flg ファイル名に日付を表示(デフォ:false)
+	 *  - 	time_flg ファイル名に時刻を表示(デフォ:false)
+	 * @return array アップロードファイル名変換後のエンティティ
 	 */
-	protected function setUploadFileValueToEntity($files,$ent,$fnField){
-
-		// ファイルフィールド名リストの初期セット
-		$fnFields = array(); // ファイルフィールド名リスト
-		if(is_array($fnField)){
-			$fnFields = $fnField;
-		}else{
-			$fnFields[] = $fnField;
-		}
-
-		// アップロードファイル情報が空ならエンティティから該当フィールドを除去して処理抜け
-		if(empty($files)){
-			foreach($fnFields as $fu_key){
-				unset($ent[$fu_key]);
-			}
-
-			return array(
-				'ent' => $ent,
-				'fuKeys' => array(),
-			);
-		}
-
-		$fuKeys = array();// アップロードファイル関連のキーリスト
-		foreach($fnFields as $fu_key){
-			if(empty($files[$fu_key])){
-				continue;
-			}
-			$fData = $files[$fu_key];
-
-			if(!empty($fData["name"]) && $fData["name"] != ''){
-				$fn = $fData["name"];
-				$ent[$fu_key] = $fn;
-				$fuKeys[] = $fu_key;
-			}
-
-			// アップロードするファイルがないなら、エンティティからアップロードファイルのフィールドを除去する。
-			else{
-				unset($ent[$fu_key]);
-			}
-		}
-
-		$res = array(
-				'ent' => $ent,
-				'fuKeys' => $fuKeys,
-		);
-
-		return $res;
+	protected function convUploadFileName(&$ent,&$FILES,$option = array()){
+		
+		return $this->CbFileUpload->convUploadFileName($ent,$FILES,$option);
 	}
+	
+	/**
+	 * ファイルアップロード関連の一括作業
+	 * @param string $form_type フォーム種別  new_inp,edit,eliminate
+	 * @param array $ent 更新エンティティ
+	 * @param array $FILES $_FILES
+	 * @param array $option
+	 * - FileUploadK.phpのオプション設定
+	 *
+	 */
+	protected function workFileUploads($form_type,&$ent,&$FILES,&$option){
+		
+			return $this->CbFileUpload->workAllAtOnce($form_type,$ent,$FILES,$option);
+	}
+	
+	
 
 
 	/**
@@ -1953,10 +1990,10 @@ class CrudBaseController extends AppController {
 	 * @return int 判定結果 0:空でない , 1:空である
 	 */
 	protected function _empty0($value){
-	    if(empty($value) && $value!==0 && $value!=='0'){
-	        return 1;
-	    }
-	    return 0;
+		if(empty($value) && $value!==0 && $value!=='0'){
+			return 1;
+		}
+		return 0;
 	}
 	
 	
@@ -1977,50 +2014,50 @@ class CrudBaseController extends AppController {
 	 * @return bool false:不一致 , true:一致
 	 */
 	function _compare0($a_value,$b_value){
-	    if(empty($a_value) && empty($b_value)){
-	        if($a_value === 0 || $a_value === '0'){
-	            if($b_value === 0 || $b_value === '0'){
-	                return true;
-	            }else{
-	                return false;
-	            }
-	            
-	        }else{
-	            if($b_value === 0 || $b_value === '0'){
-	                return false;
-	            }else{
-	                return true;
-	            }
-	            
-	        }
-	        
-	    }else{
-	        
-	        if(gettype($a_value) == 'boolean'){
-	            if($a_value){
-	                $a_value = 1;
-	            }else{
-	                $a_value = 0;
-	            }
-	        }
-	        if(gettype($b_value) == 'boolean'){
-	            if($b_value){
-	                $b_value = 1;
-	            }else{
-	                $b_value = 0;
-	            }
-	        }
-	        
-	        
-	        if(is_numeric($a_value) && is_numeric($b_value)){
-	            if($a_value == $b_value) return true;
-	        }else{
-	            if($a_value === $b_value) return true;
-	            
-	        }
-	    }
-	    
-	    return false;
+		if(empty($a_value) && empty($b_value)){
+			if($a_value === 0 || $a_value === '0'){
+				if($b_value === 0 || $b_value === '0'){
+					return true;
+				}else{
+					return false;
+				}
+				
+			}else{
+				if($b_value === 0 || $b_value === '0'){
+					return false;
+				}else{
+					return true;
+				}
+				
+			}
+			
+		}else{
+			
+			if(gettype($a_value) == 'boolean'){
+				if($a_value){
+					$a_value = 1;
+				}else{
+					$a_value = 0;
+				}
+			}
+			if(gettype($b_value) == 'boolean'){
+				if($b_value){
+					$b_value = 1;
+				}else{
+					$b_value = 0;
+				}
+			}
+			
+			
+			if(is_numeric($a_value) && is_numeric($b_value)){
+				if($a_value == $b_value) return true;
+			}else{
+				if($a_value === $b_value) return true;
+				
+			}
+		}
+		
+		return false;
 	}
 
 }

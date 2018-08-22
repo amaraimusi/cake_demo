@@ -142,69 +142,6 @@ class NekoController extends CrudBaseController {
 
 
 
-// 	/**
-// 	 * 入力画面
-// 	 * 
-// 	 * 入力フォームにて値の入力が可能です。バリデーション機能を実装しています。
-// 	 * 
-// 	 * URLクエリにidが付属する場合は編集モードになります。
-// 	 * idがない場合は新規入力モードになります。
-// 	 * 
-// 	 */
-// 	public function edit() {
-		
-// 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
-// 		$res=$this->edit_before('Neko');
-// 		$ent=$res['ent'];
-
-// 		$this->set(array(
-// 				'title_for_layout'=>'ネコ・編集',
-// 				'ent'=>$ent,
-// 		));
-		
-// 		//当画面系の共通セット
-// 		$this->setCommon();
-
-// 	}
-	
-// 	 /**
-// 	 * 登録完了画面
-// 	 * 
-// 	 * 入力画面の更新ボタンを押し、DB更新に成功した場合、この画面に遷移します。
-// 	 * 入力エラーがある場合は、入力画面へ、エラーメッセージと共にリダイレクトで戻ります。
-// 	 */
-// 	public function reg(){
-		
-		
-// 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
-// 		$res=$this->reg_before('Neko');
-// 		$ent=$res['ent'];
-		
-// 		$regMsg="<p id='reg_msg'>更新しました。</p>";
-
-// 		//オリジナルバリデーション■■■□□□■■■□□□■■■□□□
-// 		//$xFlg=$this->validNeko();
-// 		$xFlg=true;
-// 		if($xFlg==false){
-// 			//エラーメッセージと一緒に編集画面へ、リダイレクトで戻る。
-// 			$this->errBackToEdit("オリジナルバリデーションのエラー");
-// 		}
-		
-// 		//★DB保存
-// 		$this->Neko->begin();//トランザクション開始
-// 		$ent=$this->Neko->saveEntity($ent);//登録
-// 		$this->Neko->commit();//コミット
-
-// 		$this->set(array(
-// 				'title_for_layout'=>'ネコ・登録完了',
-// 				'ent'=>$ent,
-// 				'regMsg'=>$regMsg,
-// 		));
-		
-// 		//当画面系の共通セット
-// 		$this->setCommon();
-
-// 	}
 	
 	
 	
@@ -221,8 +158,7 @@ class NekoController extends CrudBaseController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		$errs = array(); // エラーリスト
 		
-		// ■■■□□□■■■□□□■■■□□□
-		//debug($_POST);//■■■□□□■■■□□□■■■□□□)
+
 // 		// 認証中でなければエラー
 // 		if(empty($this->Auth->user())){
 // 			return 'Error:login is needed.';// 認証中でなければエラー
@@ -240,22 +176,12 @@ class NekoController extends CrudBaseController {
 		// 登録パラメータ
 		$reg_param_json = $_POST['reg_param_json'];
 		$regParam = json_decode($reg_param_json,true);
+		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
 
-// 		// アップロードファイルが存在すればエンティティにセットする。
-// 		$upload_file = null;
-// 		if(!empty($_FILES["upload_file"])){
-// 			$upload_file = $_FILES["upload_file"]["name"];
-// 			$ent['neko_fn'] = $upload_file;
-// 		}
-		
-// 		// ファイルアップロード制御
-// 		App::uses('FileUploadK','Vendor/Wacg/FileUploadK');
-// 		$fuParam['suppData'] = [['wamei'=>'画像ファイル1','mime_check_flg'=>1]];
-// 		$fileUploadK = new FileUploadK($_FILES,$fuParam);
-// 		$fuRes = $fileUploadK->workAllAtOnce();
-// 		$errs = Hash::merge($errs,$fuRes['errs']);
-		
-	
+
+		// アップロードファイル名を変換する。
+		$ent = $this->convUploadFileName($ent,$_FILES);
+
 		// 更新ユーザーなど共通フィールドをセットする。
 		$ent = $this->setCommonToEntity($ent);
 	
@@ -263,22 +189,14 @@ class NekoController extends CrudBaseController {
 		$this->Neko->begin();
 		$ent = $this->Neko->saveEntity($ent,$regParam);
 		$this->Neko->commit();//コミット
-
-		if(!empty($upload_file)){
-			
-			// ファイルパスを組み立て
-			$upload_file = $_FILES["upload_file"]["name"];
-			$ffn = "game_rs/app{$id}/app_icon/{$fn}";
-			
-			// 一時ファイルを所定の場所へコピー（フォルダなければ自動作成）
-			$this->copyEx($_FILES["upload_file"]["tmp_name"], $ffn);
-	
-	
-		}
+		
+		// ファイルアップロード関連の一括作業
+		$option = array();
+		$res = $this->workFileUploads($form_type, $ent, $_FILES, $option);
+		if(!empty($res['err_msg'])) $errs[] = $res['err_msg'];
+		
 		
 		if($errs) $ent['err'] = implode("','",$errs); // フォームに表示するエラー文字列をセット
-
-		
 
 		$json_data=json_encode($ent,true);//JSONに変換
 	

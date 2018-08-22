@@ -239,6 +239,7 @@ foreach($data as $i=>$ent){
 <!-- 編集フォーム -->
 <div id="ajax_crud_edit_form" class="panel panel-primary" >
 
+	
 	<div class="panel-heading">
 		<div class="pnl_head1">編集</div>
 		<div class="pnl_head2"></div>
@@ -251,6 +252,9 @@ foreach($data as $i=>$ent){
 	</div>
 	<div class="panel-body">
 	<div class="err text-danger"></div>
+	<button type="button"  onclick="editReg();" class="btn btn-success">
+		<span class="glyphicon glyphicon-ok"></span>
+	</button>
 	<table><tbody>
 
 		<!-- CBBXS-1007 -->
