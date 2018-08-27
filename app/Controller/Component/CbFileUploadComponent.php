@@ -12,15 +12,28 @@ App::uses('Component', 'Controller');
  * 抹消機能は不要ファイルを削除する。
  *
  * @date 2018-8-22
- * @version 0.1
+ * @version 1.0
  * @histroy
- * 2018-8-22 開発着手
+ * 2018-8-22 開発
  *
  */
 class CbFileUploadComponent extends Component{
 	
+	private $dptData; // ディレクトリパステンプレート情報    directory path template data
 
 	
+	
+	public function __construct($collection){
+		parent::__construct($collection);
+		
+		// ディレクトリパステンプレート情報
+		$this->dptData = array(
+				'orig_dp_tmpl' => 'rsc/img/%field/orig/',
+				'thum1_dp_tmpl' => 'rsc/img/%field/thum/',
+				'thum2_dp_tmpl' => 'rsc/img/%field/mid/',
+		);
+		
+	}
 	/**
 	 * アップロードファイル名を変換する。
 	 * @param array $ent 更新データのエンティティ
@@ -169,19 +182,26 @@ class CbFileUploadComponent extends Component{
 			
 			// オリジナルディレクトリパスをセット
 			if(empty($dpData['orig_dp'])){
-				$dpData['orig_dp'] = "rsc/img/{$fu_field}/orig/";
+				$orig_dp = $this->dptData['orig_dp_tmpl'];
+				$orig_dp = str_replace('%field' , $fu_field , $orig_dp );
+				$dpData['orig_dp'] = $orig_dp;
 			}
 			
 			// サムネイルディレクトリパス
 			if(empty($dpData['thums'])){
+				$thum1_dp = $this->dptData['thum1_dp_tmpl'];
+				$thum1_dp = str_replace('%field' , $fu_field , $thum1_dp);
+				$thum2_dp = $this->dptData['thum2_dp_tmpl'];
+				$thum2_dp = str_replace('%field' , $fu_field , $thum2_dp);
+				
 				$dpData['thums'] = array(
 						0 => array(
-								'thum_dp' => "rsc/img/{$fu_field}/thum/",
+								'thum_dp' => $thum1_dp,
 								'thum_width' => 64,
 								'thum_height' => 64,
 						),
 						1 => array(
-								'thum_dp' => "rsc/img/{$fu_field}/mid/",
+								'thum_dp' => $thum2_dp,
 								'thum_width' => 320,
 								'thum_height' => null,
 						),
@@ -202,6 +222,16 @@ class CbFileUploadComponent extends Component{
 		return $res;
 		
 	}
+	
+	
+	/**
+	 * ディレクトリパステンプレート情報のGetter
+	 * @reutrn array ディレクトリパステンプレート情報
+	 */
+	public function getDptData(){
+		return $this->dptData;
+	}
+	
 	
 
 }

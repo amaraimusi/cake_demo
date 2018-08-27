@@ -12,13 +12,14 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.2.0
- * @date 2018-7-6 | 2018-8-14
+ * @version 1.2.2
+ * @date 2018-7-6 | 2018-8-27
  * @history 
- *  - 2018-7-6 新規作成
- *  - 2018-8-7 リリース
- *  - 2018-8-11 ver 1.1
+ *  - 2018-8-27 ver 1.2.2 setFilePaths:ファイル名空に対応
  *  - 2018-8-14 ver 1.2.0 ファイルの初期表示
+ *  - 2018-8-11 ver 1.1
+ *  - 2018-8-7 リリース
+ *  - 2018-7-6 新規作成
  * 
  */
 class FileUploadK{
@@ -219,7 +220,6 @@ class FileUploadK{
 		xhr.open('GET', fp, true);
 		xhr.responseType = 'blob';
 		xhr.onload = (e) => {
-			
 			// プリロードのonloadイベント処理： ファイル関連情報をbDataにセットする。
 			this._xhrOnload(e,xhr,bData);
 
@@ -245,6 +245,7 @@ class FileUploadK{
 		var server = xhr.getResponseHeader("server");
 		var modified = xhr.getResponseHeader("Last-Modified");
 		
+		
 		var bEnt = {
 				'fn':fn,
 				'mime_type':mime_type,
@@ -252,6 +253,7 @@ class FileUploadK{
 				'modified':modified,
 				'blob':blob
 		};
+		
 		
 		bData.push(bEnt);
 
@@ -327,6 +329,8 @@ class FileUploadK{
 			throw new Error("Unknown 'bin_type'");
 		}
 		
+		if(this._checkFnsEmpty(fileData)) return; // ファイルデータ中のファイル名がすべて空であるなら中断。
+		
 		// 親ラベル要素を内部要素に合わせてフィットさせるため幅をautoにする。
 		var parLbl = this._getElement(fue_id,'label');
 		parLbl.css({'width':'auto','height':'auto'});
@@ -342,6 +346,7 @@ class FileUploadK{
 		// バリデーション確認
 		fileData = this._validCheck(fue_id,fileData); 
 		this.box[fue_id]['fileData'] = fileData;
+		
 		
 		var preview_html = ''; // プレビューHTML
 		
@@ -408,6 +413,24 @@ class FileUploadK{
 			this._cbAsynsEndAction('exe2'); // プレビュー後コールバックアクション：制御と実行2
 		}
 	}
+	
+	/**
+	 * ファイルデータ中のファイル名がすべて空であるか？
+	 * @reutrn false:空でないファイル名が存在 , true:すべてのファイル名が空である
+	 */
+	_checkFnsEmpty(fileData){
+		
+		for(var i in fileData){
+			var fEnt = fileData[i];
+			if(fEnt.fn){
+				return false; // false:空でないファイル名が存在
+			}
+		}
+		
+		return true; //  true:すべてのファイル名が空である
+		
+	}
+	
 	
 	/**
 	 * ファイルデータのフィルタリング：0サイズとバリデーションエラーのエンティティを取り除く。
@@ -601,6 +624,15 @@ class FileUploadK{
 			}
 			
 			var fn = fEnt.fn;
+			
+			// ファイル名が空である場合
+			if(fn == '' || fn == null){
+				fEnt['err_flg'] = true;
+				fEnt['err_msg'] = 'ファイル名が空です。';
+				fEnt['fn_empty'] = true;
+				continue;
+			}
+			
 			var ext = this._getExtension(fEnt.fn);// ファイル名から拡張子を取得する。
 			
 			// 拡張子チェック
@@ -608,6 +640,7 @@ class FileUploadK{
 			if(res == -1){ // 対象外の拡張子である場合
 				fEnt['err_flg'] = true;
 				fEnt['err_msg'] = fn + 'の拡張子は対象外です。';
+				continue;
 			}else{
 				fEnt['err_flg'] = false;
 			}
@@ -932,6 +965,10 @@ class FileUploadK{
 	}
 	
 	
+	/**
+	 * ファイル群のパラメータデータを取得する
+	 * @return object ファイル群のパラメータデータ
+	 */
 	getFileParams(){
 		
 		var pData = [];

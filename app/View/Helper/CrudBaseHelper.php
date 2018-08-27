@@ -1,5 +1,6 @@
 <?php
 App::uses('FormHelper', 'View/Helper');
+App::uses('CbFileUploadHComp', 'View/Helper/Component');
 
 /**
  * CrudBase用ヘルパー
@@ -16,10 +17,11 @@ App::uses('FormHelper', 'View/Helper');
 
 class CrudBaseHelper extends FormHelper {
 
-	private $_mdl=""; // モデル名
-	private $_mdl_snk=""; // モデル名（スネーク記法）
+	private $_mdl=""; // モデル名(.)
+	private $_mdl_cml=''; // モデル名（キャメル記法）
+	private $_mdl_snk=''; // モデル名（スネーク記法）
 	private $_dateTimeList=array(); // 日時選択肢リスト
-	private $param; // 各種パラメータ
+	private $param; // CrudBase内部専用パラメータ
 	private $kjs; // 検索条件情報
 	
 	// 列並びモード用
@@ -27,20 +29,49 @@ class CrudBaseHelper extends FormHelper {
 	private $_clmSortMode = 0;		// 列並モード
 	private $_field_data;			// フィールドデータ
 	
-	
+	// コンポーネント
+	private $cbFileUploadHComp; // CrudBase用ファイルアップロード・ヘルパーコンポーネント
 	
 	/**
-	 * モデル名のセッター
+	 * 初期化(表の設定）
 	 * 
-	 * input系メソッドに影響します。
+	 * @note
+	 * 設定には表と裏がある。
+	 * 表の設定は当メソッドで行う。
+	 * 裏の設定はsetCrudBaseParam()で行う。
 	 * 
-	 * @param string $modelName モデル名
+	 * @param array $props プロパティ群
+	 *  - model_name モデル名（キャメル記法）
+	 *  
 	 */
-	public function setModelName($modelName){
-		$this->_mdl = $modelName.'.';
-		$this->_mdl_snk = $this->snakize($modelName); //スネーク記法に変換
+	public function init($props = array()){
+
+		// モデル名関連の設定
+		$model_name = $props['model_name'];
+		$this->_mdl_cml = $model_name;
+		$this->_mdl = $model_name.'.';
+		$this->_mdl_snk = $this->snakize($model_name); //スネーク記法に変換
+	}
+	
+	/**
+	 * CrudBase内部専用パラメータのセッター(裏の設定）
+	 * 
+	 * @note
+	 * 裏の設定はCrudBase内部が利用する。
+	 * 開発するときはこちらのパラメータを触らないように。
+	 *
+	 * @param array $param パラメータ
+	 */
+	public function setCrudBaseParam($param){
+		$this->param = $param;
+
+		// CrudBase用ファイルアップロード・ヘルパーコンポーネント
+		$dptData = $param['dptData'];
+		$this->cbFileUploadHComp = new CbFileUploadHComp($dptData);
+		
 		
 	}
+
 	
 	/**
 	 * CSSファイルリストを取得する
@@ -75,6 +106,7 @@ class CrudBaseHelper extends FormHelper {
 				'CrudBase/CrudBaseRowExchange.js?ver=1.2',
 				'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
 				'CrudBase/FileUploadK.js?ver=1.0',
+				'CrudBase/CbFileUploadComponent.js?ver=1.0',
 				'CrudBase/CrudBase.js?ver=2.0',
 				'livipage',						// ページ内リンク先プレビュー
 				'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
@@ -92,15 +124,6 @@ class CrudBaseHelper extends FormHelper {
 		return $this->_mdl_snk;
 	}
 	
-	/**
-	 * 各種パラメータのセッター
-	 * 
-	 * @param array $param パラメータ
-	 */
-	public function setParam($param){
-		$this->param = $param;
-	}
-	
 	
 	/**
 	 * crudBaseDataのセッター
@@ -110,50 +133,50 @@ class CrudBaseHelper extends FormHelper {
 		$this->kjs = &$kjs;
 	}
 	
+	// ■■■□□□■■■□□□■■■□□□
+// 	/**
+// 	 * 新規入力ボタンを作成
+// 	 * @param array $option オプション【省略可】
+// 	 * - class クラス属性の値
+// 	 * - onclick onclickイベントにセットするJS関数（CRUDタイプがajax型である場合のみ有効)
+// 	 * - display_name ボタンの表示名
+// 	 */
+// 	public function newBtn($option = null){
 	
-	/**
-	 * 新規入力ボタンを作成
-	 * @param array $option オプション【省略可】
-	 * - class クラス属性の値
-	 * - onclick onclickイベントにセットするJS関数（CRUDタイプがajax型である場合のみ有効)
-	 * - display_name ボタンの表示名
-	 */
-	public function newBtn($option = null){
-	
-		if(empty($option)){
-			$option = array();
-		}
+// 		if(empty($option)){
+// 			$option = array();
+// 		}
 		
-		if(empty($option['class'])){
-			$option['class'] = 'btn btn-warning btn-sm';
-		}
+// 		if(empty($option['class'])){
+// 			$option['class'] = 'btn btn-warning btn-sm';
+// 		}
 		
-		if(empty($option['onclick'])){
-			$option['onclick'] = 'newInpShow(this);';
-		}
+// 		if(empty($option['onclick'])){
+// 			$option['onclick'] = 'newInpShow(this);';
+// 		}
 		
-		if(empty($option[$this->_mdl_snk])){
-			$option[$this->_mdl_snk] = '新規入力';
-		}
+// 		if(empty($option[$this->_mdl_snk])){
+// 			$option[$this->_mdl_snk] = '新規入力';
+// 		}
 		
-		$crudType = $this->param['crudType'];
-		$class = $option['class'];
-		$btn_name = $option[$this->_mdl_snk];
+// 		$crudType = $this->param['crudType'];
+// 		$class = $option['class'];
+// 		$btn_name = $option[$this->_mdl_snk];
 		
-		// CRUDタイプがajax型である場合
-		if(empty($crudType)){
-			$onclick = $option['onclick'];
-			echo "<button type='button' class='{$class}' onclick='{$onclick}' />{$btn_name}</button>";
+// 		// CRUDタイプがajax型である場合
+// 		if(empty($crudType)){
+// 			$onclick = $option['onclick'];
+// 			echo "<button type='button' class='{$class}' onclick='{$onclick}' />{$btn_name}</button>";
 			
-		}
+// 		}
 		
-		// CRUDタイプがsubmit型である場合
-		else{
-			$path = $this->Html->webroot.$this->_mdl_snk;
-			echo "<a href='{$path}/edit' class='{$class}'>{$btn_name}</a>";
-		}
+// 		// CRUDタイプがsubmit型である場合
+// 		else{
+// 			$path = $this->Html->webroot.$this->_mdl_snk;
+// 			echo "<a href='{$path}/edit' class='{$class}'>{$btn_name}</a>";
+// 		}
 
-	}
+// 	}
 	
 	/**
 	 * 検索用のid入力フォームを作成
@@ -656,15 +679,13 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	/**
-	 * プロパティをtdタグを付加して出力する
-	 * 
+	 * 特に何もせずのTD要素を出力する。
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
 	 */
-	public function tdPlain($v,$field=''){
+	public function tdPlain(&$ent,$field){
 		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
-		
+		$v = $ent[$field];
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}'  /><span class='{$field}' >{$v}</span></td>\n";
 		$this->setTd($td,$field);
 	}
@@ -674,79 +695,71 @@ class CrudBaseHelper extends FormHelper {
 	
 
 	
-
-	public function tdStr($v,$field=''){
+	/**
+	 * XSS対策を施してからTD要素を出力する。
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 */
+	public function tdStr(&$ent,$field){
 		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
-		
+		$v = $ent[$field];
 		$v = h($v);
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' >{$v}</span></td>\n";
 		$this->setTd($td,$field);
 	
 	}
-	// TD:改行用文字列表示
-	public function tdStrRN($v,$field=''){
-	
-		if(is_array($v)){
-			$v = $v[$field];
-		}
-		
-		$v = h($v);
-		
-		$v = nl2br($v);// 改行置換
-		
-		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v}</span>\n";
-		
-		$this->setTd($td,$field);
-	
-	}
-	
 	public function tpStr($v,$wamei){
 		$v = h($v);
 		$this->tblPreview($v,$wamei);
 	}
 	
-	
-	
-	
-	
-	
 	/**
-	 * idを詳細ページリンク付のコードに変換する
-	 *
-	 * @param string $v ID
+	 * 改行を<br>タグに変換してからTD要素を出力する。（XSS対策有）
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
 	 */
-	public function propId($v){
-		$this->_check1();
-		
-		$detalUrl=$this->Html->webroot.$this->_mdl_snk.'/detail?id='.$v;
-		$v = "<a href='{$detalUrl}' >{$v}</a>";
+	public function tdStrRN(&$ent,$field){
 	
-		return $v;
+		$v = $ent[$field];
+		$v = h($v); // XSS対策
+		$v = nl2br($v);// 改行置換
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v}</span>\n";
+		$this->setTd($td,$field);
+	
 	}
 	
+// ■■■□□□■■■□□□■■■□□□
+// 	/**
+// 	 * idを詳細ページリンク付のコードに変換する
+// 	 *
+// 	 * @param string $v ID
+// 	 */
+// 	public function propId($v){
+// 		$this->_check1();
+		
+// 		$detalUrl=$this->Html->webroot.$this->_mdl_snk.'/detail?id='.$v;
+// 		$v = "<a href='{$detalUrl}' >{$v}</a>";
+	
+// 		return $v;
+// 	}
+	
 	/**
-	 * ID用のTD用をを作成する
-	 * @param string $v 表示する値
-	 * @param string $field フィールド名
+	 * 
+	 * ＩＤのTD要素を出力する。（XSS対策有）
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名（省略可）
 	 * @param array $option オプション
 	 *  - checkbox_name チェックボックス名プロパティ   このプロパティに値をセットすると、複数選択による一括処理用のチェックボックスが作成される。
 	 */
-	public function tdId($v,$field='id',$option=array()){
+	public function tdId(&$ent,$field='id',$option=array()){
 		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
-		
+		$v = $ent[$field];
 		
 		// 複数選択による一括処理用のチェックボックスHTMLを組み立てる
 		$cbHtml = ''; // チェックボックスHTML
 		if(!empty($option['checkbox_name'])){
 			$cbHtml = "<input type='checkbox' name='{$option['checkbox_name']}' /> ";
 		}
-		
 		
 		// TD要素を組み立てる
 		$td = "<td>{$cbHtml}<input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' >{$v}</span></td>\n";
@@ -755,9 +768,6 @@ class CrudBaseHelper extends FormHelper {
 		
 
 	}
-	
-
-	
 	public function tpId($v,$wamei='ID'){
 		$v = $this->propId($v);
 		$this->tblPreview($v,$wamei);
@@ -766,29 +776,15 @@ class CrudBaseHelper extends FormHelper {
 
 	
 	
-	
 	/**
-	 * プロパティをリスト内の値に置き換える
-	 *
-	 * @param string $v プロパティ
+	 * 値にひもづくリストの値をTD要素出力する。（XSS対策有）
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
 	 * @param array $list リスト
 	 */
-	public function propList($v,$list){
-	
-		if(isset($list[$v])){
-			$v = $list[$v];
-		}else{
-			$v="";
-		}
-	
-		return $v;
-	
-	}
-	public function tdList($v,$field="",$list=array()){
+	public function tdList(&$ent,$field,$list=array()){
 		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
+		$v = $ent[$field];
 
 		$v2 = $this->propList($v,$list);
 		$v2 = h($v2);
@@ -802,6 +798,23 @@ class CrudBaseHelper extends FormHelper {
 		$this->tblPreview($v,$wamei);
 	
 	}
+	/**
+	 * プロパティをリスト内の値に置き換える
+	 * @param string $v プロパティ
+	 * @param array $list リスト
+	 * @param valiant リスト内の値
+	 */
+	public function propList($v,$list){
+		
+		if(isset($list[$v])){
+			$v = $list[$v];
+		}else{
+			$v="";
+		}
+		
+		return $v;
+		
+	}
 	
 	
 	
@@ -811,8 +824,26 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	/**
+	 * 値を日本円表記に変換してTD要素を出力する。
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 */
+	public function tdMoney(&$ent,$field){
+		
+		$v = $ent[$field];
+		$v2 = $this->propMoney($v); // 日本円変換
+		
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
+		$this->setTd($td,$field);
+	}
+	public function tpMoney($v,$wamei){
+		$v = $this->propMoney($v);
+		$this->tblPreview($v,$wamei);
+
+	}
+	/**
 	 * プロパティを日本円表記に変換する。
-	 * 
+	 *
 	 * @param string $v プロパティ
 	 * @return string 日本円表示の文字列
 	 */
@@ -823,39 +854,18 @@ class CrudBaseHelper extends FormHelper {
 		
 		return $v;
 	}
-	public function tdMoney($v,$field=''){
-		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
-		
-		$v2 = $this->propMoney($v);
-		
-		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
-		$this->setTd($td,$field);
-	}
-	public function tpMoney($v,$wamei){
-		$v = $this->propMoney($v);
-		$this->tblPreview($v,$wamei);
-
-	}
-	
 	
 	
 	/**
-	 * ノートなどの長文を冒頭だけ表示する
-	 *
-	 * @param string $v プロパティまたはエンティティ
+	 * 長文の冒頭部分だけをTD要素出力する。
+	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
 	 * @param int $strLen 表示文字数（バイト）(省略時は無制限に文字表示）
 	 */
-	public function tdNote($v,$field='',$str_len = null){
+	public function tdNote(&$ent,$field,$str_len = null){
 		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
+		$v = $ent[$field];
 		
-
 		$v2="";
 		if(!empty($v)){
 			$v = h($v);
@@ -878,16 +888,13 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	/**
-	 * ノートなどの長文を改行を含めてそのまま表示する
-	 *
-	 * @param string $v プロパティまたはエンティティ
+	 * ノートなどの長文を改行を含めてそのままTD要素出力する。
+	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
 	 */
-	public function tdNotePlain($v,$field=''){
+	public function tdNotePlain(&$ent,$field){
 		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
+		$v = $ent[$field];
 
 		if(!empty($v)){
 			$v = h($v);
@@ -898,11 +905,6 @@ class CrudBaseHelper extends FormHelper {
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><div class='{$field}' >{$v}</div></td>\n";
 		$this->setTd($td,$field);
 	}
-	
-	
-	
-	
-	
 	public function tpNote($v,$wamei){
 	
 		if(!empty($v)){
@@ -913,7 +915,6 @@ class CrudBaseHelper extends FormHelper {
 		$this->tblPreview($v,$wamei);
 	
 	}
-	
 	
 	/**
 	 * テキストエリア用の文字列変換
@@ -932,8 +933,6 @@ class CrudBaseHelper extends FormHelper {
 		return $v;
 	}
 	
-	
-	
 	/**
 	 * 削除フラグの表記を変換する
 	 * 
@@ -949,8 +948,6 @@ class CrudBaseHelper extends FormHelper {
 		
 		return $v;
 	}
-	
-	
 	
 	/**
 	 * フラグの表記を変換する
@@ -973,14 +970,16 @@ class CrudBaseHelper extends FormHelper {
 		$this->setTd($html,$field);
 	}
 	
-	public function tdDeleteFlg($v,$field=''){
+	
+	/**
+	 * 削除フラグを有効/無効の表記でTD要素出力する。
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 */
+	public function tdDeleteFlg(&$ent,$field){
 		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
-		if(empty($v)){
-			$v = 0;
-		}
+		$v = $ent[$field];
+		if(empty($v)) $v = 0;
 		
 		$v2 = $this->propDeleteFlg($v);
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
@@ -994,71 +993,75 @@ class CrudBaseHelper extends FormHelper {
 
 	}
 	
-	
-	public function tdFlg($v,$field=''){
+	// ■■■□□□■■■□□□■■■□□□
+// 	public function tdFlg($v,$field=''){
 		
-		if(is_array($v)){
-			$v = $v[$field];
-		}
-		if(empty($v)){
-			$v = 0;
-		}
+// 		if(is_array($v)){
+// 			$v = $v[$field];
+// 		}
+// 		if(empty($v)){
+// 			$v = 0;
+// 		}
 		
-		$v2 = $this->propFlg($v);
-		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
+// 		$v2 = $this->propFlg($v);
+// 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		
-		$this->setTd($td,$field);
-	}
-	public function tpFlg($v,$wamei='削除フラグ'){
-		$v = $this->propFlg($v);
+// 		$this->setTd($td,$field);
+// 	}
+// 	public function tpFlg($v,$wamei='削除フラグ'){
+// 		$v = $this->propFlg($v);
 		
-		$this->tblPreview($v,$wamei);
+// 		$this->tblPreview($v,$wamei);
 		
-	}
+// 	}
 	
 	
 	/**
-	 * サムネイルと拡大画像プレビュー Lity.js用
+	 * サムネイル画像のTD要素を出力する。（オリジナル画像へのリンクあり）
 	 * @param array $ent エンティティ
 	 * @param string $field ﾌｨｰﾙﾄﾞ
-	 * @param string $thum_dir_path サムネイル画像のディレクトリパス
-	 * @param string $orig_dir_path オリジナル画像のディレクトリパス
-	 * @param bool $chash false:キャッシュから画像を読み込まない(デフォルトはtrue)
-	 * @param string $no_img_fp 画像ファイルが存在しないときに表示する画像パス（省略可）
+	 * @param array $option 
+	 *  - orig_dp オリジナル・ディレクトリパス
+	 *  - thum_dp サムネイル・ディレクトリパス
+	 *  - cash_flg false:キャッシュから画像を読み込まない(デフォルトはtrue)
+	 *  - no_img_fp 画像ファイルが存在しないときに表示する画像パス
 	 */
-	public function tdThumImgForLity($ent,$field,$thum_dir_path,$orig_dir_path,$chash=true,$no_img_fp=""){
-
-		$dt = "";
-		if(empty($chash)){
-			$dt = '?'.date('Ymdhis');
-		}
+	public function tdImage(&$ent,$field,&$option = array()){
 		
-		$fn = $ent[$field];
-		
-
-		
-		$thum_fp="";
-		$orig_fp="";
-		if(empty($fn)){
-			if(empty($no_img_fp)){
-				$no_img_fp = 'img/icon/no_image.png';
-			}
-			$thum_fp = $no_img_fp;
-			$orig_fp = $no_img_fp;
-		}else{
-			$thum_fp = $thum_dir_path.$fn.$dt;
-			$orig_fp = $orig_dir_path.$fn.$dt;
-			
-		}
-		
-		$td_html = "<td>".
-		  		"<input type='hidden' name='{$field}' value='{$fn}' />".
-		  		"<a href='{$orig_fp}' data-lity='data-lity' />".
-		  		"<img src='{$thum_fp}' data-file-preview = '{$field}' class='{$field}_display' title='{$fn}' /></a>".
-		  		"</td>";
-		
-		
+		$td_html = $this->cbFileUploadHComp->tdImage($ent,$field,$option);
 		$this->setTd($td_html,$field);
+
+	}
+	
+	/**
+	 * サムネイル画像のTD要素を出力する。【Lity.js版】
+	 * @param array $ent エンティティ
+	 * @param string $field ﾌｨｰﾙﾄﾞ
+	 * @param array $option ※tdImageメソッドと同じ
+	 */
+	public function tdImageForLity(&$ent,$field,&$option = array()){
+		
+		$option['td_type'] = 'lity';
+		$td_html = $this->cbFileUploadHComp->tdImage($ent,$field,$option);
+		$this->setTd($td_html,$field);
+	}
+	
+	
+	
+	/**
+	 * 列並用TD要素群にTD要素をセット
+	 *
+	 * 列並モードがOFFならTD要素をそのまま出力する。
+	 *
+	 * @param string $td TD要素文字列
+	 * @param string $field フィールド名
+	 */
+	private function setTd($td,$field){
+		if($this->_clmSortMode && !empty($field) ){
+			$this->_clmSortTds[$field] = $td;
+		}else{
+			echo $td;
+		}
 	}
 	
 	
@@ -1078,176 +1081,176 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	
-	
-	/**
-	 * 編集用のテキストボックスを作成
-	 * @param array $ent エンティティ
-	 * @param string $field フィールド名
-	 * @param string $wamei 和名
-	 * @param int $width 入力フォーム幅
-	 * @param array option ベースoption。文字列を指定するとtitle属性になる
-	 */
-	public function editText($ent,$field,$wamei,$width=200,$option=array()){
+	// ■■■□□□■■■□□□■■■□□□
+// 	/**
+// 	 * 編集用のテキストボックスを作成
+// 	 * @param array $ent エンティティ
+// 	 * @param string $field フィールド名
+// 	 * @param string $wamei 和名
+// 	 * @param int $width 入力フォーム幅
+// 	 * @param array option ベースoption。文字列を指定するとtitle属性になる
+// 	 */
+// 	public function editText($ent,$field,$wamei,$width=200,$option=array()){
 	
 
-		if(!is_array($option)){
-			$title = $option;
-			$option = array('title'=>$title);
-		}
+// 		if(!is_array($option)){
+// 			$title = $option;
+// 			$option = array('title'=>$title);
+// 		}
 	
-		echo
-		"<tr>".
-		" 	<td>{$wamei}</td>".
-		" 	<td>";
+// 		echo
+// 		"<tr>".
+// 		" 	<td>{$wamei}</td>".
+// 		" 	<td>";
 	
-		$option['id'] = $field;
-		$option['value'] = $ent[$field];
-		$option['type'] = 'text';
-		$option['label'] = false;
-		$option['div'] = false;
-		$option['placeholder'] = "-- {$wamei} --";
+// 		$option['id'] = $field;
+// 		$option['value'] = $ent[$field];
+// 		$option['type'] = 'text';
+// 		$option['label'] = false;
+// 		$option['div'] = false;
+// 		$option['placeholder'] = "-- {$wamei} --";
 		
-		if(!empty($option['style'])){
-			$option['style'] = "width:{$width}px;";
-		}
+// 		if(!empty($option['style'])){
+// 			$option['style'] = "width:{$width}px;";
+// 		}
 		
 	
-		echo $this->input($this->_mdl.$field,$option);
+// 		echo $this->input($this->_mdl.$field,$option);
 	
-		echo
-		" 	</td>".
-		" </tr>";
-	}
-	
-	
+// 		echo
+// 		" 	</td>".
+// 		" </tr>";
+// 	}
 	
 	
 	
-	/**
-	 * 編集用のセレクトボックスを作成
-	 * @param array $ent エンティティ
-	 * @param string $field フィールド名
-	 * @param string $wamei 和名
-	 * @param array $list 選択肢リスト
-	 * @param int $width 入力フォーム幅
-	 * @param string $title ツールチップ（省略可）
-	 */
-	public function editSelect($ent,$field,$wamei,$list,$width=200,$title=null){
+	
+	
+// 	/**
+// 	 * 編集用のセレクトボックスを作成
+// 	 * @param array $ent エンティティ
+// 	 * @param string $field フィールド名
+// 	 * @param string $wamei 和名
+// 	 * @param array $list 選択肢リスト
+// 	 * @param int $width 入力フォーム幅
+// 	 * @param string $title ツールチップ（省略可）
+// 	 */
+// 	public function editSelect($ent,$field,$wamei,$list,$width=200,$title=null){
 		
 		
-		echo 
-			"<tr>".
-			" 	<td>{$wamei}</td>".
-			" 	<td>";
+// 		echo 
+// 			"<tr>".
+// 			" 	<td>{$wamei}</td>".
+// 			" 	<td>";
 		
 
-		$option = array(
-				'id'=>$field,
-		 		'type' => 'select',
-		 		'options' => $list,
-				'default' => $ent[$field],
-				'label' => false,
-				'div' =>false,
-		 		'empty' => "-- {$wamei} --",
-				'style'=>"width:{$width}px;",
-		);
+// 		$option = array(
+// 				'id'=>$field,
+// 		 		'type' => 'select',
+// 		 		'options' => $list,
+// 				'default' => $ent[$field],
+// 				'label' => false,
+// 				'div' =>false,
+// 		 		'empty' => "-- {$wamei} --",
+// 				'style'=>"width:{$width}px;",
+// 		);
 		
-		if(!empty($title)){
-			$option['title'] = $title;
-		}
+// 		if(!empty($title)){
+// 			$option['title'] = $title;
+// 		}
 		
-		echo $this->input($this->_mdl.$field,$option);
+// 		echo $this->input($this->_mdl.$field,$option);
 
-		echo
-			" 	</td>".
-			" </tr>";
-	}
+// 		echo
+// 			" 	</td>".
+// 			" </tr>";
+// 	}
 	
 	
 	
 	
 	
-	/**
-	 * 編集用のテキストエリアを作成
-	 * @param array $ent エンティティ
-	 * @param string $field フィールド名
-	 * @param string $wamei 和名
-	 * @param int $width 入力フォーム横幅
-	 * @param int $height 入力フォーム縦幅
-	 * @param string $title ツールチップ（省略可）
-	 */
-	public function editTextArea($ent,$field,$wamei,$width=400,$height=100,$title=null){
+// 	/**
+// 	 * 編集用のテキストエリアを作成
+// 	 * @param array $ent エンティティ
+// 	 * @param string $field フィールド名
+// 	 * @param string $wamei 和名
+// 	 * @param int $width 入力フォーム横幅
+// 	 * @param int $height 入力フォーム縦幅
+// 	 * @param string $title ツールチップ（省略可）
+// 	 */
+// 	public function editTextArea($ent,$field,$wamei,$width=400,$height=100,$title=null){
 		
-		// テキストエリア用に改行やサニタイズを施す
-		$note = $this->convNoteForTextarea($ent[$field]);
+// 		// テキストエリア用に改行やサニタイズを施す
+// 		$note = $this->convNoteForTextarea($ent[$field]);
 		
-		echo 
-			"<tr>".
-			" 	<td>{$wamei}</td>".
-			" 	<td>";
+// 		echo 
+// 			"<tr>".
+// 			" 	<td>{$wamei}</td>".
+// 			" 	<td>";
 		
-		$option = array(
-				'id'=>$field,
-				'value' => $note,
-				'type' => 'textarea',
-				'placeholder' => "-- {$wamei} --",
-				'label' => false,
-				'div'=>false,
-				'escape'=>false,
-				'style'=>"width:{$width}px;height:{$height}px;",
-		);
+// 		$option = array(
+// 				'id'=>$field,
+// 				'value' => $note,
+// 				'type' => 'textarea',
+// 				'placeholder' => "-- {$wamei} --",
+// 				'label' => false,
+// 				'div'=>false,
+// 				'escape'=>false,
+// 				'style'=>"width:{$width}px;height:{$height}px;",
+// 		);
 		
 		
-		if(!empty($title)){
-			$option['title'] = $title;
-		}
+// 		if(!empty($title)){
+// 			$option['title'] = $title;
+// 		}
 		
-		echo $this->input($this->_mdl.$field,$option);
+// 		echo $this->input($this->_mdl.$field,$option);
 
-		echo
-			" 	</td>".
-			" </tr>";
-	}
+// 		echo
+// 			" 	</td>".
+// 			" </tr>";
+// 	}
 	
 	
 	
 	
-	/**
-	 * 編集用の削除フラグチェックボックスを作成
-	 * @param array $ent エンティティ
-	 * @param string $mode モード	new:新規モード , edit:編集モード
-	 */
-	public function editDeleteFlg($ent,$mode){
+// 	/**
+// 	 * 編集用の削除フラグチェックボックスを作成
+// 	 * @param array $ent エンティティ
+// 	 * @param string $mode モード	new:新規モード , edit:編集モード
+// 	 */
+// 	public function editDeleteFlg($ent,$mode){
 
 		
-		$wamei = "";
-		if($mode=='edit'){
-			$wamei = "削除";
-		}
+// 		$wamei = "";
+// 		if($mode=='edit'){
+// 			$wamei = "削除";
+// 		}
 			
-		echo
-		"<tr>".
-		" 	<td>{$wamei}</td>".
-		" 	<td>";
+// 		echo
+// 		"<tr>".
+// 		" 	<td>{$wamei}</td>".
+// 		" 	<td>";
 		
-		if($mode=='edit'){
-			echo $this->input($this->_mdl.'delete_flg', array(
-					'checked'=>$ent['delete_flg'],
-					'type' => 'checkbox',
-					'label' => false,
-					'div' =>false,
-					'title' => '削除にすると表示されません。',
-			));
-		}else{
-			echo $this->input('delete_flg', array('value' => $ent['delete_flg'],'type' => 'hidden',));
-		}
+// 		if($mode=='edit'){
+// 			echo $this->input($this->_mdl.'delete_flg', array(
+// 					'checked'=>$ent['delete_flg'],
+// 					'type' => 'checkbox',
+// 					'label' => false,
+// 					'div' =>false,
+// 					'title' => '削除にすると表示されません。',
+// 			));
+// 		}else{
+// 			echo $this->input('delete_flg', array('value' => $ent['delete_flg'],'type' => 'hidden',));
+// 		}
 		
 		
 		
-		echo
-		" 	</td>".
-		" </tr>";
-	}
+// 		echo
+// 		" 	</td>".
+// 		" </tr>";
+// 	}
 
 	
 	
@@ -1615,22 +1618,6 @@ class CrudBaseHelper extends FormHelper {
 		// クリア
 		$this->_clmSortTds = array();
 		
-	}
-	
-	/**
-	 * 列並用TD要素群にTD要素をセット
-	 * 
-	 * 列並モードがOFFならTD要素をそのまま出力する。
-	 * 
-	 * @param string $td TD要素文字列
-	 * @param string $field フィールド名
-	 */
-	private function setTd($td,$field){
-		if($this->_clmSortMode && !empty($field) ){
-			$this->_clmSortTds[$field] = $td;
-		}else{
-			echo $td;
-		}
 	}
 	
 	

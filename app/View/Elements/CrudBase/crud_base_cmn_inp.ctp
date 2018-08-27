@@ -13,5 +13,6 @@ $this->CrudBase->hiddenX('debug_mode',$debug_mode );
 $this->CrudBase->hiddenX('row_exc_flg',$row_exc_flg );
 $this->CrudBase->hiddenX('def_kjs_json',$def_kjs_json );
 $this->CrudBase->hiddenX('kjs_json',$kjs_json );
+$this->CrudBase->hiddenX('dpt_json',json_encode($dptData,true));// ファイルアップロード用のディレクトリパステンプレート情報
 
 ?>

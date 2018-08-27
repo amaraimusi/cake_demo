@@ -1,5 +1,5 @@
 <?php
-$this->CrudBase->setModelName('Neko');
+$this->CrudBase->init(array('model_name'=>'Neko'));
 
 // CSSファイルのインクルード
 $cssList = $this->CrudBase->getCssList();
@@ -82,7 +82,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 	echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));
 	
 	echo $this->element('CrudBase/crud_base_index');
-	
+
 	$csv_dl_url = $this->html->webroot . 'neko/csv_download';
 	$this->CrudBase->makeCsvBtns($csv_dl_url);
 	?>
@@ -131,7 +131,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdList($ent,'neko_group',$nekoGroupList);
 	$this->CrudBase->tdPlain($ent,'neko_date');
 	$this->CrudBase->tdPlain($ent,'neko_dt');
-	$this->CrudBase->tdPlain($ent,'img_fn');
+	$this->CrudBase->tdImage($ent,'img_fn');
 	$this->CrudBase->tdNote($ent,'note');
 	$this->CrudBase->tdPlain($ent,'sort_no');
 	$this->CrudBase->tdDeleteFlg($ent,'delete_flg');

@@ -86,8 +86,9 @@ class CrudBase{
 		// ガジェット・コンポーネント（カレンダー、数値スライダー）★★★■■■□□□■■■□□□■■■□□□
 //		this.cbGadgetKj = this._factoryCrudBaseGadgetKj(); 
 
-		// 拡張ファイルアップロード・コンポーネント
-		this.fileUploadK = this._factoryFileUploadK();
+		// CrudBase・ファイルアップロードコンポーネント
+		this.cbFileUploadComp = this._factoryCbFileUploadComponent();
+
 		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
@@ -206,25 +207,72 @@ class CrudBase{
 	}
 	
 
-
+// ■■■□□□■■■□□□■■■□□□
+//	/**
+//	 * 拡張ファイルアップロード・コンポーネントのファクトリーメソッド
+//	 * @return FileUploadK 拡張ファイルアップロード・コンポーネント
+//	 */
+//	_factoryFileUploadK(){
+//		var fileUploadK;
+//
+//		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+//		var t = typeof FileUploadK;
+//		if(t == null || t == 'undefined'){
+//			// 「空」実装
+//			fileUploadK = {
+//					'addEvent':function(){},
+//					'getFileParams':function(){},
+//					'uploadByAjax':function(){},
+//					'getFileNames()':function(){},
+//			}
+//			return fileUploadK
+//		}
+//		
+//		// フォームからfile要素のid属性
+//		var nFuIds = this._getFueIds('new_inp');
+//		var eFuIds = this._getFueIds('edit');
+//		var fuIds = nFuIds.concat(eFuIds);// 配列結合
+//		
+//		// 拡張ファイルアップロードクラスの生成
+//		fileUploadK = new FileUploadK({
+//			'prog_slt':'#prog1',
+//			'err_slt':'#err',
+//			'valid_ext':'image',
+//			'img_width':120,
+//			'img_height':120,
+//			});
+//		
+//		// file要素を拡張
+//		for(var i in fuIds){
+//			var fue_id = fuIds[i];
+//			fileUploadK.addEvent(fue_id);
+//		}
+//		
+//		return fileUploadK;
+//		
+//		
+//	}
+	
 	/**
-	 * 拡張ファイルアップロード・コンポーネントのファクトリーメソッド
-	 * @return FileUploadK 拡張ファイルアップロード・コンポーネント
+	 * CrudBase・ファイルアップロードコンポーネントのファクトリーメソッド
+	 * @return CbFileUploadComponent CrudBase・ファイルアップロードコンポーネント
 	 */
-	_factoryFileUploadK(){
-		var fileUploadK;
-
+	_factoryCbFileUploadComponent(){
+		
+		var cbFileUploadComp;
+		
 		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
-		var t = typeof FileUploadK;
+		var t = typeof CbFileUploadComponent;
 		if(t == null || t == 'undefined'){
 			// 「空」実装
-			fileUploadK = {
+			cbFileUploadComp = {
 					'addEvent':function(){},
 					'getFileParams':function(){},
 					'uploadByAjax':function(){},
-					'getFileNames()':function(){},
+					'getFileNames':function(){},
+					'setFilePaths':function(){},
 			}
-			return fileUploadK
+			return cbFileUploadComp;
 		}
 		
 		// フォームからfile要素のid属性
@@ -232,26 +280,10 @@ class CrudBase{
 		var eFuIds = this._getFueIds('edit');
 		var fuIds = nFuIds.concat(eFuIds);// 配列結合
 		
-		// 拡張ファイルアップロードクラスの生成
-		fileUploadK = new FileUploadK({
-			'prog_slt':'#prog1',
-			'err_slt':'#err',
-			'valid_ext':'image',
-			'img_width':120,
-			'img_height':120,
-			});
+		cbFileUploadComp = new CbFileUploadComponent(fuIds);
 		
-		// file要素を拡張
-		for(var i in fuIds){
-			var fue_id = fuIds[i];
-			fileUploadK.addEvent(fue_id);
-		}
-		
-		return fileUploadK;
-		
-		
+		return cbFileUploadComp;
 	}
-	
 	
 	/**
 	 * 新規入力フォームからfile要素のid属性
@@ -335,8 +367,6 @@ class CrudBase{
 	 * 
 	 * @param elm 編集ボタン要素
 	 * @param option オプション（省略可）
-	 *  -upload_dp アップロードファイルディレクトリ
-	 *  -upload_dp_cb(upload_dp,data) アップロードディレクトリコールバック
 	 * @param callBack フォームに一覧の行データを自動セットしたあとに呼び出されるコールバック関数(省略可）
 	 */
 	editShow(elm,option,callBack){
@@ -1924,6 +1954,9 @@ class CrudBase{
 		
 		this.entToBinds(tr,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
 		this.entToBinds(tr,ent,'name',option);// エンティティをname属性バインド要素群へセットする
+		
+		// 画像をTR要素に表示する
+		this.cbFileUploadComp.setImageToTr(tr,ent);
 	}
 
 	_nl2brEx(v){
@@ -2111,9 +2144,9 @@ class CrudBase{
 			if(typ=='file'){
 
 				var fue_id = inp.attr('id');
-				if(this.fileUploadK){
+				if(this.cbFileUploadComp){
 					// file要素のidを指定してファイル名を取得する。
-					var fns = this.fileUploadK.getFileNames(fue_id);
+					var fns = this.cbFileUploadComp.getFileNames(fue_id);
 					if(fns[0] != null) v = fns[0];
 				}
 				
@@ -2357,11 +2390,6 @@ class CrudBase{
 		if(param['auto_save_url'] == null){
 			param['auto_save_url'] = param.src_code + '/auto_save';
 		}
-		
-		// ファイルアップロードディレクトリ
-		if(param['upload_dp'] == null){
-			param['upload_dp'] = null;
-		}
 
 		// ファイルアップロードデータ
 		if(param['file_uploads'] == null){
@@ -2516,78 +2544,6 @@ class CrudBase{
 		return fieldData;
 	}
 
-// ■■■□□□■■■□□□■■■□□□
-//	/**
-//	 * フィールドデータにファイル要素の情報をセット、およびファイルチェンジイベントを登録する。
-//	 * @param fieldData フィールドデータ
-//	 */
-//	_initFileUpData(fieldData){
-//
-//		// フォーム名のリスト
-//		var form_typeList = ['new_inp','edit','delete'];
-//
-//		// ファイル要素系にのみ、ファイル要素情報をセットする。
-//		for(var i in fieldData){
-//			var f_ent = fieldData[i];
-//
-//			for(var ft_i = 0 ; ft_i < form_typeList.length ; ft_i++){
-//				var form_type = form_typeList[ft_i];
-//				var key = 'inp_' + form_type;
-//
-//				if(!f_ent[key]){
-//					continue;
-//				}
-//				var ent = f_ent[key];
-//
-//				if(ent.type_name == 'file'){
-//
-//					// ファイル要素情報を入力要素エンティティにセットする
-//					ent = this._setFileUploadEntity(f_ent.field,ent);
-//
-//					// イベントリスナを登録する
-//					if(form_type == 'new_inp'){
-//						ent.elm.change(e => {
-//							this._fileChangeEventNewInp(e);
-//						});
-//						
-//					}else if(form_type == 'edit'){
-//						ent.elm.change(e => {
-//							this._fileChangeEventEdit(e);
-//						});
-//
-//					}else{
-//						ent.elm.change(e => {
-//							this._fileChangeEventDel(e);
-//						});
-//
-//					}
-//				}
-//			}
-//		}
-//
-//		return fieldData;
-//	}
-
-
-
-//	/**
-//	 * ファイル要素情報を入力要素エンティティにセットする
-//	 * @param field フィールド名
-//	 * @param ent 入力要素エンティティ（type=file)
-//	 * @return 入力要素エンティティ
-//	 */
-//	_setFileUploadEntity(field,ent){
-//
-//		// プレビュー要素
-//		var preview_slt = field + '_preview';
-//
-//		ent['evt'] = null;
-//		ent['file_name'] = null;
-//		ent['file_path'] = this.param.upload_dp;
-//		ent['preview_slt'] = preview_slt;
-//
-//		return ent;
-//	}
 	
 	
 	
@@ -2597,7 +2553,6 @@ class CrudBase{
 	 * @parma row_index 行インデックス	省略した場合アクティブTRの行インデックスになる。
 	 * @param option
 	 *  - form_type フォーム種別
-	 *  - upload_dp アップロードディレクトリパス
 	 *  - xss サニタイズフラグ 0:サニタイズしない , 1:xssサニタイズを施す（デフォルト）
 	 */
 	trToDiv(par,row_index,option){
@@ -2618,7 +2573,6 @@ class CrudBase{
 	 * @param bind_attr バインド属性	'class' or 'name'
 	 * @param option
 	 *  - form_type フォーム種別
-	 *  - upload_dp アップロードディレクトリパス
 	 *  - xss サニタイズフラグ 0:サニタイズしない , 1:xssサニタイズを施す（デフォルト）
 	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
 	 */
@@ -2696,8 +2650,6 @@ class CrudBase{
 	 * @param string form_type フォーム種別
 	 * @param object ent エンティティ
 	 * @param option 省略可
-	 *  - upload_dp アップロードファイルディレクトリ
-	 *  - upload_dp_cb アップロードディレクトリ・コールバック
 	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
 	 */
 	setFieldsToForm(form_type,ent,option){
@@ -2722,8 +2674,6 @@ class CrudBase{
 	 * @param option
 	 *  - par 親要素(jQuery object)
 	 *  - form_type フォーム種別
-	 *  - upload_dp アップロードディレクトリパス
-	 *  - upload_dp_cb アップロードディレクトリ・コールバック
 	 *  - xss サニタイズフラグ 0:サニタイズしない , 1:xssサニタイズを施す（デフォルト）
 	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
 	 *  - dis_fil_flg 表示フィルター適用フラグ 0:OFF(デフォルト) , 1:ON
@@ -2805,19 +2755,8 @@ class CrudBase{
 			elm.val(val1);
 		}
 
-		// IMGタグへのセット
-		else if(tag_name == 'IMG'){
-			// IMG要素用の入力フォームセッター
-			this._setToFormForImg(option.form_type,option.par,elm,field,val1,option.upload_dp);
-		}
-
-		// audioタグへのセット
-		else if(tag_name == 'AUDIO'){
-
-			// オーディオ要素用の入力フォームセッター
-			this._setToFormForAdo(option.form_type,option.par,elm,field,val1,option.upload_dp);
-
-		}else{
+		
+		else{
 			if( typeof val1 == 'string'){
 				val1=val1.replace(/<br>/g,"\r");
 				// XSSサニタイズを施す
@@ -3002,27 +2941,13 @@ class CrudBase{
 			}
 		}
 		
-		// アップロードディレクトリ
-		var upload_dp = '';
-		if(option['upload_dp']) upload_dp = option['upload_dp'];
+
+
+		// file要素にファイルプレビューを表示する
+		var res = this.cbFileUploadComp.setFilePaths(fue_id,v);
+		var dpData = res['dpData']
 		
-		// アップロードディレクトリコールバックを実行
-		if(option['upload_dp_cb']){
-			var data = {
-					'form_type':form_type,
-					'field':field,
-					'value':v,
-					'fieldData':this.fieldData
-			}
-			upload_dp = option.upload_dp_cb(upload_dp,data);
-		}
-		
-		// プレビュー
-		var fp = '';
-		if(v){
-			fp = upload_dp + v;
-		}
-		this.fileUploadK.setFilePaths(fue_id,fp);
+
 		
 	}
 
@@ -3035,70 +2960,6 @@ class CrudBase{
 
 		return ent;
 	}
-
-// ■■■□□□■■■□□□■■■□□□
-//	/**
-//	 * 入力要素エンティティを取得する
-//	 * @param field フィールド
-//	 * @param form_type フォーム種別
-//	 * @return 入力要素エンティティ
-//	 */
-//	_getInpEnt(field,form_type){
-//		var index = this.fieldHashTable[field];
-//		var ent = this.fieldData[index];
-//		var inp_ent;
-//		var inp_key = 'inp_' + form_type;
-//		if(ent[inp_key]){
-//			inp_ent = ent[inp_key];
-//		}
-//		return inp_ent;
-//	}
-
-// ■■■□□□■■■□□□■■■□□□
-//	// IMG要素用の入力フォームセッター
-//	_setToFormForImg(form_type,form,imgElm,field,v,upload_dp){
-//
-//		// 入力エンティティを取得する
-//		var inp_ent = this._getInpEnt(field,form_type)
-//
-//		if(!upload_dp){
-//			upload_dp = inp_ent.file_path;
-//		}
-//		var fp = upload_dp + v;
-//		imgElm.attr('src',fp);
-//
-//		this._setLabel(form,field,v);// ラベル要素へセット
-//
-//	}
-//
-//	// オーディオ要素用の入力フォームセッター
-//	_setToFormForAdo(form_type,form,adoElm,field,v,upload_dp){
-//
-//		// 入力エンティティを取得する
-//		var inp_ent = this._getInpEnt(field,form_type)
-//
-//		if(!upload_dp){
-//			upload_dp = inp_ent.file_path;
-//		}
-//		var fp = upload_dp + v;
-//		adoElm.attr('src',fp);
-//
-//		this._setLabel(form,field,v);// ラベル要素へセット
-//	}
-
-
-//	/**
-//	 * ラベル要素へセット
-//	 * @param object form フォーム要素オブジェクト
-//	 * @param string field フィールド名
-//	 * @param v ラベルにセットする値
-//	 */
-//	_setLabel(form,field,v){
-//		var label = form.find("[for='" + field + "']");
-//		if(label){
-//			label.html(v);
-//		}
-//	};
 
 
 	/**

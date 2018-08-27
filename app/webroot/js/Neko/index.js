@@ -117,19 +117,11 @@ function newInpShow(btnElm){
  */
 function editShow(btnElm){
 	
-	var option = {
-		'upload_dp':'rsc',
-		'upload_dp_cb':uploadDpCb,
-	};
+	var option = {};
 	crudBase.editShow(btnElm,option);
 }
 
-function uploadDpCb(upload_dp,data){
 
-	upload_dp = upload_dp + '/' + data.field + '/';
-	
-	return upload_dp;
-}
 
 /**
  * 複製フォームを表示（新規入力フォームと同じ）
