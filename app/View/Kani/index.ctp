@@ -337,7 +337,7 @@
 
 	</div><!-- kjs2 -->
 
-	<div id="func_btns">
+	<div id="cb_func_btns">
 		<div class="kj_div">
 		<?php echo $this->Form->submit('検索', array(
 				'name' => 'search',

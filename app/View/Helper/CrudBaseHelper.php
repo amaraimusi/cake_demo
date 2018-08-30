@@ -9,8 +9,8 @@ App::uses('CbFileUploadHComp', 'View/Helper/Component');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.6.2
- * @date 2016-7-27 | 2017-4-28 tdNoteのバグを修正
+ * @version 1.6.3
+ * @date 2016-7-27 | 2017-8-30
  * @author k-uehara
  *
  */
@@ -199,6 +199,42 @@ class CrudBaseHelper extends FormHelper {
 		
 		echo "</div>\n";
 				
+	}
+	
+	
+	/**
+	 * メイン検索の入力フォームを作成
+	 *
+	 * @param array $kjs 検索条件データ
+	 * @param string $field フィールド名
+	 * @param string $wamei フィールド和名
+	 * @param int $width 入力フォームの横幅（省略可）
+	 * @param string $title ツールチップメッセージ（省略可）
+	 * @param int $maxlength 最大文字数(共通フィールドは設定不要）
+	 */
+	public function inputKjMain($kjs,$field,$wamei,$width=200,$title=null,$maxlength=255){
+		
+		if($title==null){
+			$title = $wamei."で検索";
+		}
+		
+		// maxlengthがデフォルト値のままなら、共通フィールド用のmaxlength属性値を取得する
+		if($maxlength==255){
+			$maxlength = $this->getMaxlenIfCommonField($field,$maxlength);
+		}
+		
+		echo "<div class='' data-field='{$field}' style='display:inline-block'>";
+		echo $this->input($this->_mdl.$field, array(
+				'id' => $field,
+				'value' => $kjs[$field],
+				'type' => 'text',
+				'label' => false,
+				'placeholder' => $wamei,
+				'style'=>"width:{$width}px",
+				'title'=>$title,
+				'maxlength'=>$maxlength,
+		));
+		echo "</div>\n";
 	}
 	
 	

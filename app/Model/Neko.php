@@ -5,8 +5,8 @@ App::uses('CrudBase', 'Model');
 /**
  * ネコのCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-4-24 複製したとき、順番はそのまま
- * @version 3.0.3
+ * @date 2015-9-16 | 2018-8-30
+ * @version 3.0.4
  *
  */
 class Neko extends AppModel {
@@ -60,22 +60,25 @@ class Neko extends AppModel {
 		return $ent;
 	}
 
+
+	
+	
 	/**
-	 * ネコ画面の一覧に表示するデータを、ネコテーブルから取得します。
-	 * 
-	 * @note
-	 * 検索条件、ページ番号、表示件数、ソート情報からDB（ネコテーブル）を検索し、
-	 * 一覧に表示するデータを取得します。
-	 * 
-	 * @param array $kjs 検索条件情報
-	 * @param int $page_no ページ番号
-	 * @param int $row_limit 表示件数
-	 * @param string sort ソートフィールド
-	 * @param int sort_desc ソートタイプ 0:昇順 , 1:降順
+	 * 一覧データを取得する
 	 * @return array ネコ画面一覧のデータ
 	 */
-	public function findData($kjs,$page_no,$row_limit,$sort_field,$sort_desc){
+	public function findData(&$crudBaseData){
 
+		$kjs = $crudBaseData['kjs'];//検索条件情報
+		$pages = $crudBaseData['pages'];//ページネーション情報
+
+
+		$page_no = $pages['page_no']; // ページ番号
+		$row_limit = $pages['row_limit']; // 表示件数
+		$sort_field = $pages['sort_field']; // ソートフィールド
+		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
+		
+		
 		//条件を作成
 		$conditions=$this->createKjConditions($kjs);
 		
@@ -89,15 +92,15 @@ class Neko extends AppModel {
 		if(!empty($sort_desc)) $order .= ' DESC';
 		
 		$option=array(
-            'conditions' => $conditions,
-            'limit' =>$row_limit,
-            'offset'=>$offset,
-            'order' => $order,
-        );
+				'conditions' => $conditions,
+				'limit' =>$row_limit,
+				'offset'=>$offset,
+				'order' => $order,
+		);
 		
 		//DBからデータを取得
 		$data = $this->find('all',$option);
-
+		
 		//データ構造を変換（2次元配列化）
 		$data2=array();
 		foreach($data as $i=>$tbl){
@@ -109,20 +112,6 @@ class Neko extends AppModel {
 		}
 		
 		return $data2;
-	}
-	
-	
-	/**
-	 * 一覧データを取得する
-	 */
-	public function findData2(&$crudBaseData){
-
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-
-		$data = $this->findData($kjs,$pages['page_no'],$pages['row_limit'],$pages['sort_field'],$pages['sort_desc']);
-		
-		return $data;
 	}
 
 	
@@ -154,6 +143,10 @@ class Neko extends AppModel {
 		$cnds=null;
 		
 		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
+		
+		if(!empty($kjs['kj_main'])){
+			$cnds[]="CONCAT( IFNULL(Neko.neko_name, '') ,IFNULL(Neko.neko_date, '') ,IFNULL(Neko.note, '')) LIKE '%{$kjs['kj_main']}%'";
+		}
 		
 		// CBBXS-1003
 		

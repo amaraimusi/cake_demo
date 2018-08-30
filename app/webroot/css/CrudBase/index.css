@@ -1,17 +1,16 @@
 @CHARSET "UTF-8";
 
+.cb_func_line{}
 
-
-.hr_purple{
-	border-top: solid 1px #9954bb;
+.cb_breadcrumbs{
+	display:inline-block;
 }
-
-.purple{
-	color:#9954bb;
+.cb_kj_main{
+	margin-left:20px;
+	display:inline-block;
 }
 
 .kj_div{
-	float:left;
 	display:inline-block;
 	width:auto;
 	height:auto;
@@ -20,19 +19,21 @@
 	margin-bottom:4px;
 }
 
-#kjs2{
-	display:none;
-	margin-top:12px;
+.cb_kj_detail{
+	background-color:#eeeeee;
+	border-radius:5px;
+	padding:10px;
+	
 }
 
-.d_flg_true{
-	color:#23d6e4;
+#cb_func_btns{
+	margin-left:20px;
+	display:inline-block;
 }
 
-.d_flg_false{
-	color:#b4b4b4;
+.hr_purple{
+	border-top: solid 1px #9954bb;
 }
-
 
 #clm_cbs_rap{
 	margin-top: 10px;
@@ -47,36 +48,4 @@
 }
 
 
-#total_div{
-	margin-top:5px;
-	margin-bottom:5px;
-
-}
-
-#total_div td{
-	padding-left:10px;
-}
-
-#total_div aside{
-	font-size:0.7em;
-	color:#fa9d5f;
-}
-
-#func_btns{
-	margin-top:8px;
-}
-
-/* 横並びリスト */
-.ul_side_by_side{
-	padding-left: 0px;
-	list-style-type: none;
-}
-.ul_side_by_side li{
-	float:left;
-	margin-right: 5px;
-}
-
-.new_line{
-	background-color:#fdeaea;
-}
 

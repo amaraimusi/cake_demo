@@ -75,7 +75,7 @@ class NekoController extends CrudBaseController {
 		$crudBaseData = $this->indexBefore('Neko');//indexアクションの共通先処理(CrudBaseController)
 		
 		//一覧データを取得
-		$data = $this->Neko->findData2($crudBaseData);
+		$data = $this->Neko->findData($crudBaseData);
 
 		// CrudBase共通処理（後）
 		$crudBaseData = $this->indexAfter($crudBaseData);//indexアクションの共通後処理
@@ -420,27 +420,28 @@ class NekoController extends CrudBaseController {
 		$this->kensakuJoken=array(
 		
 			// CBBXS-1000 
-
-			array('name'=>'kj_id','def'=>null),
-			array('name'=>'kj_neko_val1','def'=>null),
-			array('name'=>'kj_neko_val2','def'=>null),
-			array('name'=>'kj_neko_name','def'=>null),
-		    array('name'=>'kj_neko_date_ym','def'=>null),
-			array('name'=>'kj_neko_date1','def'=>null),
-			array('name'=>'kj_neko_date2','def'=>null),
-			array('name'=>'kj_neko_group','def'=>null),
-			array('name'=>'kj_neko_dt','def'=>null),
-			array('name'=>'kj_img_fn','def'=>null),
-			array('name'=>'kj_note','def'=>null),
-			array('name'=>'kj_sort_no','def'=>null),
-			array('name'=>'kj_delete_flg','def'=>0),
-			array('name'=>'kj_update_user','def'=>null),
-			array('name'=>'kj_ip_addr','def'=>null),
-			array('name'=>'kj_created','def'=>null),
-			array('name'=>'kj_modified','def'=>null),
-			// CBBXE
-			
-			array('name'=>'row_limit','def'=>50),
+				
+				array('name'=>'kj_main','def'=>null),
+				array('name'=>'kj_id','def'=>null),
+				array('name'=>'kj_neko_val1','def'=>null),
+				array('name'=>'kj_neko_val2','def'=>null),
+				array('name'=>'kj_neko_name','def'=>null),
+			    array('name'=>'kj_neko_date_ym','def'=>null),
+				array('name'=>'kj_neko_date1','def'=>null),
+				array('name'=>'kj_neko_date2','def'=>null),
+				array('name'=>'kj_neko_group','def'=>null),
+				array('name'=>'kj_neko_dt','def'=>null),
+				array('name'=>'kj_img_fn','def'=>null),
+				array('name'=>'kj_note','def'=>null),
+				array('name'=>'kj_sort_no','def'=>null),
+				array('name'=>'kj_delete_flg','def'=>0),
+				array('name'=>'kj_update_user','def'=>null),
+				array('name'=>'kj_ip_addr','def'=>null),
+				array('name'=>'kj_created','def'=>null),
+				array('name'=>'kj_modified','def'=>null),
+				// CBBXE
+				
+				array('name'=>'row_limit','def'=>50),
 				
 		);
 		
