@@ -33,7 +33,12 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<?php echo $this->Form->create('Neko', array('url' => true )); ?>
 		<?php $this->CrudBase->inputKjMain($kjs,'kj_main','',null,'ネコ名前、ネコ日、備考を検索する');?>
 		<?php echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));?>
-		<button type="button" class="btn btn-default btn-xs" title="詳細検索項目を表示する" onclick="jQuery('.cb_kj_detail').toggle(300)">詳細</button>
+		
+		<div class="btn-group">
+			<a href="<?php echo $home_url; ?>" class="btn btn-info btn-xs" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
+				<span class="glyphicon glyphicon-certificate"  ></span></a>
+			<button type="button" class="btn btn-default btn-xs" title="詳細検索項目を表示する" onclick="jQuery('.cb_kj_detail').toggle(300)">詳細</button>
+		</div>
 		
 		<div class="cb_kj_detail" style="display:none">
 		<?php 
@@ -68,10 +73,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 	<div id="cb_func_btns" class="btn-group" >
 		<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default">
 			<span class="glyphicon glyphicon-cog"></span></button>
-			
-		<a href="<?php echo $home_url; ?>" class="btn btn-info" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
-			<span class="glyphicon glyphicon-certificate"  ></span></a>
-			
+
 		<button id="table_transform_tbl_mode" type="button" class="btn btn-default" onclick="tableTransform(0)" style="display:none">
 			<span class="glyphicon glyphicon-th" title="一覧の変形・テーブルモード"></span></button>
 			
