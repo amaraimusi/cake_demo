@@ -418,10 +418,9 @@ class NekoController extends CrudBaseController {
 		
 		/// 検索条件情報の定義
 		$this->kensakuJoken=array(
-		
-			// CBBXS-1000 
 				
 				array('name'=>'kj_main','def'=>null),
+				// CBBXS-1000 
 				array('name'=>'kj_id','def'=>null),
 				array('name'=>'kj_neko_val1','def'=>null),
 				array('name'=>'kj_neko_val2','def'=>null),
