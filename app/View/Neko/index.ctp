@@ -64,8 +64,12 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		$this->CrudBase->inputKjLimit($kjs);
 		echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));
 		echo $this->element('CrudBase/crud_base_cmn_inp');
+		
 
 		?>
+			<div class="kj_div" style="margin-top:5px">
+				<input type="button" value="リセット" title="検索入力を初期に戻します" onclick="resetKjs()" class="btn btn-primary btn-xs" />
+			</div>
 		</div>
 		<?php echo $this->Form->end()?>
 	</div>
