@@ -244,7 +244,7 @@ class NekoController extends CrudBaseController {
 		if($eliminate_flg == 0){
 			$ent = $this->Neko->saveEntity($ent,$regParam); // 更新
 		}else{
-		    $this->Neko->delete($ent['id']); // 削除
+			$this->Neko->delete($ent['id']); // 削除
 		}
 		$this->Neko->commit();//コミット
 	
@@ -361,19 +361,29 @@ class NekoController extends CrudBaseController {
 	private function getDataForDownload(){
 		 
 		
-        //セッションから検索条件情報を取得
-        $kjs=$this->Session->read('neko_kjs');
-        
-        // セッションからページネーション情報を取得
-        $pages = $this->Session->read('neko_pages');
+		//セッションから検索条件情報を取得
+		$kjs=$this->Session->read('neko_kjs');
+		
+		// セッションからページネーション情報を取得
+		$pages = $this->Session->read('neko_pages');
 
-        $page_no = 0;
-        $row_limit = 100000;
-        $sort_field = $pages['sort_field'];
-        $sort_desc = $pages['sort_desc'];
+		$page_no = 0;
+		$row_limit = 100000;
+		$sort_field = $pages['sort_field'];
+		$sort_desc = $pages['sort_desc'];
+		
+		$crudBaseData = array(
+				'kjs' => $kjs,
+				'pages' => $pages,
+				'page_no' => $page_no,
+				'row_limit' => $row_limit,
+				'sort_field' => $sort_field,
+				'sort_desc' => $sort_desc,
+		);
+		
 
 		//DBからデータ取得
-	   $data=$this->Neko->findData($kjs,$page_no,$row_limit,$sort_field,$sort_desc);
+		$data=$this->Neko->findData($crudBaseData);
 		if(empty($data)){
 			return array();
 		}
@@ -425,7 +435,7 @@ class NekoController extends CrudBaseController {
 				array('name'=>'kj_neko_val1','def'=>null),
 				array('name'=>'kj_neko_val2','def'=>null),
 				array('name'=>'kj_neko_name','def'=>null),
-			    array('name'=>'kj_neko_date_ym','def'=>null),
+				array('name'=>'kj_neko_date_ym','def'=>null),
 				array('name'=>'kj_neko_date1','def'=>null),
 				array('name'=>'kj_neko_date2','def'=>null),
 				array('name'=>'kj_neko_group','def'=>null),
