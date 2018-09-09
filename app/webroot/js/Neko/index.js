@@ -16,8 +16,8 @@ var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複
  * - 列表示切替機能の組み込み
  * - 数値範囲系の検索入力フォームに数値範囲入力スライダーを組み込む
  * 
- * @version 1.2.1
- * @date 2015-9-16 | 2018-7-2
+ * @version 1.2.2
+ * @date 2015-9-16 | 2018-9-8
  * @author k-uehara
  */
 function init(){
@@ -96,8 +96,8 @@ function init(){
 	$("#new_inp_neko_date").datepicker({dateFormat:'yy-mm-dd'});
 	$("#edit_neko_date").datepicker({dateFormat:'yy-mm-dd'});
 	// CBBXE
-	
-	// ■■■□□□■■■□□□■■■□□□■■■
+
+		// ■■■□□□■■■□□□■■■□□□■■■
 //	// CSVインポートの初期化  <CrudBase/index.js>
 //	initCsvImportFu('neko/csv_fu');
 	
@@ -285,18 +285,10 @@ function session_clear(){
 /**
  * テーブル変形
  * @param mode_no モード番号  0:テーブルモード , 1:区分モード
- * @returns
  */
 function tableTransform(mode_no){
 
-	if(mode_no == 1){
-		jQuery("#neko_tbl").addClass('table_transform');
-		jQuery("#table_transform_tbl_mode").show();
-		jQuery("#table_transform_div_mode").hide();
-	}else{
-		jQuery("#neko_tbl").removeClass('table_transform');
-		jQuery("#table_transform_tbl_mode").hide();
-		jQuery("#table_transform_div_mode").show();
-	}
+	crudBase.tableTransform(mode_no);
+
 }
 

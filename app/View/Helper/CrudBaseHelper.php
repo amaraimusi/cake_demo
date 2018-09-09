@@ -84,7 +84,6 @@ class CrudBaseHelper extends FormHelper {
 				'YmpickerWrap',						// 年月ピッカーのラッパー
 				'nouislider.min',					// 数値範囲入力スライダー・noUiSlider
 				'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ
-				'CrudBase/table_transform.css?ver=1.0',	// テーブル変形
 				'CrudBase/FileUploadK.css?ver=1.0.1',	
 				'CrudBase/index'					// CRUD indexページ共通
 		);

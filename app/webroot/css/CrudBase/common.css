@@ -195,3 +195,20 @@ border-radius: 35px;
 	width:100%;
 }
 
+/* テーブル変形 */
+.table_transform{
+	border:none;
+	width:100%;
+}
+.table_transform thead{
+	display:none;
+}
+.table_transform tbody tr{
+	display:block;
+	border-bottom:solid #2c2255 1px;
+}
+.table_transform tbody tr td{
+	display:block;
+	border:none;
+}
+

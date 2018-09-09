@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-8-8
- * @version 2.4.0
+ * @date 2016-9-21 | 2018-9-9
+ * @version 2.4.1
  * 
  * @param object param
  *  - src_code	画面コード（スネーク記法）
@@ -88,9 +88,11 @@ class CrudBase{
 
 		// CrudBase・ファイルアップロードコンポーネント
 		this.cbFileUploadComp = this._factoryCbFileUploadComponent();
-
 		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
+		
+		// テーブル変形
+		if(this.param.device_type == 'sp') this.tableTransform(1);
 		
 	}
 	
@@ -3853,7 +3855,23 @@ class CrudBase{
 		return kjElms;
 	}
 	
-	
+	/**
+	 * テーブル変形
+	 * @param mode_no モード番号  0:テーブルモード , 1:区分モード
+	 * @returns
+	 */
+	tableTransform(mode_no){
+
+		if(mode_no == 1){
+			this.tbl.addClass('table_transform');
+			jQuery("#table_transform_tbl_mode").show();
+			jQuery("#table_transform_div_mode").hide();
+		}else{
+			this.tbl.removeClass('table_transform');
+			jQuery("#table_transform_tbl_mode").hide();
+			jQuery("#table_transform_div_mode").show();
+		}
+	}
 	
 
 	/**
