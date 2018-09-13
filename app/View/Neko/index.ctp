@@ -3,6 +3,7 @@ $this->CrudBase->init(array('model_name'=>'Neko'));
 
 // CSSファイルのインクルード
 $cssList = $this->CrudBase->getCssList();
+$cssList[] = 'Neko/index'; // 当画面専用CSS
 $this->assign('css', $this->Html->css($cssList));
 
 // JSファイルのインクルード
