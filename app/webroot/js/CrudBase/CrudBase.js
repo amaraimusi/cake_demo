@@ -14,8 +14,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-9-9
- * @version 2.4.1
+ * @date 2016-9-21 | 2018-9-17
+ * @version 2.4.2
  * 
  * @param object param
  *  - src_code	画面コード（スネーク記法）
@@ -2989,7 +2989,7 @@ class CrudBase{
 		if(this.param.device_type == 'sp'){
 			var tblElm = form.find('table');
 			tblElm.addClass('tbl_sp'); // ＳＰ版スタイルを適用
-			tblElm.find('label').hide(); // レイアウトが崩れるのでlabel要素を隠す
+			tblElm.find('label.text-danger').hide(); // レイアウトが崩れるのでlabel要素を隠す
 		}
 		
 

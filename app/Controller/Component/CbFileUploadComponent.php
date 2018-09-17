@@ -11,10 +11,11 @@ App::uses('Component', 'Controller');
  * 画像であるならサムネイル画像も作成する。
  * 抹消機能は不要ファイルを削除する。
  *
- * @date 2018-8-22
- * @version 1.0
+ * @date 2018-8-22 | 2018-9-16
+ * @version 1.0.1
  * @histroy
- * 2018-8-22 開発
+ * 1.0.1 2018-9-16 アップロードファイルの拡張子は小文字で統一
+ * 1.0.0 2018-8-22 開発
  *
  */
 class CbFileUploadComponent extends Component{
@@ -50,7 +51,7 @@ class CbFileUploadComponent extends Component{
 
 		// ファイルアップロード・フィールドリストを取得する(ファイル名が空なら除去するフィルタリングも行う)
 		$fuFields = $this->getFuFields($ent,$FILES);
-		
+
 		if(empty($fuFields)) return $ent;
 		
 		// オプションに初期値をセットする。
@@ -71,6 +72,7 @@ class CbFileUploadComponent extends Component{
 			$orig_fn = $ent[$fu_field]; // 元ファイル名
 			$path_param = pathinfo($orig_fn);
 			$ext = $path_param['extension'];	//→ 'jpg'
+			$ext = mb_strtolower($ext); // 拡張は小文字にする
 			$filename = $path_param['filename'];	//→ 'habu'
 			
 			$opt = $option[$fu_field];
