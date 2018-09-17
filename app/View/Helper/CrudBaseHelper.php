@@ -106,7 +106,7 @@ class CrudBaseHelper extends FormHelper {
 				'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
 				'CrudBase/FileUploadK.js?ver=1.0',
 				'CrudBase/CbFileUploadComponent.js?ver=1.0',
-				'CrudBase/CrudBase.js?ver=2.0',
+				'CrudBase/CrudBase.js?ver=2.4.2',
 				'livipage',						// ページ内リンク先プレビュー
 				'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
 				'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
