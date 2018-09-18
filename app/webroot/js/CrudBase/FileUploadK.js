@@ -12,9 +12,10 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.2.3
- * @date 2018-7-6 | 2018-8-27
+ * @version 1.2.4
+ * @date 2018-7-6 | 2018-9-18
  * @history 
+ *  - 2018-9-18 var 1.2.4 fuk_preview要素のstyle属性を修正
  *  - 2018-9-18 var 1.2.3 クリアのバグを修正
  *  - 2018-8-27 ver 1.2.2 setFilePaths:ファイル名空に対応
  *  - 2018-8-14 ver 1.2.0 ファイルの初期表示
@@ -278,7 +279,7 @@ class FileUploadK{
 		html += "<span class='fuk_first_msg'>" + first_msg_text +"</span>";
 		
 		// プレビュー要素を追加
-		html += "<span class='fuk_preview' style='display:'inline-block''></span>";
+		html += "<span class='fuk_preview' style='display:inline-block'></span>";
 		
 		// クリアボタン用を追加
 		html += "<div class='fuk_clear_btn_w'><input type='button' value='Clear' class='btn btn-default btn-xs fuk_clear_btn' " +

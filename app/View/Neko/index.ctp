@@ -234,7 +234,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>画像ファイル名: </td><td>
-			<label for="img_fn_n" class="fuk_label" style="width:200px;height:240px;">
+			<label for="img_fn_n" class="fuk_label" style="width:100px;height:100px;">
 				<input type="file" id="img_fn_n" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)" />
 			</label>
 		</td></tr>
@@ -307,7 +307,7 @@ foreach($data as $i=>$ent){
 
 		<tr><td>画像ファイル名: </td><td>
 		
-			<label for="img_fn_e" class="fuk_label" style="width:200px;height:240px;">
+			<label for="img_fn_e" class="fuk_label" style="width:100px;height:100px;">
 				<input type="file" id="img_fn_e" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)" />
 			</label>
 
