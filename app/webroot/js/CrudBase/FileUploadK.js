@@ -12,9 +12,10 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.2.4
+ * @version 1.2.5
  * @date 2018-7-6 | 2018-9-18
  * @history 
+ *  - 2018-9-18 var 1.2.5 コールバックパラメータを追加（pacb_param)
  *  - 2018-9-18 var 1.2.4 fuk_preview要素のstyle属性を修正
  *  - 2018-9-18 var 1.2.3 クリアのバグを修正
  *  - 2018-8-27 ver 1.2.2 setFilePaths:ファイル名空に対応
@@ -53,6 +54,8 @@ class FileUploadK{
 	 * - valid_mime_flg バリデーションMIMEフラグ 0:バリデーション行わない(デフォ) , 1:バリデーションを行う
 	 */
 	constructor(param){
+		
+		this.active_fue_id;// ファイルアップロード要素のid属性(イベント中）
 		
 		this.box = {}; // データボックス   ファイル要素、ファイルオブジェクト、各種パラメータを格納
 		
@@ -120,6 +123,7 @@ class FileUploadK{
 	 * @param option 
 	 *  - valid_ext バリデーション拡張子(詳細はconstructor()の引数を参照）
 	 *  - pacb プレビュー後コールバック関数
+	 *  - pacb_param pacbに渡すパラメータ
 	 *  - img_width プレビュー画像サイスX　（画像ファイルのみ影響）
 	 *  - img_height プレビュー画像サイスY
 	 */
@@ -195,15 +199,16 @@ class FileUploadK{
 		
 		var bData = [];
 		
-		// 複数非同期・全終了後コールバック・初期化
-		this._cbAsynsEndInit(fps.length,()=>{
+		option['pacb'] = () => {
 			//複数非同期・全終了後コールバック
 			
 			// プレビュー表示
 			this.box[fue_id]['bData'] = bData;
 			this._preview(fue_id,'blob',option);
-
-		});
+		}
+		
+		// 複数非同期・全終了後コールバック・初期化
+		this._cbAsynsEndInit(fps.length,option);
 
 		// ファイルをXHRでプリロードする
 		for(var i in fps){
@@ -313,6 +318,8 @@ class FileUploadK{
 	 */
 	_preview(fue_id,bin_type,option){
 
+		this.active_fue_id = fue_id;
+		
 		var files = null;
 		var bData = null;
 		var fileData = [];
@@ -381,8 +388,7 @@ class FileUploadK{
 		if(bin_type == 'files'){
 		
 			// プレビュー後コールバックアクションの初期化
-			if(option['pacb'] == null) option['pacb'] = null;
-			this._cbAsynsEndInit(fileData.length,option['pacb']);
+			this._cbAsynsEndInit(fileData.length,option);
 		
 			// リソース（画像など）をリソースプレビュー要素に表示させる。（非同期処理あり）
 			for(var i in fileData){
@@ -841,14 +847,23 @@ class FileUploadK{
 	/**
 	 * 複数非同期・全終了後コールバック・初期化
 	 * @param int count 非同期処理の件数
-	 * @param function callback プレビュー後コールバック
+	 * @param object option 
+	 *  - pacb ファイルプレビュー後コールバック
+	 *  - pacb_param コールバックパラメータ 
 	 */
-	_cbAsynsEndInit(count,callback){
+	_cbAsynsEndInit(count,option){
 
+		var pacb = function(){};
+		if(option['pacb'] != null) pacb = option['pacb'];
+		
+		var pacb_param = {};
+		if(option['pacb_param'] != null) pacb_param = option['pacb_param'];
+		
 		this.cbAsynsEndData = {
 			'index':0,
 			'count':count,
-			'callback':callback,
+			'callback':pacb,
+			'cbParam':pacb_param,
 		};
 		
 	}
@@ -861,6 +876,7 @@ class FileUploadK{
 	 * @param string action アクションコード
 	 *  - exe1 非同期処理がすべて終了したらコールバック関数を実行する。
 	 *  - exe2 非同期処理が0件であるならコールバック関数を実行する。
+	 * @param string fue_id FU要素のID属性
 	 */
 	_cbAsynsEndAction(action){
 		switch (action) {
@@ -869,7 +885,7 @@ class FileUploadK{
 			var cbAsynsEndData = this.cbAsynsEndData;
 			if(cbAsynsEndData.callback == null || cbAsynsEndData.count == 0) return;
 			if(cbAsynsEndData.index == cbAsynsEndData.count -1){
-				cbAsynsEndData.callback();
+				cbAsynsEndData.callback(this.active_fue_id,this.box,cbAsynsEndData.cbParam);
 			}else{
 				cbAsynsEndData.index ++;
 			}
@@ -880,7 +896,7 @@ class FileUploadK{
 			var cbAsynsEndData = this.cbAsynsEndData;
 			if(cbAsynsEndData.callback == null) return;
 			if(cbAsynsEndData.count == 0){
-				cbAsynsEndData.callback();
+				cbAsynsEndData.callback(this.active_fue_id,this.box,cbAsynsEndData.cbParam);
 			}
 			
 			break;

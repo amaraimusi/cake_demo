@@ -6,16 +6,19 @@
  * デフォルトでは、削除、編集、新規追加するたびにAjax通信を行う仕様である。
  * 削除、編集、新規追加するたびに更新するのが重い場合、適用ボタンで一括適用するモードも備える。
  * 
- * var 2.0からCrudBase.jsに名称変更、およびES6に対応（IE11は非対応）
- * ver 1.7からWordPressに対応
  * 
  * 
  * 課題
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-9-17
- * @version 2.4.3
+ * @date 2016-9-21 | 2018-9-18
+ * @version 2.4.4
+ * @histroy
+ * 2018-9-18 v2.4.4 フォームフィット機能を追加
+ * v2.0 CrudBase.jsに名称変更、およびES6に対応（IE11は非対応）
+ * v1.7 WordPressに対応
+ * 2016-9-21 v1.0.0
  * 
  * @param object param
  *  - src_code	画面コード（スネーク記法）
@@ -237,7 +240,13 @@ class CrudBase{
 		var eFuIds = this._getFueIds('edit');
 		var fuIds = nFuIds.concat(eFuIds);// 配列結合
 		
-		cbFileUploadComp = new CbFileUploadComponent(fuIds);
+		// オプションに「ファイルプレビュー後コールバック」をセットする
+		var option = {
+				'pacb':this._fukPrevAfterCallback,
+				'pacb_param':{'self':this},
+				};
+		
+		cbFileUploadComp = new CbFileUploadComponent(fuIds,option);
 		
 		return cbFileUploadComp;
 	}
@@ -2898,6 +2907,8 @@ class CrudBase{
 		if(!this._empty(form_height)){
 			form.height(form_height);
 		}
+		
+		this._fitForm(form); // フォームを内容にフィットさせるようにリサイズする。
 	}
 
 
@@ -3714,6 +3725,56 @@ class CrudBase{
 				yearSuffix: '年'};
 			jQuery.datepicker.setDefaults(jQuery.datepicker.regional['ja']);
 	}
+	
+	/**
+	 * FileUploadK | ファイルプレビュー後コールバック
+	 * @param object box データボックス（FileUploadK.jsのプロパティ）
+	 */
+	_fukPrevAfterCallback(fue_id,box,cbParam){
+
+		if(fue_id == null) return;
+		
+		// fue_idの末尾の2文字からフォーム種別を判定する。
+		var end_str = fue_id.slice(-2); // 末尾の2文字を取得
+		var form_type = null; // フォーム種別
+		if(end_str == '_n'){
+			form_type = 'new_inp';
+		}else if(end_str == '_e'){
+			form_type = 'edit';
+		}else{
+			return;
+		}
+		
+		var self = cbParam.self;
+		self._fitFormByFormType(form_type); // フォームを内容にフィットさせるようにリサイズする。
+
+	}
+	
+	/**
+	 * フォームを内容にフィットさせるようにリサイズする。
+	 * @param string form_type フォーム種別
+	 */
+	_fitFormByFormType(form_type){
+		
+		var form = this.getForm(form_type);
+		this._fitForm(form);
+
+	}
+	
+	/**
+	 * フォームを内容にフィットさせるようにリサイズする。
+	 * @param jQuery form フォームオブジェクト
+	 */
+	_fitForm(form){
+		
+		form.css({
+			'width':'auto',
+			'height':'auto',
+			'display':'inline-block',
+		});
+	}
+	
+	
 	
 
 }
