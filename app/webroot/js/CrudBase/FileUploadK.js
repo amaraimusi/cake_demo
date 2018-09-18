@@ -12,9 +12,10 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.2.2
+ * @version 1.2.3
  * @date 2018-7-6 | 2018-8-27
  * @history 
+ *  - 2018-9-18 var 1.2.3 クリアのバグを修正
  *  - 2018-8-27 ver 1.2.2 setFilePaths:ファイル名空に対応
  *  - 2018-8-14 ver 1.2.0 ファイルの初期表示
  *  - 2018-8-11 ver 1.1
@@ -831,6 +832,9 @@ class FileUploadK{
 		var parLabel = this._getElement(fue_id,'label');
 		parLabel.width(label_width);
 		parLabel.height(label_height);
+		
+		// ファイルデータもクリアする。
+		this.box[fue_id]['fileData'] = [];
 	}
 	
 	/**
