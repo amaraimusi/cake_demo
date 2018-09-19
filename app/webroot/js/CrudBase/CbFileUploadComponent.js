@@ -4,9 +4,10 @@
  * @note
  * CurdBase.jsのコンポーネントの一つ
  * 
- * @date 2018-8-24 | 2018-9-18
- * @version 1.1.1
+ * @date 2018-8-24 | 2018-9-19
+ * @version 1.1.2
  * @history
+ * 2018-9-19 v1.1.2 ファイルアップロード機能：DnDに対応
  * 2018-9-18 v1.1.1 コールバックパラメータを追加（pacb_param)
  * 2018-9-17 v1.1.0 画像ファイルが空の時に新規登録すると2行目のサムネイル画像が表示される
  * 2018-8-24 v1.0.0 開発
@@ -328,6 +329,70 @@ class CbFileUploadComponent{
 			
 		}
 			
+	}
+	
+	
+	/**
+	 * FDにファイルオブジェクトをセットする
+	 * @param FileData fd FD
+	 * @parma string form_type フォーム種別 :new_inp,edit
+	 * @return FileData FD
+	 */
+	setFilesToFd(fd,form_type){
+		
+		var box = this.fileUploadK.box;
+
+		for(var fu_id in box){
+			var fieldInfo = this._getFieldInfoFromFuKey(fu_id); // fu_keyからフィールドInfoを取得する
+			if(fieldInfo.form_type != form_type) continue;
+			
+			var files = box[fu_id]['files']; // FDにセット予定のファイルオブジェクトを取得する
+			if(files == null) continue;
+			if(files[0] == null) continue;
+			
+			var fileData = box[fu_id]['fileData']; // エラーチェックのためにフィールドデータを取得 （フィールドデータにはFU要素やDnD由来のMIME,サイズ、ファイル名がセットされている。）
+			if(fileData[0] == null) continue;
+			
+			var fEnt = fileData[0]; // フィールドエンティティを取得 (単一アップロードなので一行目のみ取得)
+			if(fEnt.err_flg == false){ // エラーでない場合
+				fd.append(fieldInfo.field, files[0]); // FDにファイルオブジェクトをセットする
+			}
+
+		}
+		return fd;
+
+	}
+	
+	/**
+	 * fu_keyからフィールドInfoを取得する
+	 * @param string fu_id
+	 * @return フィールドInfo
+	 */
+	_getFieldInfoFromFuKey(fu_id){
+		
+		// フィールドInfoのデフォルト
+		var fieldInfo = {
+				'fu_id':fu_id,
+				'field':fu_id,
+				'form_type':'none',
+		}
+		
+		if(fu_id == null || fu_id == '') return fieldInfo;
+		if(fu_id.length < 3) return fieldInfo;
+		
+		var end_str = fu_id.slice(-2); // 末尾の2文字を取得
+		if(end_str == '_n'){
+			fieldInfo.form_type = 'new_inp';
+			fieldInfo.field = fu_id.substr(0,fu_id.length-2); // 末尾の2文字を削る
+		}else if(end_str == '_e'){
+			fieldInfo.form_type = 'edit';
+			fieldInfo.field = fu_id.substr(0,fu_id.length-2);
+		}else{
+			return fieldInfo;
+		}
+		
+		return fieldInfo;
+		
 	}
 	
 	

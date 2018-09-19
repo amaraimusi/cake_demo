@@ -12,9 +12,10 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-9-18
- * @version 2.4.4
+ * @date 2016-9-21 | 2018-9-19
+ * @version 2.4.5
  * @histroy
+ * 2018-9-19 v2.4.5 ファイルアップロード機能：DnDに対応
  * 2018-9-18 v2.4.4 フォームフィット機能を追加
  * v2.0 CrudBase.jsに名称変更、およびES6に対応（IE11は非対応）
  * v1.7 WordPressに対応
@@ -527,13 +528,10 @@ class CrudBase{
 
 		// 登録ボタンを押せなくする
 		this._toggleRegBtn('new_inp',0);
-
-		// フィールドデータからファイルアップロード要素であるフィールドリストを抽出する
-		var fuEnts = this._extractFuEnt(this.fieldData,'new_inp');
-
-		// ファイルアップロード関連のエンティティをFormDataに追加する
+		
+		// FDにファイルオブジェクトをセットする。
 		var fd = new FormData();
-		fd = this._addFuEntToFd(fd,fuEnts,'new_inp');
+		fd = this.cbFileUploadComp.setFilesToFd(fd,'new_inp');
 
 		// 新規入力フォームからエンティティを取得およびJSON化し、FormDataにセットする
 		var ent = this._getEntByForm('new_inp');
@@ -670,13 +668,10 @@ class CrudBase{
 		// 編集フォームからエンティティを取得する。
 		var ent = this._getEntByForm('edit');
 		
-		// フィールドデータからファイルアップロード要素であるフィールドリストを抽出する
-		var fuEnts = this._extractFuEnt(this.fieldData,'edit');
-
-		// ファイルアップロード関連のエンティティをFormDataに追加する
+		// FDにファイルオブジェクトをセットする。
 		var fd = new FormData();
-		fd = this._addFuEntToFd(fd,fuEnts,'edit');
-
+		fd = this.cbFileUploadComp.setFilesToFd(fd,'edit');
+		
 		// Ajax送信前のコールバックを実行する
 		if(beforeCallBack){
 
@@ -2000,56 +1995,6 @@ class CrudBase{
 	}
 
 
-	/**
-	 * フィールドデータからファイルアップロード要素であるエンティティだけ抽出する
-	 * @param fieldData フィールドデータ
-	 * @param form_type フォーム種別
-	 */
-	_extractFuEnt(fieldData,form_type){
-		var fuEnts = [];
-		for(var i in fieldData){
-			var ent = fieldData[i];
-
-			// 入力要素エンティティを取得する
-			var inp_key = 'inp_' + form_type;
-			var inp_ent;
-			if(ent[inp_key]){
-				inp_ent = ent[inp_key];
-			}else{
-				continue;
-			}
-
-			if(inp_ent.type_name == 'file'){
-				fuEnts.push(ent);
-			}
-
-		}
-
-		return fuEnts;
-	}
-
-
-	/**
-	 * ファイルアップロード関連のエンティティをFormDataに追加する
-	 * @param fd FormData（フォームデータ）
-	 * @param fuEnts フィールドエンティティリスト（ファイルアップロード関連のもの）
-	 * @param form_type フォーム種別
-	 * @return 追加後のfd
-	 */
-	_addFuEntToFd(fd,fuEnts,form_type){
-
-		for(var i in fuEnts){
-			var fuEnt = fuEnts[i];
-
-			var fu_key = fuEnt.field;
-			var inp_key = 'inp_' + form_type;
-			var elm = fuEnt[inp_key].elm; // ファイル要素オブジェクトを取得
-
-			fd.append( fu_key, elm.prop("files")[0] );
-		}
-
-		return fd;
-	}
 
 
 	/**
