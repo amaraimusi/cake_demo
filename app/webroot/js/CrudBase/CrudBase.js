@@ -12,9 +12,10 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-9-19
- * @version 2.4.5
+ * @date 2016-9-21 | 2018-10-2
+ * @version 2.5.0
  * @histroy
+ * 2018-10-2 v2.5.0 フォームドラッグとリサイズ
  * 2018-9-19 v2.4.5 ファイルアップロード機能：DnDに対応
  * 2018-9-18 v2.4.4 フォームフィット機能を追加
  * v2.0 CrudBase.jsに名称変更、およびES6に対応（IE11は非対応）
@@ -40,6 +41,7 @@
  *  - valid_msg_slt	バリデーションメッセージセレクタ
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない（デフォルト）  1:フォームの外側をクリックすると自動的に閉じる
  *  - ni_tr_place	新規入力追加場所フラグ 0:末尾 , 1:先頭
+ *  - drag_and_resize_flg フォームドラッグとリサイズのフラグ 0:OFF , 1:ON(デフォルト)
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
 
@@ -97,6 +99,9 @@ class CrudBase{
 		
 		// テーブル変形
 		if(this.param.device_type == 'sp') this.tableTransform(1);
+		
+		// フォームをドラッグ移動およびリサイズできるようにする。
+		this._formDragAndResizeSetting();
 		
 	}
 	
@@ -2209,6 +2214,9 @@ class CrudBase{
 			param['device_type'] = this.judgDeviceType(); // デバイスタイプ（PC/SP）の判定
 		}
 		
+		
+		if(param['drag_and_resize_flg'] == null) param['drag_and_resize_flg'] = 1;
+		
 		return param;
 	}
 	
@@ -3717,6 +3725,47 @@ class CrudBase{
 			'height':'auto',
 			'display':'inline-block',
 		});
+	}
+	
+	
+
+	
+	/**
+	 * フォームをドラッグ移動およびリサイズできるようにする。
+	 */
+	_formDragAndResizeSetting(){
+		
+		this._formDragAndResizeSetting2('new_inp');
+		this._formDragAndResizeSetting2('edit');
+		this._formDragAndResizeSetting2('delete');
+		this._formDragAndResizeSetting2('eliminate');
+
+	}
+	
+
+	/**
+	 * フォームをドラッグ移動およびリサイズできるようにする。
+	 * @param string form_type フォーム種別
+	 */
+	_formDragAndResizeSetting2(form_type){
+		
+		if(this.param['drag_and_resize_flg'] != 1) return;
+		
+		var form = this.getForm(form_type);
+		
+		// フォームのドラッグ移動を有効にする。
+		var draggableDiv = form.draggable();
+		
+		//ドラッグ移動を組み込むとテキスト選択ができなくなるので、パネルボディ部分をテキスト選択可能にする。
+		$('.panel-body',draggableDiv).mousedown((ev) => {
+			  draggableDiv.draggable('disable');
+			}).mouseup((ev) => {
+			  draggableDiv.draggable('enable');
+			});
+		
+		//リサイズ機能を組み込む
+		form.resizable();
+
 	}
 	
 	
