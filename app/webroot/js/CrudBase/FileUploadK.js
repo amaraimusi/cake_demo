@@ -12,9 +12,10 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.2.5
- * @date 2018-7-6 | 2018-9-18
+ * @version 1.2.6
+ * @date 2018-7-6 | 2018-10-2
  * @history 
+ *  - 2018-10-2 var 1.2.6 「Now Loading...」メッセージを表示する
  *  - 2018-9-18 var 1.2.5 コールバックパラメータを追加（pacb_param)
  *  - 2018-9-18 var 1.2.4 fuk_preview要素のstyle属性を修正
  *  - 2018-9-18 var 1.2.3 クリアのバグを修正
@@ -37,7 +38,7 @@ class FileUploadK{
 	 * - unit_slt まとまり要素のセレクタ  省略時はbody
 	 * - prog_slt 進捗バー要素のセレクタ
 	 * - err_slt  エラー要素のセレクタ
-	 * - first_msg_text 初期メッセージテキスト
+	 * - fuk_msg_text 初期メッセージテキスト
 	 * - img_width プレビュー画像サイスX　（画像ファイルのみ影響）
 	 * - img_height プレビュー画像サイスY
 	 * - adf    補足データフラグリスト (Ancillary Data Flgs)
@@ -85,7 +86,7 @@ class FileUploadK{
 		
 		if(param['err_slt'] == null) param['err_slt'] = '#err';
 		
-		if(param['first_msg_text'] == null) param['first_msg_text'] = '';
+		if(param['fuk_msg_text'] == null) param['fuk_msg_text'] = '';
 		
 		if(param['valid_mime_flg'] == null) param['valid_mime_flg'] = 0;
 		
@@ -165,7 +166,7 @@ class FileUploadK{
 		// ファイルアップロード要素のチェンジイベントを追加する。
 		var fue = this._getElement(fue_id,'fue');
 		fue.change((e) => {
-			
+
 			// ボックスデータにアップロードファイル情報を追加
 			var files = e.target.files; // ファイルオブジェクト配列を取得（配列要素数は選択したファイル数を表す）
 			if(files == null || files.length == 0) return;// ファイル件数が0件なら処理抜け
@@ -197,6 +198,9 @@ class FileUploadK{
 		if(fps == null || fps == '' || fps == 0) return;
 		if(typeof fps == 'string') fps = [fps];
 		
+		var fukMsg = this._getElement(fue_id,'fuk_msg');
+		fukMsg.html('Now Loading ..');
+		
 		var bData = [];
 		
 		option['pacb'] = () => {
@@ -217,6 +221,8 @@ class FileUploadK{
 		}
 	}
 	
+	
+	
 	/**
 	 * XHRによってファイルをプリロードする Preloaded by XHR
 	 * @param string fp ファイルパス
@@ -227,6 +233,7 @@ class FileUploadK{
 		xhr.open('GET', fp, true);
 		xhr.responseType = 'blob';
 		xhr.onload = (e) => {
+
 			// プリロードのonloadイベント処理： ファイル関連情報をbDataにセットする。
 			this._xhrOnload(e,xhr,bData);
 
@@ -280,8 +287,8 @@ class FileUploadK{
 		var html = '';
 		
 		// 初期メッセージ要素を追加
-		var first_msg_text = box[fue_id]['first_msg_text']; // 初期メッセージテキスト
-		html += "<span class='fuk_first_msg'>" + first_msg_text +"</span>";
+		var fuk_msg_text = box[fue_id]['fuk_msg_text']; // 初期メッセージテキスト
+		html += "<span class='fuk_msg'>" + fuk_msg_text +"</span>";
 		
 		// プレビュー要素を追加
 		html += "<span class='fuk_preview' style='display:inline-block'></span>";
@@ -318,6 +325,9 @@ class FileUploadK{
 	 */
 	_preview(fue_id,bin_type,option){
 
+		var fukMsg = this._getElement(fue_id,'fuk_msg');
+		fukMsg.html('Now Loading ...');
+
 		this.active_fue_id = fue_id;
 		
 		var files = null;
@@ -343,11 +353,7 @@ class FileUploadK{
 		// 親ラベル要素を内部要素に合わせてフィットさせるため幅をautoにする。
 		var parLbl = this._getElement(fue_id,'label');
 		parLbl.css({'width':'auto','height':'auto'});
-		
-		// 初期メッセージ要素を隠す。
-		var firsMsgElm = this._getElement(fue_id,'first_msg');
-		firsMsgElm.hide();
-		
+
 		// クリアボタンを表示する
 		var clearBtnW = this._getElement(fue_id,'clear_btn_w');
 		clearBtnW.show();
@@ -368,7 +374,7 @@ class FileUploadK{
 		// プレビュー区分要素にプレビューHTMLをセットする。
 		var prvElm = this._getElement(fue_id,'preview');
 		if(prvElm[0]) prvElm.html(preview_html);
-
+		
 		// リソースプレビュー要素を取得する。リソースプレビュー要素はプレビュー区分要素内に複数存在するDIV要素群のこと。
 		var rpElms = {}; // リソースプレビュー要素リスト
 		prvElm.children('div').each((i,elm)=>{
@@ -826,8 +832,10 @@ class FileUploadK{
 		fue.val('');
 		
 		// 初期メッセージ要素を再表示する。
-		var firstMsg = this._getElement(fue_id,'first_msg');
-		firstMsg.show();
+		var fukMsg = this._getElement(fue_id,'fuk_msg');
+		var fuk_msg_text = this.box[fue_id]['fuk_msg_text'];
+		fukMsg.html(fuk_msg_text);
+		fukMsg.show();
 		
 		// プレビュー要素を取得し、中身をクリアする。
 		var preview = this._getElement(fue_id,'preview');
@@ -883,9 +891,11 @@ class FileUploadK{
 		case 'exe1':
 
 			var cbAsynsEndData = this.cbAsynsEndData;
-			if(cbAsynsEndData.callback == null || cbAsynsEndData.count == 0) return;
 			if(cbAsynsEndData.index == cbAsynsEndData.count -1){
-				cbAsynsEndData.callback(this.active_fue_id,this.box,cbAsynsEndData.cbParam);
+				if(cbAsynsEndData.callback != null){
+					cbAsynsEndData.callback(this.active_fue_id,this.box,cbAsynsEndData.cbParam);
+					this._endPreview();
+				}
 			}else{
 				cbAsynsEndData.index ++;
 			}
@@ -893,14 +903,29 @@ class FileUploadK{
 
 		case 'exe2':
 
+			
 			var cbAsynsEndData = this.cbAsynsEndData;
-			if(cbAsynsEndData.callback == null) return;
 			if(cbAsynsEndData.count == 0){
-				cbAsynsEndData.callback(this.active_fue_id,this.box,cbAsynsEndData.cbParam);
+				if(cbAsynsEndData.callback != null) {
+					cbAsynsEndData.callback(this.active_fue_id,this.box,cbAsynsEndData.cbParam);
+					this._endPreview();
+				}
+				
 			}
 			
 			break;
 		}
+	}
+	
+
+	/**
+	 * プレビュー最後の処理
+	 */
+	_endPreview(){
+
+		// 初期メッセージ要素を隠す。
+		var fukMsgElm = this._getElement(this.active_fue_id,'fuk_msg');
+		fukMsgElm.hide();
 	}
 	
 	
@@ -1017,7 +1042,7 @@ class FileUploadK{
 	/**
 	 * ファイルアップロード関連の要素を引数を指定して取得する
 	 * @param fue_id ファイルアップロード要素のid属性
-	 * @param key 要素を指定するキー　label,file,first_msg,preview
+	 * @param key 要素を指定するキー　label,file,fuk_msg,preview
 	 * @return jQuery 要素
 	 */
 	_getElement(fue_id,key){
@@ -1055,15 +1080,15 @@ class FileUploadK{
 		}
 		
 		// 初期メッセージ要素を取得
-		else if(key == 'first_msg'){
+		else if(key == 'fuk_msg'){
 			var elm = null;
-			if(box[fue_id]['first_msg']){
-				elm = box[fue_id]['first_msg'];
+			if(box[fue_id]['fuk_msg']){
+				elm = box[fue_id]['fuk_msg'];
 			}else{
 				var label = this._getElement(fue_id,'label');
 				if(label == null) return null;
-				elm = label.find('.fuk_first_msg');
-				box[fue_id]['first_msg'] = elm;
+				elm = label.find('.fuk_msg');
+				box[fue_id]['fuk_msg'] = elm;
 			}
 			return elm; 
 		}
@@ -1135,19 +1160,19 @@ class FileUploadK{
 		bEnt['label_height'] = parLebel.height(); 
 		
 		// paramの初期メッセージテキストをセット。空ならFU要素のtitle属性をセット
-		var first_msg_text = ''; // 初期メッセージテキスト
-		if(this.param.first_msg_text){
-			first_msg_text = this.param.first_msg_text;
+		var fuk_msg_text = ''; // 初期メッセージテキスト
+		if(this.param.fuk_msg_text){
+			fuk_msg_text = this.param.fuk_msg_text;
 		}else{
 			var fue = this._getElement(fue_id,'fue'); // FU要素
 			var fe_title = fue.attr('title');
 			if(fe_title){
-				first_msg_text = fe_title;
+				fuk_msg_text = fe_title;
 			}else{
-				first_msg_text = 'File Upload';
+				fuk_msg_text = 'File Upload';
 			}
 		}
-		bEnt['first_msg_text'] = first_msg_text;
+		bEnt['fuk_msg_text'] = fuk_msg_text;
 		
 		// バリデーション情報をセットする
 		if(option['valid_ext'] == null){
