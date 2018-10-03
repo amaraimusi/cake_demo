@@ -116,8 +116,6 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<?php echo $pages['page_index_html'];//ページ目次 ?>
 	</div>
 	<div style="display:inline-block">件数:<?php echo $data_count ?></div>
-	<div style="display:inline-block">
-		<a href="#help_lists" class="livipage btn btn-info btn-xs" title="ヘルプ"><span class="glyphicon glyphicon-question-sign"></span></a></div>
 </div>
 
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
