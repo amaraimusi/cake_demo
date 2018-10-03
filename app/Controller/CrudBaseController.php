@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.3.6";
+	var $version = "2.3.9";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -20,9 +20,6 @@ class CrudBaseController extends AppController {
 	var $defSortType=0;//0:昇順 1:降順
 	
 	public $userInfo = array(); // ユーザー情報
-
-	///検索条件のセッション保存フラグ
-	public $kj_session_flg = false;
 
 	///検索条件定義（要,オーバーライド）
 	public $kensakuJoken=array();
@@ -77,7 +74,6 @@ class CrudBaseController extends AppController {
 	 * - kjs <array> 検索条件情報
 	 * - errMsg <string> 検索条件入力のエラーメッセージ
 	 * - pages <array> ページネーション情報
-	 * - saveKjFlg <bool> 検索条件保存フラグ。true:検索条件を保存する, false:保存しない
 	 * - bigDataFlg <bool> true:一覧データ件数が500件を超える,false:500件以下。500件の制限はオーバーライドで変更可能。
 	 *
 	 */
@@ -97,11 +93,6 @@ class CrudBaseController extends AppController {
 
 		// アクションを判定してアクション種別を取得する（0:初期表示、1:検索ボタン、2:ページネーション、3:ソート）
 		$actionType = $this->judgActionType();
-
-		// 検索入力保存フラグの処理
-		$saveKjFlg = $this->kj_session_flg;
-		
-
 		
  		// 新バージョンであるかチェック。新バージョンである場合セッションクリアを行う。２回目のリクエスト（画面表示）から新バージョンではなくなる。
 		$new_version_chg = 0; // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更
@@ -135,8 +126,8 @@ class CrudBaseController extends AppController {
 		//サニタイズクラスをインポート
 		App::uses('Sanitize', 'Utility');
 
-		//検索条件情報をPOST,GET,SESSION,デフォルトのいずれから取得。
-		$kjs=$this->getKjs($name,$saveKjFlg);
+		//検索条件情報をPOST,GET,デフォルトのいずれから取得。
+		$kjs=$this->getKjs($name);
 
 		//SQLインジェクション対策
 		foreach($kjs as $i => $kj){
@@ -151,7 +142,7 @@ class CrudBaseController extends AppController {
 		//入力エラーがあった場合。
 		if(isset($errMsg)){
 			//再表示用の検索条件情報をSESSION,あるいはデフォルトからパラメータを取得する。
-			$kjs= $this->getKjsSD($name,$saveKjFlg);
+			$kjs= $this->getKjsSD($name);
 		}
 		
 		//検索ボタンが押された場合
@@ -159,12 +150,12 @@ class CrudBaseController extends AppController {
 		if(!empty($request['search'])){
 			
 			//ページネーションパラメータを取得
-			$pages = $this->getPageParamForSubmit($kjs,$postData,$saveKjFlg);
+			$pages = $this->getPageParamForSubmit($kjs,$postData);
 
 		}else{
 			//ページネーション用パラメータを取得
 			$overData['row_limit']=$kjs['row_limit'];
-			$pages=$this->getPageParam($saveKjFlg,$overData);
+			$pages=$this->getPageParam($overData);
 			
 		}
 
@@ -225,7 +216,6 @@ class CrudBaseController extends AppController {
 				'big_data_fields'=>$big_data_fields, // 巨大データ用のフィールド情報 (高速化のため列の種類は少なめ）
 				'pages'=>$pages, // ページネーションパラメータ
 				'act_flg'=>$act_flg, // アクティブフラグ	null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
-				'saveKjFlg'=>$saveKjFlg, // 検索条件保存フラグ（非推奨）
 				'sql_dump_flg'=>$sql_dump_flg, // SQLダンプフラグ
 				'dptData' => $dptData, // ファイルアップロード用のディレクトリパステンプレート情報
 		);
@@ -303,96 +293,7 @@ class CrudBaseController extends AppController {
 		return 0; // その他は初期表示
 	}
 
-	/**
-	 * 検索入力保存フラグの判定、取得、セッション更新を行う。
-	 * @param array $postData POSTリクエストのデータ
-	 * @param int $actionType アクション種別  0:初期表示、1:検索ボタン、2:ページネーション、3:ソート
-	 * @param string $name モデル名
-	 * @return bool 検索入力保存フラグ
-	 */
-	private function judeSessionFlg($postData,$actionType,$name){
 
-		// KJセッション保存フラグ(検索条件セッション保存フラグ）をメンバから取得
-		$saveKjFlg = $this->kj_session_flg;
-
-		// フォーム・KSFを取得
-		$f_saveKjFlg = null;
-		if(isset($postData)){
-			if(isset($postData['saveKjFlg'])){
-				$f_saveKjFlg = $postData['saveKjFlg'];
-			}
-		}
-		if(!isset($f_saveKjFlg)){
-			if(isset($this->request->query['saveKjFlg'])){
-				$f_saveKjFlg=$this->request->query['saveKjFlg'];
-			}
-		}
-
-		// セッション・KSFを取得
-		$s_saveKjFlg=$this->Session->read($this->main_model_name_s.'_saveKjFlg');
-
-		// フォームKSF = 有
-		if(isset($f_saveKjFlg)){
-
-			// フォームからの値をKJセッション保存フラグにセットする。
-			$saveKjFlg = $f_saveKjFlg;
-			$s_saveKjFlg = $saveKjFlg;
-
-		}
-
-		// フォームKSF = 空
-		else{
-			// 	セッションKSF=有
-			if(isset($s_saveKjFlg)){
-
-				// 初期表示アクション
-				if($actionType == 0){
-					if($this->kj_session_flg==true){
-						$saveKjFlg = $s_saveKjFlg;
-					}
-
-				}
-
-				// 検索アクション
-				else if($actionType == 1){
-					if($this->kj_session_flg==true){
-						$saveKjFlg = $s_saveKjFlg;
-					}
-
-				}
-
-				// ページネーション・アクション
-				else if($actionType == 2){
-					$saveKjFlg = true;
-				}
-
-				// ソート
-				else if($actionType == 3){
-					$saveKjFlg = true;
-				}
-
-			}
-
-			// セッションKSF=空
-			else{
-				// なにもしない
-			}
-
-		}
-
-		// セッションKSFを保存する
-		$this->Session->write($this->main_model_name_s.'_saveKjFlg',$s_saveKjFlg);
-
-		$skfData = array(
-				'kj_session_flg' => $this->kj_session_flg,// デフォルト
-				'saveKjFlg'=>$saveKjFlg,// 実質のフラグ
-				'f_saveKjFlg'=>$f_saveKjFlg,// フォームからのフラグ
-				's_saveKjFlg'=>$s_saveKjFlg,// セッションからのフラグ
-		);
-
-		return $skfData;
-
-	}
 
 
 	/**
@@ -409,7 +310,6 @@ class CrudBaseController extends AppController {
 		$err_ses_key=$page_code.'_err';//入力エラー情報のセッションキー
 		$page_ses_key=$pageCode.'_page_param';//ページパラメータのセッションキー
 		$kjs_ses_key=$pageCode;	//検索条件情報のセッションキー
-		$svkj_ses_key=$page_code.'_saveKjFlg';//検索入力保存フラグのセッションキー
 		$csv_ses_key=$page_code.'_kjs';//CSV用のセッションキー
 		$mains_ses_key = $page_code.'_mains_cb';//主要パラメータのセッションキー
 		$ini_cnds_ses_key = $page_code.'_ini_cnds';// 初期条件データのセッションキー
@@ -1019,15 +919,14 @@ class CrudBaseController extends AppController {
 	 * POST,またはSESSION,あるいはデフォルトから検索条件情報を取得します。
 	 *
 	 * @param $formKey form要素のキー。通常はモデル名をキーにしているので、モデルを指定すれば良い。
-	 * @param int $saveKjFlg セッション保存フラグ
 	 * @return array 検索条件情報
 	 */
-	protected function getKjs($formKey,$saveKjFlg){
+	protected function getKjs($formKey){
 
 		$def=$this->getDefKjs();//デフォルトパラメータ
 		$keys=$this->getKjKeys();//検索条件キーリストを取得
 
-		$kjs=$this->getParams($keys,$formKey,$def,$saveKjFlg);
+		$kjs=$this->getParams($keys,$formKey,$def);
 
 		foreach($kjs as $k=>$v){
 			if(is_array($v)){
@@ -1082,14 +981,13 @@ class CrudBaseController extends AppController {
 	 * SESSION,あるいはデフォルトから検索条件情報を取得する
 	 *
 	 * @param string $formKey モデル名、またはformタグのname要素
-	 * @param int $saveKjFlg セッション保存フラグ
 	 * @return array 検索条件情報
 	 */
-	protected function getKjsSD($formKey,$saveKjFlg){
+	protected function getKjsSD($formKey){
 
 		$def=$this->getDefKjs();//デフォルトパラメータ
 		$keys=$this->getKjKeys();
-		$kjs=$this->getParamsSD($keys,$formKey,$def,$saveKjFlg);
+		$kjs=$this->getParamsSD($keys,$formKey,$def);
 
 		return $kjs;
 	}
@@ -1120,7 +1018,6 @@ class CrudBaseController extends AppController {
 	 *
 	 * ページネーション情報は、ページ番号の羅列であるページ目次のほかに、ソート機能にも使われます。
 	 *
-	 * @param int $saveKjFlg セッション保存フラグ
 	 * @param array $overData 上書きデータ
 	 * @return array
 	 * - page_no <int> 現在のページ番号
@@ -1128,17 +1025,13 @@ class CrudBaseController extends AppController {
 	 * - sort_field <string> ソートする列フィールド
 	 * - sort_desc <int> 並び方向。 0:昇順 1:降順
 	 */
-	protected function getPageParam($saveKjFlg,$overData){
+	protected function getPageParam($overData){
 		//GETよりパラメータを取得する。
 		$pages=$this->params['url'];
 
 		// 上書き
 		$pages=Hash::merge($pages,$overData);
 
-		//空ならセッションから取得する。
-		if(empty($pages) && $saveKjFlg==true){
-			$pages=$this->Session->read($this->main_model_name_s.'_page_param');
-		}
 
 		$defs=$this->getDefKjs();//デフォルト情報を取得
 
@@ -1156,10 +1049,6 @@ class CrudBaseController extends AppController {
 			$pages['sort_desc']=$this->defSortType;//0:昇順 1:降順
 		}
 
-		//セッションに詰める。
-		if($saveKjFlg==true){
-			$this->Session->write($this->main_model_name_s.'_page_param',$pages);//セッションへの書き込み
-		}
 
 		return $pages;
 	}
@@ -1174,13 +1063,12 @@ class CrudBaseController extends AppController {
 	 *
 	 * @param array $kjs 検索条件情報。row_limitのみ利用する。
 	 * @param $postData POST
-	 * @param int $saveKjFlg セッション保存フラグ
 	 * @return array ページネーション情報
 	 * - page_no <int> ページ番号
 	 * - limit <int> 表示件数
 	 *
 	 */
-	protected function getPageParamForSubmit(&$kjs,&$postData,$saveKjFlg){
+	protected function getPageParamForSubmit(&$kjs,&$postData){
 		
 		$pages =  array();
 		$defs=$this->getDefKjs();//デフォルト情報を取得
@@ -1205,9 +1093,7 @@ class CrudBaseController extends AppController {
 			$pages['sort_desc'] = $this->defSortType;//0:昇順 1:降順;
 		}
 		
-		if($saveKjFlg==true){
-			$this->Session->write($this->main_model_name.'_page_param',$pages);//セッションへの書き込み
-		}
+
 		return $pages;
 	}
 
@@ -1219,15 +1105,12 @@ class CrudBaseController extends AppController {
 	 * @param string $keys キーリスト
 	 * @param string $formKey フォームキー
 	 * @param string $def デフォルトパラメータ
-	 * @param bool $saveKjFlg セッション保存フラグ
 	 * @return array フォームデータ
 	 */
-	protected function getParamsSD($keys,$formKey,$def,$saveKjFlg){
+	protected function getParamsSD($keys,$formKey,$def){
 
 		$ses=null;
-		if($saveKjFlg==true){
-			$ses=$this->Session->read($formKey);
-		}
+
 
 		$prms=null;
 		foreach($keys as $key){
@@ -1264,15 +1147,11 @@ class CrudBaseController extends AppController {
 	 * @param array $keys キーリスト
 	 * @param string $formKey フォームキー
 	 * @param array $def デフォルトパラメータ
-	 * @param int $saveKjFlg セッション保存フラグ
 	 * @return array パラメータ
 	 */
-	protected function getParams($keys,$formKey,$def,$saveKjFlg){
+	protected function getParams($keys,$formKey,$def){
 
 		$ses=null;
-		if($saveKjFlg==true){
-			$ses=$this->Session->read($this->main_model_name_s.'_kjs');//セッションのパラメータを取得
-		}
 
 		$prms=null;
 		foreach($keys as $key){
