@@ -2,8 +2,6 @@
 
 	// CrudBaseヘルパーへ各種パラメータをセットする。
 	$this->CrudBase->setCrudBaseParam(array(
-			'iniFlg'=>$iniFlg,
-			'crudType'=>$crudType,
 			'bigDataFlg'=>$bigDataFlg,
 			'debug_mode'=>$debug_mode,
 			'dptData'=>$dptData,

@@ -132,51 +132,6 @@ class CrudBaseHelper extends FormHelper {
 		$this->kjs = &$kjs;
 	}
 	
-	// ■■■□□□■■■□□□■■■□□□
-// 	/**
-// 	 * 新規入力ボタンを作成
-// 	 * @param array $option オプション【省略可】
-// 	 * - class クラス属性の値
-// 	 * - onclick onclickイベントにセットするJS関数（CRUDタイプがajax型である場合のみ有効)
-// 	 * - display_name ボタンの表示名
-// 	 */
-// 	public function newBtn($option = null){
-	
-// 		if(empty($option)){
-// 			$option = array();
-// 		}
-		
-// 		if(empty($option['class'])){
-// 			$option['class'] = 'btn btn-warning btn-sm';
-// 		}
-		
-// 		if(empty($option['onclick'])){
-// 			$option['onclick'] = 'newInpShow(this);';
-// 		}
-		
-// 		if(empty($option[$this->_mdl_snk])){
-// 			$option[$this->_mdl_snk] = '新規入力';
-// 		}
-		
-// 		$crudType = $this->param['crudType'];
-// 		$class = $option['class'];
-// 		$btn_name = $option[$this->_mdl_snk];
-		
-// 		// CRUDタイプがajax型である場合
-// 		if(empty($crudType)){
-// 			$onclick = $option['onclick'];
-// 			echo "<button type='button' class='{$class}' onclick='{$onclick}' />{$btn_name}</button>";
-			
-// 		}
-		
-// 		// CRUDタイプがsubmit型である場合
-// 		else{
-// 			$path = $this->Html->webroot.$this->_mdl_snk;
-// 			echo "<a href='{$path}/edit' class='{$class}'>{$btn_name}</a>";
-// 		}
-
-// 	}
-	
 	/**
 	 * 検索用のid入力フォームを作成
 	 * 
@@ -1306,18 +1261,7 @@ class CrudBaseHelper extends FormHelper {
 			$onclick="editShow(this);";
 		}
 		
-		$crudType = $this->param['crudType'];
-		
-		// CRUDタイプがajax型である場合
-		if(empty($crudType)){
-			echo "<input type='button' value='編集'  class='{$css_class}' onclick='{$onclick}' />";
-		}
-		
-		// CRUDタイプがsubmit型である場合
-		else{
-			$url=$this->Html->webroot.$this->_mdl_snk.'/edit?id='.$id;
-			echo "<a href='{$url}' class='{$css_class}'>編集</a>";
-		}
+		echo "<input type='button' value='編集'  class='{$css_class}' onclick='{$onclick}' />";
 
 	}
 	
@@ -1339,51 +1283,12 @@ class CrudBaseHelper extends FormHelper {
 		if(empty($onclick)){
 			$onclick="copyShow(this);";
 		}
-		
-		$crudType = $this->param['crudType'];
-		
+
 		echo "<input type='button' value='複製'  class='{$css_class}' onclick='{$onclick}' />";
 		
 	}
 	
-	
-	
-	
-	
-	
-	/**
-	 * 行のプレビューボタンを作成する
-	 * @param int $id ID
-	 * @param string $css_class CSSスタイル（省略可）
-	 */
-	public function rowPreviewBtn($id,$css_class=null){
-		
-		if(empty($css_class)){
-			$css_class='row_preview_btn btn btn-info btn-xs';
-		}
-		
-		
-		$crudType = $this->param['crudType'];
-		
-		// CRUDタイプがajax型である場合
-		if(empty($crudType)){
-			// ajax型にはプレビュー表示の概念が存在しないのでプレビューボタンを作成しない。
-				
-		}
-		
-		// CRUDタイプがsubmit型である場合
-		else{
-			$url=$this->Html->webroot.$this->_mdl_snk.'/detail?id='.$id;
-			echo "<a href='{$url}' class='{$css_class}'>詳細</a>";
-		}
-		
-		
-		
-	}
-	
-	
-	
-	
+
 	/**
 	 * 行の削除ボタンを作成する
 	 * @param int $id ID
@@ -1397,17 +1302,12 @@ class CrudBaseHelper extends FormHelper {
 		
 		$onclick="deleteAction(this);";
 		if(isset($option['onclick'])) $css_class = $option['onclick'];
-		
-		$crudType = $this->param['crudType'];
-		
+
 		// 検索条件データの削除フラグが0(有効)でなければ削除ボタンを表示しない。
 		$style='';
 		if($ent['delete_flg'] == 1) $style = "style='display:none'";
 		
-		// CRUDタイプがajax型である場合
-		if(empty($crudType)){
-			echo "<input type='button' value='削除'  class='{$css_class}' onclick='{$onclick}' {$style} />";	
-		}
+		echo "<input type='button' value='削除'  class='{$css_class}' onclick='{$onclick}' {$style} />";	
 
 	}
 	
@@ -1428,16 +1328,12 @@ class CrudBaseHelper extends FormHelper {
 		$onclick="enabledAction(this);";
 		if(isset($option['onclick'])) $css_class = $option['onclick'];
 		
-		$crudType = $this->param['crudType'];
-		
 		// 検索条件データの有効フラグが1(無効)でなければ有効ボタンを表示しない。
 		$style='';
 		if($ent['delete_flg'] != 1) $style = "style='display:none'";
 		
 		// CRUDタイプがajax型である場合
-		if(empty($crudType)){
-			echo "<input type='button' value='有効'  class='{$css_class}' onclick='{$onclick}' {$style} />";
-		}
+		echo "<input type='button' value='有効'  class='{$css_class}' onclick='{$onclick}' {$style} />";
 		
 	}
 	
@@ -1464,16 +1360,11 @@ class CrudBaseHelper extends FormHelper {
 		
 		$onclick="eliminateShow(this);";
 		if(isset($option['onclick'])) $css_class = $option['onclick'];
-
-		$crudType = $this->param['crudType'];
 		
 		$style='';
 		if($ent['delete_flg'] != 1) $style = "style='display:none'";
 		
-		// CRUDタイプがajax型である場合
-		if(empty($crudType)){
-			echo "<input type='button' value='抹消'  class='{$css_class}' onclick='{$onclick}' {$style} title='データベースからも消去します。復元できません。' />";
-		}
+		echo "<input type='button' value='抹消'  class='{$css_class}' onclick='{$onclick}' {$style} title='データベースからも消去します。復元できません。' />";
 		
 	}
 	

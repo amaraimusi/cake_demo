@@ -115,19 +115,7 @@ class CrudBaseController extends AppController {
 		if(!empty($this->request->query['sc'])){
 			$this->sessionClear();
 		}
-		
 
-		//URLクエリ（GET)から初期フラグを取得する。
-		$iniFlg=0;
-		if(!empty($this->request->query['ini'])){
-			$iniFlg=$this->request->query['ini'];
-		}
-
-		//URLクエリ（GET)からCRUDタイプを取得する
-		$crudType = 0; // 0:AjaxCrud.js型   1:submit型
-		if(!empty($this->request->query['crud_type'])){
-			$crudType = $this->request->query['crud_type'];
-		}
 
 		//巨大データフィールドデータを取得
 		$big_data_fields = $this->big_data_fields;
@@ -237,12 +225,11 @@ class CrudBaseController extends AppController {
 				'big_data_fields'=>$big_data_fields, // 巨大データ用のフィールド情報 (高速化のため列の種類は少なめ）
 				'pages'=>$pages, // ページネーションパラメータ
 				'act_flg'=>$act_flg, // アクティブフラグ	null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
-				'crudType'=>$crudType, // CRUDタイプ 0:AjaxCrud.js型   1:submit型
-				'iniFlg'=>$iniFlg, // 初期フラグ（非推奨）	URLクエリで指定する初期状態を表すフラグ
 				'saveKjFlg'=>$saveKjFlg, // 検索条件保存フラグ（非推奨）
 				'sql_dump_flg'=>$sql_dump_flg, // SQLダンプフラグ
 				'dptData' => $dptData, // ファイルアップロード用のディレクトリパステンプレート情報
 		);
+		
 		
 		return $crudBaseData;
 	}

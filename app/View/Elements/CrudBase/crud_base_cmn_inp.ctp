@@ -4,8 +4,6 @@ $this->CrudBase->hiddenX('act_flg',1);
 $this->CrudBase->hiddenX('page_no',$pages['page_no'] );
 $this->CrudBase->hiddenX('sort_field',$pages['sort_field'] );
 $this->CrudBase->hiddenX('sort_desc',$pages['sort_desc'] );
-$this->CrudBase->hiddenX('iniFlg',$iniFlg );
-$this->CrudBase->hiddenX('crudType',$crudType );
 $this->CrudBase->hiddenX('webroot',$this->Html->webroot );
 $this->CrudBase->hiddenX('csh_json',$csh_json );
 $this->CrudBase->hiddenX('bigDataFlg',$bigDataFlg );
