@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.3.9";
+	var $version = "2.4.0";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -69,7 +69,13 @@ class CrudBaseController extends AppController {
 	 * 検索条件情報の取得、入力エラー、ページネーションなどの情報を取得します。
 	 * このメソッドはindexアクションの冒頭部分で呼び出されます。
 	 * @param string $name 	対応するモデル名（キャメル記法）
-	 * @param array $request 	HTTPリクエスト
+	 * @param array $option
+	 *  - request 	HTTPリクエスト
+	 *  - func_new_version 新バージョンチェック機能   0:OFF(デフォルト) , 1:ON
+	 *  - func_csv_export CSVエクスポート機能 0:OFF ,1:ON(デフォルト)
+	 *  - func_file_upload ファイルアップロード機能 0:OFF , 1:ON(デフォルト)
+	 *  - sql_dump_flg SQLダンプフラグ   true:SQLダンプを表示（デバッグモードである場合。デフォルト） , false:デバッグモードであってもSQLダンプを表示しない。
+	 *  
 	 * @return array
 	 * - kjs <array> 検索条件情報
 	 * - errMsg <string> 検索条件入力のエラーメッセージ
@@ -77,15 +83,29 @@ class CrudBaseController extends AppController {
 	 * - bigDataFlg <bool> true:一覧データ件数が500件を超える,false:500件以下。500件の制限はオーバーライドで変更可能。
 	 *
 	 */
-	protected function indexBefore($name,$request=null){
+	protected function indexBefore($name,$option = array()){
 
-		if(empty($request)) $request = $this->request->data;
+		// ▼ HTTPリクエストを取得
+		$request = null;
+		if(empty($option['request'])){
+			$request = $this->request->data;
+		}else{
+			$request = $option['request'];
+		}
 
+		// ▼ オプションの初期化
+		if(empty($option['func_new_version'])) $option['func_new_version'] = 0;
+		if(!isset($option['func_csv_export'])) $option['func_csv_export'] = 1;
+		if(!isset($option['sql_dump_flg'])) $option['sql_dump_flg'] = true;
+		if(!isset($option['func_file_upload'])) $option['func_file_upload'] = 1;
+		
+		
+		// ▼ 画面に関連づいているモデル名関連を取得
 		$this->MainModel=ClassRegistry::init($name);
 		$this->main_model_name=$name;
 		$this->main_model_name_s=$this->snakize($name);
 
-		// POSTデータを取得
+		// ▼POSTデータを取得
 		$postData = null;
 		if(isset($this->request->data[$name])){
 			$postData = $this->request->data[$name];
@@ -96,20 +116,18 @@ class CrudBaseController extends AppController {
 		
  		// 新バージョンであるかチェック。新バージョンである場合セッションクリアを行う。２回目のリクエスト（画面表示）から新バージョンではなくなる。
 		$new_version_chg = 0; // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更
-		$system_version = $this->checkNewPageVersion($this->this_page_version);
-
-		if(!empty($system_version)){
-			$new_version_chg = 1;
-			$this->sessionClear();
+		if($option['func_new_version'] != 0){
+			$system_version = $this->checkNewPageVersion($this->this_page_version);
+			if(!empty($system_version)){
+				$new_version_chg = 1;
+				$this->sessionClear();
+			}
 		}
+
 		//URLクエリ（GET)にセッションクリアフラグが付加されている場合、当画面に関連するセッションをすべてクリアする。
 		if(!empty($this->request->query['sc'])){
 			$this->sessionClear();
 		}
-
-
-		//巨大データフィールドデータを取得
-		$big_data_fields = $this->big_data_fields;
 
 		//フィールドデータが画面コントローラで定義されている場合、以下の処理を行う。
 		if(!empty($this->field_data)){
@@ -128,13 +146,6 @@ class CrudBaseController extends AppController {
 
 		//検索条件情報をPOST,GET,デフォルトのいずれから取得。
 		$kjs=$this->getKjs($name);
-
-		//SQLインジェクション対策
-		foreach($kjs as $i => $kj){
-			if(!empty($kj)){
-				$kjs[$i] = str_replace("'", '\'', $kj);
-			}
-		}
 
 		//パラメータのバリデーション
 		$errMsg=$this->valid($kjs,$this->kjs_validate);
@@ -192,12 +203,15 @@ class CrudBaseController extends AppController {
 		$kjs_json = json_encode($kjs,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
 		// セッションへセット（CSVエクスポートで利用）
-		$this->Session->write($this->main_model_name_s.'_kjs',$kjs);
+		if(!empty($option['func_csv_export'])){
+			$this->Session->write($this->main_model_name_s.'_kjs',$kjs);
+		}
 		
-		$sql_dump_flg = true; // SQLダンプフラグ   true:SQLダンプを表示（デバッグモードである場合） , false:デバッグモードであってもSQLダンプを表示しない。
+		$sql_dump_flg = $option['sql_dump_flg']; // SQLダンプフラグ   true:SQLダンプを表示（デバッグモードである場合） , false:デバッグモードであってもSQLダンプを表示しない。
 		
 		// ファイルアップロード用のディレクトリパステンプレート情報
-		$dptData = $this->CbFileUpload->getDptData();
+		$dptData = array();
+		if($option['func_file_upload']) $dptData = $this->CbFileUpload->getDptData();
 		
 		
 		$crudBaseData = array(
@@ -925,7 +939,6 @@ class CrudBaseController extends AppController {
 
 		$def=$this->getDefKjs();//デフォルトパラメータ
 		$keys=$this->getKjKeys();//検索条件キーリストを取得
-
 		$kjs=$this->getParams($keys,$formKey,$def);
 
 		foreach($kjs as $k=>$v){
@@ -935,6 +948,13 @@ class CrudBaseController extends AppController {
 				$kjs[$k]=trim($v);
 			}
 
+		}
+		
+		//SQLインジェクション対策
+		foreach($kjs as $i => $kj){
+			if(!empty($kj)){
+				$kjs[$i] = str_replace("'", '\'', $kj);
+			}
 		}
 
 		return $kjs;
@@ -1101,7 +1121,7 @@ class CrudBaseController extends AppController {
 	
 
 	/**
-	 * SESSION,あるいはデフォルトからパラメータを取得する。
+	 * デフォルトからパラメータを取得する。
 	 * @param string $keys キーリスト
 	 * @param string $formKey フォームキー
 	 * @param string $def デフォルトパラメータ
@@ -1109,41 +1129,19 @@ class CrudBaseController extends AppController {
 	 */
 	protected function getParamsSD($keys,$formKey,$def){
 
-		$ses=null;
-
-
 		$prms=null;
 		foreach($keys as $key){
-			$prms[$key]=$this->getParamSD($key, $formKey,$ses,$def);
+			$prms[$key] = $def[$key];
 		}
 		return $prms;
 
 	}
 
-	/**
-	 * SESSION,あるいはデフォルトからパラメータを取得する。
-	 *
-	 * 内部処理用です。
-	 *
-	 */
-	protected function getParamSD($key,$formKey,$ses,$def){
 
-
-		$v=null;
-
-		if(isset($ses)){
-			$v=$ses[$key];
-		}else{
-
-			$v=$def[$key];
-		}
-
-		return $v;
-	}
 
 
 	/**
-	 * POST,GET,SESSION,デフォルトのいずれかからパラメータリストを取得する
+	 * POST,GET,デフォルトのいずれかからパラメータリストを取得する
 	 * @param array $keys キーリスト
 	 * @param string $formKey フォームキー
 	 * @param array $def デフォルトパラメータ
@@ -1151,11 +1149,9 @@ class CrudBaseController extends AppController {
 	 */
 	protected function getParams($keys,$formKey,$def){
 
-		$ses=null;
-
 		$prms=null;
 		foreach($keys as $key){
-			$prms[$key]=$this->getParam($key, $formKey,$ses,$def);
+			$prms[$key]=$this->getParam($key, $formKey,$def);
 		}
 
 		return $prms;
@@ -1165,12 +1161,11 @@ class CrudBaseController extends AppController {
 	 * POST,GET,SESSION,デフォルトのいずれかからパラメータを取得する。
 	 * @param string $key パラメータのキー
 	 * @param string $formKey フォームキー
-	 * @param array $ses セッションパラメータ
 	 * @param string $def デフォルトパラメータ
 	 *
 	 * @return array パラメータ
 	 */
-	protected function getParam($key,$formKey,&$ses,&$def){
+	protected function getParam($key,$formKey,&$def){
 		$v=null;
 
 		//POSTからデータ取得を試みる。
@@ -1181,11 +1176,6 @@ class CrudBaseController extends AppController {
 		//GETからデータ取得を試みる。
 		elseif(isset($this->params['url'][$key])){
 			$v=$this->params['url'][$key];
-		}
-
-		//SESSIONからデータを読み取る。
-		elseif(isset($ses[$key])){
-			$v=$ses[$key];
 		}
 
 		//デフォルトのパラメータをセット
