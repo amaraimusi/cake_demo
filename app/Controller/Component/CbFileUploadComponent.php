@@ -11,9 +11,10 @@ App::uses('Component', 'Controller');
  * 画像であるならサムネイル画像も作成する。
  * 抹消機能は不要ファイルを削除する。
  *
- * @date 2018-8-22 | 2018-9-16
- * @version 1.0.1
+ * @date 2018-8-22 | 2018-10-3
+ * @version 1.0.2
  * @histroy
+ * 1.0.2 2018-2018-10-3 ファイル名にidを付けない状態をデフォルトにする
  * 1.0.1 2018-9-16 アップロードファイルの拡張子は小文字で統一
  * 1.0.0 2018-8-22 開発
  *
@@ -58,10 +59,10 @@ class CbFileUploadComponent extends Component{
 		foreach($fuFields as $fu_field){
 			if(empty($option[$fu_field])) $option[$fu_field] = array();
 			$opt = $option[$fu_field];
-			if(empty($opt['id_flg'])) $opt['id_flg'] = true;
-			if(empty($opt['fn_flg'])) $opt['fn_flg'] = true;
-			if(empty($opt['date_flg'])) $opt['date_flg'] = false;
-			if(empty($opt['time_flg'])) $opt['time_flg'] = false;
+			if(!isset($opt['id_flg'])) $opt['id_flg'] = false;
+			if(!isset($opt['fn_flg'])) $opt['fn_flg'] = true;
+			if(!isset($opt['date_flg'])) $opt['date_flg'] = false;
+			if(!isset($opt['time_flg'])) $opt['time_flg'] = false;
 			$option[$fu_field] = $opt;
 		}
 		

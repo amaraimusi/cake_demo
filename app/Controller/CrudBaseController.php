@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.3.4";
+	var $version = "2.3.5";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -1868,63 +1868,6 @@ class CrudBaseController extends AppController {
 		return 'success';
 	}
 
-// ■■■□□□■■■□□□■■■□□□
-// 	/**
-// 	 * アップロードファイルが存在すれば、アップロードファイル名をエンティティにセットする
-// 	 * 
-// 	 * @param array $files アップロードファイル情報($_FILESを指定する)
-// 	 * @param array $ent エンティティ
-// 	 * @param string $fnField ファイル名フィールド（複数あるときは配列指定可）
-// 	 * @return array アップロードファイル名をセットしたエンティティ 
-// 	 */
-// 	protected function setUploadFileValueToEntity($files,$ent,$fnField){
-
-// 		// ファイルフィールド名リストの初期セット
-// 		$fnFields = array(); // ファイルフィールド名リスト
-// 		if(is_array($fnField)){
-// 			$fnFields = $fnField;
-// 		}else{
-// 			$fnFields[] = $fnField;
-// 		}
-
-// 		// アップロードファイル情報が空ならエンティティから該当フィールドを除去して処理抜け
-// 		if(empty($files)){
-// 			foreach($fnFields as $fu_key){
-// 				unset($ent[$fu_key]);
-// 			}
-
-// 			return array(
-// 				'ent' => $ent,
-// 				'fuKeys' => array(),
-// 			);
-// 		}
-
-// 		$fuKeys = array();// アップロードファイル関連のキーリスト
-// 		foreach($fnFields as $fu_key){
-// 			if(empty($files[$fu_key])){
-// 				continue;
-// 			}
-// 			$fData = $files[$fu_key];
-
-// 			if(!empty($fData["name"]) && $fData["name"] != ''){
-// 				$fn = $fData["name"];
-// 				$ent[$fu_key] = $fn;
-// 				$fuKeys[] = $fu_key;
-// 			}
-
-// 			// アップロードするファイルがないなら、エンティティからアップロードファイルのフィールドを除去する。
-// 			else{
-// 				unset($ent[$fu_key]);
-// 			}
-// 		}
-
-// 		$res = array(
-// 				'ent' => $ent,
-// 				'fuKeys' => $fuKeys,
-// 		);
-
-// 		return $res;
-// 	}
 
 	/**
 	 * エンティティ中のアップロード系フィールドのファイル名を変換する。
@@ -2061,6 +2004,16 @@ class CrudBaseController extends AppController {
 		}
 		
 		return false;
+	}
+	
+	
+	
+	/**
+	 * ファイルアップロード用のディレクトリパステンプレート情報を取得
+	 * @return array ディレクトリパステンプレート情報
+	 */
+	public function getDptData(){
+		return $this->CbFileUpload->getDptData();
 	}
 
 }

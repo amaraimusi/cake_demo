@@ -8,8 +8,8 @@ App::uses('PagenationForCake', 'Vendor/Wacg');
  * @note
  * ネコ画面ではネコ一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2018-4-25 削除のバグを主末井
- * @version 3.0.1
+ * @date 2015-9-16 | 2018-10-3 ファイル抹消処理
+ * @version 3.1.0
  *
  */
 class NekoController extends CrudBaseController {
@@ -244,6 +244,8 @@ class NekoController extends CrudBaseController {
 		if($eliminate_flg == 0){
 			$ent = $this->Neko->saveEntity($ent,$regParam); // 更新
 		}else{
+			$dtpData = $this->getDptData(); // ディレクトリパステンプレート情報
+			$this->Neko->eliminateFiles($ent['id'],'img_fn',$dtpData); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
 			$this->Neko->delete($ent['id']); // 削除
 		}
 		$this->Neko->commit();//コミット
