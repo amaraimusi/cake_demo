@@ -12,8 +12,8 @@
  * - ページネーション情報としてページ目次、ソート用リンク、データ件数等を出力する。
  * 
  * @author k-uehara
- * @version 1.5.1 最戻リンクのバグを修正
- * @date 2010-4-1 | 2018-5-22
+ * @version 1.5.2 
+ * @date 2010-4-1 | 2018-10-5
  *
  */
 class PagenationForCake{
@@ -32,6 +32,8 @@ class PagenationForCake{
 	 * - $data['page_index_html'] ページ目次を生成するHTML
 	 * - $data['page_prev_link'] 前へリンク
 	 * - $data['page_next_link'] 戻りリンク
+	 * - $data['page_top_link'] トップリンク
+	 * - $data['page_last_link'] ラストリンク
 	 * - $data['sorts'][フィールド名] HTMLテーブルをソートするリンク
 	 * - $data['page_no'] 現在ページ番号
 	 * - $data['all_data_cnt'] 検索データ件数
@@ -51,6 +53,8 @@ class PagenationForCake{
 		$pages['page_index_html'] = $res['mokuji'];;
 		$pages['page_prev_link'] = $res['page_prev_link'];
 		$pages['page_next_link'] = $res['page_next_link'];
+		$pages['page_top_link'] = $res['page_top_link'];
+		$pages['page_last_link'] = $res['page_last_link'];
 		$pages['sorts']=$sorts;
 		$pages['page_no']=$pages['page_no'];//現在ページ
 		$pages['all_data_cnt']=$all_data_cnt;//全データ数
@@ -201,35 +205,41 @@ class PagenationForCake{
 		}
 
 		//▼最戻リンクを作成
+		$page_top_link = '';
 		$rtnMax='&lt&lt';
 		if($page_no>0){
 			$url = "{$pageName}?page_no=0{$strParams}&act_flg=2&{$kjs_uq}";
+			$page_top_link = $url;
 			$rtnMax="<a href='{$url}'>{$rtnMax}</a>";
 		}
 
 		//▼単戻リンクを作成
 		$rtn1='&lt';
-		$page_prev_link="";
+		$page_prev_link = '';
 		if($page_no>0){
 			$p=$page_no-1;
 			$url = "{$pageName}?page_no={$p}{$strParams}&act_flg=2&{$kjs_uq}";
-			$rtn1="<a href='{$url}'>{$rtn1}</a>";
+			$page_prev_link = $url;
+			$rtn1 = "<a href='{$url}'>{$rtn1}</a>";
 		}
 
 		//▼単進リンクを作成
-		$page_next_link="";
+		$page_next_link = '';
 		$next1='&gt';
 		if($page_no<$lastPageNo){
 			$p=$page_no+1;
 			$url = "{$pageName}?page_no={$p}{$strParams}&act_flg=2&{$kjs_uq}";
-			$next1="<a href='{$url}'>{$next1}</a>";
+			$page_next_link = $url;
+			$next1 = "<a href='{$url}'>{$next1}</a>";
 		}
 
 		//▼最進リンクを作成
+		$page_last_link = '';
 		$nextMax='&gt&gt';
 		if($page_no<$lastPageNo){
 			$p=$lastPageNo;
 			$url = "{$pageName}?page_no={$p}{$strParams}&act_flg=2&{$kjs_uq}";
+			$page_last_link = $url;
 			$nextMax="<a href='$url'>{$nextMax}</a>";
 		}
 
@@ -266,6 +276,8 @@ class PagenationForCake{
 				'mokuji'=>$html,
 				'page_prev_link'=>$page_prev_link,
 				'page_next_link'=>$page_next_link,
+				'page_top_link'=>$page_top_link,
+				'page_last_link'=>$page_last_link,
 				
 		);
 

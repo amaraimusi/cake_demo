@@ -10,22 +10,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<?php
 		echo $this->Html->meta('icon');
-
-		echo $this->Html->css(array(
-			'bootstrap.min',
-			'bootstrap-theme.min',
-			'jquery-ui.min',
-			'Layouts/default',
-			'CrudBase/common',
-		));
-
-
-		echo $this->Html->script(array(
-			'jquery-2.1.4.min',
-			'bootstrap.min',
-			'jquery-ui.min',
-			'Layouts/default',
-			));
 		
 		echo $this->fetch('meta');
 		echo $this->fetch('css');
@@ -37,7 +21,8 @@
 <body>
 
 	<?php 
-		echo $this->element('header');
+	if(empty($header)) $header = 'header';
+	echo $this->element($header);
 	?>
 	
 	<div class="container">

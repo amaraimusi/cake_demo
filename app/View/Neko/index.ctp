@@ -87,7 +87,11 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 			
 		<button type="button" class="btn btn-warning" onclick="newInpShow(this);">
 			<span class="glyphicon glyphicon-plus-sign" title="新規入力"></span></button>
+		
 	</div>
+		
+	<a href="neko/front_a" class="btn btn-info btn-xs" target="blank" >フロント画面</a>
+	
 </div><!-- cb_func_line -->
 
 <div style="clear:both"></div>

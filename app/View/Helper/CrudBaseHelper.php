@@ -79,6 +79,11 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function getCssList(){
 		return array(
+				'bootstrap.min',
+				'bootstrap-theme.min',
+				'jquery-ui.min',
+				'Layouts/default',
+				'CrudBase/common',
 				'jquery.datetimepicker.min',		// 日時ピッカー
 				'clm_show_hide',					// 列表示切替
 				'YmpickerWrap',						// 年月ピッカーのラッパー
@@ -94,6 +99,10 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function getJsList(){
 		return array(
+				'jquery-2.1.4.min',
+				'bootstrap.min',
+				'jquery-ui.min',
+				'Layouts/default',
 				'clm_show_hide',				// 列表示切替
 				'date_ex',						// 日付関連関数集
 				'jquery.ui.ympicker',			// 年月選択ダイアログ

@@ -8,8 +8,8 @@ App::uses('PagenationForCake', 'Vendor/Wacg');
  * @note
  * ネコ画面ではネコ一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2018-10-3 ファイル抹消処理
- * @version 3.1.0
+ * @date 2015-9-16 | 2018-10-4 フロントAページ追加
+ * @version 3.2.0
  *
  */
 class NekoController extends CrudBaseController {
@@ -17,10 +17,10 @@ class NekoController extends CrudBaseController {
 	/// 名称コード
 	public $name = 'Neko';
 	
-	/// 使用しているモデル
+	/// 使用しているモデル[CakePHPの機能]
 	public $uses = array('Neko','CrudBase');
 	
-	/// オリジナルヘルパーの登録
+	/// オリジナルヘルパーの登録[CakePHPの機能]
 	public $helpers = array('CrudBase');
 
 	/// デフォルトの並び替え対象フィールド
@@ -106,6 +106,53 @@ class NekoController extends CrudBaseController {
 
 
 	}
+	
+	
+	/**
+	 * フロントページA
+	 */
+	public function front_a(){
+		
+		// フロントA用のコンポーネント
+		$this->NekoFrontA = $this->Components->load('NekoFrontA');
+
+		
+		
+		
+		// CrudBase共通処理（前）
+		$option = array(
+				'func_csv_export'=>0, // CSVエクスポート機能 0:OFF ,1:ON
+				'func_file_upload'=>1, // ファイルアップロード機能 0:OFF , 1:ON
+		);
+		$crudBaseData = $this->indexBefore('Neko',$option);//indexアクションの共通先処理(CrudBaseController)
+		
+		// ディレクトリパステンプレートを調整する(パスはindex用の相対パスになっているのでズレを調整しなければならない）
+		$crudBaseData['dptData'] = $this->NekoFrontA->adjustDpt($crudBaseData['dptData']);
+		
+		//一覧データを取得
+		$data = $this->Neko->findData($crudBaseData);
+		
+		// CrudBase共通処理（後）
+		$crudBaseData = $this->indexAfter($crudBaseData,['method_url'=>'front_a']);//indexアクションの共通後処理
+		
+		// CBBXS-1020
+		$nekoGroupList = $this->Neko->getNekoGroupList();
+		$neko_group_json = json_encode($nekoGroupList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
+		$this->set(array('nekoGroupList' => $nekoGroupList,'neko_group_json' => $neko_group_json));
+		// CBBXE
+		
+		$this->set($crudBaseData);
+		$this->setCommon();//当画面系の共通セット
+		$this->set(array(
+				'header' => 'front_a_header',
+				'title_for_layout'=>'ネコ',
+				'data'=> $data,
+		));
+		
+		
+		
+	}
+	
 
 	/**
 	 * 詳細画面
@@ -404,7 +451,7 @@ class NekoController extends CrudBaseController {
 		$new_version_flg = $this->checkNewPageVersion($this->this_page_version);
 		
 		$this->set(array(
-				'header' => 'header_demo',
+				'header' => 'header',
 				'new_version_flg' => $new_version_flg, // 当ページの新バージョンフラグ   0:バージョン変更なし  1:新バージョン
 				'this_page_version' => $this->this_page_version,// 当ページのバージョン
 		));
