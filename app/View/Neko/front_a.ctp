@@ -39,7 +39,16 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 <thead>
 <tr>
-
+	<!-- CBBXS-1050 -->
+	<th>画像</th>
+	<th>説明</th>
+	<th>ID</th>
+	<th>ネコ名</th>
+	<th>ネコ日付</th>
+	<th>ネコ日時</th>
+	<th>更新日</th>
+	<th>ネコ数値</th>
+	<!-- CBBXE -->
 </tr>
 </thead>
 <tbody>
@@ -51,6 +60,8 @@ $this->CrudBase->startClmSortMode($field_data);
 foreach($data as $i=>$ent){
 
 	echo "<tr id=i{$ent['id']}>";
+	
+	// CBBXS-1051
 	$this->FrontA->tdImage($ent,'img_fn','td_image');
 	$this->FrontA->tdNote($ent,'note','td_note');
 	$this->FrontA->tdPlain($ent,'id');
@@ -59,9 +70,8 @@ foreach($data as $i=>$ent){
 	$this->FrontA->tdPlain($ent,'neko_dt');
 	$this->FrontA->tdPlain($ent,'modified');
 	$this->FrontA->tdPlain($ent,'neko_val');
+	// CBBXE
 	
-	$this->CrudBase->tdsEchoForClmSort();// 列並に合わせてTD要素群を出力する
-
 	echo "</tr>";
 }
 
