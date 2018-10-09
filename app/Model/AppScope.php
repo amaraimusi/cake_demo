@@ -19,7 +19,7 @@ class AppScope extends Model {
 	 *  アプリケーションスコープテーブルからIDに紐づくエンティティを取得する。
 	 *  アプリケーションスコープをDBを利用して擬似的に実現している。
 	 * @param $id
-	 * @return アプリケーションスコープエンティティ
+	 * @return array アプリケーションスコープエンティティ
 	 */
 	public function getEntById($id){
 
@@ -47,7 +47,7 @@ class AppScope extends Model {
 	
 	/**
 	 * アプリケーションスコープテーブルから変数名または変数名配列を指定して、データセットを取得する。
-	 * @param $var_names 変数名または変数名配列
+	 * @param array $var_names 変数名または変数名配列
 	 * @return データセット(変数名=>値)
 	 */
 	public function getValue($var_names){

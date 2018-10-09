@@ -5,8 +5,8 @@ App::uses('CrudBase', 'Model');
 /**
  * ネコのCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-10-3
- * @version 3.1.0
+ * @date 2015-9-16 | 2018-10-8
+ * @version 3.1.1
  *
  */
 class Neko extends AppModel {
@@ -313,10 +313,12 @@ class Neko extends AppModel {
 	 * 
 	 * @param int $id
 	 * @param string $fn_field_strs ファイルフィールド群文字列（複数ある場合はコンマで連結）
-	 * @param array $dtpData ディレクトリパステンプレート情報
+	 * @param array $ent エンティティ
+	 * @param string $dp_tmpl ディレクトリパス・テンプレート
+	 * @param string $viaDpFnMap 中継パスマッピング
 	 */
-	public function eliminateFiles($id,$fn_field_strs,&$dtpData){
-		$this->CrudBase->eliminateFiles($this,$id,$fn_field_strs,$dtpData);
+	public function eliminateFiles($id, $fn_field_strs, &$ent, $dp_tmpl, $viaDpFnMap){
+		$this->CrudBase->eliminateFiles($this, $id, $fn_field_strs, $ent, $dp_tmpl, $viaDpFnMap);
 	}
 	
 	

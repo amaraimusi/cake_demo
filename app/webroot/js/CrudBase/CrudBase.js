@@ -12,9 +12,10 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-10-2
- * @version 2.5.0
+ * @date 2016-9-21 | 2018-10-9
+ * @version 2.5.1
  * @histroy
+ * 2018-10-9 v2.5.1 経由ディレクトリパスに対応
  * 2018-10-2 v2.5.0 フォームドラッグとリサイズ
  * 2018-9-19 v2.4.5 ファイルアップロード機能：DnDに対応
  * 2018-9-18 v2.4.4 フォームフィット機能を追加
@@ -42,6 +43,7 @@
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない（デフォルト）  1:フォームの外側をクリックすると自動的に閉じる
  *  - ni_tr_place	新規入力追加場所フラグ 0:末尾 , 1:先頭
  *  - drag_and_resize_flg フォームドラッグとリサイズのフラグ 0:OFF , 1:ON(デフォルト)
+ *  - viaDpFnMap 経由パスマッピング
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
 
@@ -1766,7 +1768,7 @@ class CrudBase{
 		this.entToBinds(tr,ent,'name',option);// エンティティをname属性バインド要素群へセットする
 		
 		// 画像をTR要素に表示する
-		this.cbFileUploadComp.setImageToTr(tr,ent);
+		this.cbFileUploadComp.setImageToTr(tr,ent,this.param.viaDpFnMap);
 	}
 
 	_nl2brEx(v){
@@ -2213,6 +2215,12 @@ class CrudBase{
 		if(param['device_type'] == null){
 			param['device_type'] = this.judgDeviceType(); // デバイスタイプ（PC/SP）の判定
 		}
+
+		// 経由パスマッピング
+		if(param['viaDpFnMap'] == null){
+			var via_dp_fn_json = jQuery('#via_dp_fn_json').val();
+			param['viaDpFnMap'] = jQuery.parseJSON(via_dp_fn_json);
+		}
 		
 		
 		if(param['drag_and_resize_flg'] == null) param['drag_and_resize_flg'] = 1;
@@ -2352,7 +2360,7 @@ class CrudBase{
 			var elms = bindElms[field];
 			for(var e_i in elms){
 				var elm = elms[e_i];
-				this.setValueToElement(elm,field,ent[field],option); // バインド要素リストを取得する
+				this.setValueToElement(elm,field,ent[field],ent,option); // バインド要素リストを取得する
 			}
 		}
 	}
@@ -2426,6 +2434,7 @@ class CrudBase{
 	 * @param elm(string or jQuery object) 要素オブジェクト、またはセレクタ
 	 * @param field フィールド
 	 * @param val1 要素にセットする値
+	 * @param ent エンティティ
 	 * @param option
 	 *  - par 親要素(jQuery object)
 	 *  - form_type フォーム種別
@@ -2433,7 +2442,7 @@ class CrudBase{
 	 *  - disFilData object[フィールド]{フィルタータイプ,オプション} 表示フィルターデータ
 	 *  - dis_fil_flg 表示フィルター適用フラグ 0:OFF(デフォルト) , 1:ON
 	 */
-	setValueToElement(elm,field,val1,option){
+	setValueToElement(elm,field,val1,ent,option){
 		
 		if(!(elm instanceof jQuery)) elm = jQuery(elm);// 要素がjQueryオブジェクトでなければ、jQueryオブジェクトに変換。
 		
@@ -2466,7 +2475,7 @@ class CrudBase{
 			if(typ=='file'){
 
 				// アップロードファイル要素用の入力フォームセッター
-				this._setToFormForFile(option.form_type,option.par,field,val1,option);
+				this._setToFormForFile(option.form_type,option.par,field,val1,ent,option);
 
 			}
 
@@ -2678,11 +2687,12 @@ class CrudBase{
 	 * @param jQuery form フォーム要素
 	 * @param string field フィールド
 	 * @param variant v 値
+	 * @param ent データのエンティティ
 	 * @param object option editShow(),newInpShowからのoption 
 	 */
-	_setToFormForFile(form_type,form,field,v,option){
+	_setToFormForFile(form_type,form,field,v,ent,option){
 
-		// フィールドに紐づくfile要素のid属性を取得する
+		// ▼フィールドに紐づくfile要素のid属性を取得する
 		var fue_id = null; // file要素のid属性
 		for(var i in this.fieldData){
 			var fEnt = this.fieldData[i];
@@ -2696,10 +2706,16 @@ class CrudBase{
 			}
 		}
 		
-
+		// ▼経由ディレクトリパスを取得
+		var via_dp = '';
+		if(this.param.viaDpFnMap[field] != null){
+			var via_dp_field = this.param.viaDpFnMap[field];
+			via_dp = ent[via_dp];
+		}
+		
 
 		// file要素にファイルプレビューを表示する
-		var res = this.cbFileUploadComp.setFilePaths(fue_id,v);
+		var res = this.cbFileUploadComp.setFilePaths(fue_id,v,via_dp);
 		var dpData = res['dpData']
 		
 

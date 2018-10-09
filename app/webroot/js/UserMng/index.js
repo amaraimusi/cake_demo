@@ -86,10 +86,7 @@ function init(){
 
 	// CBBXE
 	
-	// ■■■□□□■■■□□□■■■□□□■■■
-//	// CSVインポートの初期化  <CrudBase/index.js>
-//	initCsvImportFu('user_mng/csv_fu');
-	
+
 }
 
 /**

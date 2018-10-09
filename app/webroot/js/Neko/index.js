@@ -96,10 +96,6 @@ function init(){
 	$("#new_inp_neko_date").datepicker({dateFormat:'yy-mm-dd'});
 	$("#edit_neko_date").datepicker({dateFormat:'yy-mm-dd'});
 	// CBBXE
-
-		// ■■■□□□■■■□□□■■■□□□■■■
-//	// CSVインポートの初期化  <CrudBase/index.js>
-//	initCsvImportFu('neko/csv_fu');
 	
 }
 

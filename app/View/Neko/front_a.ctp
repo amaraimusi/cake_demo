@@ -3,7 +3,8 @@
 $this->FrontA = $this->Helpers->load('FrontA');// ヘルパー
 $this->FrontA->init(array(
 		'data'=>$data,
-		'dptData'=>$dptData,
+		'dp_tmpl'=>$dp_tmpl,
+		'viaDpFnMap'=>$viaDpFnMap,
 ));
 
 // CSSファイルのインクルード

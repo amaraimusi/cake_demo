@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.4.2";
+	var $version = "2.5.0";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -50,6 +50,12 @@ class CrudBaseController extends AppController {
 	
 	// バージョン情報
 	public $verInfo = array();
+	
+	/// リソース保存先・ディレクトリパス・テンプレート
+	public $dp_tmpl = 'rsc/img/%field/%via_dp/%dn/';
+	
+	/// 経由パスマッピング
+	public $viaDpFnMap = array();
 	
 	public $components = ['CbFileUpload']; // ファイルアップロードコンポーネント [CakePHPの機能]
 	
@@ -209,9 +215,8 @@ class CrudBaseController extends AppController {
 		
 		$sql_dump_flg = $option['sql_dump_flg']; // SQLダンプフラグ   true:SQLダンプを表示（デバッグモードである場合） , false:デバッグモードであってもSQLダンプを表示しない。
 		
-		// ファイルアップロード用のディレクトリパステンプレート情報
-		$dptData = array();
-		if($option['func_file_upload']) $dptData = $this->CbFileUpload->getDptData();
+		// 経由パスマッピングJSON
+		$via_dp_fn_json = json_encode($this->viaDpFnMap,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		
 		
 		$crudBaseData = array(
@@ -231,7 +236,9 @@ class CrudBaseController extends AppController {
 				'pages'=>$pages, // ページネーションパラメータ
 				'act_flg'=>$act_flg, // アクティブフラグ	null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
 				'sql_dump_flg'=>$sql_dump_flg, // SQLダンプフラグ
-				'dptData' => $dptData, // ファイルアップロード用のディレクトリパステンプレート情報
+				'dp_tmpl' => $this->dp_tmpl, // リソース保存先・ディレクトリパス・テンプレート
+				'viaDpFnMap' => $this->viaDpFnMap , // 経由パスマッピング
+				'via_dp_fn_json' => $via_dp_fn_json, // 経由パスマッピングJSON
 		);
 		
 		
@@ -1749,15 +1756,17 @@ class CrudBaseController extends AppController {
 	/**
 	 * ファイルアップロード関連の一括作業
 	 * @param string $form_type フォーム種別  new_inp,edit,eliminate
+	 * @param string $dp_tmpl リソース保存先・ディレクトリパス・テンプレート
+	 * @param array $viaDpFnMap 経由パスマッピング
 	 * @param array $ent 更新エンティティ
 	 * @param array $FILES $_FILES
 	 * @param array $option
 	 * - FileUploadK.phpのオプション設定
 	 *
 	 */
-	protected function workFileUploads($form_type,&$ent,&$FILES,&$option){
+	protected function workFileUploads($form_type,$dp_tmpl,$viaDpFnMap,&$ent,&$FILES,$option = array()){
 		
-			return $this->CbFileUpload->workAllAtOnce($form_type,$ent,$FILES,$option);
+		return $this->CbFileUpload->workAllAtOnce($form_type,$dp_tmpl,$viaDpFnMap,$ent,$FILES,$option);
 	}
 	
 	
@@ -1866,14 +1875,5 @@ class CrudBaseController extends AppController {
 		return false;
 	}
 	
-	
-	
-	/**
-	 * ファイルアップロード用のディレクトリパステンプレート情報を取得
-	 * @return array ディレクトリパステンプレート情報
-	 */
-	public function getDptData(){
-		return $this->CbFileUpload->getDptData();
-	}
 
 }

@@ -8,8 +8,8 @@ App::uses('PagenationForCake', 'Vendor/Wacg');
  * @note
  * ネコ画面ではネコ一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2018-10-4 フロントAページ追加
- * @version 3.2.0
+ * @date 2015-9-16 | 2018-10-8
+ * @version 3.2.1
  *
  */
 class NekoController extends CrudBaseController {
@@ -45,7 +45,14 @@ class NekoController extends CrudBaseController {
 	public $edit_validate = array();
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '1.9.1'; 
+	public $this_page_version = '1.9.1'; 	/// リソース保存先・ディレクトリパス・テンプレート
+	
+	/// リソース保存先・ディレクトリパス・テンプレート
+	public $dp_tmpl = 'rsc/img/%field/%via_dp/%dn/';
+	
+	/// 経由パスマッピング
+	public $viaDpFnMap = array(); // 例　'img_fn'=>'img_via_dp'
+	//public $viaDpFnMap = array('img_fn'=>'neko_group');
 
 
 
@@ -86,15 +93,6 @@ class NekoController extends CrudBaseController {
 		$this->set(array('nekoGroupList' => $nekoGroupList,'neko_group_json' => $neko_group_json));
 		// CBBXE
 		
-// 		// ■■■□□□■■■□□□■■■□□□テスト
-// 		App::uses('DbExport','Vendor/Wacg');
-// 		App::uses('DaoForCake','Model');
-// 		$dao = new DaoForCake();
-// 		$dbExp = new DbExport();
-// 		$dbExp->test($dao);
-		
-	
-		
 		$this->set($crudBaseData);
 		$this->set(array(
 			'title_for_layout'=>'ネコ',
@@ -124,7 +122,7 @@ class NekoController extends CrudBaseController {
 		$crudBaseData = $this->indexBefore('Neko',$option);//indexアクションの共通先処理(CrudBaseController)
 		
 		// ディレクトリパステンプレートを調整する(パスはindex用の相対パスになっているのでズレを調整しなければならない）
-		$crudBaseData['dptData'] = $this->NekoFrontA->adjustDpt($crudBaseData['dptData']);
+		$crudBaseData['dp_tmpl'] = $this->NekoFrontA->adjustDpt($crudBaseData['dp_tmpl']);
 		
 		//一覧データを取得
 		$data = $this->Neko->findData($crudBaseData);
@@ -149,41 +147,6 @@ class NekoController extends CrudBaseController {
 		
 		
 	}
-	
-
-	/**
-	 * 詳細画面
-	 * 
-	 * ネコ情報の詳細を表示します。
-	 * この画面から入力画面に遷移できます。
-	 * 
-	 */
-	public function detail() {
-		
-		$res=$this->edit_before('Neko');
-		$ent=$res['ent'];
-	
-
-		$this->set(array(
-				'title_for_layout'=>'ネコ・詳細',
-				'ent'=>$ent,
-		));
-		
-		//当画面系の共通セット
-		$this->setCommon();
-	
-	}
-
-
-
-
-
-
-
-
-
-
-
 
 
 	
@@ -235,8 +198,7 @@ class NekoController extends CrudBaseController {
 		$this->Neko->commit();//コミット
 		
 		// ファイルアップロード関連の一括作業
-		$option = array();
-		$res = $this->workFileUploads($form_type, $ent, $_FILES, $option);
+		$res = $this->workFileUploads($form_type,$this->dp_tmpl, $this->viaDpFnMap, $ent, $_FILES, $option);
 		if(!empty($res['err_msg'])) $errs[] = $res['err_msg'];
 		
 		
@@ -288,8 +250,7 @@ class NekoController extends CrudBaseController {
 		if($eliminate_flg == 0){
 			$ent = $this->Neko->saveEntity($ent,$regParam); // 更新
 		}else{
-			$dtpData = $this->getDptData(); // ディレクトリパステンプレート情報
-			$this->Neko->eliminateFiles($ent['id'],'img_fn',$dtpData); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
+			$this->Neko->eliminateFiles($ent['id'], 'img_fn', $ent, $this->dp_tmpl, $this->viaDpFnMap); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
 			$this->Neko->delete($ent['id']); // 削除
 		}
 		$this->Neko->commit();//コミット
