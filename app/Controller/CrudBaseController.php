@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.5.0";
+	var $version = "2.5.1";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -153,13 +153,13 @@ class CrudBaseController extends AppController {
 		//検索条件情報をPOST,GET,デフォルトのいずれから取得。
 		$kjs=$this->getKjs($name);
 
-		//パラメータのバリデーション
-		$errMsg=$this->valid($kjs,$this->kjs_validate);
-
-		//入力エラーがあった場合。
-		if(isset($errMsg)){
+		// 検索条件情報のバリデーション
+		$errTypes = array();
+		$errMsg = $this->valid($kjs,$this->kjs_validate);
+		if(isset($errMsg)){//入力エラーがあった場合。
 			//再表示用の検索条件情報をSESSION,あるいはデフォルトからパラメータを取得する。
 			$kjs= $this->getKjsSD($name);
+			$errTypes[] = 'kjs_err';
 		}
 		
 		//検索ボタンが押された場合
@@ -218,6 +218,8 @@ class CrudBaseController extends AppController {
 		// 経由パスマッピングJSON
 		$via_dp_fn_json = json_encode($this->viaDpFnMap,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		
+		// エラータイプJSON
+		$err_types_json = json_encode($errTypes,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		
 		$crudBaseData = array(
 				'field_data'=>$active, // アクティブフィールドデータ
@@ -225,6 +227,8 @@ class CrudBaseController extends AppController {
 				'kjs_json'=>$kjs_json, // 検索条件JSON
 				'def_kjs_json'=>$def_kjs_json, // デフォルト検索情報JSON
 				'errMsg'=>$errMsg, // エラーメッセージ
+				'errTypes' => $errTypes, // エラータイプ
+				'err_types_json' => $err_types_json, // エラータイプJSON
 				'version'=>$this->version, // CrudBaseのバージョン
 				'userInfo'=>$userInfo, // ユーザー情報
 				'new_version_chg'=>$new_version_chg, // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更

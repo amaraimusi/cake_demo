@@ -13,5 +13,6 @@ $this->CrudBase->hiddenX('def_kjs_json',$def_kjs_json );
 $this->CrudBase->hiddenX('kjs_json',$kjs_json );
 $this->CrudBase->hiddenX('dp_tmpl',$dp_tmpl);
 $this->CrudBase->hiddenX('via_dp_fn_json',$via_dp_fn_json);
+$this->CrudBase->hiddenX('err_types_json',$err_types_json);
 
 ?>

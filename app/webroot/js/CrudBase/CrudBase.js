@@ -13,7 +13,7 @@
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
  * @date 2016-9-21 | 2018-10-9
- * @version 2.5.1
+ * @version 2.5.2
  * @histroy
  * 2018-10-9 v2.5.1 経由ディレクトリパスに対応
  * 2018-10-2 v2.5.0 フォームドラッグとリサイズ
@@ -43,7 +43,7 @@
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない（デフォルト）  1:フォームの外側をクリックすると自動的に閉じる
  *  - ni_tr_place	新規入力追加場所フラグ 0:末尾 , 1:先頭
  *  - drag_and_resize_flg フォームドラッグとリサイズのフラグ 0:OFF , 1:ON(デフォルト)
- *  - viaDpFnMap 経由パスマッピング
+ *  
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
 
@@ -104,6 +104,9 @@ class CrudBase{
 		
 		// フォームをドラッグ移動およびリサイズできるようにする。
 		this._formDragAndResizeSetting();
+		
+		// エラータイプリストによるエラー処理
+		this._errByErrTypes();
 		
 	}
 	
@@ -2221,6 +2224,12 @@ class CrudBase{
 			var via_dp_fn_json = jQuery('#via_dp_fn_json').val();
 			param['viaDpFnMap'] = jQuery.parseJSON(via_dp_fn_json);
 		}
+
+		// エラータイプリスト
+		if(param['errTypes'] == null){
+			var err_types_json = jQuery('#err_types_json').val();
+			param['errTypes'] = jQuery.parseJSON(err_types_json);
+		}
 		
 		
 		if(param['drag_and_resize_flg'] == null) param['drag_and_resize_flg'] = 1;
@@ -3782,6 +3791,17 @@ class CrudBase{
 		//リサイズ機能を組み込む
 		form.resizable();
 
+	}
+	
+	/**
+	 * エラータイプリストによるエラー処理
+	 */
+	_errByErrTypes(){
+
+		// 検索条件エラーが存在する場合、詳細検索フォームを表示する
+		if(this.param.errTypes.indexOf('kjs_err') >= 0){
+			jQuery('.cb_kj_detail').show();
+		}
 	}
 	
 	
