@@ -90,12 +90,12 @@ function init(){
 		}
 	});
 	
-	
-	// 日付カレンダーのセット
-	// CBBXS-1030
-	$("#new_inp_neko_date").datepicker({dateFormat:'yy-mm-dd'});
-	$("#edit_neko_date").datepicker({dateFormat:'yy-mm-dd'});
-	// CBBXE
+	// ■■■□□□■■■□□□■■■□□□
+//	// 日付カレンダーのセット
+//	// CBBXS-1030
+//	$("#new_inp_neko_date").datepicker({dateFormat:'yy-mm-dd'});
+//	$("#edit_neko_date").datepicker({dateFormat:'yy-mm-dd'});
+//	// CBBXE
 	
 }
 

@@ -221,7 +221,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ日付: </td><td>
-			<input id="new_inp_neko_date" type="text" name="neko_date" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+			<input type="text" name="neko_date" class="valid datepicker" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
 			<label class="text-danger" for="neko_date"></label>
 		</td></tr>
 
@@ -288,12 +288,12 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ名: </td><td>
-			<input type="text" name="neko_name" class="valid" value=""  maxlength="255" title="255文字以内で入力してください" />
+			<input type="text" name="neko_name" class="valid " value=""  maxlength="255" title="255文字以内で入力してください" />
 			<label class="text-danger" for="neko_name"></label>
 		</td></tr>
 
 		<tr><td>ネコ日付: </td><td>
-			<input id="edit_neko_date" type="text" name="neko_date" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+			<input type="text" name="neko_date" class="valid datepicker" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
 			<label class="text-danger" for="neko_date"></label>
 		</td></tr>
 
@@ -303,7 +303,7 @@ foreach($data as $i=>$ent){
 		</td></tr>
 
 		<tr><td>ネコ日時: </td><td>
-			<input type="text" name="neko_dt" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
+			<input type="text" name="neko_dt" class="valid " value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
 			<label class="text-danger" for="neko_dt"></label>
 		</td></tr>
 

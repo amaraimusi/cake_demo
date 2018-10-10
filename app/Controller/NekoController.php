@@ -198,7 +198,7 @@ class NekoController extends CrudBaseController {
 		$this->Neko->commit();//コミット
 		
 		// ファイルアップロード関連の一括作業
-		$res = $this->workFileUploads($form_type,$this->dp_tmpl, $this->viaDpFnMap, $ent, $_FILES, $option);
+		$res = $this->workFileUploads($form_type,$this->dp_tmpl, $this->viaDpFnMap, $ent, $_FILES);
 		if(!empty($res['err_msg'])) $errs[] = $res['err_msg'];
 		
 		

@@ -13,7 +13,7 @@
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
  * @date 2016-9-21 | 2018-10-9
- * @version 2.5.2
+ * @version 2.5.3 
  * @histroy
  * 2018-10-9 v2.5.1 経由ディレクトリパスに対応
  * 2018-10-2 v2.5.0 フォームドラッグとリサイズ
@@ -96,6 +96,9 @@ class CrudBase{
 
 		// CrudBase・ファイルアップロードコンポーネント
 		this.cbFileUploadComp = this._factoryCbFileUploadComponent();
+		
+		// カレンダー日付ピッカー・ラッパーコンポーネン
+		this.datepickerWrap = this._factoryDatepickerWrap();
 		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
@@ -191,36 +194,36 @@ class CrudBase{
 		
 	}
 
-
-	/**
-	 * ガシェット・コンポーネントのファクトリーメソッド
-	 * @return CrudBaseGadgetKj ガシェット・コンポーネント
-	 */
-	_factoryCrudBaseGadgetKj(){
-		
-		var cbGadgetKj;
-
-		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
-		var t = typeof CrudBaseGadgetKj;
-		if(t == null || t == 'undefined'){
-			// 「空」実装
-			cbGadgetKj = {
-					'reset':function(){}
-			}
-			return cbGadgetKj
-		}
-		
-		// 検索条件入力要素にガシェットを組み込む
-		var kjElms = this.getKjElms(); // 検索条件入力要素リストを取得する
-		cbGadgetKj = new CrudBaseGadgetKj(kjElms); // ガシェット管理クラス
-		cbGadgetKj.onGadgetsToElms();// 各検索入力要素にガシェットを組み込み
-		
-		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
-		jQuery.datetimepicker.setLocale('ja');// 日時ピッカーを日本語化<jquery.datetimepicker.full.min.js>
-
-		return cbGadgetKj;
-
-	}
+// ■■■□□□■■■□□□■■■□□□
+//	/**
+//	 * ガシェット・コンポーネントのファクトリーメソッド
+//	 * @return CrudBaseGadgetKj ガシェット・コンポーネント
+//	 */
+//	_factoryCrudBaseGadgetKj(){
+//		
+//		var cbGadgetKj;
+//
+//		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+//		var t = typeof CrudBaseGadgetKj;
+//		if(t == null || t == 'undefined'){
+//			// 「空」実装
+//			cbGadgetKj = {
+//					'reset':function(){}
+//			}
+//			return cbGadgetKj
+//		}
+//		
+//		// 検索条件入力要素にガシェットを組み込む
+//		var kjElms = this.getKjElms(); // 検索条件入力要素リストを取得する
+//		cbGadgetKj = new CrudBaseGadgetKj(kjElms); // ガシェット管理クラス
+//		cbGadgetKj.onGadgetsToElms();// 各検索入力要素にガシェットを組み込み
+//		
+//		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
+//		jQuery.datetimepicker.setLocale('ja');// 日時ピッカーを日本語化<jquery.datetimepicker.full.min.js>
+//
+//		return cbGadgetKj;
+//
+//	}
 	
 
 	
@@ -260,6 +263,31 @@ class CrudBase{
 		cbFileUploadComp = new CbFileUploadComponent(fuIds,option);
 		
 		return cbFileUploadComp;
+	}
+	
+	
+	/**
+	 * カレンダー日付ピッカー・ラッパーコンポーネントのファクトリーメソッド
+	 * @return DatepickerWrap カレンダー日付ピッカー・ラッパーコンポーネント
+	 */
+	_factoryDatepickerWrap(){
+		var datepickerWrap;
+		
+		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+		var t = typeof DatepickerWrap;
+		if(t == null || t == 'undefined'){
+			// 「空」実装
+			datepickerWrap = {
+					'tukishomatu':function(){},
+			}
+			return datepickerWrap
+		}
+		
+		// 自動保存機能の初期化
+		datepickerWrap = new DatepickerWrap(this);
+		
+		return datepickerWrap;
+		
 	}
 	
 	/**
@@ -3678,31 +3706,7 @@ class CrudBase{
 	}
 	
 
-	/**
-	 * jQuery UIカレンダーを日本語化する
-	 */
-	datepicker_ja(){
-		
-		jQuery.datepicker.regional['ja'] = {
-				closeText: '閉じる',
-				prevText: '<前',
-				nextText: '次>',
-				currentText: '今日',
-				monthNames: ['1月','2月','3月','4月','5月','6月',
-				'7月','8月','9月','10月','11月','12月'],
-				monthNamesShort: ['1月','2月','3月','4月','5月','6月',
-				'7月','8月','9月','10月','11月','12月'],
-				dayNames: ['日曜日','月曜日','火曜日','水曜日','木曜日','金曜日','土曜日'],
-				dayNamesShort: ['日','月','火','水','木','金','土'],
-				dayNamesMin: ['日','月','火','水','木','金','土'],
-				weekHeader: '週',
-				dateFormat: 'yy/mm/dd',
-				firstDay: 0,
-				isRTL: false,
-				showMonthAfterYear: true,
-				yearSuffix: '年'};
-			jQuery.datepicker.setDefaults(jQuery.datepicker.regional['ja']);
-	}
+	
 	
 	/**
 	 * FileUploadK | ファイルプレビュー後コールバック

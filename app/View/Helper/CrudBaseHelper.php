@@ -85,9 +85,9 @@ class CrudBaseHelper extends FormHelper {
 				'jquery-ui.min',
 				'Layouts/default',
 				'CrudBase/common',
-				'jquery.datetimepicker.min',		// 日時ピッカー
+				//'jquery.datetimepicker.min',		// 日時ピッカー(重いので保留■■■□□□■■■□□□■■■□□□）
 				'clm_show_hide',					// 列表示切替
-				'YmpickerWrap',						// 年月ピッカーのラッパー
+				'CrudBase/DatepickerWrap',						// 年月ピッカーのラッパー
 				'nouislider.min',					// 数値範囲入力スライダー・noUiSlider
 				'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ
 				'CrudBase/FileUploadK.css?ver=1.0.1',	
@@ -106,11 +106,11 @@ class CrudBaseHelper extends FormHelper {
 				'Layouts/default',
 				'clm_show_hide',				// 列表示切替
 				'date_ex',						// 日付関連関数集
-				'jquery.ui.ympicker',			// 年月選択ダイアログ
+				'jquery.ui.ympicker',			// 年月ピッカー
+				//'jquery.datetimepicker.full.min',// 日時ピッカー(重いので保留■■■□□□■■■□□□■■■□□□）
+				'CrudBase/DatepickerWrap',		// カレンダー日付ピッカー・ラッパークラス
 				'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-				'jquery.datetimepicker.full.min',// 日時ピッカー
 				'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ
-				'CrudBase/YmpickerWrap',		// 年月ピッカーのラッパークラス
 				'CrudBase/CrudBaseAutoSave.js?ver=1.0',
 				'CrudBase/CrudBaseRowExchange.js?ver=1.2',
 				'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
@@ -532,6 +532,7 @@ class CrudBaseHelper extends FormHelper {
 				'type' => 'text',
 				'label' => false,
 				'placeholder' => '-- '.$wamei.'年月 --',
+				'class' => 'datepicker',
 				'style'=>'width:100px;',
 		));
 		echo "</div>";
