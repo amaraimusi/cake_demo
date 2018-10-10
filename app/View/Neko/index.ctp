@@ -91,7 +91,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		
 	</div>
 		
-	<a href="neko/front_a?row_limit=10" class="btn btn-info btn-xs" target="blank" >フロント画面</a>
+	<a href="neko/front_a?<?php echo $pages['query_str']; ?>" class="btn btn-info btn-xs" target="brank" >フロント画面</a>
 	
 </div><!-- cb_func_line -->
 

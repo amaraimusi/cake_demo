@@ -127,7 +127,7 @@ class CbFileUploadHComp{
 			$td_html = "<td>
 				<input type='hidden' name='{$field}' value='{$fn}' />
 				<label for='$field'>
-				<a href='{$orig_fp}' target='blank' />
+				<a href='{$orig_fp}' target='brank' />
 				<img src='{$thum_fp}' title='{$fn}' />
 				</a>
 				</label>
