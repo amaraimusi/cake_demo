@@ -51,6 +51,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
 		//$this->CrudBase->inputKjDateTime($kjs,'kj_neko_dt','ネコ日時',150);
 		$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
+		$this->CrudBase->inputKjFlg($kjs,'kj_neko_flg','ネコフラグ');
 		$this->CrudBase->inputKjText($kjs,'kj_img_fn','ネコ名前',200);
 		$this->CrudBase->inputKjText($kjs,'kj_note','備考',200,'部分一致検索'); 
 		$this->CrudBase->inputKjId($kjs); 
@@ -153,6 +154,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdList($ent,'neko_group',$nekoGroupList);
 	$this->CrudBase->tdPlain($ent,'neko_date');
 	$this->CrudBase->tdPlain($ent,'neko_dt');
+	$this->CrudBase->tdFlg($ent,'neko_flg');
 	$this->CrudBase->tdImage($ent,'img_fn');
 	$this->CrudBase->tdNote($ent,'note');
 	$this->CrudBase->tdPlain($ent,'sort_no');
@@ -234,6 +236,11 @@ foreach($data as $i=>$ent){
 			<input type="text" name="neko_dt" class="valid" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
 			<label class="text-danger" for="neko_dt"></label>
 		</td></tr>
+		
+		<tr><td>ネコフラグ: </td><td>
+			<input type="checkbox" name="neko_flg" class="valid"/>
+			<label class="text-danger" for="neko_flg" ></label>
+		</td></tr>
 
 		<tr><td>画像ファイル名: </td><td>
 			<label for="img_fn_n" class="fuk_label" style="width:100px;height:100px;">
@@ -305,6 +312,11 @@ foreach($data as $i=>$ent){
 		<tr><td>ネコ日時: </td><td>
 			<input type="text" name="neko_dt" class="valid " value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
 			<label class="text-danger" for="neko_dt"></label>
+		</td></tr>
+		
+		<tr><td>ネコフラグ: </td><td>
+			<input type="checkbox" name="neko_flg" class="valid"/>
+			<label class="text-danger" for="neko_flg" ></label>
 		</td></tr>
 
 		<tr><td>画像ファイル名: </td><td>

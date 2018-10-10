@@ -9,8 +9,8 @@ App::uses('CbFileUploadHComp', 'View/Helper/Component');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.6.4
- * @date 2016-7-27 | 2018-10-8
+ * @version 1.6.5
+ * @date 2016-7-27 | 2018-10-10
  * @author k-uehara
  *
  */
@@ -454,9 +454,9 @@ class CrudBaseHelper extends FormHelper {
 			'id' => $field,
 			'type' => 'select',
 			'options' => array(
-				-1=>'すべて表示',
-				0=>'無効',
-				1=>'有効',
+					-1=>"-- {$wamei} --",
+				0=>'OFF',
+				1=>'ON',
 			),
 			'default' => $kjs[$field],
 			'label' => false,
@@ -800,6 +800,33 @@ class CrudBaseHelper extends FormHelper {
 		}
 		
 		return $v;
+		
+	}
+	
+	
+	
+	
+	/**
+	 * フラグ系TDO出力
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 * @param array $list リスト
+	 */
+	public function tdFlg(&$ent,$field,$list=array('OFF','ON')){
+		
+		$v = $ent[$field];
+		
+		// ▼ 0か1に書き換える
+		if($v == null || $v == '') $v = 0;
+		if($v != 0) $v = 1;
+		
+		// ▼ スタイル
+		$style = '';
+		if($v == 0) $style = 'color:Gray';
+		
+		$v2 = $list[$v];
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' style='{$style}'>{$v2}</span></td>\n";
+		$this->setTd($td,$field);
 		
 	}
 	
