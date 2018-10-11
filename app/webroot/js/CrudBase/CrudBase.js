@@ -12,8 +12,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2018-10-9
- * @version 2.5.3 
+ * @date 2016-9-21 | 2018-10-11
+ * @version 2.5.4 
  * @histroy
  * 2018-10-9 v2.5.1 経由ディレクトリパスに対応
  * 2018-10-2 v2.5.0 フォームドラッグとリサイズ
@@ -41,7 +41,7 @@
  *  - form_z_index	重なり順序(cssのz-indexと同じ)
  *  - valid_msg_slt	バリデーションメッセージセレクタ
  *  - auto_close_flg	自動閉フラグ	0:自動で閉じない（デフォルト）  1:フォームの外側をクリックすると自動的に閉じる
- *  - ni_tr_place	新規入力追加場所フラグ 0:末尾 , 1:先頭
+ *  - ni_tr_place	新規入力追加場所フラグ 0:末尾(デフォルト） , 1:先頭
  *  - drag_and_resize_flg フォームドラッグとリサイズのフラグ 0:OFF , 1:ON(デフォルト)
  *  
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
@@ -2747,16 +2747,13 @@ class CrudBase{
 		var via_dp = '';
 		if(this.param.viaDpFnMap[field] != null){
 			var via_dp_field = this.param.viaDpFnMap[field];
-			via_dp = ent[via_dp];
+			via_dp = ent[via_dp_field];
 		}
 		
-
 		// file要素にファイルプレビューを表示する
 		var res = this.cbFileUploadComp.setFilePaths(fue_id,v,via_dp);
 		var dpData = res['dpData']
-		
 
-		
 	}
 
 	/**
