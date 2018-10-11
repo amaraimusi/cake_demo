@@ -13,7 +13,7 @@
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
  * @date 2016-9-21 | 2018-10-11
- * @version 2.5.4 
+ * @version 2.5.5
  * @histroy
  * 2018-10-9 v2.5.1 経由ディレクトリパスに対応
  * 2018-10-2 v2.5.0 フォームドラッグとリサイズ
@@ -2584,6 +2584,7 @@ class CrudBase{
 	 */
 	displayFilter(val1,field,disFilData,xss){
 		
+		
 		 var res = {'val1':val1,'xss':xss};
 
 		if(!disFilData) disFilData = this.param.disFilData;
@@ -2595,8 +2596,11 @@ class CrudBase{
 		
 		switch (filEnt.fil_type) {
 		case 'select':
-			
+
+
 			res.val1 = this.disFilSelect(val1,field,filEnt.option);// 表示フィルター・SELECTリスト
+			
+
 			break;
 			
 		case 'delete_flg':
@@ -2609,6 +2613,7 @@ class CrudBase{
 
 			res.val1 = this.disFilFlg(val1,field,filEnt.option);// 表示フィルター・フラグ
 			res.xss = 0;
+
 			break;
 			
 		case 'money':
@@ -2686,12 +2691,14 @@ class CrudBase{
 	 */
 	disFilFlg(val1,field,option){
 
-		if(val1 == null) return val1;
+		if(val1 == null || val1 == '' || val1 == false) val1 = 0;
+		if(val1 > 0) val1 = 1;
+		var val2 = option.list[val1];
 		
 		if(val1 == 1){
-			return '<span style="color:#23d6e4;">有効</span>';
+			return '<span style="color:#23d6e4;">' + val2 + '</span>';
 		}else{
-			return '<span style="color:#b4b4b4;">無効</span>';
+			return '<span style="color:#b4b4b4;">' + val2 + '</span>';
 		}
 
 	}
