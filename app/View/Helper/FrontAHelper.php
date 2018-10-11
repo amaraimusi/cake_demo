@@ -164,8 +164,8 @@ class FrontAHelper extends Helper {
 
 		echo "
 			<td class='{$class_v}'>
-			<img class='{$field} img-responsive' src='{$mid_fp}' alt='{$fn}' /><br>
-			<a href='{$orig_fp}' class='btn btn-link btn-xs' target='brank'>[拡大]</a>
+			<img class='{$field} img-responsive' src='{$mid_fp}' alt='{$fn}' />
+			<a href='{$orig_fp}' class='btn btn-link btn-xs' target='blank'>[拡大]</a>
 			</td>
 		";
 		
