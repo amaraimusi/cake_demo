@@ -156,7 +156,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdPlain($ent,'neko_dt');
 	$this->CrudBase->tdFlg($ent,'neko_flg');
 	$this->CrudBase->tdImage($ent,'img_fn');
-	$this->CrudBase->tdNote($ent,'note');
+	$this->CrudBase->tdNote($ent,'note',50);
 	$this->CrudBase->tdPlain($ent,'sort_no');
 	$this->CrudBase->tdDeleteFlg($ent,'delete_flg');
 	$this->CrudBase->tdPlain($ent,'update_user');

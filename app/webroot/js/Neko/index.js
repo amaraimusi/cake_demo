@@ -286,3 +286,12 @@ function tableTransform(mode_no){
 
 }
 
+/**
+ * ノート詳細を開く
+ * @param btnElm 詳細ボタン要素
+ */
+function openNoteDetail(btnElm){
+	btnElm = jQuery(btnElm);
+	crudBase.openNoteDetail(btnElm);
+}
+
