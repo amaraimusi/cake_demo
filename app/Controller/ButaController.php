@@ -8,8 +8,8 @@ App::uses('PagenationForCake', 'Vendor/Wacg');
  * @note
  * ブタ画面ではブタ一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2018-10-8
- * @version 3.2.1
+ * @date 2015-9-16 | 2018-10-10
+ * @version 3.2.2
  *
  */
 class ButaController extends CrudBaseController {
@@ -45,7 +45,7 @@ class ButaController extends CrudBaseController {
 	public $edit_validate = array();
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '1.9.1'; 	/// リソース保存先・ディレクトリパス・テンプレート
+	public $this_page_version = '1.9.1';
 	
 	/// リソース保存先・ディレクトリパス・テンプレート
 	public $dp_tmpl = 'rsc/img/%field/%via_dp/%dn/';
@@ -474,7 +474,7 @@ class ButaController extends CrudBaseController {
 				),
 				'kj_neko_val1' => array(
 						'custom'=>array(
-								'rule' => array( 'custom', '/^[-]?[0-9] ?$/' ),
+								'rule' => array( 'custom', '/^[-]?[0-9]+$/' ),
 								'message' => 'neko_valは整数を入力してください。',
 								'allowEmpty' => true
 						),
@@ -533,7 +533,7 @@ class ButaController extends CrudBaseController {
 				),
 				'kj_sort_no' => array(
 						'custom'=>array(
-								'rule' => array( 'custom', '/^[-]?[0-9] ?$/' ),
+								'rule' => array( 'custom', '/^[-]?[0-9]+$/' ),
 								'message' => '順番は整数を入力してください。',
 								'allowEmpty' => true
 						),

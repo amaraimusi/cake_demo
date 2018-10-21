@@ -44,7 +44,7 @@ function init(){
 	var disFilData = {
 			// CBBXS-1008
 			'neko_flg':{
-				'fil_type':'select',
+				'fil_type':'flg',
 				'option':{'list':['OFF','ON']}
 			},
 			'delete_flg':{
@@ -88,13 +88,6 @@ function init(){
 		}
 	});
 	
-	// ■■■□□□■■■□□□■■■□□□
-//	// 日付カレンダーのセット
-//	// CBBXS-1030
-	$("#new_inp_neko_date").datepicker({dateFormat:'yy-mm-dd'});
-	$("#edit_neko_date").datepicker({dateFormat:'yy-mm-dd'});
-
-//	// CBBXE
 	
 }
 
@@ -285,5 +278,14 @@ function tableTransform(mode_no){
 
 	crudBase.tableTransform(mode_no);
 
+}
+
+/**
+ * ノート詳細を開く
+ * @param btnElm 詳細ボタン要素
+ */
+function openNoteDetail(btnElm){
+	btnElm = jQuery(btnElm);
+	crudBase.openNoteDetail(btnElm);
 }
 

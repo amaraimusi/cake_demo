@@ -5,8 +5,8 @@ App::uses('CrudBase', 'Model');
 /**
  * ブタのCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-10-8
- * @version 3.1.1
+ * @date 2015-9-16 | 2018-10-10
+ * @version 3.1.2
  *
  */
 class Buta extends AppModel {

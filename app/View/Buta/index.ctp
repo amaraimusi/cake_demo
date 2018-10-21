@@ -91,7 +91,7 @@ $this->CrudBase->inputKjFlg($kjs,'kj_neko_flg','ネコフラグ');
 		
 	</div>
 		
-	<a href="buta/front_a?row_limit=10" class="btn btn-info btn-xs" target="brank" >フロント画面</a>
+	<a href="buta/front_a?<?php echo $pages['query_str']; ?>" class="btn btn-info btn-xs" target="brank" >フロント画面</a>
 	
 </div><!-- cb_func_line -->
 
@@ -114,6 +114,8 @@ $this->CrudBase->inputKjFlg($kjs,'kj_neko_flg','ネコフラグ');
 ?>
 
 </div><!-- detail_div -->
+
+<div id="new_inp_form_point"></div><!-- 新規入力フォーム表示地点 -->
 
 
 <div style="margin-top:8px;">
@@ -192,161 +194,234 @@ foreach($data as $i=>$ent){
 
 <?php echo $this->element('CrudBase/crud_base_pwms'); // 複数選択による一括処理 ?>
 
-<!-- 新規入力フォーム -->
-<div id="ajax_crud_new_inp_form" class="panel panel-primary">
 
-	<div class="panel-heading">
-		<div class="pnl_head1">新規入力</div>
-		<div class="pnl_head2"></div>
-		<div class="pnl_head3">
-			<button type="button" class="btn btn-primary btn-sm" onclick="closeForm('new_inp')"><span class="glyphicon glyphicon-remove"></span></button>
-		</div>
-	</div>
-	<div class="panel-body">
-	<div class="err text-danger"></div>
+
+
+
+<table>
+
+	<!-- 新規入力フォーム -->
+	<tr id="ajax_crud_new_inp_form" class="crud_base_form" style="display:none;padding-bottom:60px"><td>
 	
-	<div style="display:none">
-    	<input type="hidden" name="form_type">
-    	<input type="hidden" name="row_index">
-    	<input type="hidden" name="sort_no">
-	</div>
-	<table><tbody>
-
+		<div>
+			<div style="color:#3174af;float:left">新規入力</div>
+			<div style="float:left;margin-left:10px">
+				<button type="button"  onclick="newInpReg();" class="btn btn-success btn-xs reg_btn">
+					<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
+				</button>
+			</div>
+			<div style="float:right">
+				<button type="button" class="btn btn-primary btn-xs" onclick="closeForm('new_inp')"><span class="glyphicon glyphicon-remove"></span></button>
+			</div>
+		</div>
+		<div style="clear:both;height:4px"></div>
+		<div class="err text-danger"></div>
+		
+		<div style="display:none">
+	    	<input type="hidden" name="form_type">
+	    	<input type="hidden" name="row_index">
+	    	<input type="hidden" name="sort_no">
+		</div>
+	
+	
 		<!-- CBBXS-1006 -->
-		<tr><td>neko_val: </td><td>
-			<input type="text" name="neko_val" class="valid" value=""  pattern="^[+-]?([0-9]*[.])?[0-9]+$" maxlength="11" title="数値を入力してください" />
-			<label class="text-danger" for="neko_val"></label>
-		</td></tr>
-		<tr><td>neko_name: </td><td>
-			<input type="text" name="neko_name" class="valid" value=""  maxlength="255" title="255文字以内で入力してください" />
-			<label class="text-danger" for="neko_name"></label>
-		</td></tr>
-
-		<tr><td>neko_date: </td><td>
-			<input  type="text" name="neko_date" class="valid datepicker" value=""  pattern="([0-9]{4})(/|-)([0-9]{1,2})(/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
-			<label class="text-danger" for="neko_date"></label>
-		</td></tr>
-		<tr><td>猫種別: </td><td>
-			<input type="text" name="neko_group" class="valid" value=""  pattern="^[0-9]$" maxlength="11" title="数値（自然数）を入力してください" />
-			<label class="text-danger" for="neko_group"></label>
-		</td></tr>
-
-		<tr><td>neko_dt: </td><td>
-			<input type="text" name="neko_dt" class="valid" value=""  pattern="([0-9]{4})(/|-)([0-9]{1,2})(/|-)([0-9]{1,2}) [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
-			<label class="text-danger" for="neko_dt"></label>
-		</td></tr>
-		<tr><td>ネコフラグ: </td><td>
-			<input type="checkbox" name="neko_flg" class="valid"/>
-			<label class="text-danger" for="neko_flg" ></label>
-		</td></tr>
-		<tr><td>画像ファイル名: </td><td>
-			<label for="img_fn_n" class="fuk_label" style="width:200px;height:240px;">
-				<input type="file" id="img_fn_n" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ" />
-			</label>
-		</td></tr>
-		<tr><td>備考： </td><td>
-			<textarea name="note" ></textarea>
-			<label class="text-danger" for="note"></label>
-		</td></tr>
-
-		<!-- CBBXE -->
-	</tbody></table>
-	
-
-	<button type="button" onclick="newInpReg();" class="btn btn-success reg_btn">
-		<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
-	</button>
-
-	</div><!-- panel-body -->
-</div>
-
-
-
-<!-- 編集フォーム -->
-<div id="ajax_crud_edit_form" class="panel panel-primary" >
-
-	
-	<div class="panel-heading">
-		<div class="pnl_head1">編集</div>
-		<div class="pnl_head2"></div>
-		<div class="pnl_head3">
-			<button type="button" class="btn btn-primary btn-sm" onclick="closeForm('edit')"><span class="glyphicon glyphicon-remove"></span></button>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >neko_val: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_val" class="valid" value="" pattern="^[+-]?([0-9]*[.])?[0-9]+$" maxlength="11" title="数値を入力してください" />
+				<label class="text-danger" for="neko_val" ></label>
+			</div>
 		</div>
-	</div>
-	<div style="display:none">
-    	<input type="hidden" name="sort_no">
-	</div>
-	<div class="panel-body">
-	<div class="err text-danger"></div>
-	<button type="button"  onclick="editReg();" class="btn btn-success reg_btn">
-		<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
-	</button>
-	<table><tbody>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp' >neko_name: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_name" class="valid " value=""  maxlength="255" title="255文字以内で入力してください" />
+				<label class="text-danger" for="neko_name"></label>
+			</div>
+		</div>
 
-		<!-- CBBXS-1007 -->
-		<tr><td>ID: </td><td>
-			<span class="id"></span>
-		</td></tr>
-		<tr><td>neko_val: </td><td>
-			<input type="text" name="neko_val" class="valid" value=""  pattern="^[+-]?([0-9]*[.])?[0-9]+$" maxlength="11" title="数値を入力してください" />
-			<label class="text-danger" for="neko_val"></label>
-		</td></tr>
-		<tr><td>neko_name: </td><td>
-			<input type="text" name="neko_name" class="valid" value=""  maxlength="255" title="255文字以内で入力してください" />
-			<label class="text-danger" for="neko_name"></label>
-		</td></tr>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >neko_date: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_date" class="valid datepicker" value=""  pattern="([0-9]{4})(/|-)([0-9]{1,2})(/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+				<label class="text-danger" for="neko_date"></label>
+			</div>
+		</div>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >猫種別: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_group" class="valid" value="" pattern="^[0-9]+$" maxlength="11" title="数値（自然数）を入力してください" />
+				<label class="text-danger" for="neko_group" ></label>
+			</div>
+		</div>
 
-		<tr><td>neko_date: </td><td>
-			<input type="text" name="neko_date" class="valid datepicker" value=""  pattern="([0-9]{4})(/|-)([0-9]{1,2})(/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
-			<label class="text-danger" for="neko_date"></label>
-		</td></tr>
-		<tr><td>猫種別: </td><td>
-			<input type="text" name="neko_group" class="valid" value=""  pattern="^[0-9]$" maxlength="11" title="数値（自然数）を入力してください" />
-			<label class="text-danger" for="neko_group"></label>
-		</td></tr>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >neko_dt: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_dt" class="valid " value=""  pattern="([0-9]{4})(/|-)([0-9]{1,2})(/|-)([0-9]{1,2}) [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
+				<label class="text-danger" for="neko_dt"></label>
+			</div>
+		</div>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >ネコフラグ: </div>
+			<div class='cbf_input'>
+				<input type="checkbox" name="neko_flg" class="valid"/>
+				<label class="text-danger" for="neko_flg" ></label>
+			</div>
+		</div>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label_long' >画像ファイル名: </div>
+			<div class='cbf_input'>
+				<label for="img_fn_n" class="fuk_label" style="width:100px;height:100px;">
+					<input type="file" id="img_fn_n" class="img_fn" style="display:none" accept="image/*" title="画像ファイルのアップロード" />
+				</label>
+			</div>
+		</div>
 
-		<tr><td>neko_dt: </td><td>
-			<input type="text" name="neko_dt" class="valid" value=""  pattern="([0-9]{4})(/|-)([0-9]{1,2})(/|-)([0-9]{1,2}) [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
-			<label class="text-danger" for="neko_dt"></label>
-		</td></tr>
-		<tr><td>ネコフラグ: </td><td>
-			<input type="checkbox" name="neko_flg" class="valid"/>
-			<label class="text-danger" for="neko_flg" ></label>
-		</td></tr>
-
-		<tr><td>画像ファイル名: </td><td>
-			<label for="img_fn_e" class="fuk_label" style="width:200px;height:240px;">
-				<input type="file" id="img_fn_e" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ" />
-			</label>
-		</td></tr>
-		<tr><td>備考： </td><td>
-			<textarea name="note"></textarea>
-			<label class="text-danger" for="note"></label>
-		</td></tr>
-		<tr><td>削除：<input type="checkbox" name="delete_flg" class="valid"  /> </td><td></td></tr>
+		<div class="cbf_inp_wrap_long">
+			<div class='cbf_inp_label' >備考： </div>
+			<div class='cbf_input'>
+				<textarea name="note" maxlength="1000" title="1000文字以内で入力してください" style="height:100px;width:100%"></textarea>
+				<label class="text-danger" for="note"></label>
+			</div>
+		</div>
 
 		<!-- CBBXE -->
-	</tbody></table>
-	
-	
+		
+		<div style="clear:both"></div>
+		<div class="cbf_inp_wrap">
+			<button type="button" onclick="newInpReg();" class="btn btn-success reg_btn">
+				<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
+			</button>
+		</div>
+	</td></tr><!-- new_inp_form -->
 
-	<button type="button"  onclick="editReg();" class="btn btn-success reg_btn">
-		<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
-	</button>
-	<hr>
-	
-	<input type="button" value="更新情報" class="btn btn-default btn-xs" onclick="$('#ajax_crud_edit_form_update').toggle(300)" /><br>
-	<aside id="ajax_crud_edit_form_update" style="display:none">
-		更新日時: <span class="modified"></span><br>
-		生成日時: <span class="created"></span><br>
-		ユーザー名: <span class="update_user"></span><br>
-		IPアドレス: <span class="ip_addr"></span><br>
-		ユーザーエージェント: <span class="user_agent"></span><br>
-	</aside>
-	
 
-	</div><!-- panel-body -->
-</div>
+
+	<!-- 編集フォーム -->
+	<tr id="ajax_crud_edit_form" class="crud_base_form"><td colspan='5'>
+		<div  style='width:100%'>
+	
+			<div>
+				<div style="color:#3174af;float:left">編集</div>
+				<div style="float:left;margin-left:10px">
+					<button type="button"  onclick="editReg();" class="btn btn-success btn-xs reg_btn">
+						<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
+					</button>
+				</div>
+				<div style="float:right">
+					<button type="button" class="btn btn-primary btn-xs" onclick="closeForm('edit')"><span class="glyphicon glyphicon-remove"></span></button>
+				</div>
+			</div>
+			<div style="clear:both;height:4px"></div>
+			<div class="err text-danger"></div>
+			
+			<!-- CBBXS-1007 -->
+			<div class="cbf_inp_wrap">
+				<div class='cbf_inp' >ID: </div>
+				<div class='cbf_input'>
+					<span class="id"></span>
+				</div>
+			</div>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp' >neko_val: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_val" class="valid " value=""  maxlength="11" title="11文字以内で入力してください" />
+				<label class="text-danger" for="neko_val"></label>
+			</div>
+		</div>
+
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp' >neko_name: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_name" class="valid " value=""  maxlength="255" title="255文字以内で入力してください" />
+				<label class="text-danger" for="neko_name"></label>
+			</div>
+		</div>
+
+
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >neko_date: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_date" class="valid datepicker" value=""  pattern="([0-9]{4})(/|-)([0-9]{1,2})(/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+				<label class="text-danger" for="neko_date"></label>
+			</div>
+		</div>
+
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >猫種別: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_group" class="valid" value="" pattern="^[0-9]+$" maxlength="11" title="数値（自然数）を入力してください" />
+				<label class="text-danger" for="neko_group" ></label>
+			</div>
+		</div>
+
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >neko_dt: </div>
+			<div class='cbf_input'>
+				<input type="text" name="neko_dt" class="valid " value=""  pattern="([0-9]{4})(/|-)([0-9]{1,2})(/|-)([0-9]{1,2}) [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
+				<label class="text-danger" for="neko_dt"></label>
+			</div>
+		</div>
+
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >ネコフラグ: </div>
+			<div class='cbf_input'>
+				<input type="checkbox" name="neko_flg" class="valid"/>
+				<label class="text-danger" for="neko_flg" ></label>
+			</div>
+		</div>
+
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label_long' >画像ファイル名: </div>
+			<div class='cbf_input'>
+				<label for="img_fn_e" class="fuk_label" style="width:100px;height:100px;">
+					<input type="file" id="img_fn_e" class="img_fn" style="display:none" accept="image/*" title="画像ファイルのアップロード" />
+				</label>
+			</div>
+		</div>
+
+		<div class="cbf_inp_wrap_long">
+			<div class='cbf_inp_label' >備考： </div>
+			<div class='cbf_input'>
+				<textarea name="note" maxlength="1000" title="1000文字以内で入力してください" style="height:100px;width:100%"></textarea>
+				<label class="text-danger" for="note"></label>
+			</div>
+		</div>
+
+			<div class="cbf_inp_wrap">
+				<div class='cbf_inp_label' >無効フラグ：</div>
+				<div class='cbf_input'>
+					<input type="checkbox" name="delete_flg" class="valid"  />
+				</div>
+			</div>
+
+			<!-- CBBXE -->
+			
+			<div style="clear:both"></div>
+			<div class="cbf_inp_wrap">
+				<button type="button"  onclick="editReg();" class="btn btn-success reg_btn">
+					<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
+				</button>
+			</div>
+			
+			<div class="cbf_inp_wrap" style="padding:5px;">
+				<input type="button" value="更新情報" class="btn btn-default btn-xs" onclick="$('#ajax_crud_edit_form_update').toggle(300)" /><br>
+				<aside id="ajax_crud_edit_form_update" style="display:none">
+					更新日時: <span class="modified"></span><br>
+					生成日時: <span class="created"></span><br>
+					ユーザー名: <span class="update_user"></span><br>
+					IPアドレス: <span class="ip_addr"></span><br>
+					ユーザーエージェント: <span class="user_agent"></span><br>
+				</aside>
+			</div>
+		</div>
+	</td></tr>
+</table>
+
+
+
+
 
 
 
