@@ -168,8 +168,11 @@ class Buta extends AppModel {
 		if(!empty($kjs['kj_neko_date2'])){
 			$cnds[]="Buta.neko_date <= '{$kjs['kj_neko_date2']}'";
 		}
-		if(!empty($kjs['kj_neko_group']) || $kjs['kj_neko_group'] ==='0' || $kjs['kj_neko_group'] ===0){
-			$cnds[]="Buta.neko_group = {$kjs['kj_neko_group']}";
+		if(!empty($kjs['kj_neko_group1'])){
+			$cnds[]="Buta.neko_group >= {$kjs['kj_neko_group1']}";
+		}
+		if(!empty($kjs['kj_neko_group2'])){
+			$cnds[]="Buta.neko_group <= {$kjs['kj_neko_group2']}";
 		}
 		if(!empty($kjs['kj_neko_dt'])){
 			$kj_neko_dt = $kjs['kj_neko_dt'];

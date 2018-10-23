@@ -439,7 +439,8 @@ class ButaController extends CrudBaseController {
 			array('name'=>'kj_neko_name','def'=>null),
 			array('name'=>'kj_neko_date1','def'=>null),
 			array('name'=>'kj_neko_date2','def'=>null),
-			array('name'=>'kj_neko_group','def'=>null),
+			array('name'=>'kj_neko_group1','def'=>null),
+			array('name'=>'kj_neko_group2','def'=>null),
 			array('name'=>'kj_neko_dt','def'=>null),
 			array('name'=>'kj_neko_flg','def'=>null),
 			array('name'=>'kj_img_fn','def'=>null),
@@ -503,10 +504,17 @@ class ButaController extends CrudBaseController {
 						'message' => 'neko_date【範囲2】は日付形式【yyyy-mm-dd】で入力してください。',
 						'allowEmpty' => true
 				),
-				'kj_neko_group' => array(
-						'naturalNumber'=>array(
-								'rule' => array('naturalNumber', true),
-								'message' => '猫種別は数値を入力してください',
+				'kj_neko_group1' => array(
+						'custom'=>array(
+								'rule' => array( 'custom', '/^[-]?[0-9]+$/' ),
+								'message' => '猫種別は整数を入力してください。',
+								'allowEmpty' => true
+						),
+				),
+				'kj_neko_group2' => array(
+						'custom'=>array(
+								'rule' => array( 'custom', '/^[-]?[0-9] ?$/' ),
+								'message' => '猫種別は整数を入力してください。',
 								'allowEmpty' => true
 						),
 				),

@@ -49,9 +49,9 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		$this->CrudBase->inputKjNouislider($kjs,'neko_val','neko_val');
 		$this->CrudBase->inputKjText($kjs,'kj_neko_name','neko_name');
 		$this->CrudBase->inputKjMoDateRng($kjs,'kj_neko_date','neko_date');
-		$this->CrudBase->inputKjText($kjs,'kj_neko_group','猫種別');
+		$this->CrudBase->inputKjNouislider($kjs,'neko_group','猫種別');
 		$this->CrudBase->inputKjText($kjs,'kj_neko_dt','neko_dt');
-$this->CrudBase->inputKjFlg($kjs,'kj_neko_flg','ネコフラグ');
+		$this->CrudBase->inputKjFlg($kjs,'kj_neko_flg','ネコフラグ');
 		$this->CrudBase->inputKjText($kjs,'kj_img_fn','画像ファイル名');
 		$this->CrudBase->inputKjText($kjs,'kj_note','備考');
 		$this->CrudBase->inputKjHidden($kjs,'kj_sort_no');
@@ -250,11 +250,10 @@ foreach($data as $i=>$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp_label' >猫種別: </div>
 			<div class='cbf_input'>
-				<input type="text" name="neko_group" class="valid" value="" pattern="^[0-9]+$" maxlength="11" title="数値（自然数）を入力してください" />
+				<input type="text" name="neko_group" class="valid" value="" pattern="^[+-]?([0-9]*[.])?[0-9]+$" maxlength="11" title="数値を入力してください" />
 				<label class="text-danger" for="neko_group" ></label>
 			</div>
 		</div>
-
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp_label' >neko_dt: </div>
 			<div class='cbf_input'>
@@ -349,10 +348,10 @@ foreach($data as $i=>$ent){
 		</div>
 
 		<div class="cbf_inp_wrap">
-			<div class='cbf_inp_label' >猫種別: </div>
+			<div class='cbf_inp' >猫種別: </div>
 			<div class='cbf_input'>
-				<input type="text" name="neko_group" class="valid" value="" pattern="^[0-9]+$" maxlength="11" title="数値（自然数）を入力してください" />
-				<label class="text-danger" for="neko_group" ></label>
+				<input type="text" name="neko_group" class="valid " value=""  maxlength="11" title="11文字以内で入力してください" />
+				<label class="text-danger" for="neko_group"></label>
 			</div>
 		</div>
 
