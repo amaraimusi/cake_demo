@@ -495,13 +495,14 @@ class CrudBase{
 			
 			// tdのcolspan属性に表示中の列数をセットする
 			var td = form.find('td');
-			td.attr('colspan', clm_cnt);
 			
 			// SPモードの場合はblock, PCモードの場合はtable系にする。
 			if(this.param.device_type == 'sp'){
+				td.attr('colspan', 1);
 				td.css('display','block');
 				form.css('display','block');
 			}else{
+				td.attr('colspan', clm_cnt);
 				td.css('display','table-cell');
 				form.css('display','table-row');
 			}
