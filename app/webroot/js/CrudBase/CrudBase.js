@@ -100,8 +100,11 @@ class CrudBase{
 		// CrudBase・ファイルアップロードコンポーネント
 		this.cbFileUploadComp = this._factoryCbFileUploadComponent();
 		
-		// カレンダー日付ピッカー・ラッパーコンポーネン
+		// カレンダー日付ピッカー・ラッパーコンポーネント
 		this.datepickerWrap = this._factoryDatepickerWrap();
+		
+		// ボタンサイズ変更コンポーネント
+		this.cbBtnSizeChanger = this._factoryCbBtnSizeChanger();
 		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
@@ -294,6 +297,31 @@ class CrudBase{
 		datepickerWrap = new DatepickerWrap(this);
 		
 		return datepickerWrap;
+		
+	}
+	
+	
+	/**
+	 * ボタンサイズ変更コンポーネントのファクトリーメソッド
+	 * @return CbBtnSizeChanger ボタンサイズ変更コンポーネント
+	 */
+	_factoryCbBtnSizeChanger(){
+		var cbBtnSizeChanger;
+		
+		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+		var t = typeof CbBtnSizeChanger;
+		if(t == null || t == 'undefined'){
+			// 「空」実装
+			cbBtnSizeChanger = {
+					'dummy':function(){},
+			}
+			return cbBtnSizeChanger
+		}
+		
+		// 自動保存機能の初期化
+		cbBtnSizeChanger = new CbBtnSizeChanger();
+		
+		return cbBtnSizeChanger;
 		
 	}
 	

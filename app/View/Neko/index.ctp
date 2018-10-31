@@ -117,6 +117,8 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 <div id="new_inp_form_point"></div><!-- 新規入力フォーム表示地点 -->
 
+<input type="button" value="ボタンサイズ変更" class="btn btn-default" onclick="jQuery('#CbBtnSizeChanger').toggle(300);" />
+<div id="CbBtnSizeChanger"></div>
 
 <div style="margin-top:8px;">
 	<div style="display:inline-block">
@@ -170,7 +172,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdsEchoForClmSort();// 列並に合わせてTD要素群を出力する
 	
 	// 行のボタン類
-	echo "<td><div class='btn-group' style='display:inline-block'>";
+	echo "<td><div style='display:inline-block'>";
 	$id = $ent['id'];
 	echo  "<input type='button' value='↑↓' onclick='rowExchangeShowForm(this)' class='row_exc_btn btn btn-info btn-xs' />";
 	$this->CrudBase->rowEditBtn($id);

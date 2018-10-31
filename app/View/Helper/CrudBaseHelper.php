@@ -88,7 +88,7 @@ class CrudBaseHelper extends FormHelper {
 				//'jquery.datetimepicker.min',		// 日時ピッカー(重いので保留
 				'clm_show_hide',					// 列表示切替
 				'nouislider.min',					// 数値範囲入力スライダー・noUiSlider
-				'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ
+				//'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ(重いので保留
 				'CrudBase/FileUploadK.css?ver=1.0.1',	
 				'CrudBase/index'					// CRUD indexページ共通
 		);
@@ -109,12 +109,13 @@ class CrudBaseHelper extends FormHelper {
 				//'jquery.datetimepicker.full.min',// 日時ピッカー(重いので保留■■■□□□■■■□□□■■■□□□）
 				'CrudBase/DatepickerWrap',		// カレンダー日付ピッカー・ラッパークラス
 				'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
-				'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ
+				//'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ(重いので保留）
 				'CrudBase/CrudBaseAutoSave.js?ver=1.0',
 				'CrudBase/CrudBaseRowExchange.js?ver=1.2',
 				'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
 				'CrudBase/FileUploadK.js?ver=1.0',
 				'CrudBase/CbFileUploadComponent.js?ver=1.0',
+				'CrudBase/CbBtnSizeChanger.js?ver=1.0.0', // ボタンサイズ変更
 				'CrudBase/CrudBase.js?ver=2.4.2',
 				'livipage',						// ページ内リンク先プレビュー
 				'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
