@@ -117,8 +117,6 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 <div id="new_inp_form_point"></div><!-- 新規入力フォーム表示地点 -->
 
-<input type="button" value="ボタンサイズ変更" class="btn btn-default" onclick="jQuery('#CbBtnSizeChanger').toggle(300);" />
-<div id="CbBtnSizeChanger"></div>
 
 <div style="margin-top:8px;">
 	<div style="display:inline-block">

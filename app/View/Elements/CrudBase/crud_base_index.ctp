@@ -32,7 +32,11 @@
 <hr class="hr_purple">
 </div>
 
-<button type="button" class="btn btn-default" onclick="session_clear()" >セッションクリア</button>
+<input type="button" value="ボタンサイズ変更" class="btn btn-default btn-sm" onclick="jQuery('#CbBtnSizeChanger').toggle(300);" />
+<div id="CbBtnSizeChanger" style="display:none"></div>
+
+
+<button type="button" class="btn btn-default btn-sm" onclick="session_clear()" >セッションクリア</button>
 
 
 
