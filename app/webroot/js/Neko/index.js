@@ -298,3 +298,9 @@ function openNoteDetail(btnElm){
 	crudBase.openNoteDetail(btnElm);
 }
 
+/**
+ * 検索実行
+ */
+function searchKjs(){
+	crudBase.searchKjs();
+}

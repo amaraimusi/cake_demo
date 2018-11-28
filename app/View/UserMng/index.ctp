@@ -33,7 +33,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 <div id="cb_func_btns" >
 	<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default">
 		<span class="glyphicon glyphicon-cog"></span></button>
-	<a href="<?php echo $home_url; ?>" class="btn btn-info" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
+		<a href="" class="ini_rtn btn btn-info btn-xs" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
 		<span class="glyphicon glyphicon-certificate"  ></span></a>
 	<button type="button" class="btn btn-warning" onclick="newInpShow(this);">
 		<span class="glyphicon glyphicon-plus-sign" title="新規入力"></span></button>

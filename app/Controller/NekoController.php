@@ -85,6 +85,7 @@ class NekoController extends CrudBaseController {
 	 */
 	public function index() {
 		
+		
 		// CrudBase共通処理（前）
 		$crudBaseData = $this->indexBefore('Neko');//indexアクションの共通先処理(CrudBaseController)
 		
