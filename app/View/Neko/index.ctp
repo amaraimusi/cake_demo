@@ -85,6 +85,9 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<button id="table_transform_div_mode" type="button" class="btn btn-default" onclick="tableTransform(1)" >
 			<span class="glyphicon glyphicon-th-large" title="一覧の変形・区分モード"></span></button>
 			
+		<button id="calendar_view_k_btn" type="button" class="btn btn-default" onclick="calendarViewKShow()" >
+			<span class="glyphicon glyphicon-time" title="カレンダーモード"></span></button>
+			
 		<button type="button" class="btn btn-warning" onclick="newInpShow(this);">
 			<span class="glyphicon glyphicon-plus-sign" title="新規入力"></span></button>
 		
@@ -123,6 +126,8 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 	</div>
 	<div style="display:inline-block">件数:<?php echo $data_count ?></div>
 </div>
+
+<div id="calendar_view_k"></div>
 
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
 <!-- 一覧テーブル -->

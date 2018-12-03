@@ -90,6 +90,7 @@ class CrudBaseHelper extends FormHelper {
 				'nouislider.min',					// 数値範囲入力スライダー・noUiSlider
 				//'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ(重いので保留
 				'CrudBase/FileUploadK.css?ver=1.0.1',	
+				'CrudBase/CalendarViewK.css',
 				'CrudBase/index'					// CRUD indexページ共通
 		);
 	}
@@ -116,6 +117,7 @@ class CrudBaseHelper extends FormHelper {
 				'CrudBase/FileUploadK.js?ver=1.0',
 				'CrudBase/CbFileUploadComponent.js?ver=1.0',
 				'CrudBase/CbBtnSizeChanger.js?ver=1.0.0', // ボタンサイズ変更
+				'CrudBase/CalendarViewK.js', // カレンダービューK
 				'CrudBase/CrudBase.js?ver=2.6.6',
 				'livipage',						// ページ内リンク先プレビュー
 				'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理

@@ -107,6 +107,9 @@ class CrudBase{
 		// ボタンサイズ変更コンポーネント
 		this.cbBtnSizeChanger = this._factoryCbBtnSizeChanger();
 		
+		// カレンダービュー
+		this.calendarViewK = this._factoryCalendarViewK();
+		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
 		// テーブル変形
@@ -334,6 +337,31 @@ class CrudBase{
 		cbBtnSizeChanger = new CbBtnSizeChanger();
 		
 		return cbBtnSizeChanger;
+		
+	}
+	
+	
+	/**
+	 * カレンダービューのファクトリーメソッド
+	 * @return CalendarViewK カレンダービュー
+	 */
+	_factoryCalendarViewK(){
+		var calendarViewK;
+		
+		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+		var t = typeof CalendarViewK;
+		if(t == null || t == 'undefined'){
+			// 「空」実装
+			calendarViewK = {
+					'create':function(){},
+			}
+			return calendarViewK
+		}
+		
+		// 自動保存機能の初期化
+		calendarViewK = new CalendarViewK();
+		
+		return calendarViewK;
 		
 	}
 	
@@ -4090,6 +4118,30 @@ class CrudBase{
 			this.formKjsElm = jQuery('.form_kjs');
 		}
 		return this.formKjsElm;
+	}
+	
+	
+	
+	/**
+	 * カレンダービューを生成
+	 * @param string date_field 日付フィールド
+	 */
+	calendarViewCreate(date_field){
+		// ■■■□□□■■■□□□■■■□□□
+		var d1 = new Date();
+		var t1 = d1.getTime();
+		
+		// 一覧テーブルからデータを取得する
+		var data = this.getDataFromTbl();
+		
+		// カレンダービューを生成
+		this.calendarViewK.create(data, date_field);
+		
+		// ■■■□□□■■■□□□■■■□□□
+		var d2 = new Date();
+		var t2 = d1.getTime();
+		var t3 = t2 - t1;
+		console.log('タイム：' + t3);//■■■□□□■■■□□□■■■□□□)
 	}
 
 }

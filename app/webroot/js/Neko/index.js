@@ -97,7 +97,6 @@ function init(){
 		}
 	});
 	
-	
 }
 
 /**
@@ -303,4 +302,12 @@ function openNoteDetail(btnElm){
  */
 function searchKjs(){
 	crudBase.searchKjs();
+}
+
+/**
+ * カレンダーモード
+ */
+function calendarViewKShow(){
+	// カレンダービューを生成 
+	crudBase.calendarViewCreate('neko_date');
 }
