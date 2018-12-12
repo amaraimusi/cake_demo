@@ -97,6 +97,8 @@ function init(){
 		}
 	});
 	
+	// リアクト機能の初期化
+	crudBase.reactInit('neko_tbl, hyo2');
 }
 
 /**

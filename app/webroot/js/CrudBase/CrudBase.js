@@ -110,6 +110,9 @@ class CrudBase{
 		// カレンダービュー
 		this.calendarViewK = this._factoryCalendarViewK();
 		
+		// CrudBase用リアクティブ機能
+		this.crudBaseReact = this._factoryCrudBaseReact();
+		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
 		// テーブル変形
@@ -362,6 +365,32 @@ class CrudBase{
 		calendarViewK = new CalendarViewK();
 		
 		return calendarViewK;
+		
+	}
+	
+	
+	/**
+	 * CrudBase用リアクティブ機能のファクトリーメソッド
+	 * @return CrudBaseReact CrudBase用リアクティブ機能
+	 */
+	_factoryCrudBaseReact(){
+		var crudBaseReact;
+		
+		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
+		var t = typeof CrudBaseReact;
+		if(t == null || t == 'undefined'){
+			// 「空」実装
+			crudBaseReact = {
+					'init':function(){},
+					'reactivatingOfRow':function(){},
+			}
+			return crudBaseReact
+		}
+		
+		// 自動保存機能の初期化
+		crudBaseReact = new CrudBaseReact();
+		
+		return crudBaseReact;
 		
 	}
 	
@@ -4127,15 +4156,32 @@ class CrudBase{
 	 * @param string date_field 日付フィールド
 	 */
 	calendarViewCreate(date_field){
-		// ■■■□□□■■■□□□■■■□□□
-		var d1 = new Date();
-		var t1 = d1.getTime();
-		
+
 		// 一覧テーブルからデータを取得する
 		var data = this.getDataFromTbl();
 		
 		// カレンダービューを生成
 		this.calendarViewK.create(data, date_field);
+		
+	}
+	
+	/**
+	 * リアクト機能の初期化
+	 * @param string hyo_elm_id 表要素ID   複数の表IDを指定するときはコンマで連結する
+	 */
+	reactInit(hyo_elm_id){		
+		// ■■■□□□■■■□□□■■■□□□
+		var d1 = new Date();
+		var t1 = d1.getTime();
+		
+
+//		console.log('this.fieldData');//■■■□□□■■■□□□■■■□□□)
+//		console.log(this.fieldData);//■■■□□□■■■□□□■■■□□□)
+//		
+		// フィールド配列を取得する
+		var fields = this._getFields();
+		
+		this.crudBaseReact.init(fields, hyo_elm_id);
 		
 		// ■■■□□□■■■□□□■■■□□□
 		var d2 = new Date();
@@ -4143,7 +4189,32 @@ class CrudBase{
 		var t3 = t2 - t1;
 		console.log('タイム：' + t3);//■■■□□□■■■□□□■■■□□□)
 	}
+	
+	/**
+	 * 行のリアクティビング
+	 */
+	reactivatingOfRow(){
+		this.crudBaseReact.reactivatingOfRow();
+	}
 
+	/**
+	 * フィールド配列を取得する
+	 * @return array フィールド配列
+	 */
+	_getFields(){
+		
+		if(this.fields != null) return this.fields;
+		
+		var fields = [];
+		for(var i in this.fieldData){
+			var fEnt = this.fieldData[i];
+			fields.push(fEnt.field);
+		}
+		this.fields = fields;
+		return this.fields;
+
+	}
+	
 }
 
 

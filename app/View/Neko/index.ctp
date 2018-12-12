@@ -128,6 +128,42 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 </div>
 
 <div id="calendar_view_k"></div>
+<div id="hyo2">
+	<div>
+		<input type='text' name='id'  value='85' placeholder='id' style='width:80px'/>
+		<input type='text' name='neko_val'  value='' placeholder='neko_val' style='width:80px'/>
+		<input type='text' name='neko_name'  value='' placeholder='neko_name' style='width:80px'/>
+		<input type='text' name='neko_date'  value='' placeholder='neko_date' style='width:80px'/>
+		<input type='text' name='neko_group'  value='' placeholder='neko_group' style='width:80px'/>
+		<input type='text' name='neko_dt'  value='' placeholder='neko_dt' style='width:80px'/>
+		<input type='text' name='neko_flg'  value='' placeholder='neko_flg' style='width:80px'/>
+		<input type='text' name='img_fn'  value='' placeholder='img_fn' style='width:80px'/>
+		<input type='text' name='note'  value='' placeholder='note' style='width:80px'/>
+		<input type='text' name='sort_no'  value='' placeholder='sort_no' style='width:80px'/>
+		<input type='text' name='delete_flg'  value='' placeholder='delete_flg' style='width:80px'/>
+		<input type='text' name='update_user'  value='' placeholder='update_user' style='width:80px'/>
+		<input type='text' name='ip_addr'  value='' placeholder='ip_addr' style='width:80px'/>
+		<input type='text' name='created'  value='' placeholder='created' style='width:80px'/>
+		<input type='text' name='modified'  value='' placeholder='modified' style='width:80px'/>
+	</div>
+	<div>
+		<input type='text' name='id'  value='89' placeholder='id' style='width:80px'/>
+		<input type='text' name='neko_val'  value='' placeholder='neko_val' style='width:80px'/>
+		<input type='text' class='neko_name'  value='' placeholder='neko_name' style='width:80px'/>
+		<input type='text' name='neko_date'  value='' placeholder='neko_date' style='width:80px'/>
+		<input type='text' name='neko_group'  value='' placeholder='neko_group' style='width:80px'/>
+		<input type='text' name='neko_dt'  value='' placeholder='neko_dt' style='width:80px'/>
+		<input type='text' name='neko_flg'  value='' placeholder='neko_flg' style='width:80px'/>
+		<input type='text' name='img_fn'  value='' placeholder='img_fn' style='width:80px'/>
+		<input type='text' name='note'  value='' placeholder='note' style='width:80px'/>
+		<input type='text' name='sort_no'  value='' placeholder='sort_no' style='width:80px'/>
+		<input type='text' name='delete_flg'  value='' placeholder='delete_flg' style='width:80px'/>
+		<input type='text' name='update_user'  value='' placeholder='update_user' style='width:80px'/>
+		<input type='text' name='ip_addr'  value='' placeholder='ip_addr' style='width:80px'/>
+		<input type='text' name='created'  value='' placeholder='created' style='width:80px'/>
+		<input type='text' name='modified'  value='' placeholder='modified' style='width:80px'/>
+	</div>
+</div>
 
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
 <!-- 一覧テーブル -->
