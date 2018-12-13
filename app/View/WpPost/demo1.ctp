@@ -9,6 +9,9 @@
 			'WpPost/demo1',
 	];
 	$this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
+	
+	$wp_path = '/wp_demo/wordpress/';
+
 ?>
 <style>
 	.div1{
@@ -40,7 +43,7 @@
 			echo $data[$post_id]['post_content']; 
 		?>
 		<time><?php echo $data[$post_id]['post_date_gmt']; ?></time>
-		<a href='/wp_demo/wordpress/wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
+		<a href='<?php echo $wp_path; ?>wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
 	</div>
 	
 	<div class="div1" style="background-color:#ebbec4">
@@ -49,7 +52,7 @@
 			echo $data[$post_id]['post_content']; 
 		?>
 		<time><?php echo $data[$post_id]['post_date_gmt']; ?></time>
-		<a href='/wp_demo/wordpress/wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
+		<a href='<?php echo $wp_path; ?>wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
 	</div>
 	
 	<div class="div1" style="background-color:#fff4d9">
@@ -58,7 +61,7 @@
 			echo $data[$post_id]['post_content']; 
 		?>
 		<time><?php echo $data[$post_id]['post_date_gmt']; ?></time>
-		<a href='/wp_demo/wordpress/wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
+		<a href='<?php echo $wp_path; ?>wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
 	</div>
 	
 	<div class="div2" style="background-color:#ebfaf1">
@@ -67,7 +70,7 @@
 			echo $data[$post_id]['post_content']; 
 		?>
 		<time><?php echo $data[$post_id]['post_date_gmt']; ?></time>
-		<a href='/wp_demo/wordpress/wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
+		<a href='<?php echo $wp_path; ?>wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
 	</div>
 	
 	<div class="div2" style="background-color:#e1e9ff">
@@ -76,7 +79,7 @@
 			echo $data[$post_id]['post_content']; 
 		?>
 		<time><?php echo $data[$post_id]['post_date_gmt']; ?></time>
-		<a href='/wp_demo/wordpress/wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
+		<a href='<?php echo $wp_path; ?>wp-admin/post.php?post=<?php echo $post_id?>&action=edit' target="blank" class='btn btn-primary'>編集</a>
 	</div>
 </div>
 <hr>
