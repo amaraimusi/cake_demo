@@ -87,9 +87,6 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 			
 		<button id="calendar_view_k_btn" type="button" class="btn btn-default" onclick="calendarViewKShow()" >
 			<span class="glyphicon glyphicon-time" title="カレンダーモード"></span></button>
-			
-		<button type="button" class="btn btn-warning" onclick="newInpShow(this);">
-			<span class="glyphicon glyphicon-plus-sign" title="新規入力"></span></button>
 		
 	</div>
 		
@@ -166,8 +163,12 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 </div>
 
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
+
+<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">
+	<span class="glyphicon glyphicon-plus-sign" title="新規入力"> 追加</span></button>
+	
 <!-- 一覧テーブル -->
-<table id="neko_tbl" border="1"  class="table table-striped table-bordered table-condensed" style="display:none">
+<table id="neko_tbl" border="1"  class="table table-striped table-bordered table-condensed" style="display:none;margin-bottom:0px">
 
 <thead>
 <tr>
@@ -231,16 +232,15 @@ foreach($data as $i=>$ent){
 </tbody>
 </table>
 
+<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_bottom');">
+	<span class="glyphicon glyphicon-plus-sign" title="新規入力"> 追加</span></button>
+	
 <?php echo $this->element('CrudBase/crud_base_pwms'); // 複数選択による一括処理 ?>
 
-
-
-
-
-<table>
+<table id="crud_base_forms">
 
 	<!-- 新規入力フォーム -->
-	<tr id="ajax_crud_new_inp_form" class="crud_base_form" style="display:none;padding-bottom:60px"><td>
+	<tr id="ajax_crud_new_inp_form" class="crud_base_form" style="display:none;padding-bottom:60px"><td colspan='5'>
 	
 		<div>
 			<div style="color:#3174af;float:left">新規入力</div>

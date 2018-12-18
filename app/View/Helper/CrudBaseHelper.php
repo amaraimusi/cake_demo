@@ -119,7 +119,7 @@ class CrudBaseHelper extends FormHelper {
 				'CrudBase/CbBtnSizeChanger.js?ver=1.0.0', // ボタンサイズ変更
 				'CrudBase/CalendarViewK.js', // カレンダービューK
 				'CrudBase/CrudBaseReact.js?ver=0.1.0', // CrudBase用リアクティブ機能
-				'CrudBase/CrudBase.js?ver=2.6.6',
+				'CrudBase/CrudBase.js?ver=2.6.8',
 				'livipage',						// ページ内リンク先プレビュー
 				'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
 				'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
