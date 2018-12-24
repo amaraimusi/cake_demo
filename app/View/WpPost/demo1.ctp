@@ -6,7 +6,7 @@
 	$jsList[] = [
 			'jquery-2.1.4.min',
 			'bootstrap.min',
-			'WpPost/demo1',
+			'WpPost/dist/one.js',
 	];
 	$this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 	
