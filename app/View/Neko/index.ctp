@@ -125,7 +125,8 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 </div>
 
 <div id="calendar_view_k"></div>
-<div id="hyo2">
+<!-- ■■■□□□■■■□□□■■■□□□ -->
+<div id="hyo2" style="display:none">
 	<div>
 		<input type='text' name='id'  value='85' placeholder='id' style='width:80px'/>
 		<input type='text' name='neko_val'  value='' placeholder='neko_val' style='width:80px'/>
