@@ -50,7 +50,7 @@ var ClmShowHide =function(){
 		}
 		
 		// デフォルト列データを作成する
-		defClmData=[];
+		var defClmData=[];
 		for(var i=0;i < iniClmData.length ;i++){
 			var show_flg=iniClmData[i];
 

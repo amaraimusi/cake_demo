@@ -104,27 +104,29 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'clm_show_hide',				// 列表示切替
-				'date_ex',						// 日付関連関数集
-				'jquery.ui.ympicker',			// 年月ピッカー
+				'CrudBase/dist/CrudBase.min.js?ver=2.6.8',
+				
+				//'clm_show_hide',				// 列表示切替
+				//'date_ex',						// 日付関連関数集
+				//'jquery.ui.ympicker',			// 年月ピッカー
 				//'jquery.datetimepicker.full.min',// 日時ピッカー(重いので保留■■■□□□■■■□□□■■■□□□）
-				'CrudBase/DatepickerWrap',		// カレンダー日付ピッカー・ラッパークラス
-				'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
+				//'CrudBase/DatepickerWrap',		// カレンダー日付ピッカー・ラッパークラス
+				//'nouislider.min',				// 数値範囲入力スライダー・noUiSlider
 				//'CrudBase/NoUiSliderWrap',		// noUiSliderのラップ(重いので保留）
-				'CrudBase/CrudBaseAutoSave.js?ver=1.0',
-				'CrudBase/CrudBaseRowExchange.js?ver=1.2',
-				'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
-				'CrudBase/FileUploadK.js?ver=1.0',
-				'CrudBase/CbFileUploadComponent.js?ver=1.0',
-				'CrudBase/CbBtnSizeChanger.js?ver=1.0.0', // ボタンサイズ変更
-				'CrudBase/CalendarViewK.js', // カレンダービューK
-				'CrudBase/CrudBaseReact.js?ver=0.1.0', // CrudBase用リアクティブ機能
-				'CrudBase/CrudBase.js?ver=2.6.8',
-				'livipage',						// ページ内リンク先プレビュー
-				'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
-				'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
-				'CrudBase/AjaxLoginWithCake.js?ver=1.0', // CakePHPによるAjax認証
-				'CrudBase/index'				// CRUD indexページ共通
+				//'CrudBase/CrudBaseAutoSave.js?ver=1.0',
+				//'CrudBase/CrudBaseRowExchange.js?ver=1.2',
+				//'CrudBase/CrudBaseGadgetKj.js?ver=1.0',
+				//'CrudBase/FileUploadK.js?ver=1.0',
+				//'CrudBase/CbFileUploadComponent.js?ver=1.0',
+				//'CrudBase/CbBtnSizeChanger.js?ver=1.0.0', // ボタンサイズ変更
+				//'CrudBase/CalendarViewK.js', // カレンダービューK
+				//'CrudBase/CrudBaseReact.js?ver=0.1.0', // CrudBase用リアクティブ機能
+				//'CrudBase/CrudBase.js?ver=2.6.8',
+				//'livipage',						// ページ内リンク先プレビュー
+				//'ProcessWithMultiSelection',	// 一覧のチェックボックス複数選択による一括処理
+				//'CrudBase/ImportFu.js',			// インポート・ファイルアップロードクラス
+				//'CrudBase/AjaxLoginWithCake.js?ver=1.0', // CakePHPによるAjax認証
+				//'CrudBase/index'				// CRUD indexページ共通
 		);
 	}
 	

@@ -81,13 +81,13 @@
 	 */
 	function DateParse(date, format){
 
-		var year = 1990;
-		var month = 01;
-		var day = 01;
-		var hour = 00;
-		var minute = 00;
-		var second = 00;
-		var millisecond = 000;
+		var year = '1990';
+		var month = '01';
+		var day = '01';
+		var hour = '00';
+		var minute = '00';
+		var second = '00';
+		var millisecond = '000';
 
 		var f;
 		var idx;
