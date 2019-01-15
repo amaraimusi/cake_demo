@@ -7,9 +7,9 @@ var uglify = require('gulp-uglify');
 gulp.task('CrudBase', function () {
 	gulp.src('../app/webroot/js/CrudBase/*.js')
 	.pipe(concat('CrudBase.min.js'))
-	.pipe(babel({
-		presets: ['@babel/env']
-	}))
+//	.pipe(babel({
+//		presets: ['@babel/env']
+//	}))
 //	.pipe(uglify())
 	.pipe(gulp.dest('../app/webroot/js/CrudBase/dist'));
 });

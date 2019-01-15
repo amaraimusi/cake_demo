@@ -91,6 +91,7 @@ class CrudBaseHelper extends FormHelper {
 				//'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ(重いので保留
 				'CrudBase/FileUploadK.css?ver=1.0.1',	
 				'CrudBase/CalendarViewK.css',
+				'CrudBase/CrudBaseBulkAdd.css',
 				'CrudBase/index'					// CRUD indexページ共通
 		);
 	}
@@ -105,6 +106,7 @@ class CrudBaseHelper extends FormHelper {
 				'jquery-ui.min',
 				'Layouts/default',
 				'CrudBase/dist/CrudBase.min.js?ver=2.6.8',
+				'CrudBase/dev/CrudBaseBulkAdd.js',//■■■□□□■■■□□□■■■□□□
 				
 				//'clm_show_hide',				// 列表示切替
 				//'date_ex',						// 日付関連関数集

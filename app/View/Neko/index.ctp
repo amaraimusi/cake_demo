@@ -87,6 +87,9 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 			
 		<button id="calendar_view_k_btn" type="button" class="btn btn-default" onclick="calendarViewKShow()" >
 			<span class="glyphicon glyphicon-time" title="カレンダーモード"></span></button>
+			
+		<button id="crud_base_bulk_add_btn" type="button" class="btn btn-default" onclick="crudBase.crudBaseBulkAdd.showForm()" >
+			一括追加</button>
 		
 	</div>
 		
@@ -96,6 +99,8 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 <div style="clear:both"></div>
 
+<!-- 一括追加機能  -->
+<div id="crud_base_bulk_add" style="display:none"></div>
 
 <?php echo $this->element('CrudBase/crud_base_new_page_version');?>
 <div id="err" class="text-danger"><?php echo $errMsg;?></div>

@@ -113,6 +113,9 @@ class CrudBase{
 		// CrudBase用リアクティブ機能
 		this.crudBaseReact = this._factoryCrudBaseReact();
 		
+		// 一括追加機能
+		this.crudBaseBulkAdd = new CrudBaseBulkAdd(this.fieldData);
+		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
 		// テーブル変形
@@ -1938,6 +1941,17 @@ class CrudBase{
 
 		return fuEnt;
 	}
+	
+	/**
+	 * 新しい行を作成する。 | 外部公開用のメソッド
+	 * @param ent 行エンティティ
+	 * @param add_row_index 追加行インデックス :テーブル行の挿入場所。-1にすると末尾へ追加。-1がデフォルト。
+	 * @param option 拡張予定
+	 * @return jQuery_Object 新行要素
+	 */
+	addTr(ent,add_row_index,option){
+		this._addTr(ent,add_row_index,option)
+	}
 
 
 	/**
@@ -1979,6 +1993,7 @@ class CrudBase{
 
 	}
 
+	
 	/**
 	 * TR要素をテーブルの指定行に挿入する
 	 * @note

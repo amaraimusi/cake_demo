@@ -97,8 +97,24 @@ function init(){
 		}
 	});
 	
-	// リアクト機能の初期化
+	// リアクト機能の初期化■■■□□□■■■□□□■■■□□□開発中
 	crudBase.reactInit('neko_tbl, hyo2');
+	
+	// CrudBase一括追加機能の初期化
+	var today = new Date().toLocaleDateString();
+	crudBase.crudBaseBulkAdd.init(
+		[
+			{'field':'neko_name', 'inp_type':'textarea'}, 
+			{'field':'neko_val', 'inp_type':'textarea'}, 
+			{'field':'neko_group', 'inp_type':'select', 'list':nekoGroupList, 'def':2}, 
+			{'field':'neko_date', 'inp_type':'date', 'def':today}, 
+			{'field':'note', 'inp_type':'text', 'def':'TEST'}, 
+			{'field':'sort_no', 'inp_type':'sort_no', 'def':1}, 
+		],
+		{
+			'ajax_url':'neko/bulk_reg',
+		}
+	);
 }
 
 /**
