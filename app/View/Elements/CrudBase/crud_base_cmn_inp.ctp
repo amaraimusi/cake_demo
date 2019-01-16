@@ -2,6 +2,19 @@
 <div id="hiddens_data" style="display:none">
 <?php
 
+// CrudBaseヘルパーへ各種パラメータをセットする。
+$this->CrudBase->setCrudBaseParam(array(
+		'bigDataFlg'=>$bigDataFlg,
+		'debug_mode'=>$debug_mode,
+		'dp_tmpl'=>$dp_tmpl,
+		'viaDpFnMap'=>$viaDpFnMap,
+));
+
+$this->CrudBase->setKjs($kjs);
+
+$model_name_s = $this->CrudBase->getModelNameSnk();//スネーク記法モデル名
+
+
 $this->CrudBase->hiddenX('base_url',$base_url);
 $this->CrudBase->hiddenX('referer_url',$referer_url);
 $this->CrudBase->hiddenX('now_url',$now_url);

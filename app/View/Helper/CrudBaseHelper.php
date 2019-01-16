@@ -1598,10 +1598,10 @@ class CrudBaseHelper extends FormHelper {
 	public function makeCsvBtns($csv_dl_url){
 		
 		$html = "
-		<a href='{$csv_dl_url}' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-save'></span>CSVエクスポート</a>
+		<a href='{$csv_dl_url}' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-save'></span>CSVエクスポート</a>
 		<input type='button' value='CSVインポート' class='btn btn-default btn-xs' onclick='jQuery(\"#csv_fu_div\").toggle(300);' style='display:none' />
 		<div id='csv_fu_div' style='display:none'><input type='file' id='csv_fu' /></div>
-		";// ■■■□□□■■■□□□■■■□□□ CSVインポートボタンは一時的に非表示
+		";
 		
 		echo $html;
 		

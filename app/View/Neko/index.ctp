@@ -77,24 +77,9 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 	
 	<div id="cb_func_btns" class="btn-group" >
 		<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default">
-			<span class="glyphicon glyphicon-cog"></span></button>
-
-		<button id="table_transform_tbl_mode" type="button" class="btn btn-default" onclick="tableTransform(0)" style="display:none">
-			<span class="glyphicon glyphicon-th" title="一覧の変形・テーブルモード"></span></button>
-			
-		<button id="table_transform_div_mode" type="button" class="btn btn-default" onclick="tableTransform(1)" >
-			<span class="glyphicon glyphicon-th-large" title="一覧の変形・区分モード"></span></button>
-			
-		<button id="calendar_view_k_btn" type="button" class="btn btn-default" onclick="calendarViewKShow()" >
-			<span class="glyphicon glyphicon-time" title="カレンダーモード"></span></button>
-			
-		<button id="crud_base_bulk_add_btn" type="button" class="btn btn-default" onclick="crudBase.crudBaseBulkAdd.showForm()" >
-			一括追加</button>
-		
+			<span class="glyphicon glyphicon-wrench"></span></button>
 	</div>
 		
-	<a href="neko/front_a?<?php echo $pages['query_str']; ?>" class="btn btn-info btn-xs" target="brank" >フロント画面</a>
-	
 </div><!-- cb_func_line -->
 
 <div style="clear:both"></div>
@@ -110,14 +95,39 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 <div id="detail_div" style="display:none">
 	
-<?php 
-	echo $this->element('CrudBase/crud_base_index');
+	<div id="main_tools" style="margin-bottom:10px;">
+		<?php 
+			// 列表示切替機能
+			echo $this->element('CrudBase/clm_cbs'); 
+			
+			// CSVエクスポート機能
+			$csv_dl_url = $this->html->webroot . 'neko/csv_download';
+			$this->CrudBase->makeCsvBtns($csv_dl_url);
+			
 	
-	$csv_dl_url = $this->html->webroot . 'neko/csv_download';
-	$this->CrudBase->makeCsvBtns($csv_dl_url);
-?>
+			
+		?>
 
+		<button id="crud_base_bulk_add_btn" type="button" class="btn btn-default btn-sm" onclick="crudBase.crudBaseBulkAdd.showForm()" >一括追加</button>
+		
+	</div><!-- main_tools -->
+	
+	<div id="sub_tools">
+		<input type="button" value="ボタンサイズ変更" class="btn btn-default btn-xs" onclick="jQuery('#CbBtnSizeChanger').toggle(300);" />
+		<div id="CbBtnSizeChanger" style="display:none"></div>
+		
+		<button id="calendar_view_k_btn" type="button" class="btn btn-default btn-xs" onclick="calendarViewKShow()" >
+			<span class="glyphicon glyphicon-time" >カレンダーモード</span></button>
+		
+		<button type="button" class="btn btn-default btn-xs" onclick="session_clear()" >セッションクリア</button>
+	
+		<button id="table_transform_tbl_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(0)" style="display:none">一覧の変形・テーブルモード</button>	
+		<button id="table_transform_div_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(1)" >一覧の変形・スマホモード</button>
+		
+		<a href="neko/front_a?<?php echo $pages['query_str']; ?>" class="btn btn-default btn-xs" target="brank" >フロント画面表示</a>
+	</div><!-- sub_tools -->
 </div><!-- detail_div -->
+
 
 <div id="new_inp_form_point"></div><!-- 新規入力フォーム表示地点 -->
 
