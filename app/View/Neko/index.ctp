@@ -103,9 +103,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 			// CSVエクスポート機能
 			$csv_dl_url = $this->html->webroot . 'neko/csv_download';
 			$this->CrudBase->makeCsvBtns($csv_dl_url);
-			
-	
-			
+
 		?>
 
 		<button id="crud_base_bulk_add_btn" type="button" class="btn btn-default btn-sm" onclick="crudBase.crudBaseBulkAdd.showForm()" >一括追加</button>
@@ -140,48 +138,14 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 </div>
 
 <div id="calendar_view_k"></div>
-<!-- ■■■□□□■■■□□□■■■□□□ -->
-<div id="hyo2" style="display:none">
-	<div>
-		<input type='text' name='id'  value='85' placeholder='id' style='width:80px'/>
-		<input type='text' name='neko_val'  value='' placeholder='neko_val' style='width:80px'/>
-		<input type='text' name='neko_name'  value='' placeholder='neko_name' style='width:80px'/>
-		<input type='text' name='neko_date'  value='' placeholder='neko_date' style='width:80px'/>
-		<input type='text' name='neko_group'  value='' placeholder='neko_group' style='width:80px'/>
-		<input type='text' name='neko_dt'  value='' placeholder='neko_dt' style='width:80px'/>
-		<input type='text' name='neko_flg'  value='' placeholder='neko_flg' style='width:80px'/>
-		<input type='text' name='img_fn'  value='' placeholder='img_fn' style='width:80px'/>
-		<input type='text' name='note'  value='' placeholder='note' style='width:80px'/>
-		<input type='text' name='sort_no'  value='' placeholder='sort_no' style='width:80px'/>
-		<input type='text' name='delete_flg'  value='' placeholder='delete_flg' style='width:80px'/>
-		<input type='text' name='update_user'  value='' placeholder='update_user' style='width:80px'/>
-		<input type='text' name='ip_addr'  value='' placeholder='ip_addr' style='width:80px'/>
-		<input type='text' name='created'  value='' placeholder='created' style='width:80px'/>
-		<input type='text' name='modified'  value='' placeholder='modified' style='width:80px'/>
-	</div>
-	<div>
-		<input type='text' name='id'  value='89' placeholder='id' style='width:80px'/>
-		<input type='text' name='neko_val'  value='' placeholder='neko_val' style='width:80px'/>
-		<input type='text' class='neko_name'  value='' placeholder='neko_name' style='width:80px'/>
-		<input type='text' name='neko_date'  value='' placeholder='neko_date' style='width:80px'/>
-		<input type='text' name='neko_group'  value='' placeholder='neko_group' style='width:80px'/>
-		<input type='text' name='neko_dt'  value='' placeholder='neko_dt' style='width:80px'/>
-		<input type='text' name='neko_flg'  value='' placeholder='neko_flg' style='width:80px'/>
-		<input type='text' name='img_fn'  value='' placeholder='img_fn' style='width:80px'/>
-		<input type='text' name='note'  value='' placeholder='note' style='width:80px'/>
-		<input type='text' name='sort_no'  value='' placeholder='sort_no' style='width:80px'/>
-		<input type='text' name='delete_flg'  value='' placeholder='delete_flg' style='width:80px'/>
-		<input type='text' name='update_user'  value='' placeholder='update_user' style='width:80px'/>
-		<input type='text' name='ip_addr'  value='' placeholder='ip_addr' style='width:80px'/>
-		<input type='text' name='created'  value='' placeholder='created' style='width:80px'/>
-		<input type='text' name='modified'  value='' placeholder='modified' style='width:80px'/>
-	</div>
-</div>
+
 
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
 
-<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">
-	<span class="glyphicon glyphicon-plus-sign" title="新規入力"> 追加</span></button>
+<?php if(!empty($data)){ ?>
+	<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">
+		<span class="glyphicon glyphicon-plus-sign" title="新規入力"> 追加</span></button>
+<?php } ?>
 	
 <!-- 一覧テーブル -->
 <table id="neko_tbl" border="1"  class="table table-striped table-bordered table-condensed" style="display:none;margin-bottom:0px">
