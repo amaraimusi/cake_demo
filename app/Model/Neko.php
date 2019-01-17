@@ -145,7 +145,7 @@ class Neko extends AppModel {
 		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
 		
 		if(!empty($kjs['kj_main'])){
-			$cnds[]="CONCAT( IFNULL(Neko.neko_name, '') ,IFNULL(Neko.neko_date, '') ,IFNULL(Neko.note, '')) LIKE '%{$kjs['kj_main']}%'";
+			$cnds[]="CONCAT( IFNULL(Neko.neko_name, '') ,IFNULL(Neko.note, '')) LIKE '%{$kjs['kj_main']}%'";
 		}
 		
 		// CBBXS-1003

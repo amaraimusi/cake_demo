@@ -32,7 +32,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 	<div class="cb_kj_main">
 		<!-- 検索条件入力フォーム -->
 		<?php echo $this->Form->create('Neko', array('url' => true , 'class' => 'form_kjs')); ?>
-		<?php $this->CrudBase->inputKjMain($kjs,'kj_main','',null,'ネコ名前、ネコ日、備考を検索する');?>
+		<?php $this->CrudBase->inputKjMain($kjs,'kj_main','',null,'ネコ名、備考を検索する');?>
 		<input type='button' value='検索' onclick='searchKjs()' class='search_kjs_btn btn btn-success' />
 		<div class="btn-group">
 			<a href="" class="ini_rtn btn btn-info btn-xs" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
