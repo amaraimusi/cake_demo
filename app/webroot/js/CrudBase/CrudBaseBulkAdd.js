@@ -1,8 +1,8 @@
 /**
  * CrudBase一括追加機能
  * 
- * @date 2019-1-3
- * @version 1.0.0
+ * @date 2019-1-3 | 2019-1-17
+ * @version 1.0.1
  * 
  */
 class CrudBaseBulkAdd{
@@ -83,12 +83,12 @@ class CrudBaseBulkAdd{
 		}
 
 		if(param['ta_placeholder'] == null){
-			param['ta_placeholder'] = "Excelからコピーしたネコ名、ネコ数値（タブ区切りテキスト）を貼り付けてください。\n(例)\nネコ名A\t100\nネコ名B\t101\n";
+			param['ta_placeholder'] = "Excelからコピーした行列を貼り付けてください。\n(例)\nネコ名A\t100\nネコ名B\t101\n";
 		}
 		
 		if(param['ta_height'] == null) param['ta_height'] ='20rem';
 		
-		if(param['test_mode'] == null) param['test_mode'] = 1;
+		if(param['test_mode'] == null) param['test_mode'] = 0;
 		
 		return param;
 	}
