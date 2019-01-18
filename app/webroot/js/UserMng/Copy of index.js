@@ -2,9 +2,6 @@
 
 $(function() {
 	init();//初期化
-	
-	$('#user_mng_tbl').show();// 高速表示のためテーブルは最後に表示する
-	
 });
 
 
@@ -19,16 +16,11 @@ var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複
  * - 列表示切替機能の組み込み
  * - 数値範囲系の検索入力フォームに数値範囲入力スライダーを組み込む
  * 
- * @version 1.2.2
- * @date 2015-9-16 | 2018-9-8
+ * @version 1.2
+ * @date 2015-9-16 | 2016-12-14
  * @author k-uehara
  */
 function init(){
-	
-	// CakePHPによるAjax認証
-	var alwc = new AjaxLoginWithCake();
-	var alwcParam = {'btn_type':0,'form_slt':'#ajax_login_with_cake'}
-	alwc.loginCheckEx(alwcParam);
 	
 	// 検索条件情報を取得する
 	var kjs_json = jQuery('#kjs_json').val();
@@ -46,9 +38,6 @@ function init(){
 	// 表示フィルターデータの定義とセット
 	var disFilData = {
 			// CBBXS-1008
-			'delete_flg':{
-				'fil_type':'delete_flg',
-			},
 
 			// CBBXE
 			
@@ -91,29 +80,21 @@ function init(){
 		}
 	});
 	
-	// リアクト機能の初期化■■■□□□■■■□□□■■■□□□開発中
-	crudBase.reactInit('user_mng_tbl, hyo2');
 	
-	// CrudBase一括追加機能の初期化
-	var today = new Date().toLocaleDateString();
-	crudBase.crudBaseBulkAdd.init(
-		[
-			{'field':'username', 'inp_type':'textarea'}, 
-			{'field':'role', 'inp_type':'select', 'list':roleList}, 
-		],
-		{
-			'ajax_url':'user_mng/bulk_reg',
-			'ta_placeholder':"ユーザー名の一覧を貼り付けてください。\n(例)\nuser1\nuser2",
-		}
-	);
+	// 日付カレンダーのセット
+	// CBBXS-1030
+
+	// CBBXE
+	
+
 }
 
 /**
  * 新規入力フォームを表示
  * @param btnElm ボタン要素
  */
-function newInpShow(btnElm, ni_tr_place){
-	crudBase.newInpShow(btnElm, {'ni_tr_place':ni_tr_place});
+function newInpShow(btnElm){
+	crudBase.newInpShow(btnElm);
 }
 
 /**
@@ -121,12 +102,17 @@ function newInpShow(btnElm, ni_tr_place){
  * @param btnElm ボタン要素
  */
 function editShow(btnElm){
+	crudBase.editShow(btnElm);
 	
-	var option = {};
-	crudBase.editShow(btnElm,option);
+	// パスワード変更ボタンを表示
+	jQuery("#chg_pw_btn").show();
+	
+	// パスワードテキストボックスを中身をクリアしｔから表示する
+	var epTxtElm = jQuery("#edit_password");
+	epTxtElm.val('');
+	epTxtElm.hide();
+	
 }
-
-
 
 /**
  * 複製フォームを表示（新規入力フォームと同じ）
@@ -288,35 +274,14 @@ function session_clear(){
 }
 
 /**
- * テーブル変形
- * @param mode_no モード番号  0:テーブルモード , 1:区分モード
+ * パスワード変更ボタンをクリック
  */
-function tableTransform(mode_no){
-
-	crudBase.tableTransform(mode_no);
-
+function chgPwBtnClick(){
+	jQuery("#chg_pw_btn").hide();
+	
+	// パスワードテキストボックスを中身をクリアしｔから表示する
+	var epTxtElm = jQuery("#edit_password");
+	epTxtElm.val('');
+	epTxtElm.show();
 }
 
-/**
- * ノート詳細を開く
- * @param btnElm 詳細ボタン要素
- */
-function openNoteDetail(btnElm){
-	btnElm = jQuery(btnElm);
-	crudBase.openNoteDetail(btnElm);
-}
-
-/**
- * 検索実行
- */
-function searchKjs(){
-	crudBase.searchKjs();
-}
-
-/**
- * カレンダーモード
- */
-function calendarViewKShow(){
-	// カレンダービューを生成 
-	crudBase.calendarViewCreate('user_mng_date');
-}

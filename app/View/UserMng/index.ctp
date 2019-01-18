@@ -1,8 +1,9 @@
 <?php
-$this->CrudBase->setModelName('UserMng');
+$this->CrudBase->init(array('model_name'=>'UserMng'));
 
 // CSSファイルのインクルード
 $cssList = $this->CrudBase->getCssList();
+$cssList[] = 'UserMng/index'; // 当画面専用CSS
 $this->assign('css', $this->Html->css($cssList));
 
 // JSファイルのインクルード
@@ -15,45 +16,38 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 
 
-<h2>ユーザー管理</h2>
-
-ユーザー管理の検索閲覧および編集する画面です。<br>
-<br>
-
-<?php
-	$this->Html->addCrumb("トップ",'/');
-	$this->Html->addCrumb("ユーザー管理");
-	echo $this->Html->getCrumbs(" > ");
-?>
-
-<?php echo $this->element('CrudBase/crud_base_new_page_version');?>
-<div id="err" class="text-danger"><?php echo $errMsg;?></div>
 
 
-<div id="cb_func_btns" >
-	<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default">
-		<span class="glyphicon glyphicon-cog"></span></button>
-		<a href="" class="ini_rtn btn btn-info btn-xs" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
-		<span class="glyphicon glyphicon-certificate"  ></span></a>
-	<button type="button" class="btn btn-warning" onclick="newInpShow(this);">
-		<span class="glyphicon glyphicon-plus-sign" title="新規入力"></span></button>
-</div>
-<div style="clear:both"></div>
+<div class="cb_func_line">
 
 
-<!-- 検索条件入力フォーム -->
-<?php echo $this->Form->create('UserMng', array('url' => true )); ?>
-<div style="clear:both"></div>
-
-<div id="detail_div" style="display:none">
+	<div class="cb_breadcrumbs">
+	<?php
+		$this->Html->addCrumb("トップ",'/');
+		$this->Html->addCrumb("ユーザー管理画面");
+		echo $this->Html->getCrumbs(" > ");
+	?>
+	</div>
 	
-	<?php 
-	
-	// --- CBBXS-1004
+	<div class="cb_kj_main">
+		<!-- 検索条件入力フォーム -->
+		<?php echo $this->Form->create('UserMng', array('url' => true , 'class' => 'form_kjs')); ?>
+		<?php $this->CrudBase->inputKjMain($kjs,'kj_main','',null,'ユーザー名を検索する');?>
+		<input type='button' value='検索' onclick='searchKjs()' class='search_kjs_btn btn btn-success' />
+		<div class="btn-group">
+			<a href="" class="ini_rtn btn btn-info btn-xs" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
+				<span class="glyphicon glyphicon-certificate"  ></span></a>
+			<button type="button" class="btn btn-default btn-xs" title="詳細検索項目を表示する" onclick="jQuery('.cb_kj_detail').toggle(300)">詳細</button>
+		</div>
+		
+		<div class="cb_kj_detail" style="display:none">
+		<?php 
+		
+		// --- CBBXS-1004
 		$this->CrudBase->inputKjId($kjs);
 		$this->CrudBase->inputKjText($kjs,'kj_username','ユーザー名');
 		$this->CrudBase->inputKjText($kjs,'kj_password','パスワード');
-		$this->CrudBase->inputKjSelect($kjs,'kj_role','ネコ種別',$roleList); 
+		$this->CrudBase->inputKjSelect($kjs,'kj_role','権限',$roleList); 
 		$this->CrudBase->inputKjHidden($kjs,'kj_sort_no');
 		$this->CrudBase->inputKjDeleteFlg($kjs);
 		$this->CrudBase->inputKjText($kjs,'kj_update_user','更新ユーザー');
@@ -61,21 +55,74 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		$this->CrudBase->inputKjCreated($kjs);
 		$this->CrudBase->inputKjModified($kjs);
 
-	// --- CBBXE
-	
-	$this->CrudBase->inputKjLimit($kjs);
-	echo $this->element('CrudBase/crud_base_cmn_inp');
+		// --- CBBXE
+		
+		$this->CrudBase->inputKjLimit($kjs);
+		echo "<input type='button' value='検索' onclick='searchKjs()' class='search_kjs_btn btn btn-success' />";
+		echo $this->element('CrudBase/crud_base_cmn_inp');
+		
 
-	echo $this->Form->submit('検索', array('name' => 'search','class'=>'btn btn-success','div'=>false,));
+		?>
+			<div class="kj_div" style="margin-top:5px">
+				<input type="button" value="リセット" title="検索入力を初期に戻します" onclick="resetKjs()" class="btn btn-primary btn-xs" />
+			</div>
+		</div>
+		<?php echo $this->Form->end()?>
+	</div>
 	
-	echo $this->element('CrudBase/crud_base_index');
-	
-	$csv_dl_url = $this->html->webroot . 'user_mng/csv_download';
-	$this->CrudBase->makeCsvBtns($csv_dl_url);
-	?>
+	<div id="cb_func_btns" class="btn-group" >
+		<button type="button" onclick="$('#detail_div').toggle(300);" class="btn btn-default">
+			<span class="glyphicon glyphicon-wrench"></span></button>
+	</div>
+		
+</div><!-- cb_func_line -->
 
+<div style="clear:both"></div>
+
+<!-- 一括追加機能  -->
+<div id="crud_base_bulk_add" style="display:none"></div>
+
+<?php echo $this->element('CrudBase/crud_base_new_page_version');?>
+<div id="err" class="text-danger"><?php echo $errMsg;?></div>
+
+
+<div style="clear:both"></div>
+
+<div id="detail_div" style="display:none">
+	
+	<div id="main_tools" style="margin-bottom:10px;">
+		<?php 
+			// 列表示切替機能
+			echo $this->element('CrudBase/clm_cbs'); 
+			
+			// CSVエクスポート機能
+			$csv_dl_url = $this->html->webroot . 'user_mng/csv_download';
+			$this->CrudBase->makeCsvBtns($csv_dl_url);
+
+		?>
+
+		<button id="crud_base_bulk_add_btn" type="button" class="btn btn-default btn-sm" onclick="crudBase.crudBaseBulkAdd.showForm()" >一括追加</button>
+		
+	</div><!-- main_tools -->
+	
+	<div id="sub_tools">
+		<input type="button" value="ボタンサイズ変更" class="btn btn-default btn-xs" onclick="jQuery('#CbBtnSizeChanger').toggle(300);" />
+		<div id="CbBtnSizeChanger" style="display:none"></div>
+		
+		<button id="calendar_view_k_btn" type="button" class="btn btn-default btn-xs" onclick="calendarViewKShow()" >
+			<span class="glyphicon glyphicon-time" >カレンダーモード</span></button>
+		
+		<button type="button" class="btn btn-default btn-xs" onclick="session_clear()" >セッションクリア</button>
+	
+		<button id="table_transform_tbl_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(0)" style="display:none">一覧の変形・テーブルモード</button>	
+		<button id="table_transform_div_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(1)" >一覧の変形・スマホモード</button>
+		
+		<a href="user_mng/front_a?<?php echo $pages['query_str']; ?>" class="btn btn-default btn-xs" target="brank" >フロント画面表示</a>
+	</div><!-- sub_tools -->
 </div><!-- detail_div -->
-<?php echo $this->Form->end()?>
+
+
+<div id="new_inp_form_point"></div><!-- 新規入力フォーム表示地点 -->
 
 
 <div style="margin-top:8px;">
@@ -83,13 +130,20 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<?php echo $pages['page_index_html'];//ページ目次 ?>
 	</div>
 	<div style="display:inline-block">件数:<?php echo $data_count ?></div>
-	<div style="display:inline-block">
-		<a href="#help_lists" class="livipage btn btn-info btn-xs" title="ヘルプ"><span class="glyphicon glyphicon-question-sign"></span></a></div>
 </div>
 
+<div id="calendar_view_k"></div>
+
+
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
+
+<?php if(!empty($data)){ ?>
+	<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">
+		<span class="glyphicon glyphicon-plus-sign" title="新規入力"> 追加</span></button>
+<?php } ?>
+	
 <!-- 一覧テーブル -->
-<table id="user_mng_tbl" border="1"  class="table table-striped table-bordered table-condensed">
+<table id="user_mng_tbl" class="table table-striped table-bordered table-condensed" style="display:none;margin-bottom:0px">
 
 <thead>
 <tr>
@@ -128,7 +182,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdsEchoForClmSort();// 列並に合わせてTD要素群を出力する
 	
 	// 行のボタン類
-	echo "<td><div class='btn-group' style='display:inline-block'>";
+	echo "<td><div style='display:inline-block'>";
 	$id = $ent['id'];
 	echo  "<input type='button' value='↑↓' onclick='rowExchangeShowForm(this)' class='row_exc_btn btn btn-info btn-xs' />";
 	$this->CrudBase->rowEditBtn($id);
@@ -149,124 +203,164 @@ foreach($data as $i=>$ent){
 </tbody>
 </table>
 
+<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_bottom');">
+	<span class="glyphicon glyphicon-plus-sign" title="新規入力"> 追加</span></button>
+	
 <?php echo $this->element('CrudBase/crud_base_pwms'); // 複数選択による一括処理 ?>
 
-<!-- 新規入力フォーム -->
-<div id="ajax_crud_new_inp_form" class="panel panel-primary">
+<table id="crud_base_forms">
 
-	<div class="panel-heading">
-		<div class="pnl_head1">新規入力</div>
-		<div class="pnl_head2"></div>
-		<div class="pnl_head3">
-			<button type="button" class="btn btn-primary btn-sm" onclick="closeForm('new_inp')"><span class="glyphicon glyphicon-remove"></span></button>
-		</div>
-	</div>
-	<div class="panel-body">
-	<div class="err text-danger"></div>
+	<!-- 新規入力フォーム -->
+	<tr id="ajax_crud_new_inp_form" class="crud_base_form" style="display:none;padding-bottom:60px"><td colspan='5'>
 	
-	<div style="display:none">
-    	<input type="hidden" name="form_type">
-    	<input type="hidden" name="row_index">
-    	<input type="hidden" name="sort_no">
-	</div>
-	<table><tbody>
-
+		<div>
+			<div style="color:#3174af;float:left">新規入力</div>
+			<div style="float:left;margin-left:10px">
+				<button type="button"  onclick="newInpReg();" class="btn btn-success btn-xs reg_btn">
+					<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
+				</button>
+			</div>
+			<div style="float:right">
+				<button type="button" class="btn btn-primary btn-xs" onclick="closeForm('new_inp')"><span class="glyphicon glyphicon-remove"></span></button>
+			</div>
+		</div>
+		<div style="clear:both;height:4px"></div>
+		<div class="err text-danger"></div>
+		
+		<div style="display:none">
+	    	<input type="hidden" name="form_type">
+	    	<input type="hidden" name="row_index">
+	    	<input type="hidden" name="sort_no">
+		</div>
+	
+	
 		<!-- CBBXS-1006 -->
-		<tr><td>ユーザー名: </td><td>
-			<input type="text" name="username" class="valid" value=""  maxlength="50" title="50文字以内で入力してください" />
-			<label class="text-danger" for="username"></label>
-		</td></tr>
-
-		<tr><td>パスワード: </td><td>
-			<input type="text" name="password" class="valid" value=""  maxlength="50" title="50文字以内で入力してください" />
-			<label class="text-danger" for="password"></label>
-		</td></tr>
-
-		<tr><td>権限: </td><td>
-			<?php $this->CrudBase->selectX('role',null,$roleList);?>
-			<label class="text-danger" for="role"></label>
-		</td></tr>
-
-
-		<!-- CBBXE -->
-	</tbody></table>
-	
-
-	<button type="button" onclick="newInpReg();" class="btn btn-success">
-		<span class="glyphicon glyphicon-ok"></span>
-	</button>
-
-	</div><!-- panel-body -->
-</div>
-
-
-
-<!-- 編集フォーム -->
-<div id="ajax_crud_edit_form" class="panel panel-primary">
-
-	<div class="panel-heading">
-		<div class="pnl_head1">編集</div>
-		<div class="pnl_head2"></div>
-		<div class="pnl_head3">
-			<button type="button" class="btn btn-primary btn-sm" onclick="closeForm('edit')"><span class="glyphicon glyphicon-remove"></span></button>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp' >ユーザー名: </div>
+			<div class='cbf_input'>
+				<input type="text" name="username" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
+				<label class="text-danger" for="username"></label>
+			</div>
 		</div>
-	</div>
-	<div style="display:none">
-    	<input type="hidden" name="sort_no">
-	</div>
-	<div class="panel-body">
-	<div class="err text-danger"></div>
-	<table><tbody>
 
-		<!-- CBBXS-1007 -->
-		<tr><td>ID: </td><td>
-			<span class="id"></span>
-		</td></tr>
-		<tr><td>ユーザー名: </td><td>
-			<input type="text" name="username" class="valid" value=""  maxlength="50" title="50文字以内で入力してください" />
-			<label class="text-danger" for="username"></label>
-		</td></tr>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp' >パスワード: </div>
+			<div class='cbf_input'>
+				<input type="text" name="password" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
+				<label class="text-danger" for="password"></label>
+			</div>
+		</div>
 
-		<tr><td>パスワード: </td><td>
-			<input type="button" id="chg_pw_btn" value="パスワード変更" onclick='chgPwBtnClick();' class="btn btn-warning btn-xs" />
-			<input type="text" id="edit_password" name="password" class="valid" value=""  maxlength="50" title="50文字以内で入力してください" style="display:none" />
-			<label class="text-danger" for="password"></label>
-		</td></tr>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >権限: </div>
+			<div class='cbf_input'>
+				<?php $this->CrudBase->selectX('role',null,$roleList,null);?>
+				<label class="text-danger" for="role"></label>
+			</div>
+		</div>
 
-		<tr><td>権限: </td><td>
-			<?php $this->CrudBase->selectX('role',null,$roleList);?>
-			<label class="text-danger" for="role"></label>
-		</td></tr>
-
-		<tr><td>削除：<input type="checkbox" name="delete_flg" class="valid"  /> </td><td></td></tr>
 
 		<!-- CBBXE -->
-	</tbody></table>
-	
-	
+		
+		<div style="clear:both"></div>
+		<div class="cbf_inp_wrap">
+			<button type="button" onclick="newInpReg();" class="btn btn-success reg_btn">
+				<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
+			</button>
+		</div>
+	</td></tr><!-- new_inp_form -->
 
-	<button type="button"  onclick="editReg();" class="btn btn-success">
-		<span class="glyphicon glyphicon-ok"></span>
-	</button>
-	<hr>
-	
-	<input type="button" value="更新情報" class="btn btn-default btn-xs" onclick="$('#ajax_crud_edit_form_update').toggle(300)" /><br>
-	<aside id="ajax_crud_edit_form_update" style="display:none">
-		更新日時: <span class="modified"></span><br>
-		生成日時: <span class="created"></span><br>
-		ユーザー名: <span class="update_user"></span><br>
-		IPアドレス: <span class="ip_addr"></span><br>
-		ユーザーエージェント: <span class="user_agent"></span><br>
-	</aside>
-	
 
-	</div><!-- panel-body -->
-</div>
+
+	<!-- 編集フォーム -->
+	<tr id="ajax_crud_edit_form" class="crud_base_form" style="display:none"><td colspan='5'>
+		<div  style='width:100%'>
+	
+			<div>
+				<div style="color:#3174af;float:left">編集</div>
+				<div style="float:left;margin-left:10px">
+					<button type="button"  onclick="editReg();" class="btn btn-success btn-xs reg_btn">
+						<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
+					</button>
+				</div>
+				<div style="float:right">
+					<button type="button" class="btn btn-primary btn-xs" onclick="closeForm('edit')"><span class="glyphicon glyphicon-remove"></span></button>
+				</div>
+			</div>
+			<div style="clear:both;height:4px"></div>
+			<div class="err text-danger"></div>
+			
+			<!-- CBBXS-1007 -->
+			<div class="cbf_inp_wrap">
+				<div class='cbf_inp' >ID: </div>
+				<div class='cbf_input'>
+					<span class="id"></span>
+				</div>
+			</div>
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp' >ユーザー名: </div>
+			<div class='cbf_input'>
+				<input type="text" name="username" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
+				<label class="text-danger" for="username"></label>
+			</div>
+		</div>
+
+
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp' >パスワード: </div>
+			<div class='cbf_input'>
+				<input type="text" name="password" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
+				<label class="text-danger" for="password"></label>
+			</div>
+		</div>
+
+
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >権限: </div>
+			<div class='cbf_input'>
+				<?php $this->CrudBase->selectX('role',null,$roleList,null);?>
+				<label class="text-danger" for="role"></label>
+			</div>
+		</div>
+
+			<div class="cbf_inp_wrap">
+				<div class='cbf_inp_label' >削除フラグ：</div>
+				<div class='cbf_input'>
+					<input type="checkbox" name="delete_flg" class="valid"  />
+				</div>
+			</div>
+
+			<!-- CBBXE -->
+			
+			<div style="clear:both"></div>
+			<div class="cbf_inp_wrap">
+				<button type="button"  onclick="editReg();" class="btn btn-success reg_btn">
+					<span class="glyphicon glyphicon-ok reg_btn_msg"></span>
+				</button>
+			</div>
+			
+			<div class="cbf_inp_wrap" style="padding:5px;">
+				<input type="button" value="更新情報" class="btn btn-default btn-xs" onclick="$('#ajax_crud_edit_form_update').toggle(300)" /><br>
+				<aside id="ajax_crud_edit_form_update" style="display:none">
+					更新日時: <span class="modified"></span><br>
+					生成日時: <span class="created"></span><br>
+					ユーザー名: <span class="update_user"></span><br>
+					IPアドレス: <span class="ip_addr"></span><br>
+					ユーザーエージェント: <span class="user_agent"></span><br>
+				</aside>
+			</div>
+		</div>
+	</td></tr>
+</table>
+
+
+
+
 
 
 
 <!-- 削除フォーム -->
-<div id="ajax_crud_delete_form" class="panel panel-danger">
+<div id="ajax_crud_delete_form" class="panel panel-danger" style="display:none">
 
 	<div class="panel-heading">
 		<div class="pnl_head1">削除</div>
@@ -287,6 +381,11 @@ foreach($data as $i=>$ent){
 
 		<tr><td>ユーザー管理名: </td><td>
 			<span class="user_mng_name"></span>
+		</td></tr>
+		
+		<tr><td>画像ファイル: </td><td>
+			<label for="img_fn"></label><br>
+			<img src="" class="img_fn" width="80" height="80" ></img>
 		</td></tr>
 
 
@@ -316,7 +415,7 @@ foreach($data as $i=>$ent){
 
 
 <!-- 抹消フォーム -->
-<div id="ajax_crud_eliminate_form" class="panel panel-danger">
+<div id="ajax_crud_eliminate_form" class="panel panel-danger" style="display:none">
 
 	<div class="panel-heading">
 		<div class="pnl_head1">抹消</div>

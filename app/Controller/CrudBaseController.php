@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.5.5";
+	var $version = "2.7.2";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -596,6 +596,33 @@ class CrudBaseController extends AppController {
 
 		return $userInfo;
 	}
+	
+	/**
+	 * 許可権限リストを作成(扱える下位権限のリスト）
+	 * @return array 許可権限リスト
+	 */
+	protected function makePermRoles(){
+		
+		$userInfo = $this->getUserInfo(); // 現在のログインユーザー情報を取得する
+		$authData = $this->getAuthorityData();// 権限データを取得する
+		
+		// 許可権限リストを権限データをフィルタリングして取得する
+		$permRoles = array(); // 許可権限リスト
+		$role = $userInfo['authority']['name']; // 権限名
+		if($role == 'master'){
+			$permRoles = array_keys($authData);
+		}else{
+			$level = $userInfo['authority']['level']; // 権限レベル
+			foreach($authData as $aEnt){
+				if($aEnt['level'] < $level){
+					$permRoles[] = $aEnt['name'];
+				}
+			}
+		}
+		
+		return $permRoles;
+		
+	}
 
 	/**
 	 * 権限に紐づく権限エンティティを取得する
@@ -621,7 +648,7 @@ class CrudBaseController extends AppController {
 	 */
 	protected function getRoleList(){
 		
-		$role = $this->userInfo['authority']['name'];
+		$role = $this->userInfo['authority']['name']; // 現在の権限を取得
 		$data = $this->getAuthorityData();
 		$roleList = array(); // 権限リスト
 		if($role == 'master'){
@@ -630,7 +657,7 @@ class CrudBaseController extends AppController {
 			$level = $this->userInfo['authority']['level'];
 			foreach($data as $ent){
 				if($level > $ent['level']){
-					$name = $ent['level'];
+					$name = $ent['name'];
 					$wamei = $ent['wamei'];
 					$roleList[$name] = $wamei;
 				}

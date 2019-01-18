@@ -5,8 +5,8 @@ App::uses('CrudBase', 'Model');
 /**
  * ユーザー管理のCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-10-10
- * @version 3.1.2
+ * @date 2015-9-16 | 2018-4-24 複製したとき、順番はそのまま
+ * @version 3.0.3
  *
  */
 class UserMng extends AppModel {
@@ -21,6 +21,8 @@ class UserMng extends AppModel {
 
 	/// バリデーションはコントローラクラスで定義
 	public $validate = null;
+	
+	public $permRoles = array(); // 許可権限リスト
 	
 	
 	public function __construct() {
@@ -61,25 +63,22 @@ class UserMng extends AppModel {
 		return $ent;
 	}
 
-
-	
-	
 	/**
-	 * 一覧データを取得する
+	 * ユーザー管理画面の一覧に表示するデータを、ユーザー管理テーブルから取得します。
+	 * 
+	 * @note
+	 * 検索条件、ページ番号、表示件数、ソート情報からDB（ユーザー管理テーブル）を検索し、
+	 * 一覧に表示するデータを取得します。
+	 * 
+	 * @param array $kjs 検索条件情報
+	 * @param int $page_no ページ番号
+	 * @param int $row_limit 表示件数
+	 * @param string sort ソートフィールド
+	 * @param int sort_desc ソートタイプ 0:昇順 , 1:降順
 	 * @return array ユーザー管理画面一覧のデータ
 	 */
-	public function findData(&$crudBaseData){
+	public function findData($kjs,$page_no,$row_limit,$sort_field,$sort_desc){
 
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-
-
-		$page_no = $pages['page_no']; // ページ番号
-		$row_limit = $pages['row_limit']; // 表示件数
-		$sort_field = $pages['sort_field']; // ソートフィールド
-		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
-		
-		
 		//条件を作成
 		$conditions=$this->createKjConditions($kjs);
 		
@@ -93,15 +92,15 @@ class UserMng extends AppModel {
 		if(!empty($sort_desc)) $order .= ' DESC';
 		
 		$option=array(
-				'conditions' => $conditions,
-				'limit' =>$row_limit,
-				'offset'=>$offset,
-				'order' => $order,
-		);
+            'conditions' => $conditions,
+            'limit' =>$row_limit,
+            'offset'=>$offset,
+            'order' => $order,
+        );
 		
 		//DBからデータを取得
 		$data = $this->find('all',$option);
-		
+
 		//データ構造を変換（2次元配列化）
 		$data2=array();
 		foreach($data as $i=>$tbl){
@@ -113,6 +112,20 @@ class UserMng extends AppModel {
 		}
 		
 		return $data2;
+	}
+	
+	
+	/**
+	 * 一覧データを取得する
+	 */
+	public function findData2(&$crudBaseData){
+
+		$kjs = $crudBaseData['kjs'];//検索条件情報
+		$pages = $crudBaseData['pages'];//ページネーション情報
+
+		$data = $this->findData($kjs,$pages['page_no'],$pages['row_limit'],$pages['sort_field'],$pages['sort_desc']);
+		
+		return $data;
 	}
 
 	
@@ -145,10 +158,6 @@ class UserMng extends AppModel {
 		
 		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
 		
-		if(!empty($kjs['kj_main'])){
-			$cnds[]="CONCAT( IFNULL(UserMng.username, '')) LIKE '%{$kjs['kj_main']}%'";
-		}
-		
 		// CBBXS-1003
 		if(!empty($kjs['kj_id']) || $kjs['kj_id'] ==='0' || $kjs['kj_id'] ===0){
 			$cnds[]="UserMng.id = {$kjs['kj_id']}";
@@ -161,12 +170,6 @@ class UserMng extends AppModel {
 		}
 		if(!empty($kjs['kj_role']) || $kjs['kj_role'] ==='0' || $kjs['kj_role'] ===0){
 			$cnds[]="UserMng.role = {$kjs['kj_role']}";
-		}
-		if(!empty($kjs['permRoles'])){
-			$perm_roles_c = "'" . implode("','", $kjs['permRoles']) . "'";
-			$cnds[]="UserMng.role IN({$perm_roles_c})";
-		}else{
-			$cnds[]="UserMng.role ='empty'";
 		}
 		if(!empty($kjs['kj_sort_no']) || $kjs['kj_sort_no'] ==='0' || $kjs['kj_sort_no'] ===0){
 			$cnds[]="UserMng.sort_no = {$kjs['kj_sort_no']}";
@@ -190,6 +193,10 @@ class UserMng extends AppModel {
 		if(!empty($kjs['kj_modified'])){
 			$kj_modified=$kjs['kj_modified'].' 00:00:00';
 			$cnds[]="UserMng.modified >= '{$kj_modified}'";
+		}
+		if(!empty($this->permRoles)){
+			$perm_roles_c = "'".implode("','",$this->permRoles)."'";
+			$cnds[]="UserMng.role IN({$perm_roles_c})";
 		}
 
 		// CBBXE
@@ -273,51 +280,12 @@ class UserMng extends AppModel {
 	}
 	
 	/**
-	 * アップロードファイルの抹消処理
-	 * 
-	 * @note
-	 * 他のレコードが保持しているファイルは抹消対象外
-	 * 
-	 * @param int $id
-	 * @param string $fn_field_strs ファイルフィールド群文字列（複数ある場合はコンマで連結）
-	 * @param array $ent エンティティ
-	 * @param string $dp_tmpl ディレクトリパス・テンプレート
-	 * @param string $viaDpFnMap 中継パスマッピング
+	 * 許可権限リストのセッター
+	 * @param array $permRoles 権限レベル
 	 */
-	public function eliminateFiles($id, $fn_field_strs, &$ent, $dp_tmpl, $viaDpFnMap){
-		$this->CrudBase->eliminateFiles($this, $id, $fn_field_strs, $ent, $dp_tmpl, $viaDpFnMap);
+	public function setPermRoles($permRoles){
+		$this->permRoles = $permRoles;
 	}
-	
-	
-	// CBBXS-1021
-	/**
-	 * 権限リストをDBから取得する
-	 */
-	public function getRoleList(){
-		if(empty($this->Role)){
-			App::uses('Role','Model');
-			$this->Role=ClassRegistry::init('Role');
-		}
-		$fields=array('id','role_name');//SELECT情報
-		$conditions=array("delete_flg = 0");//WHERE情報
-		$order=array('sort_no');//ORDER情報
-		$option=array(
-				'fields'=>$fields,
-				'conditions'=>$conditions,
-				'order'=>$order,
-		);
-
-		$data=$this->Role->find('all',$option); // DBから取得
-		
-		// 構造変換
-		if(!empty($data)){
-			$data = Hash::combine($data, '{n}.Role.id','{n}.Role.role_name');
-		}
-		
-		return $data;
-	}
-
-	// CBBXE
 
 
 }

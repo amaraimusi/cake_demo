@@ -85,9 +85,12 @@ class NekoController extends CrudBaseController {
 	 */
 	public function index() {
 		
-		
 		// CrudBase共通処理（前）
 		$crudBaseData = $this->indexBefore('Neko');//indexアクションの共通先処理(CrudBaseController)
+		
+		// CBBXS-1019
+		
+		// CBBXE
 		
 		//一覧データを取得
 		$data = $this->Neko->findData($crudBaseData);
@@ -193,9 +196,12 @@ class NekoController extends CrudBaseController {
 		$regParam = json_decode($reg_param_json,true);
 		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
 
-
+		// CBBXS-1024
+		
 		// アップロードファイル名を変換する。
 		$ent = $this->convUploadFileName($ent,$_FILES);
+		
+		// CBBXE
 
 		// 更新ユーザーなど共通フィールドをセットする。
 		$ent = $this->setCommonToEntity($ent);
@@ -234,8 +240,8 @@ class NekoController extends CrudBaseController {
 	public function ajax_delete(){
 		App::uses('Sanitize', 'Utility');
 	
-		$this->autoRender = false;//ビュー(ctp)を使わない。
-		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
+// 		$this->autoRender = false;//ビュー(ctp)を使わない。
+// 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 	
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];

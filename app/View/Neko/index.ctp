@@ -148,7 +148,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 <?php } ?>
 	
 <!-- 一覧テーブル -->
-<table id="neko_tbl" border="1"  class="table table-striped table-bordered table-condensed" style="display:none;margin-bottom:0px">
+<table id="neko_tbl" class="table table-striped table-bordered table-condensed" style="display:none;margin-bottom:0px">
 
 <thead>
 <tr>

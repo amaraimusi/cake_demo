@@ -13,7 +13,7 @@
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
  * @date 2016-9-21 | 2019-1-16
- * @version 2.7.0
+ * @version 2.7.2
  * @histroy
  * 2018-10-21 v2.6.6 検索をGETクエリ方式にする
  * 2018-10-21 v2.6.0 フォームをアコーディオン形式にする。
@@ -77,6 +77,10 @@ class CrudBase{
 		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'edit');
 		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'delete');
 
+		// フォーム要素オブジェクトを取得する
+		var editForm = this.getForm('edit');
+		var newInpForm = this.getForm('new_inp');
+		
 		// フィールドハッシュテーブルをフィールドデータから生成する。
 		this.fieldHashTable = this._createFieldHashTable(this.fieldData);
 
@@ -115,6 +119,9 @@ class CrudBase{
 		
 		// 一括追加機能
 		this.crudBaseBulkAdd = new CrudBaseBulkAdd(this.fieldData);
+		
+		// パスワード編集機能
+		this.crudBasePasswordEdit = new CrudBasePasswordEdit(newInpForm, editForm);
 		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
@@ -674,6 +681,9 @@ class CrudBase{
 			
 		}
 		
+		// パスワード編集機能
+		this.crudBasePasswordEdit.showForm('new_inp');
+		
 	}
 
 
@@ -728,7 +738,8 @@ class CrudBase{
 			this._showForm(form,elm,option);			
 		}
 
-		
+		// パスワード編集機能
+		this.crudBasePasswordEdit.showForm('edit');
 
 	}
 
@@ -806,6 +817,9 @@ class CrudBase{
 			this._showForm(form,elm,option);
 			
 		}
+		
+		// パスワード編集機能
+		this.crudBasePasswordEdit.showForm('copy');
 
 
 

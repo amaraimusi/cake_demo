@@ -105,11 +105,11 @@ function init(){
 	crudBase.crudBaseBulkAdd.init(
 		[
 			{'field':'neko_name', 'inp_type':'textarea'}, 
-			{'field':'neko_val', 'inp_type':'textarea'}, 
-			{'field':'neko_group', 'inp_type':'select', 'list':nekoGroupList, 'def':2}, 
-			{'field':'neko_date', 'inp_type':'date', 'def':today}, 
-			{'field':'note', 'inp_type':'text', 'def':'TEST'}, 
-			{'field':'sort_no', 'inp_type':'sort_no', 'def':1}, 
+//			{'field':'neko_val', 'inp_type':'textarea'}, 
+//			{'field':'neko_group', 'inp_type':'select', 'list':nekoGroupList, 'def':2}, 
+//			{'field':'neko_date', 'inp_type':'date', 'def':today}, 
+//			{'field':'note', 'inp_type':'text', 'def':'TEST'}, 
+//			{'field':'sort_no', 'inp_type':'sort_no', 'def':1}, 
 		],
 		{
 			'ajax_url':'neko/bulk_reg',

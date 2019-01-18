@@ -8,8 +8,8 @@ App::uses('PagenationForCake', 'Vendor/Wacg');
  * @note
  * ユーザー管理画面ではユーザー管理一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2018-10-10
- * @version 3.2.2
+ * @date 2015-9-16 | 2018-10-9
+ * @version 3.0.2
  *
  */
 class UserMngController extends CrudBaseController {
@@ -17,10 +17,10 @@ class UserMngController extends CrudBaseController {
 	/// 名称コード
 	public $name = 'UserMng';
 	
-	/// 使用しているモデル[CakePHPの機能]
+	/// 使用しているモデル
 	public $uses = array('UserMng','CrudBase');
 	
-	/// オリジナルヘルパーの登録[CakePHPの機能]
+	/// オリジナルヘルパーの登録
 	public $helpers = array('CrudBase');
 
 	/// デフォルトの並び替え対象フィールド
@@ -45,30 +45,11 @@ class UserMngController extends CrudBaseController {
 	public $edit_validate = array();
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '1.9.1';
-	
-	/// リソース保存先・ディレクトリパス・テンプレート
-	public $dp_tmpl = 'rsc/img/%field/%via_dp/%dn/';
-	
-	/// 経由パスマッピング
-	public $viaDpFnMap = array(); // 例　'img_fn'=>'img_via_dp'
-	//public $viaDpFnMap = array('img_fn'=>'user_mng_group');
+	public $this_page_version = '1.9.1'; 
 
 
 
 	public function beforeFilter() {
-
-		// 未ログイン中である場合、未認証モードの扱いでページ表示する。
-		if(empty($this->Auth->user())){
-			$this->Auth->allow(); // 未認証モードとしてページ表示を許可する。
-		}
-		
-// 		if($this->action == 'front_a'){
-// 			// 未ログイン中である場合、未認証モードの扱いでページ表示する。
-// 			if(empty($this->Auth->user())){
-// 				$this->Auth->allow(); // 未認証モードとしてページ表示を許可する。
-// 			}
-// 		}
 	
 		parent::beforeFilter();
 	
@@ -88,30 +69,23 @@ class UserMngController extends CrudBaseController {
 		// CrudBase共通処理（前）
 		$crudBaseData = $this->indexBefore('UserMng');//indexアクションの共通先処理(CrudBaseController)
 		
-		// CBBXS-1019
-		// 許可権限リストを作成(扱える下位権限のリスト）
-		$crudBaseData['kjs']['permRoles'] = $this->makePermRoles();
-		
+		$userInfo = $crudBaseData['userInfo']; // ユーザー情報
+		$authData = $this->getAuthorityData(); // 権限データを取得
+		$permRoles = $this->makePermRoles($userInfo,$authData); // 許可権限リストを作成
+		$this->UserMng->setPermRoles($permRoles);
 
-		// CBBXE
-		
 		//一覧データを取得
-		$data = $this->UserMng->findData($crudBaseData);
+		$data = $this->UserMng->findData2($crudBaseData);
 
 		// CrudBase共通処理（後）
 		$crudBaseData = $this->indexAfter($crudBaseData);//indexアクションの共通後処理
 		
 		// CBBXS-1020
+
 		// 権限リスト
 		$roleList = $this->getRoleList();
 		$role_json = json_encode($roleList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		$this->set(array('roleList' => $roleList,'role_json' => $role_json));
-		
-		// 権限リスト空である場合、当画面にアクセス禁止にする。
-		if(empty($roleList)){
-			echo 'You do not have permission.<br>';
-			die();
-		}
 
 		// CBBXE
 		
@@ -127,58 +101,126 @@ class UserMngController extends CrudBaseController {
 
 	}
 	
-	
 	/**
-	 * フロントページA
+	 * 許可権限リストを作成
+	 * @param array $userInfo ユーザー情報
+	 * @param array $authData 権限データ
+	 * @return array 許可権限リスト
 	 */
-	public function front_a(){
-		
-		// フロントA用のコンポーネント
-		$this->UserMngFrontA = $this->Components->load('UserMngFrontA');
+	private function makePermRoles($userInfo,$authData){
 
-		// CrudBase共通処理（前）
-		$option = array(
-				'func_csv_export'=>0, // CSVエクスポート機能 0:OFF ,1:ON
-				'func_file_upload'=>1, // ファイルアップロード機能 0:OFF , 1:ON
-		);
-		$crudBaseData = $this->indexBefore('UserMng',$option);//indexアクションの共通先処理(CrudBaseController)
-		
-		// ディレクトリパステンプレートを調整する(パスはindex用の相対パスになっているのでズレを調整しなければならない）
-		$crudBaseData['dp_tmpl'] = $this->UserMngFrontA->adjustDpt($crudBaseData['dp_tmpl']);
-		
-		//一覧データを取得
-		$data = $this->UserMng->findData($crudBaseData);
-		
-		// CrudBase共通処理（後）
-		$crudBaseData = $this->indexAfter($crudBaseData,['method_url'=>'front_a']);//indexアクションの共通後処理
-		
-		// CBBXS-1020-2
-		// 権限リスト
-		$roleList = $this->getRoleList();
-		$role_json = json_encode($roleList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-		$this->set(array('roleList' => $roleList,'role_json' => $role_json));
-		
-		// 権限リスト空である場合、当画面にアクセス禁止にする。
-		if(empty($roleList)){
-			echo 'You do not have permission.<br>';
-			die();
+		$permRoles = array(); // 許可権限リスト
+		$role = $userInfo['authority']['name']; // 権限名
+		if($role == 'master'){
+			$permRoles = array_keys($authData);
+		}else{
+			$level = $userInfo['authority']['level']; // 権限レベル
+			foreach($authData as $aEnt){
+				if($aEnt['level'] < $level){
+					$permRoles[] = $aEnt['name'];
+				}
+			}
 		}
-
-		// CBBXE
 		
-		$this->set($crudBaseData);
-		$this->setCommon();//当画面系の共通セット
-		$this->set(array(
-				'header' => 'front_a_header',
-				'title_for_layout'=>'ユーザー管理',
-				'data'=> $data,
-		));
-		
-		
+		return $permRoles;
 		
 	}
 
+	/**
+	 * 詳細画面
+	 * 
+	 * ユーザー管理情報の詳細を表示します。
+	 * この画面から入力画面に遷移できます。
+	 * 
+	 */
+	public function detail() {
+		
+		$res=$this->edit_before('UserMng');
+		$ent=$res['ent'];
+	
 
+		$this->set(array(
+				'title_for_layout'=>'ユーザー管理・詳細',
+				'ent'=>$ent,
+		));
+		
+		//当画面系の共通セット
+		$this->setCommon();
+	
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+	/**
+	 * 入力画面
+	 * 
+	 * 入力フォームにて値の入力が可能です。バリデーション機能を実装しています。
+	 * 
+	 * URLクエリにidが付属する場合は編集モードになります。
+	 * idがない場合は新規入力モードになります。
+	 * 
+	 */
+	public function edit() {
+
+		$res=$this->edit_before('UserMng');
+		$ent=$res['ent'];
+
+		$this->set(array(
+				'title_for_layout'=>'ユーザー管理・編集',
+				'ent'=>$ent,
+		));
+		
+		//当画面系の共通セット
+		$this->setCommon();
+
+	}
+	
+	 /**
+	 * 登録完了画面
+	 * 
+	 * 入力画面の更新ボタンを押し、DB更新に成功した場合、この画面に遷移します。
+	 * 入力エラーがある場合は、入力画面へ、エラーメッセージと共にリダイレクトで戻ります。
+	 */
+	public function reg(){
+		$res=$this->reg_before('UserMng');
+		$ent=$res['ent'];
+		
+		debug($ent);//■■■□□□■■■□□□■■■□□□)
+		$regMsg="<p id='reg_msg'>更新しました。</p>";
+
+		//オリジナルバリデーション
+		//$xFlg=$this->validUserMng();
+		$xFlg=true;
+		if($xFlg==false){
+			//エラーメッセージと一緒に編集画面へ、リダイレクトで戻る。
+			$this->errBackToEdit("オリジナルバリデーションのエラー");
+		}
+		
+		//★DB保存
+		$this->UserMng->begin();//トランザクション開始
+		$ent=$this->UserMng->saveEntity($ent);//登録
+		$this->UserMng->commit();//コミット
+
+		$this->set(array(
+				'title_for_layout'=>'ユーザー管理・登録完了',
+				'ent'=>$ent,
+				'regMsg'=>$regMsg,
+		));
+		
+		//当画面系の共通セット
+		$this->setCommon();
+
+	}
 	
 	
 	
@@ -192,20 +234,9 @@ class UserMngController extends CrudBaseController {
 	 */
 	public function ajax_reg(){
 		App::uses('Sanitize', 'Utility');
+	
 		$this->autoRender = false;//ビュー(ctp)を使わない。
-		$errs = array(); // エラーリスト
-		
 
-// 		// 認証中でなければエラー
-// 		if(empty($this->Auth->user())){
-// 			return 'Error:login is needed.';// 認証中でなければエラー
-// 		}
-		
-		// 未ログインかつローカルでないなら、エラーアラートを返す。
-		if(empty($this->Auth->user()) && $_SERVER['SERVER_NAME']!='localhost'){
-			return '一般公開モードでは編集登録はできません。';
-		}
-		
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
 		$ent = json_decode($json,true);
@@ -213,32 +244,41 @@ class UserMngController extends CrudBaseController {
 		// 登録パラメータ
 		$reg_param_json = $_POST['reg_param_json'];
 		$regParam = json_decode($reg_param_json,true);
-		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
 
-		// CBBXS-1024
+		// アップロードファイルが存在すればエンティティにセットする。
+		$upload_file = null;
+		if(!empty($_FILES["upload_file"])){
+			$upload_file = $_FILES["upload_file"]["name"];
+			$ent['user_mng_fn'] = $upload_file;
+		}
+	
+	
+		// 更新ユーザーなど共通フィールドをセットする。
+		$ent = $this->setCommonToEntity($ent);
+		
 		// パスワードを暗号化する
 		if(!empty($ent['password'])){
 			$ent['password'] = AuthComponent::password($ent['password']);
 		}else{
 			unset($ent['password']);
 		}
-
-		// CBBXE
-
-		// 更新ユーザーなど共通フィールドをセットする。
-		$ent = $this->setCommonToEntity($ent);
 	
 		// エンティティをDB保存
 		$this->UserMng->begin();
 		$ent = $this->UserMng->saveEntity($ent,$regParam);
 		$this->UserMng->commit();//コミット
-		
-		// ファイルアップロード関連の一括作業
-		$res = $this->workFileUploads($form_type,$this->dp_tmpl, $this->viaDpFnMap, $ent, $_FILES);
-		if(!empty($res['err_msg'])) $errs[] = $res['err_msg'];
-		
-		
-		if($errs) $ent['err'] = implode("','",$errs); // フォームに表示するエラー文字列をセット
+
+		if(!empty($upload_file)){
+			
+			// ファイルパスを組み立て
+			$upload_file = $_FILES["upload_file"]["name"];
+			$ffn = "game_rs/app{$id}/app_icon/{$fn}";
+			
+			// 一時ファイルを所定の場所へコピー（フォルダなければ自動作成）
+			$this->copyEx($_FILES["upload_file"]["tmp_name"], $ffn);
+	
+	
+		}
 
 		$json_data=json_encode($ent,true);//JSONに変換
 	
@@ -262,8 +302,7 @@ class UserMngController extends CrudBaseController {
 	public function ajax_delete(){
 		App::uses('Sanitize', 'Utility');
 	
-// 		$this->autoRender = false;//ビュー(ctp)を使わない。
-// 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
+		$this->autoRender = false;//ビュー(ctp)を使わない。
 	
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
@@ -286,8 +325,7 @@ class UserMngController extends CrudBaseController {
 		if($eliminate_flg == 0){
 			$ent = $this->UserMng->saveEntity($ent,$regParam); // 更新
 		}else{
-			$this->UserMng->eliminateFiles($ent['id'], 'img_fn', $ent, $this->dp_tmpl, $this->viaDpFnMap); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
-			$this->UserMng->delete($ent['id']); // 削除
+		    $this->UserMng->delete($ent['id']); // 削除
 		}
 		$this->UserMng->commit();//コミット
 	
@@ -306,11 +344,10 @@ class UserMngController extends CrudBaseController {
 	* 
 	*/
 	public function auto_save(){
-		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		App::uses('Sanitize', 'Utility');
-		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
+		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		$json=$_POST['key1'];
 		
@@ -328,41 +365,8 @@ class UserMngController extends CrudBaseController {
 		return $json_str;
 	}
 	
-	/**
-	 * 一括登録 | AJAX
-	 * 
-	 * @note
-	 * 一括追加, 一括編集, 一括複製
-	 */
-	public function bulk_reg(){
-		
-		App::uses('DaoForCake', 'Model');
-		App::uses('BulkReg', 'Vendor/Wacg');
-		
-		$this->autoRender = false;//ビュー(ctp)を使わない。
-		
-		
-		// 更新ユーザーを取得
-		$update_user = 'none';
-		if(!empty($this->Auth->user())){
-			$userData = $this->Auth->user();
-			$update_user = $userData['username'];
-		}
 
-		$json_param=$_POST['key1'];
-		$param = json_decode($json_param,true);//JSON文字を配列に戻す
-		
-		// 一括登録
-		$dao = new DaoForCake();
-		$bulkReg = new BulkReg($dao, $update_user);
-		$res = $bulkReg->reg('users', $param);
-		
-		//JSONに変換
-		$str_json = json_encode($res,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-		
-		return $str_json;
-	}
-
+	
 	
 	/**
 	 * CSVインポート | AJAX
@@ -372,9 +376,8 @@ class UserMngController extends CrudBaseController {
 	 */
 	public function csv_fu(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
-		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
-		$this->csv_fu_base($this->UserMng,array('id','user_mng_val','user_mng_name','user_mng_date','user_mng_group','user_mng_dt','user_mng_flg','img_fn','note','sort_no'));
+		$this->csv_fu_base($this->UserMng,array('id','user_mng_val','user_mng_name','user_mng_date','user_mng_group','user_mng_dt','note','sort_no'));
 		
 	}
 	
@@ -437,29 +440,19 @@ class UserMngController extends CrudBaseController {
 	private function getDataForDownload(){
 		 
 		
-		//セッションから検索条件情報を取得
-		$kjs=$this->Session->read('user_mng_kjs');
-		
-		// セッションからページネーション情報を取得
-		$pages = $this->Session->read('user_mng_pages');
+        //セッションから検索条件情報を取得
+        $kjs=$this->Session->read('user_mng_kjs');
+        
+        // セッションからページネーション情報を取得
+        $pages = $this->Session->read('user_mng_pages');
 
-		$page_no = 0;
-		$row_limit = 100000;
-		$sort_field = $pages['sort_field'];
-		$sort_desc = $pages['sort_desc'];
-		
-		$crudBaseData = array(
-				'kjs' => $kjs,
-				'pages' => $pages,
-				'page_no' => $page_no,
-				'row_limit' => $row_limit,
-				'sort_field' => $sort_field,
-				'sort_desc' => $sort_desc,
-		);
-		
+        $page_no = 0;
+        $row_limit = 100000;
+        $sort_field = $pages['sort_field'];
+        $sort_desc = $pages['sort_desc'];
 
 		//DBからデータ取得
-		$data=$this->UserMng->findData($crudBaseData);
+	   $data=$this->UserMng->findData($kjs,$page_no,$row_limit,$sort_field,$sort_desc);
 		if(empty($data)){
 			return array();
 		}
@@ -478,7 +471,7 @@ class UserMngController extends CrudBaseController {
 		$new_version_flg = $this->checkNewPageVersion($this->this_page_version);
 		
 		$this->set(array(
-				'header' => 'header',
+				'header' => 'header_demo',
 				'new_version_flg' => $new_version_flg, // 当ページの新バージョンフラグ   0:バージョン変更なし  1:新バージョン
 				'this_page_version' => $this->this_page_version,// 当ページのバージョン
 		));
@@ -503,9 +496,8 @@ class UserMngController extends CrudBaseController {
 		
 		/// 検索条件情報の定義
 		$this->kensakuJoken=array(
-				
-				array('name'=>'kj_main','def'=>null),
-				// CBBXS-1000 
+		
+			// CBBXS-1000 
 			array('name'=>'kj_id','def'=>null),
 			array('name'=>'kj_username','def'=>null),
 			array('name'=>'kj_password','def'=>null),
@@ -517,9 +509,9 @@ class UserMngController extends CrudBaseController {
 			array('name'=>'kj_created','def'=>null),
 			array('name'=>'kj_modified','def'=>null),
 
-				// CBBXE
-				
-				array('name'=>'row_limit','def'=>50),
+			// CBBXE
+			
+			array('name'=>'row_limit','def'=>50),
 				
 		);
 		
@@ -554,14 +546,14 @@ class UserMngController extends CrudBaseController {
 				),
 				'kj_role' => array(
 						'custom'=>array(
-								'rule' => array( 'custom', '/^[-]?[0-9]+$/' ),
+								'rule' => array( 'custom', '/^[-]?[0-9] ?$/' ),
 								'message' => '権限は整数を入力してください。',
 								'allowEmpty' => true
 						),
 				),
 				'kj_sort_no' => array(
 						'custom'=>array(
-								'rule' => array( 'custom', '/^[-]?[0-9]+$/' ),
+								'rule' => array( 'custom', '/^[-]?[0-9] ?$/' ),
 								'message' => '順番は整数を入力してください。',
 								'allowEmpty' => true
 						),

@@ -12,8 +12,8 @@
  * - ページネーション情報としてページ目次、ソート用リンク、データ件数等を出力する。
  * 
  * @author k-uehara
- * @version 1.5.3 
- * @date 2010-4-1 | 2018-10-11
+ * @version 1.5.4
+ * @date 2010-4-1 | 2019-1-18
  *
  */
 class PagenationForCake{
@@ -81,6 +81,7 @@ class PagenationForCake{
 		
 		$str = "";
 		foreach($kjs as $field => $value){
+			if(is_array($value)) continue;
 			if($value !== "" && $value !==null){
 				if($str != ""){
 					$str .= '&';
