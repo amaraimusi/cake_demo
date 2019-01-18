@@ -128,60 +128,7 @@ class UserMngController extends CrudBaseController {
 	}
 	
 	
-	/**
-	 * フロントページA
-	 */
-	public function front_a(){
-		
-		// フロントA用のコンポーネント
-		$this->UserMngFrontA = $this->Components->load('UserMngFrontA');
 
-		// CrudBase共通処理（前）
-		$option = array(
-				'func_csv_export'=>0, // CSVエクスポート機能 0:OFF ,1:ON
-				'func_file_upload'=>1, // ファイルアップロード機能 0:OFF , 1:ON
-		);
-		$crudBaseData = $this->indexBefore('UserMng',$option);//indexアクションの共通先処理(CrudBaseController)
-		
-		// ディレクトリパステンプレートを調整する(パスはindex用の相対パスになっているのでズレを調整しなければならない）
-		$crudBaseData['dp_tmpl'] = $this->UserMngFrontA->adjustDpt($crudBaseData['dp_tmpl']);
-		
-		//一覧データを取得
-		$data = $this->UserMng->findData($crudBaseData);
-		
-		// CrudBase共通処理（後）
-		$crudBaseData = $this->indexAfter($crudBaseData,['method_url'=>'front_a']);//indexアクションの共通後処理
-		
-		// CBBXS-1020-2
-		// 権限リスト
-		$roleList = $this->getRoleList();
-		$role_json = json_encode($roleList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-		$this->set(array('roleList' => $roleList,'role_json' => $role_json));
-		
-		// 権限リスト空である場合、当画面にアクセス禁止にする。
-		if(empty($roleList)){
-			echo 'You do not have permission.<br>';
-			die();
-		}
-
-		// CBBXE
-		
-		$this->set($crudBaseData);
-		$this->setCommon();//当画面系の共通セット
-		$this->set(array(
-				'header' => 'front_a_header',
-				'title_for_layout'=>'ユーザー管理',
-				'data'=> $data,
-		));
-		
-		
-		
-	}
-
-
-	
-	
-	
 	
 	/**
 	 * DB登録

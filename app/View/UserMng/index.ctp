@@ -117,7 +117,6 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<button id="table_transform_tbl_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(0)" style="display:none">一覧の変形・テーブルモード</button>	
 		<button id="table_transform_div_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(1)" >一覧の変形・スマホモード</button>
 		
-		<a href="user_mng/front_a?<?php echo $pages['query_str']; ?>" class="btn btn-default btn-xs" target="brank" >フロント画面表示</a>
 	</div><!-- sub_tools -->
 </div><!-- detail_div -->
 
