@@ -375,15 +375,18 @@ class NekoController extends CrudBaseController {
 		//ダウンロード用のデータを取得する。
 		$data = $this->getDataForDownload();
 		
-		
-		// ユーザーエージェントなど特定の項目をダブルクォートで囲む
-		foreach($data as $i=>$ent){
-			if(!empty($ent['user_agent'])){
-				$data[$i]['user_agent']='"'.$ent['user_agent'].'"';
+		// ダブルクォートで値を囲む
+		foreach($data as &$ent){
+			unset($ent['xml_text']);
+			foreach($ent as $field => $value){
+				if(mb_strpos($value,'"')!==false){
+					$value = str_replace('"', '""', $value);
+				}
+				$value = '"' . $value . '"';
+				$ent[$field] = $value;
 			}
 		}
-
-		
+		unset($ent);
 		
 		//列名配列を取得
 		$clms=array_keys($data[0]);
