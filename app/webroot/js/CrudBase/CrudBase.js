@@ -12,8 +12,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2019-1-16
- * @version 2.7.2
+ * @date 2016-9-21 | 2019-1-25
+ * @version 2.7.4
  * @histroy
  * 2018-10-21 v2.6.6 検索をGETクエリ方式にする
  * 2018-10-21 v2.6.0 フォームをアコーディオン形式にする。
@@ -99,9 +99,6 @@ class CrudBase{
 		// 列表示切替機能・コンポーネント
 		this.csh = this._factoryClmShowHide(); 
 
-		// ガジェット・コンポーネント（カレンダー、数値スライダー）★★★■■■□□□■■■□□□■■■□□□
-//		this.cbGadgetKj = this._factoryCrudBaseGadgetKj(); 
-
 		// CrudBase・ファイルアップロードコンポーネント
 		this.cbFileUploadComp = this._factoryCbFileUploadComponent();
 		
@@ -122,6 +119,12 @@ class CrudBase{
 		
 		// パスワード編集機能
 		this.crudBasePasswordEdit = new CrudBasePasswordEdit(newInpForm, editForm);
+		
+		// Google翻訳API・キャッシュ機能拡張
+		this.cbGtaCash = new CbGtaCash({
+			'slt':'#cb_gta_cash',
+			'ajax_url':'cb_gta_cash',
+		});
 		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
@@ -3991,9 +3994,12 @@ class CrudBase{
 	 */
 	_formDragAndResizeSetting2(form_type){
 		
+		
 		if(this.param['drag_and_resize_flg'] != 1) return;
 		
 		var form = this.getForm(form_type);
+		if(form==null) return;
+		if(form.draggable == null) return;
 		
 		// フォームのドラッグ移動を有効にする。
 		var draggableDiv = form.draggable();
@@ -4291,6 +4297,17 @@ class CrudBase{
 		this.fields = fields;
 		return this.fields;
 
+	}
+	
+	
+	/**
+	 * Google翻訳API・キャッシュ機能拡張の初期化
+	 * @param string page_code ページコード
+	 * @param string xids ID属性リスト
+	 */
+	initCbGtaCash(page_code, xids){
+		if(this.cbGtaCash == null) return;
+		this.cbGtaCash.init(page_code, xids);
 	}
 	
 }

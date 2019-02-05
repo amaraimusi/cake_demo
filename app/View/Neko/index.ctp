@@ -1,5 +1,5 @@
 <?php
-$this->CrudBase->init(array('model_name'=>'Neko'));
+echo $this->element('CrudBase/crud_base_helper_init');
 
 // CSSファイルのインクルード
 $cssList = $this->CrudBase->getCssList();
@@ -46,7 +46,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		// --- CBBXS-1004
 		$this->CrudBase->inputKjText($kjs,'kj_neko_name','ネコ名前');
 		$this->CrudBase->inputKjMoDateRng($kjs,'kj_neko_date','ネコ日付');
-		$this->CrudBase->inputKjNouislider($kjs,'neko_val','ネコ数値'); 
+		$this->CrudBase->inputKjNumRange($kjs,'neko_val','ネコ数値'); 
 		$this->CrudBase->inputKjSelect($kjs,'kj_neko_group','ネコ種別',$nekoGroupList); 
 		//$this->CrudBase->inputKjDateTime($kjs,'kj_neko_dt','ネコ日時',150);
 		$this->CrudBase->inputKjText($kjs,'kj_neko_dt','ネコ日時',150); 
@@ -169,7 +169,7 @@ $this->CrudBase->startClmSortMode($field_data);
 
 foreach($data as $i=>$ent){
 
-	echo "<tr id=i{$ent['id']}>";
+	echo "<tr id='ent{$ent['id']}' >";
 	// CBBXS-1005
 	$this->CrudBase->tdId($ent,'id',array('checkbox_name'=>'pwms'));
 	$this->CrudBase->tdMoney($ent,'neko_val');

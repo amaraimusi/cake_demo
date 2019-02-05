@@ -1,16 +1,14 @@
 <?php
+echo $this->element('CrudBase/crud_base_helper_init');
+$cbh = $this->CrudBase;
+$frontA = $cbh->getFrontAHelper();
 
-$this->FrontA = $this->Helpers->load('FrontA');// ヘルパー
-$this->FrontA->init(array(
-		'data'=>$data,
-		'dp_tmpl'=>$dp_tmpl,
-		'viaDpFnMap'=>$viaDpFnMap,
-));
 
 // CSSファイルのインクルード
 $cssList = array(
 		'bootstrap.min',
 		'bootstrap-theme.min',
+		'CrudBase/common.css?v=1.0.0',
 		'Neko/front_a'// 当画面専用CSS
 );
 $this->assign('css', $this->Html->css($cssList));
@@ -19,6 +17,8 @@ $this->assign('css', $this->Html->css($cssList));
 $jsList = array(
 		'jquery-2.1.4.min',
 		'bootstrap.min',
+		'CrudBase/dist/CrudBase.min.js',
+		'Neko/front_a.js',
 );
 $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
@@ -27,9 +27,9 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 <div style="margin-top:8px;margin-bottom:8px;">
 	<?php 
-	echo $this->FrontA->topLinkBtn($pages);
-	echo $this->FrontA->prevLinkBtn($pages);
-	echo $this->FrontA->nextLinkBtn($pages); 
+	echo $frontA->topLinkBtn($pages);
+	echo $frontA->prevLinkBtn($pages);
+	echo $frontA->nextLinkBtn($pages); 
 	?>
 	<div style="display:inline-block"><?php echo $pages['page_index_html']; ?></div>
 	<div style="display:inline-block">件数:<?php echo $data_count ?></div>
@@ -60,17 +60,17 @@ $this->CrudBase->startClmSortMode($field_data);
 
 foreach($data as $i=>$ent){
 
-	echo "<tr id=i{$ent['id']}>";
+	echo "<tr id='ent{$ent['id']}'>";
 	
 	// CBBXS-1051
-	$this->FrontA->tdImage($ent,'img_fn','td_image');
-	$this->FrontA->tdNote($ent,'note','td_note');
-	$this->FrontA->tdPlain($ent,'id');
-	$this->FrontA->tdStr($ent,'neko_name');
-	$this->FrontA->tdPlain($ent,'neko_date');
-	$this->FrontA->tdPlain($ent,'neko_dt');
-	$this->FrontA->tdPlain($ent,'modified');
-	$this->FrontA->tdPlain($ent,'neko_val');
+	$frontA->tdImage($ent,'img_fn','td_image');
+	$frontA->tdNote($ent,'note','td_note');
+	$frontA->tdPlain($ent,'id');
+	$frontA->tdStr($ent,'neko_name');
+	$frontA->tdPlain($ent,'neko_date');
+	$frontA->tdPlain($ent,'neko_dt');
+	$frontA->tdPlain($ent,'modified');
+	$frontA->tdPlain($ent,'neko_val');
 	// CBBXE
 	
 	echo "</tr>";
@@ -82,9 +82,9 @@ foreach($data as $i=>$ent){
 
 <div style="margin-top:8px;margin-bottom:8px;">
 	<?php 
-	echo $this->FrontA->topLinkBtn($pages);
-	echo $this->FrontA->prevLinkBtn($pages);
-	echo $this->FrontA->nextLinkBtn($pages); 
+	echo $frontA->topLinkBtn($pages);
+	echo $frontA->prevLinkBtn($pages);
+	echo $frontA->nextLinkBtn($pages); 
 	?>
 	<div style="display:inline-block"><?php echo $pages['page_index_html']; ?></div>
 	<div style="display:inline-block">件数:<?php echo $data_count ?></div>

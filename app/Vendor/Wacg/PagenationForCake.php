@@ -12,8 +12,8 @@
  * - ページネーション情報としてページ目次、ソート用リンク、データ件数等を出力する。
  * 
  * @author k-uehara
- * @version 1.5.4
- * @date 2010-4-1 | 2019-1-18
+ * @version 1.5.5
+ * @date 2010-4-1 | 2019-1-28
  *
  */
 class PagenationForCake{
@@ -331,7 +331,7 @@ class PagenationForCake{
 		$data=null;
 		foreach($fields as $f=>$fName){
 			//リンクを組み立てる。
-			$url = "{$path}?page_no={$page_no}&limit={$row_limit}&sort_field={$f}&sort_desc=0{$strParams}&act_flg=3&{$kjs_uq}";
+			$url = "{$path}?page_no={$page_no}&sort_field={$f}&sort_desc=0{$strParams}&act_flg=3&{$kjs_uq}";
 			$link = "<a href='$url'>{$fName}</a>";
 
 			//リンクをフィールド名をキーにしてソートリンクリストにセット

@@ -1,6 +1,7 @@
 <?php
 App::uses('FormHelper', 'View/Helper');
-App::uses('CbFileUploadHComp', 'View/Helper/Component');
+App::uses('CbFileUploadHComp', 'View/Helper/CrudBaseComponent');
+App::uses('FrontAHelperX', 'View/Helper/CrudBaseComponent');
 
 /**
  * CrudBase用ヘルパー
@@ -9,8 +10,8 @@ App::uses('CbFileUploadHComp', 'View/Helper/Component');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.6.9
- * @date 2016-7-27 | 2018-12-18
+ * @version 1.7.0
+ * @date 2016-7-27 | 2019-1-25
  * @author k-uehara
  *
  */
@@ -31,47 +32,54 @@ class CrudBaseHelper extends FormHelper {
 	
 	// コンポーネント
 	private $cbFileUploadHComp; // CrudBase用ファイルアップロード・ヘルパーコンポーネント
+	private $frontAHelper; // フロントA画面・ヘルパーコンポーネント
 	
 	/**
-	 * 初期化(表の設定）
+	 * 初期化
 	 * 
-	 * @note
-	 * 設定には表と裏がある。
-	 * 表の設定は当メソッドで行う。
-	 * 裏の設定はsetCrudBaseParam()で行う。
-	 * 
-	 * @param array $props プロパティ群
-	 *  - model_name モデル名（キャメル記法）
+	 * @param array $param パラメータ
+	 *  - model_name	モデル名（キャメル記法）
+	 *  - bigDataFlg	巨大データフラグ
+	 *  - debug_mode	デバッグモード
+	 *  - dp_tmpl		リソース保存先・ディレクトリパス・テンプレート
+	 *  - viaDpFnMap	経由パスマッピング
 	 *  
 	 */
-	public function init($props = array()){
+	public function init($param = array()){
 
 		// モデル名関連の設定
-		$model_name = $props['model_name'];
+		$model_name = $param['model_name'];
 		$this->_mdl_cml = $model_name;
 		$this->_mdl = $model_name.'.';
 		$this->_mdl_snk = $this->snakize($model_name); //スネーク記法に変換
-	}
-	
-	/**
-	 * CrudBase内部専用パラメータのセッター(裏の設定）
-	 * 
-	 * @note
-	 * 裏の設定はCrudBase内部が利用する。
-	 * 開発するときはこちらのパラメータを触らないように。
-	 *
-	 * @param array $param パラメータ
-	 */
-	public function setCrudBaseParam($param){
+		
 		$this->param = $param;
-
-		// CrudBase用ファイルアップロード・ヘルパーコンポーネント
+		
 		$dp_tmpl = $param['dp_tmpl'];
 		$viaDpFnMap = $param['viaDpFnMap'];
+		
+		// CrudBase用ファイルアップロード・ヘルパーコンポーネントの初期化
 		$this->cbFileUploadHComp = new CbFileUploadHComp($dp_tmpl, $viaDpFnMap);
 		
+		// フロントAヘルパーの初期化
+		$this->frontAHelper = new FrontAHelperX();
+		$this->frontAHelper->init(array(
+				'dp_tmpl'=>$dp_tmpl,
+				'viaDpFnMap'=>$viaDpFnMap,
+		));
 		
 	}
+	
+	
+	/**
+	 * フロントAヘルパーのインスタンスを取得
+	 * @return Object FrontAHelper フロントAヘルパー
+	 */
+	public function getFrontAHelper(){
+		return $this->frontAHelper;
+	}
+	
+
 
 	
 	/**
@@ -85,14 +93,10 @@ class CrudBaseHelper extends FormHelper {
 				'jquery-ui.min',
 				'Layouts/default',
 				'CrudBase/common',
-				//'jquery.datetimepicker.min',		// 日時ピッカー(重いので保留
 				'clm_show_hide',					// 列表示切替
-				'nouislider.min',					// 数値範囲入力スライダー・noUiSlider
-				//'CrudBase/NoUiSliderWrap',			// noUiSliderのラップ(重いので保留
 				'CrudBase/FileUploadK.css?ver=1.0.1',	
 				'CrudBase/CalendarViewK.css',
 				'CrudBase/CrudBaseBulkAdd.css',
-				'CrudBase/index'					// CRUD indexページ共通
 		);
 	}
 	
@@ -105,7 +109,7 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'CrudBase/dist/CrudBase.min.js?ver=2.7.1',
+				'CrudBase/dist/CrudBase.min.js?ver=2.7.3',
 		);
 	}
 	
@@ -587,58 +591,34 @@ class CrudBaseHelper extends FormHelper {
 	 * @param string $field フィールド名（ kj_ を付けないこと）
 	 * @param string $wamei フィールド和名
 	 */
-	public function inputKjNouislider($kjs,$field,$wamei){
-		//<!-- 数値範囲入力スライダー・noUiSlider -->
-		$detail_noui = $field.'_detail';
+	public function inputKjNumRange($kjs, $field, $wamei, $option=array()){
 		
-		echo "<div class='kj_div kj_wrap' data-field='{$field}' data-gadget='nouislider'><table><tr><td>";
-		echo "		<span class='nusr_label'><{$wamei}による範囲検索</span>&nbsp;";
-		echo "		<span id='{$field}_preview' class='nusr_preview'></span>";
-		echo "	</td></tr>";
+		// テキストの幅を自動指定する
+		$str_len = mb_strlen($wamei);
+		$str_len += 3;
+		if($str_len < 4) $str_len = 4;
+		$width = $str_len . 'em';
 		
-		
-		echo "	<tr><td><div id='{$field}_slider' title='{$wamei}による範囲検索'></div></td>";
-		echo "	<td><input type='button' class='nusr_toggle_btn kjs_inp' value='' onclick=\"$('#{$detail_noui}').fadeToggle()\" title='日付範囲入力を表示します'></td>";
-		echo "	</tr>";
-		
-		
-		
-		echo "	<tr id='{$detail_noui}' class='nusr_detail'><td>";
-		echo "	<div class='kj_div'>";
-			
-		$key='kj_'.$field.'1';
-		echo $this->input($this->_mdl.$key, array(
-			'id' => $key,
-			'value' => $kjs[$key],
-			'type' => 'number',
-			'label' => false,
-			'style'=>'width:50px',
-			'class' => 'kjs_inp',
-			'title'=>$wamei.'による範囲検索',
-		));
-			
-		echo "	</div><div class='kj_div'>～</div><div class='kj_div'>";
-		
-		$key='kj_'.$field.'2';
-		echo $this->input($this->_mdl.$key, array(
-			'id' => $key,
-			'value' => $kjs[$key],
-			'type' => 'number',
-			'label' => false,
-			'style'=>'width:50px',
-			'class' => 'kjs_inp',
-			'title'=>$wamei.'による範囲検索',
-		));
-		
-		echo "	</div></td><td></td></tr></table></div>";
-		
-		
+		echo "
+			<div class='kj_div'>
+				<div class='input number'>
+					<input name='data[Neko][kj_{$field}1]' id='kj_{$field}1' value='' 
+						class='kjs_inp' placeholder='{$wamei}～' title='{$wamei}～' 
+						type='number' style='width:{$width}'>
+				</div>
+			</div>			
+			<div class='kj_div'>
+				<div class='input number'>
+					<input name='data[Neko][kj_{$field}2]' id='kj_{$field}2' value='' 
+						class='kjs_inp' placeholder='～{$wamei}' title='～{$wamei}' 
+						type='number' style='width:{$width}'>
+				</div>
+			</div>
+		";
+
 	}
 	
-	
-	
-	
-	
+
 	/**
 	 * 検索入力保存の入力要素を作成する
 	 * @param bool $saveKjFlg
@@ -663,18 +643,7 @@ class CrudBaseHelper extends FormHelper {
 		
 
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	/**
 	 * 特に何もせずのTD要素を出力する。
@@ -1625,11 +1594,123 @@ class CrudBaseHelper extends FormHelper {
 	}
 	
 	
+	/**
+	 * ハッシュタグを作成
+	 * @param array $ent エンティティ
+	 * @param string $field フィールド
+	 * @param string wamei 和名
+	 * @param string $label ラベル　 0:ラベル無(デフォルト), 1:ラベル有
+	 * @param string $class class属性名
+	 * @param string $unit_after 単位（後）
+	 */
+	public function hashTag(&$ent, $field, $wamei, $label=0, $class='hash_tag0', $unit_after=''){
+		if(empty($ent[$field])){
+			return;
+		}
+		
+		
+		// ラベル名、ツールチップ名の取得
+		$label_name = '';
+		$title_name = '';
+		if($label == 1){
+			$label_name = $wamei . ': ';
+		}else{
+			$title_name = $wamei;
+		}
+		
+		echo "<div class='{$class}' title='{$title_name}' >{$label_name}{$ent[$field]}{$unit_after}</div>";
+	}
 	
 	
+	/**
+	 * ハッシュURLを作成
+	 * @param array $ent エンティティ
+	 * @param string $field フィールド
+	 * @param string wamei 和名
+	 * @param $label string ラベル　 0:ラベル無(デフォルト), 1:ラベル有
+	 * @param $class string class属性名
+	 * @param $unit_after string 単位（後）
+	 */
+	public function hashUrl(&$ent, $field, $wamei, $label=0, $class='hash_tag0', $unit_after=''){
+		if(empty($ent[$field])){
+			if($ent[$field] !== 0 && $ent[$field]!=='0') return;
+		}
+		
+		
+		// ラベル名、ツールチップ名の取得
+		$label_name = '';
+		$title_name = '';
+		if($label == 1){
+			$label_name = $wamei;
+		}else{
+			$title_name = $wamei;
+		}
+		if(empty($label_name)){
+			$label_name = 'URL';
+		}
+		
+		echo "<div class='{$class}' title='{$title_name}' ><a href='{$ent[$field]}' target='blank'>{$label_name}{$unit_after}</a></div>";
+	}
 	
 	
+	/**
+	 * 値連結型ハッシュタグを作成
+	 * @param array $ent エンティティ
+	 * @param array $fields フィールドリスト
+	 * @param string $wamei 値連結後の和名
+	 * @param $label string ラベル　 0:ラベル無(デフォルト), 1:ラベル有
+	 * @param $class string class属性名
+	 */
+	public function hashTagJoin(&$ent, $fields, $wamei, $label=0, $class='hash_tag0'){
+		
+		// 値を連結
+		$join_str = '';
+		foreach($fields as $field){
+			$join_str .= $ent[$field];
+		}
+		
+		// ラベル名、ツールチップ名の取得
+		$label_name = '';
+		$title_name = '';
+		if($label == 1){
+			$label_name = $wamei . ': ';
+		}else{
+			$title_name = $wamei;
+		}
+		
+		echo "<div class='{$class}' title='{$title_name}' >{$label_name}{$join_str}</div>";
+	}
+ 
+	/**
+	 * google mapピン付きリンクの作成
+	 * @param string $lat 緯度
+	 * @param string $lon 経度
+	 * @return string google mapピン付きリンク
+	 */
+	public function gmapPinLink($lat, $lon, $text, $class='btn btn-link'){
+		
+		if($this->_empty0($lat) || $this->_empty0($lon)) return;
+		
+		$url = "https://maps.google.com/maps?q={$lat},{$lon}";
+		echo "<a href='{$url}' class='{$class}' target='blank'>$text</a>";
+		
+	}
 	
 	
+	/**
+	 * 0以外の空判定
+	 *
+	 * @note
+	 * いくつかの空値のうち、0と'0'は空と判定しない。
+	 *
+	 * @param $value
+	 * @return int 判定結果 0:空でない , 1:空である
+	 */
+	private function _empty0($value){
+		if(empty($value) && $value!==0 && $value!=='0'){
+			return 1;
+		}
+		return 0;
+	}
 	
 }

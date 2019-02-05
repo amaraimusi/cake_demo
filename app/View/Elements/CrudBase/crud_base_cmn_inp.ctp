@@ -2,13 +2,7 @@
 <div id="hiddens_data" style="display:none">
 <?php
 
-// CrudBaseヘルパーへ各種パラメータをセットする。
-$this->CrudBase->setCrudBaseParam(array(
-		'bigDataFlg'=>$bigDataFlg,
-		'debug_mode'=>$debug_mode,
-		'dp_tmpl'=>$dp_tmpl,
-		'viaDpFnMap'=>$viaDpFnMap,
-));
+
 
 $this->CrudBase->setKjs($kjs);
 

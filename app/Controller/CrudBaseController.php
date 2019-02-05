@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.7.2";
+	var $version = "2.7.3";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -220,25 +220,27 @@ class CrudBaseController extends AppController {
 		
 		// エラータイプJSON
 		$err_types_json = json_encode($errTypes,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-		
+
 		$crudBaseData = array(
-				'field_data'=>$active, // アクティブフィールドデータ
-				'kjs'=>$kjs, // 検索条件情報
-				'kjs_json'=>$kjs_json, // 検索条件JSON
+				'model_name_c'=> $this->main_model_name, // モデル名（キャメル記法）
+				'model_name_s'=> $this->main_model_name_s, // モデル名（スネーク記法）
+				'field_data'=>$active, 		// アクティブフィールドデータ
+				'kjs'=>$kjs, 				// 検索条件情報
+				'kjs_json'=>$kjs_json, 		// 検索条件JSON
 				'def_kjs_json'=>$def_kjs_json, // デフォルト検索情報JSON
-				'errMsg'=>$errMsg, // エラーメッセージ
-				'errTypes' => $errTypes, // エラータイプ
+				'errMsg'=>$errMsg, 			// エラーメッセージ
+				'errTypes' => $errTypes, 	// エラータイプ
 				'err_types_json' => $err_types_json, // エラータイプJSON
-				'version'=>$this->version, // CrudBaseのバージョン
-				'userInfo'=>$userInfo, // ユーザー情報
+				'version'=>$this->version, 	// CrudBaseのバージョン
+				'userInfo'=>$userInfo, 		// ユーザー情報
 				'new_version_chg'=>$new_version_chg, // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更
-				'debug_mode'=>$debug_mode, // デバッグモード	CakePHPのデバッグモードと同じもの
-				'csh_ary'=>$csh_ary, // 列表示配列	列表示切替機能用
-				'csh_json'=>$csh_json, // 列表示配列JSON	 列表示切替機能用
-				'bigDataFlg'=>$bigDataFlg, // 巨大データフラグ	画面に表示する行数が制限数（$big_data_limit）を超えるとONになる。
+				'debug_mode'=>$debug_mode, 	// デバッグモード	CakePHPのデバッグモードと同じもの
+				'csh_ary'=>$csh_ary, 		// 列表示配列	列表示切替機能用
+				'csh_json'=>$csh_json, 		// 列表示配列JSON	 列表示切替機能用
+				'bigDataFlg'=>$bigDataFlg, 	// 巨大データフラグ	画面に表示する行数が制限数（$big_data_limit）を超えるとONになる。
 				'big_data_fields'=>$big_data_fields, // 巨大データ用のフィールド情報 (高速化のため列の種類は少なめ）
-				'pages'=>$pages, // ページネーションパラメータ
-				'act_flg'=>$act_flg, // アクティブフラグ	null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
+				'pages'=>$pages, 			// ページネーションパラメータ
+				'act_flg'=>$act_flg, 		// アクティブフラグ	null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
 				'sql_dump_flg'=>$sql_dump_flg, // SQLダンプフラグ
 				'dp_tmpl' => $this->dp_tmpl, // リソース保存先・ディレクトリパス・テンプレート
 				'viaDpFnMap' => $this->viaDpFnMap , // 経由パスマッピング

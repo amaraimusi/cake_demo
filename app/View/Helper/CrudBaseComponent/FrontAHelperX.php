@@ -1,21 +1,35 @@
 <?php
-App::uses('FormHelper', 'View/Helper');
 
 /**
  * フロントAページ用ヘルパー
- * 
- * @version 1.0.2
- * @date 2018-10-8 | 2018-12-27
+ *
+ * @version 1.1.0
+ * @date 2018-10-8 | 2019-1-26
  * @author k-uehara
  *
  */
-
-class FrontAHelper extends Helper {
-
-	private $data; 
+class FrontAHelperX{
+	
 	private $dp_tmpl; // ディレクトリパステンプレート・データ
 	private $viaDpFnMap; // 経由パスマッピング
-
+	
+	/**
+	 * 初期化
+	 * @param array $option
+	 *  - data
+	 *  - dp_tmpl ディレクトリパステンプレート
+	 *
+	 */
+	public function init($option){
+		
+		$dp_tmpl = $option['dp_tmpl'];
+		$viaDpFnMap = $option['viaDpFnMap'];
+		
+		$this->dp_tmpl = $dp_tmpl;
+		$this->viaDpFnMap = $viaDpFnMap;
+		
+	}
+	
 	
 	/**
 	 * トップ・ページリンクボタンを作成する
@@ -62,25 +76,6 @@ class FrontAHelper extends Helper {
 		if(empty($url)) $disabled = 'disabled';
 		
 		return "<a href='{$url}' class='btn btn-success' {$disabled} >次へ</a>";
-	}
-	
-	/**
-	 * 初期化
-	 * @param array $option
-	 *  - data 
-	 *  - dp_tmpl ディレクトリパステンプレート
-	 *  
-	 */
-	public function init($option){
-		
-		$data = $option['data'];
-		$dp_tmpl = $option['dp_tmpl'];
-		$viaDpFnMap = $option['viaDpFnMap'];
-
-		$this->data = $data;
-		$this->dp_tmpl = $dp_tmpl;
-		$this->viaDpFnMap = $viaDpFnMap;
-
 	}
 	
 	
@@ -145,7 +140,7 @@ class FrontAHelper extends Helper {
 		if(isset($list[$v])) $v2 = $list[$v];
 		$v2 = h($v2);
 		echo "<td class='{$class_v}'><span class='{$field}' data-value='{$v}' >{$v2}</span></td>\n";
-
+		
 	}
 	
 	/**
@@ -166,11 +161,35 @@ class FrontAHelper extends Helper {
 		// ファイルパスを組み立てる
 		$orig_fp = $this->buildFp('orig', $ent, $field);
 		$mid_fp = $this->buildFp('mid', $ent, $field);
-
+		
 		echo "
 			<td class='{$class_v}'>
 			<img class='{$field} img-responsive' src='{$mid_fp}' alt='{$fn}' />
 			<a href='{$orig_fp}' class='btn btn-link btn-xs' target='blank'>[拡大]</a>
+			</td>
+		";
+		
+	}
+	
+	/**
+	 * イメージTD出力(シンプル）
+	 * @note IMG要素に値をセットするのみ
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 * @param string $class_v class属性値
+	 */
+	public function tdImageSimple(&$ent,$field,$class_v = 'td_line'){
+		
+		$fn = $ent[$field];
+		
+		if($fn == null || $fn == ''){
+			echo "<td class='{$class_v}'></td>";
+			return;
+		}
+		
+		echo "
+			<td class='{$class_v}'>
+			<img class='{$field} img-responsive' src='{$fn}' />
 			</td>
 		";
 		
@@ -220,7 +239,7 @@ class FrontAHelper extends Helper {
 		$v2='';
 		if(!empty($v)){
 			$v = h($v);
-
+			
 			$v= str_replace("\r\n", '<br>', $v);
 			$v= str_replace("\n", '<br>', $v);
 			$v= str_replace('\\', '', $v);
@@ -229,6 +248,26 @@ class FrontAHelper extends Helper {
 		echo "<td class='{$class_v}'><div class='{$field}'  >{$v}</div></td>\n";
 		
 	}
+	
+	
+	
+	/**
+	 * hidden TD要素出力
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド
+	 * @param string $class_v class属性値
+	 */
+	public function tdHidden(&$ent,$field,$class_v = 'td_line'){
+		echo "<td class='{$class_v}'><input type='hidden' name='{$field}' value='{$ent[$field]}' />";
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 }

@@ -157,7 +157,7 @@ class BulkReg{
 	/**
 	 * 共通データをセットする
 	 * @param array $data
-	 * @return 共通データをセット後のデータ
+	 * @return array 共通データをセット後のデータ
 	 */
 	private function setCommonField(&$data){
 		
@@ -222,7 +222,7 @@ class BulkReg{
 	
 	/**
 	 * 配列の深みにある値を取得する(先頭行のみ）
-	 * @param $ary 対象配列
+	 * @param array $ary 対象配列
 	 * @
 	 */
 	private function getValueFromAryDepth(&$ary){

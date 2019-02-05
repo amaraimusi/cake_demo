@@ -1,5 +1,5 @@
 <?php
-$this->CrudBase->init(array('model_name'=>'UserMng'));
+echo $this->element('CrudBase/crud_base_helper_init');
 
 // CSSファイルのインクルード
 $cssList = $this->CrudBase->getCssList();
