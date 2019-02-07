@@ -1,6 +1,6 @@
 <?php
 App::uses('CrudBaseController', 'Controller');
-App::uses('PagenationForCake', 'Vendor/Wacg');
+App::uses('PagenationForCake', 'Vendor/CrudBase');
 
 /**
  * ネコ
@@ -146,6 +146,16 @@ class NekoController extends CrudBaseController {
 		$neko_group_json = json_encode($nekoGroupList,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 		$this->set(array('nekoGroupList' => $nekoGroupList,'neko_group_json' => $neko_group_json));
 		// CBBXE
+		
+// 		// ▼ サブ画像集約ライブラリ
+// 		App::uses('SubImgAgg', 'Vendor/CrudBase');
+// 		$subImgAgg = new SubImgAgg();
+// 		$data = $subImgAgg->agg($data,array(
+// 				'note_field' => 'note',			// ノートフィールド名
+// 				'img_fn_field' => 'img_fn' ,	// 画像フィールド名
+// 				'img_via_dp_field' => $this->viaDpFnMap['img_fn'], // 画像経由パスフィールド名
+// 				'dp_tmpl' => $this->dp_tmpl));	// ディレクトリパス・テンプレート
+		
 		
 		$this->set($crudBaseData);
 		$this->setCommon();//当画面系の共通セット
@@ -315,7 +325,7 @@ class NekoController extends CrudBaseController {
 	public function bulk_reg(){
 		
 		App::uses('DaoForCake', 'Model');
-		App::uses('BulkReg', 'Vendor/Wacg');
+		App::uses('BulkReg', 'Vendor/CrudBase');
 		
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
@@ -402,7 +412,7 @@ class NekoController extends CrudBaseController {
 	
 	
 		//CSVダウンロード
-		App::uses('CsvDownloader','Vendor/Wacg');
+		App::uses('CsvDownloader','Vendor/CrudBase');
 		$csv= new CsvDownloader();
 		$csv->output($fn, $data);
 		 

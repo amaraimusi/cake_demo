@@ -208,7 +208,7 @@ class CbFileUploadComponent extends Component{
 
 		
 		// ファイルアップロードの一括作業
-		App::uses('FileUploadK','Vendor/Wacg/FileUploadK');
+		App::uses('FileUploadK','Vendor/CrudBase/FileUploadK');
 		$fileUploadK = new FileUploadK();
 		$option['dpDatas'] = $dpDatas;
 		$res = $fileUploadK->workAllAtOnce($FILES,$option);

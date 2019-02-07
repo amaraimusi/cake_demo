@@ -111,7 +111,7 @@ class CrudBase{
 	 */
 	public function guessDatetimeInfo($str,$option=array()){
 	    
-	    App::uses('DatetimeGuess','Vendor/Wacg');
+	    App::uses('DatetimeGuess','Vendor/CrudBase');
 	    if(empty($this->DatetimeGuess)) $this->DatetimeGuess = new DatetimeGuess();
 	    
 	    $info = $this->DatetimeGuess->guessDatetimeInfo($str,$option);

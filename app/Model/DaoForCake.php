@@ -1,7 +1,7 @@
 <?php
 App::uses('Model', 'Model');
 App::uses('AppModel', 'Model');
-App::uses('IDao', 'Vendor/Wacg');
+App::uses('IDao', 'Vendor/CrudBase');
 
 /**
  * CakePHP用のDao

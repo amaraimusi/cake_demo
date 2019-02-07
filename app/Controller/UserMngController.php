@@ -1,6 +1,6 @@
 <?php
 App::uses('CrudBaseController', 'Controller');
-App::uses('PagenationForCake', 'Vendor/Wacg');
+App::uses('PagenationForCake', 'Vendor/CrudBase');
 
 /**
  * ユーザー管理
@@ -284,7 +284,7 @@ class UserMngController extends CrudBaseController {
 	public function bulk_reg(){
 		
 		App::uses('DaoForCake', 'Model');
-		App::uses('BulkReg', 'Vendor/Wacg');
+		App::uses('BulkReg', 'Vendor/CrudBase');
 		
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
@@ -368,7 +368,7 @@ class UserMngController extends CrudBaseController {
 	
 	
 		//CSVダウンロード
-		App::uses('CsvDownloader','Vendor/Wacg');
+		App::uses('CsvDownloader','Vendor/CrudBase');
 		$csv= new CsvDownloader();
 		$csv->output($fn, $data);
 		 

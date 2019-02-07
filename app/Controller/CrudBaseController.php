@@ -815,7 +815,7 @@ class CrudBaseController extends AppController {
 
 		//リロードチェック
 		if(empty($this->ReloadCheck)){
-			App::uses('ReloadCheck','Vendor/Wacg');
+			App::uses('ReloadCheck','Vendor/CrudBase');
 			$this->ReloadCheck=new ReloadCheck();
 		}
 
@@ -1466,7 +1466,7 @@ class CrudBaseController extends AppController {
 	protected function copyEx($sourceFn,$copyFn,$permission=0777){
 
 		if(empty($this->CopyEx)){
-			App::uses('CopyEx', 'Vendor/Wacg');
+			App::uses('CopyEx', 'Vendor/CrudBase');
 			$this->CopyEx = $this->Animal=new CopyEx();
 		}
 
@@ -1502,7 +1502,7 @@ class CrudBaseController extends AppController {
 	protected function mkdir777($path,$sjisFlg=false){
 
 		if(empty($this->MkdirEx)){
-			App::uses('MkdirEx', 'Vendor/Wacg');
+			App::uses('MkdirEx', 'Vendor/CrudBase');
 			$this->MkdirEx = new MkdirEx();
 		}
 
