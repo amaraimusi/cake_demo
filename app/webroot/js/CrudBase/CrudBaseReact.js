@@ -28,11 +28,7 @@ class CrudBaseReact{
 	_setParamIfEmpty(param){
 		
 		if(param == null) param = {};
-		
-		// ■■■□□□■■■□□□■■■□□□
-		if(param['flg'] == null){
-			param['flg'] = 0;
-		}
+
 		
 		return param;
 	}
@@ -54,8 +50,8 @@ class CrudBaseReact{
 		}
 		this.hyoIds = hyoIds;
 		
-		console.log(this.fields);//■■■□□□■■■□□□■■■□□□)
-		console.log(this.hyoIds);//■■■□□□■■■□□□■■■□□□)
+//		console.log(this.fields);//■■■□□□■■■□□□■■■□□□)
+//		console.log(this.hyoIds);//■■■□□□■■■□□□■■■□□□)
 	}
 	
 	/**
@@ -64,7 +60,7 @@ class CrudBaseReact{
 	 * 各表の行/エンティティを同期する
 	 */
 	reactivatingOfRow(){
-		console.log('test=Ａ');//■■■□□□■■■□□□■■■□□□)
+//		console.log('test=Ａ');//■■■□□□■■■□□□■■■□□□)
 	}
 
 }

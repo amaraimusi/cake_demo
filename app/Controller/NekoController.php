@@ -46,16 +46,9 @@ class NekoController extends CrudBaseController {
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
 	public $this_page_version = '1.9.1';
+
 	
-	/// リソース保存先・ディレクトリパス・テンプレート
-	public $dp_tmpl = 'rsc/img/%field/%via_dp/%dn/';
 	
-	/// 経由パスマッピング（上記のテンプレートと連動）
-	public $viaDpFnMap = array(); // 例　'img_fn'=>'img_via_dp'
-	//public $viaDpFnMap = array('img_fn'=>'neko_group');
-
-
-
 	public function beforeFilter() {
 
 		// 未ログイン中である場合、未認証モードの扱いでページ表示する。
@@ -122,18 +115,12 @@ class NekoController extends CrudBaseController {
 	 */
 	public function front_a(){
 		
-		// フロントA用のコンポーネント
-		$this->NekoFrontA = $this->Components->load('NekoFrontA');
-
 		// CrudBase共通処理（前）
 		$option = array(
 				'func_csv_export'=>0, // CSVエクスポート機能 0:OFF ,1:ON
 				'func_file_upload'=>1, // ファイルアップロード機能 0:OFF , 1:ON
 		);
 		$crudBaseData = $this->indexBefore('Neko',$option);//indexアクションの共通先処理(CrudBaseController)
-		
-		// ディレクトリパステンプレートを調整する(パスはindex用の相対パスになっているのでズレを調整しなければならない）
-		$crudBaseData['dp_tmpl'] = $this->NekoFrontA->adjustDpt($crudBaseData['dp_tmpl']);
 		
 		//一覧データを取得
 		$data = $this->Neko->findData($crudBaseData);
@@ -154,8 +141,7 @@ class NekoController extends CrudBaseController {
 // 		$data = $subImgAgg->agg($data,array(
 // 				'note_field' => 'note',			// ノートフィールド名
 // 				'img_fn_field' => 'img_fn' ,	// 画像フィールド名
-// 				'img_via_dp_field' => $this->viaDpFnMap['img_fn'], // 画像経由パスフィールド名
-// 				'dp_tmpl' => $this->dp_tmpl));	// ディレクトリパス・テンプレート
+//			));	// ディレクトリパス・テンプレート
 		
 		
 		$this->set($crudBaseData);
@@ -207,19 +193,7 @@ class NekoController extends CrudBaseController {
 		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
 
 		// CBBXS-1024
-		
-		// テンプレートからファイルパスを組み立てる
-		//debug($ent['img_fn']);//■■■□□□■■■□□□■■■□□□)
 		$ent['img_fn'] = $this->makeFilePath($_FILES, 'rsc/img/%field/y%Y/m%m/orig/%Y%m%d%H%i%s_%fn', $ent, 'img_fn');
-		//debug($ent['img_fn']);//■■■□□□■■■□□□■■■□□□)
-		//if(empty($ent['img_fn'])) unset($ent['img_fn']);
-		
-		// ■■■□□□■■■□□□■■■□□□
-// 		// アップロードファイル名を変換する。
-// 		$ent = $this->convUploadFileName($ent,$_FILES);
-		
-
-		
 		// CBBXE
 
 		// 更新ユーザーなど共通フィールドをセットする。
@@ -229,10 +203,7 @@ class NekoController extends CrudBaseController {
 		$this->Neko->begin();
 		$ent = $this->Neko->saveEntity($ent,$regParam);
 		$this->Neko->commit();//コミット
-		
-		// ファイルアップロード関連の一括作業// ■■■□□□■■■□□□■■■□□□
-		//$res = $this->workFileUploads($form_type,$this->dp_tmpl, $this->viaDpFnMap, $ent, $_FILES);
-		
+
 		// ファイルアップロードの一括作業
 		App::uses('FileUploadK','Vendor/CrudBase/FileUploadK');
 		$fileUploadK = new FileUploadK();
@@ -288,7 +259,7 @@ class NekoController extends CrudBaseController {
 		if($eliminate_flg == 0){
 			$ent = $this->Neko->saveEntity($ent,$regParam); // 更新
 		}else{
-			$this->Neko->eliminateFiles($ent['id'], 'img_fn', $ent, $this->dp_tmpl, $this->viaDpFnMap); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
+			$this->Neko->eliminateFiles($ent['id'], 'img_fn', $ent); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
 			$this->Neko->delete($ent['id']); // 削除
 		}
 		$this->Neko->commit();//コミット

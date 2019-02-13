@@ -1,6 +1,5 @@
 <?php
 App::uses('FormHelper', 'View/Helper');
-App::uses('CbFileUploadHComp', 'View/Helper/CrudBaseComponent');
 App::uses('FrontAHelperX', 'View/Helper/CrudBaseComponent');
 
 /**
@@ -10,8 +9,8 @@ App::uses('FrontAHelperX', 'View/Helper/CrudBaseComponent');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.7.0
- * @date 2016-7-27 | 2019-1-25
+ * @version 1.8.1
+ * @date 2016-7-27 | 2019-2-13
  * @author k-uehara
  *
  */
@@ -31,7 +30,6 @@ class CrudBaseHelper extends FormHelper {
 	private $_field_data;			// フィールドデータ
 	
 	// コンポーネント
-	private $cbFileUploadHComp; // CrudBase用ファイルアップロード・ヘルパーコンポーネント
 	private $frontAHelper; // フロントA画面・ヘルパーコンポーネント
 	
 	/**
@@ -41,8 +39,6 @@ class CrudBaseHelper extends FormHelper {
 	 *  - model_name	モデル名（キャメル記法）
 	 *  - bigDataFlg	巨大データフラグ
 	 *  - debug_mode	デバッグモード
-	 *  - dp_tmpl		リソース保存先・ディレクトリパス・テンプレート
-	 *  - viaDpFnMap	経由パスマッピング
 	 *  
 	 */
 	public function init($param = array()){
@@ -54,19 +50,10 @@ class CrudBaseHelper extends FormHelper {
 		$this->_mdl_snk = $this->snakize($model_name); //スネーク記法に変換
 		
 		$this->param = $param;
-		
-		$dp_tmpl = $param['dp_tmpl'];
-		$viaDpFnMap = $param['viaDpFnMap'];
-		
-		// CrudBase用ファイルアップロード・ヘルパーコンポーネントの初期化
-		$this->cbFileUploadHComp = new CbFileUploadHComp($dp_tmpl, $viaDpFnMap);
-		
+
 		// フロントAヘルパーの初期化
 		$this->frontAHelper = new FrontAHelperX();
-		$this->frontAHelper->init(array(
-				'dp_tmpl'=>$dp_tmpl,
-				'viaDpFnMap'=>$viaDpFnMap,
-		));
+		$this->frontAHelper->init();
 		
 	}
 	
@@ -991,7 +978,7 @@ class CrudBaseHelper extends FormHelper {
 	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
 	 */
-	public function tdImage1(&$ent, $field){
+	public function tdImage(&$ent, $field){
 		
 		$orig_fp = $ent[$field];
 		$href = '';
@@ -1020,36 +1007,6 @@ class CrudBaseHelper extends FormHelper {
 		
 	}
 	
-	
-	
-	/**
-	 * 非推奨 // ■■■□□□■■■□□□■■■□□□
-	 * 画像TD要素出力オプションの初期化
-	 *
-	 * @note
-	 * tdImageメソッドと連動
-	 *
-	 * @param array $option
-	 *  - cash_flg 0:キャッシュから読み込む（デフォ） , 1:キャッシュから読み込まない
-	 *  - no_img_fp 画像ファイルが存在しないときに表示する画像パス
-	 *  - td_type TDタイプ     省略:通常版  , lity:Lity.Js版
-	 */
-	public function initTdImageOption($tdImageOption = array()){
-		$this->cbFileUploadHComp->initTdImageOption($tdImageOption);
-	}
-	
-	/**
-	 * 非推奨 //　■■■□□□■■■□□□■■■□□□
-	 * サムネイル画像のTD要素を出力する。（オリジナル画像へのリンクあり）
-	 * @param array $ent エンティティ
-	 * @param string $field ﾌｨｰﾙﾄﾞ
-	 */
-	public function tdImage(&$ent,$field){
-		
-		$td_html = $this->cbFileUploadHComp->tdImage($ent,$field);
-		$this->setTd($td_html,$field);
-
-	}
 	
 	/**
 	 * 列並用TD要素群にTD要素をセット

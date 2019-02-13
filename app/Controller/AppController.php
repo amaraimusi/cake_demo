@@ -27,9 +27,6 @@ class AppController extends Controller {
 
 	public function beforeFilter(){
 		
-
-		
-		// ■■■□□□■■■□□□■■■□□□一時的なバグ回避
 		if(empty($role)){
 			$role="developer";
 		}

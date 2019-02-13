@@ -51,15 +51,6 @@ class CrudBaseController extends AppController {
 	// バージョン情報
 	public $verInfo = array();
 	
-	/// リソース保存先・ディレクトリパス・テンプレート
-	public $dp_tmpl = 'rsc/img/%field/%via_dp/%dn/';
-	
-	/// 経由パスマッピング
-	public $viaDpFnMap = array();
-	
-	public $components = ['CbFileUpload']; // ファイルアップロードコンポーネント [CakePHPの機能]
-	
-
 	// -- ▽ 内部処理用
 	private $m_kj_keys;//検索条件キーリスト
 	private $m_kj_defs;//検索条件デフォルト値
@@ -214,10 +205,7 @@ class CrudBaseController extends AppController {
 		}
 		
 		$sql_dump_flg = $option['sql_dump_flg']; // SQLダンプフラグ   true:SQLダンプを表示（デバッグモードである場合） , false:デバッグモードであってもSQLダンプを表示しない。
-		
-		// 経由パスマッピングJSON
-		$via_dp_fn_json = json_encode($this->viaDpFnMap,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-		
+
 		// エラータイプJSON
 		$err_types_json = json_encode($errTypes,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
@@ -242,9 +230,7 @@ class CrudBaseController extends AppController {
 				'pages'=>$pages, 			// ページネーションパラメータ
 				'act_flg'=>$act_flg, 		// アクティブフラグ	null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
 				'sql_dump_flg'=>$sql_dump_flg, // SQLダンプフラグ
-				'dp_tmpl' => $this->dp_tmpl, // リソース保存先・ディレクトリパス・テンプレート
-				'viaDpFnMap' => $this->viaDpFnMap , // 経由パスマッピング
-				'via_dp_fn_json' => $via_dp_fn_json, // 経由パスマッピングJSON
+
 		);
 		
 		
@@ -1714,43 +1700,7 @@ class CrudBaseController extends AppController {
 
 		return 'success';
 	}
-
-
-	/**
-	 * エンティティ中のアップロード系フィールドのファイル名を変換する。
-	 * @param array $ent 更新データのエンティティ
-	 * @param array $FILES $_FILES
-	 * @param option
-	 *  - fu_field アップロード系フィールド
-	 *  - 	id_flg ファイル名にidを表示(デフォ:true)
-	 *  - 	fn_flg ファイル名に元ファイル名を表示(デフォ:true)
-	 *  - 	date_flg ファイル名に日付を表示(デフォ:false)
-	 *  - 	time_flg ファイル名に時刻を表示(デフォ:false)
-	 * @return array アップロードファイル名変換後のエンティティ
-	 */
-	protected function convUploadFileName(&$ent,&$FILES,$option = array()){
-		
-		return $this->CbFileUpload->convUploadFileName($ent,$FILES,$option);
-	}
 	
-	/**
-	 * ファイルアップロード関連の一括作業
-	 * @param string $form_type フォーム種別  new_inp,edit,eliminate
-	 * @param string $dp_tmpl リソース保存先・ディレクトリパス・テンプレート
-	 * @param array $viaDpFnMap 経由パスマッピング
-	 * @param array $ent 更新エンティティ
-	 * @param array $FILES $_FILES
-	 * @param array $option
-	 * - FileUploadK.phpのオプション設定
-	 *
-	 */
-	protected function workFileUploads($form_type,$dp_tmpl,$viaDpFnMap,&$ent,&$FILES,$option = array()){
-		
-		return $this->CbFileUpload->workAllAtOnce($form_type,$dp_tmpl,$viaDpFnMap,$ent,$FILES,$option);
-	}
-	
-	
-
 
 	/**
 	 * パラメータ内の指定したフィールドが数値であるかチェックする

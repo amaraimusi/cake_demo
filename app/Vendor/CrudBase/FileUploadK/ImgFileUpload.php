@@ -23,8 +23,6 @@ class ImgFileUpload extends FileUploadBase{
 		// アップロードファイルのバリデーションを行い、エラーがあればエラーリストに追加する。
 		$upFileValid = new UploadFileValidation();
 		$suppData = $this->param['suppData']; // 補足データ
-		debug('test=$suppData');//■■■□□□■■■□□□■■■□□□)
-		debug($suppData);//■■■□□□■■■□□□■■■□□□)
 		$errs = $upFileValid->checkFiles($this->files,array('png','jpg','jpeg'),array('image/png','image/jpeg'),$suppData);
 
 		return $errs;

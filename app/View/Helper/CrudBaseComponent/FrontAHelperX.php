@@ -3,30 +3,19 @@
 /**
  * フロントAページ用ヘルパー
  *
- * @version 1.1.0
- * @date 2018-10-8 | 2019-1-26
+ * @version 1.2.0
+ * @date 2018-10-8 | 2019-2-13
  * @author k-uehara
  *
  */
 class FrontAHelperX{
 	
-	private $dp_tmpl; // ディレクトリパステンプレート・データ
-	private $viaDpFnMap; // 経由パスマッピング
-	
 	/**
-	 * 初期化
+	 * 初期化 | 拡張用
 	 * @param array $option
-	 *  - data
-	 *  - dp_tmpl ディレクトリパステンプレート
 	 *
 	 */
-	public function init($option){
-		
-		$dp_tmpl = $option['dp_tmpl'];
-		$viaDpFnMap = $option['viaDpFnMap'];
-		
-		$this->dp_tmpl = $dp_tmpl;
-		$this->viaDpFnMap = $viaDpFnMap;
+	public function init($option = array()){
 		
 	}
 	
@@ -76,32 +65,6 @@ class FrontAHelperX{
 		if(empty($url)) $disabled = 'disabled';
 		
 		return "<a href='{$url}' class='btn btn-success' {$disabled} >次へ</a>";
-	}
-	
-	
-	
-	/**
-	 * ディレクトリパスデータの作成
-	 * @param array $data
-	 * @param array $dp_tmpl ディレクトリパステンプレート・データ
-	 * @return array ディレクトリパスデータ
-	 */
-	private function makeDps(&$data,&$dp_tmpl){
-		
-		$dps = array(); // ディレクトリパスデータ
-		if(empty($data)) return $dps;
-		
-		// ▼ディレクトリパステンプレート・データとエンティティのキー（フィールド）からディレクトリパスデータを作成する。
-		$ent = $data[0];
-		foreach($ent as $field => $value){
-			$dps[$field] = array();
-			foreach($dp_tmpl as $key => $dpt){
-				$dp = str_replace('%field' , $field , $dpt );
-				$dps[$field][$key] = $dp;
-			}
-		}
-		
-		return $dps;
 	}
 	
 	
@@ -159,12 +122,12 @@ class FrontAHelperX{
 		}
 		
 		// ファイルパスを組み立てる
-		$orig_fp = $this->buildFp('orig', $ent, $field);
-		$mid_fp = $this->buildFp('mid', $ent, $field);
-		
+		$orig_fp = '../' . $ent[$field];
+		$mid_fp = '../' . str_replace('/orig/', '/mid/', $ent[$field]);
+
 		echo "
 			<td class='{$class_v}'>
-			<img class='{$field} img-responsive' src='{$mid_fp}' alt='{$fn}' />
+			<img class='{$field} img-responsive' src='{$mid_fp}' alt='{$mid_fp}' />
 			<a href='{$orig_fp}' class='btn btn-link btn-xs' target='blank'>[拡大]</a>
 			</td>
 		";
@@ -193,36 +156,6 @@ class FrontAHelperX{
 			</td>
 		";
 		
-	}
-	
-	
-	/**
-	 * ファイルパスを組み立てる
-	 * @param string $dn ディレクトリ名
-	 * @param array $ent データのエンティティ
-	 * @param string $field フィールド
-	 * @return string ファイルパス
-	 */
-	private function buildFp($dn, &$ent, $field){
-		
-		// ▼ ディレクトリパス・テンプレートのフィールド名、フォルダ名部分を置換する。
-		$fp = $this->dp_tmpl;
-		$fp = str_replace('%field', $field, $fp);
-		$fp = str_replace('%dn', $dn, $fp);
-		
-		// ▼ 経由パス部分を置換する
-		$via_dp = '';
-		if(!empty($this->viaDpFnMap[$field])){
-			$via_dp_field = $this->viaDpFnMap[$field];
-			$via_dp = $ent[$via_dp_field];
-		}
-		
-		$fp = str_replace('%via_dp', $via_dp, $fp);
-		$fp = str_replace('//', '/', $fp);
-		
-		$fp .= $ent[$field]; // ファイル名を連結
-		
-		return $fp;
 	}
 	
 	

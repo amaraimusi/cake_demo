@@ -281,12 +281,6 @@ class CrudBase{
 			param['device_type'] = this.judgDeviceType(); // デバイスタイプ（PC/SP）の判定
 		}
 
-		// 経由パスマッピング
-		if(param['viaDpFnMap'] == null){
-			var via_dp_fn_json = jQuery('#via_dp_fn_json').val();
-			param['viaDpFnMap'] = jQuery.parseJSON(via_dp_fn_json);
-		}
-
 		// エラータイプリスト
 		if(param['errTypes'] == null){
 			var err_types_json = jQuery('#err_types_json').val();
@@ -2144,10 +2138,7 @@ class CrudBase{
 		
 		this.entToBinds(tr,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
 		this.entToBinds(tr,ent,'name',option);// エンティティをname属性バインド要素群へセットする
-		
-		// 画像をTR要素に表示する // ■■■□□□■■■□□□■■■□□□
-		// this.cbFileUploadComp.setImageToTr(tr,ent,this.param.viaDpFnMap); ■■■□□□■■■□□□■■■□□□
-		
+
 	}
 
 	_nl2brEx(v){
@@ -2706,11 +2697,9 @@ class CrudBase{
 		if(inp_ex){
 			switch(inp_ex){
 			case 'image1':
-				console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□□)
 				this._setEntToImage1(elm, field, val1); // 画像1型
 				break;
 			case 'image_fuk':
-				console.log('test=Ａ2');//■■■□□□■■■□□□■■■□□□)
 				this._setEntToImageFuk(elm, field, val1); // 画像FUK型
 				break;
 			}
@@ -2722,14 +2711,6 @@ class CrudBase{
 
 			// type属性を取得
 			var typ = elm.attr('type');
-
-			// ■■■□□□■■■□□□■■■□□□
-//			if(typ=='file'){
-//
-//				// アップロードファイル要素用の入力フォームセッター
-//				this._setToFormForFile(option.form_type,option.par,field,val1,ent,option);
-//
-//			}
 
 			if(typ=='checkbox'){
 				if(val1 ==0 || val1==null || val1==''){
@@ -2831,12 +2812,6 @@ class CrudBase{
 		
 		elm.attr('data-fp', fp); // 「type='file'」に対応
 
-		// ■■■□□□■■■□□□■■■□□□
-//		var fue_id = null;
-
-//		// file要素にファイルパスをセットする
-//		this.cbFileUploadComp.setFilePaths(fue_id, fp);
-
 	}
 	
 	
@@ -2851,10 +2826,6 @@ class CrudBase{
 		elm.attr('data-fp', fp); // 「type='file'」に対応
 
 		var fue_id = elm.attr('id');
-		
-		console.log('test=Ａ3');//■■■□□□■■■□□□■■■□□□)
-		console.log('fue_id=' + fue_id);//■■■□□□■■■□□□■■■□□□)
-		console.log(fp);//■■■□□□■■■□□□■■■□□□)
 
 		// file要素にファイルパスをセットする
 		this.cbFileUploadComp.setFilePaths(fue_id, fp);
@@ -3013,44 +2984,7 @@ class CrudBase{
 		return currency + String(val1).replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
 
 	}
-	
 
-
-	
-// ■■■□□□■■■□□□■■■□□□
-//	/**
-//	 * アップロードファイル要素用の入力フォームセッター
-//	 * @param string form_type フォーム種別
-//	 * @param jQuery form フォーム要素
-//	 * @param string field フィールド
-//	 * @param variant v 値
-//	 * @param ent データのエンティティ
-//	 * @param object option editShow(),newInpShowからのoption 
-//	 */
-//	_setToFormForFile(form_type, form, field, fp, ent, option){
-//		
-//		
-//		// ▼ fue_idの取得 | フィールドに紐づくfile要素のid属性を取得する
-//		var fue_id = null; // file要素のid属性
-//		for(var i in this.fieldData){
-//			var fEnt = this.fieldData[i];
-//			if(fEnt.field == field){
-//				var inp = fEnt['inp_' + form_type];
-//				if(inp == null) break;
-//				if(inp['elm'] == null) break;
-//				var elm = inp['elm'];
-//				fue_id = elm.attr('id');
-//				break;
-//			}
-//		}
-//
-//		// file要素にファイルパスをセットする
-//		this.cbFileUploadComp.setFilePaths(fue_id,fp);
-//
-//
-//	}
-	
-	
 
 	/**
 	 * フィールド名を指定してフィールドエンティティを取得する

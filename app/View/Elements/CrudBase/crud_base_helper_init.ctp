@@ -5,6 +5,4 @@ $this->CrudBase->init(array(
 		'model_name'=>$model_name_c,
 		'bigDataFlg'=>$bigDataFlg,
 		'debug_mode'=>$debug_mode,
-		'dp_tmpl'=>$dp_tmpl,
-		'viaDpFnMap'=>$viaDpFnMap,
 ));

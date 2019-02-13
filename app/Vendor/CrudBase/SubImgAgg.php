@@ -16,7 +16,6 @@ class SubImgAgg {
 	 * @param array $param パラメータ
 	 *  - note_field ノートフィールド名
 	 *  - img_field 画像フィールド名
-	 *  - img_via_dp_field 画像経由パスフィールド名
 	 * @return array 集約後のデータ
 	 */
 	public function agg(&$data, $param){
@@ -24,8 +23,7 @@ class SubImgAgg {
 		// パラメータの初期化
 		if(empty($param['note_field'])) $param['note_field'] = 'note';
 		if(empty($param['img_field'])) $param['img_field'] = 'img_fn';
-		if(empty($param['img_via_dp_field'])) $param['img_via_dp_field'] = 'via_dp';
-		
+
 		// データを集約する
 		$data2 = $this->aggByNote($data,$param);
 		
@@ -76,7 +74,6 @@ class SubImgAgg {
 	 * @param array $data
 	 * @param array $param パラメータ
 	 *  - img_field 画像フィールド名
-	 *  - img_via_dp_field 画像経由パスフィールド名
 	 * @return array サブ画像リストHTMLをセットした$data
 	 */
 	private function makeSubImgListHtml(&$data,&$param){

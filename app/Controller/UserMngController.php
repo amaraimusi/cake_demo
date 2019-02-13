@@ -46,15 +46,6 @@ class UserMngController extends CrudBaseController {
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
 	public $this_page_version = '1.9.1';
-	
-	/// リソース保存先・ディレクトリパス・テンプレート
-	public $dp_tmpl = 'rsc/img/%field/%via_dp/%dn/';
-	
-	/// 経由パスマッピング
-	public $viaDpFnMap = array(); // 例　'img_fn'=>'img_via_dp'
-	//public $viaDpFnMap = array('img_fn'=>'user_mng_group');
-
-
 
 	public function beforeFilter() {
 
@@ -180,11 +171,6 @@ class UserMngController extends CrudBaseController {
 		$ent = $this->UserMng->saveEntity($ent,$regParam);
 		$this->UserMng->commit();//コミット
 		
-		// ファイルアップロード関連の一括作業
-		$res = $this->workFileUploads($form_type,$this->dp_tmpl, $this->viaDpFnMap, $ent, $_FILES);
-		if(!empty($res['err_msg'])) $errs[] = $res['err_msg'];
-		
-		
 		if($errs) $ent['err'] = implode("','",$errs); // フォームに表示するエラー文字列をセット
 
 		$json_data=json_encode($ent,true);//JSONに変換
@@ -233,7 +219,7 @@ class UserMngController extends CrudBaseController {
 		if($eliminate_flg == 0){
 			$ent = $this->UserMng->saveEntity($ent,$regParam); // 更新
 		}else{
-			$this->UserMng->eliminateFiles($ent['id'], 'img_fn', $ent, $this->dp_tmpl, $this->viaDpFnMap); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
+			$this->UserMng->eliminateFiles($ent['id'], 'img_fn', $ent); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
 			$this->UserMng->delete($ent['id']); // 削除
 		}
 		$this->UserMng->commit();//コミット

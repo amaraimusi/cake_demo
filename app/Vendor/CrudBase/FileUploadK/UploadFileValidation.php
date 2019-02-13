@@ -21,11 +21,6 @@ class UploadFileValidation{
 	 * @return エラー情報。 正常である場合はnullを返す
 	 */
 	public function checkFiles($files,$permitExts,$permitMimes,$suppData){
-		
-		
-// ■■■□□□■■■□□□■■■□□□
-// 		// オプションのプロパティが未セットなら初期値をセットする
-// 		$option = $this->setOptionIfEmpty($option);
 
 		// 補足データをデータ型に整型する。
 		$suppData = $this->formattingSuppData($suppData,$files);
@@ -207,35 +202,6 @@ class UploadFileValidation{
 		return 1; // プリミティブ型
 		
 	}
-	
-	
-	// ■■■□□□■■■□□□■■■□□□
-// 	/**
-// 	 * オプションのプロパティが未セットなら初期値をセットする
-// 	 * @param array $option オプション
-// 	 * @return array オプション
-// 	 */
-// 	private function setOptionIfEmpty($option){
-// 		if(empty($option)){
-// 			$option = array();
-// 		}else if(!is_array($option)){
-// 			$wamei = $option;
-// 			$option = array('wamei'=>$wamei);
-// 		}
-		
-// 		if(empty($option['wamei'])){
-// 			$option['wamei'] = ' : ';
-// 		}
-		
-// 		if(!isset($option['mime_check_flg'])){
-// 			$option['mime_check_flg'] = 1;
-// 		}
-		
-// 		return $option;
-
-// 	}
-	
-	
 	
 	
 	/**

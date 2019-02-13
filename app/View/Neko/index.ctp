@@ -178,7 +178,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdPlain($ent,'neko_date');
 	$this->CrudBase->tdPlain($ent,'neko_dt');
 	$this->CrudBase->tdFlg($ent,'neko_flg');
-	$this->CrudBase->tdImage1($ent,'img_fn');
+	$this->CrudBase->tdImage($ent,'img_fn');
 	$this->CrudBase->tdNote($ent,'note',50);
 	$this->CrudBase->tdPlain($ent,'sort_no');
 	$this->CrudBase->tdDeleteFlg($ent,'delete_flg');
