@@ -4,4 +4,4 @@ echo '作業ディレクトリ'
 pwd
 gulp CrudBase
 echo "------------ 処理完了"
-cmd /k
+#cmd /k

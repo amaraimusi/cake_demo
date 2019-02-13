@@ -178,7 +178,7 @@ foreach($data as $i=>$ent){
 	$this->CrudBase->tdPlain($ent,'neko_date');
 	$this->CrudBase->tdPlain($ent,'neko_dt');
 	$this->CrudBase->tdFlg($ent,'neko_flg');
-	$this->CrudBase->tdImage($ent,'img_fn');
+	$this->CrudBase->tdImage1($ent,'img_fn');
 	$this->CrudBase->tdNote($ent,'note',50);
 	$this->CrudBase->tdPlain($ent,'sort_no');
 	$this->CrudBase->tdDeleteFlg($ent,'delete_flg');
@@ -249,7 +249,7 @@ foreach($data as $i=>$ent){
 			<div class='cbf_inp_label_long' >画像ファイル名: </div>
 			<div class='cbf_input'>
 				<label for="img_fn_n" class="fuk_label" style="width:100px;height:100px;">
-					<input type="file" id="img_fn_n" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)" />
+					<input type="file" id="img_fn_n" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)"  data-inp-ex='image_fuk' data-fp='' />
 				</label>
 			</div>
 		</div>
@@ -364,7 +364,7 @@ foreach($data as $i=>$ent){
 				<div class='cbf_inp_label_long' >画像ファイル名: </div>
 				<div class='cbf_input'>
 					<label for="img_fn_e" class="fuk_label" style="width:100px;height:100px;">
-						<input type="file" id="img_fn_e" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)" />
+						<input type="file" id="img_fn_e" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)" data-inp-ex='image_fuk' data-fp='' />
 					</label>
 				</div>
 			</div>

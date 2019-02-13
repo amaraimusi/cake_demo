@@ -50,7 +50,7 @@ class NekoController extends CrudBaseController {
 	/// リソース保存先・ディレクトリパス・テンプレート
 	public $dp_tmpl = 'rsc/img/%field/%via_dp/%dn/';
 	
-	/// 経由パスマッピング
+	/// 経由パスマッピング（上記のテンプレートと連動）
 	public $viaDpFnMap = array(); // 例　'img_fn'=>'img_via_dp'
 	//public $viaDpFnMap = array('img_fn'=>'neko_group');
 
@@ -147,6 +147,7 @@ class NekoController extends CrudBaseController {
 		$this->set(array('nekoGroupList' => $nekoGroupList,'neko_group_json' => $neko_group_json));
 		// CBBXE
 		
+		
 // 		// ▼ サブ画像集約ライブラリ
 // 		App::uses('SubImgAgg', 'Vendor/CrudBase');
 // 		$subImgAgg = new SubImgAgg();
@@ -185,7 +186,6 @@ class NekoController extends CrudBaseController {
 		App::uses('Sanitize', 'Utility');
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		$errs = array(); // エラーリスト
-		
 
 // 		// 認証中でなければエラー
 // 		if(empty($this->Auth->user())){
@@ -208,8 +208,17 @@ class NekoController extends CrudBaseController {
 
 		// CBBXS-1024
 		
-		// アップロードファイル名を変換する。
-		$ent = $this->convUploadFileName($ent,$_FILES);
+		// テンプレートからファイルパスを組み立てる
+		//debug($ent['img_fn']);//■■■□□□■■■□□□■■■□□□)
+		$ent['img_fn'] = $this->makeFilePath($_FILES, 'rsc/img/%field/y%Y/m%m/orig/%Y%m%d%H%i%s_%fn', $ent, 'img_fn');
+		//debug($ent['img_fn']);//■■■□□□■■■□□□■■■□□□)
+		//if(empty($ent['img_fn'])) unset($ent['img_fn']);
+		
+		// ■■■□□□■■■□□□■■■□□□
+// 		// アップロードファイル名を変換する。
+// 		$ent = $this->convUploadFileName($ent,$_FILES);
+		
+
 		
 		// CBBXE
 
@@ -221,10 +230,15 @@ class NekoController extends CrudBaseController {
 		$ent = $this->Neko->saveEntity($ent,$regParam);
 		$this->Neko->commit();//コミット
 		
-		// ファイルアップロード関連の一括作業
-		$res = $this->workFileUploads($form_type,$this->dp_tmpl, $this->viaDpFnMap, $ent, $_FILES);
-		if(!empty($res['err_msg'])) $errs[] = $res['err_msg'];
+		// ファイルアップロード関連の一括作業// ■■■□□□■■■□□□■■■□□□
+		//$res = $this->workFileUploads($form_type,$this->dp_tmpl, $this->viaDpFnMap, $ent, $_FILES);
 		
+		// ファイルアップロードの一括作業
+		App::uses('FileUploadK','Vendor/CrudBase/FileUploadK');
+		$fileUploadK = new FileUploadK();
+		$res = $fileUploadK->putFile1($_FILES, 'img_fn', $ent['img_fn']);
+		
+		if(!empty($res['err_msg'])) $errs[] = $res['err_msg'];
 		
 		if($errs) $ent['err'] = implode("','",$errs); // フォームに表示するエラー文字列をセット
 
@@ -250,7 +264,7 @@ class NekoController extends CrudBaseController {
 	public function ajax_delete(){
 		App::uses('Sanitize', 'Utility');
 	
-// 		$this->autoRender = false;//ビュー(ctp)を使わない。
+ 		$this->autoRender = false;//ビュー(ctp)を使わない。
 // 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 	
 		// JSON文字列をパースしてエンティティを取得する

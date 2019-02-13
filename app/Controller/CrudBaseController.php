@@ -1855,5 +1855,53 @@ class CrudBaseController extends AppController {
 		return false;
 	}
 	
+	/**
+	 * テンプレートからファイルパスを組み立てる
+	 * @param array $FILES $_FILES
+	 * @param string $path_tmpl ファイルパステンプレート
+	 * @param array $ent エンティティ
+	 * @param string $field
+	 * @param string $date 
+	 * @return string ファイルパス
+	 */
+	protected function makeFilePath(&$FILES, $path_tmpl, $ent, $field, $date=null){
+		
+		// $_FILESにアップロードデータがなければ、既存ファイルパスを返す
+		if(empty($FILES[$field])){
+			return $ent[$field];
+		}
+
+		$fp = $path_tmpl;
+		
+		// ファイル名を置換
+		$fn = $FILES[$field]['name']; // ファイル名を取得
+		$fp = str_replace('%fn', $fn, $fp);
+		
+		// フィールドを置換
+		$fp = str_replace('%field', $field, $fp);
+
+		// 日付が空なら現在日時をセットする
+		if(empty($date)){
+			$date = date('Y-m-d H:i:s');
+		}
+		$u = strtotime($date);
+		$Y = date('Y',$u);
+		$m = date('m',$u);
+		$d = date('d',$u);
+		$H = date('H',$u);
+		$i = date('i',$u);
+		$s = date('s',$u);
+		
+		$fp = str_replace('%Y', $Y, $fp);
+		$fp = str_replace('%m', $m, $fp);
+		$fp = str_replace('%d', $d, $fp);
+		$fp = str_replace('%H', $H, $fp);
+		$fp = str_replace('%i', $i, $fp);
+		$fp = str_replace('%s', $s, $fp);
+		
+		return $fp;
+	
+	}
+	
 
 }

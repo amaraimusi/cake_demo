@@ -40,6 +40,55 @@ class FileUploadK{
 	
 	
 	/**
+	 * ファイル配置　シンプル型
+	 * @param array $FILES $_FILES
+	 * @param string $filed フィールド
+	 * @param string $fp ファイルパス
+	 */
+	public function putFile1(&$FILES, $filed, $fp){
+		
+		if(empty($fp)) return;
+		
+		// ファイルパスからファイル名とディレクトリパスを取得する
+		$pathInfo = pathinfo($fp);
+		$fn = $pathInfo['basename'];
+		$dp = $pathInfo['dirname'];
+		
+		// ディレクトリパスからmidディレクトリパスとthumディレクトリパスを作成する。
+		$ary=explode("/", $dp);
+		end($ary); // 配列の内部ポインタを末尾に移動する
+		$last_key = key($ary); // 末尾のキーを取得
+		$ary[$last_key] = 'mid';
+		$mid_dp = join("/", $ary); // midディレクトリパスを作成
+		$ary[$last_key] = 'thum';
+		$thum_dp = join("/", $ary); // thumディレクトリパスを作成
+		
+		// ファイル保管ディレクトリ情報にパラメータをセットする
+		$dpDatas[$filed] = array(
+				'fn' => $fn,
+				'orig_dp' => $dp,
+				'thums' => array(
+					0 => array(
+							'thum_dp' => $thum_dp,
+							'thum_width' => 64,
+							'thum_height' => 64,
+							),
+					1 => array(
+							'thum_dp' => $mid_dp,
+							'thum_width' => 480,
+							'thum_height' => null,
+							),
+					)
+		);
+		
+		// ファイルアップロードの一括作業
+		$option['dpDatas'] = $dpDatas;
+		$res = $this->workAllAtOnce($FILES,$option);
+		
+	}
+	
+	
+	/**
 	 * 一括作業
 	 * @param array $files2 $_FILES
 	 * @param array $option オプション

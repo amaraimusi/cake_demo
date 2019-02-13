@@ -27,6 +27,8 @@ class CbFileUploadComponent extends Component{
 		parent::__construct($collection);
 
 	}
+	
+	
 	/**
 	 * アップロードファイル名を変換する。
 	 * @param array $ent 更新データのエンティティ

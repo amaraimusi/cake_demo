@@ -202,40 +202,56 @@ class CbFileUploadComponent{
 	}
 	
 	
+//	/**// ■■■□□□■■■□□□■■■□□□
+//	 * file要素にファイルパスをセットする
+//	 * @param string fue_id file要素のid
+//	 * @param array fn ファイル名リスト（ ファイル名一つを文字列指定可）
+//	 * @param object option addEventのoptionと同じ
+//	 */
+//	setFilePaths(fue_id,fns,via_dps,option){
+//		
+//		if(typeof fns == 'string') fns = [fns];
+//		if(via_dps == null) via_dps = [''];
+//		if(typeof via_dps == 'string') via_dps = [via_dps];
+//
+//		var field = this._fudIdToField(fue_id); // file要素idからフィールドに変換する。
+//		var dp = this.dpData[field]['mid']; // ディレクトリパスを取得
+//		
+//		
+//
+//		// ファイルパスリストを組み立て
+//		var fps = [];
+//		for(var i in fns){
+//			var fn = fns[i];
+//			var via_dp = via_dps[i];
+//			var fp = this._joinDpFn(dp,via_dp,fn); // ディレクトリとファイル名を連結してファイルパスを作成
+//			fps.push(fp);
+//		}
+//		
+//		// file要素にファイルパスをセットする
+//		this.fileUploadK.setFilePaths(fue_id,fps,option);
+//		
+//		var res = {'fps':fps};
+//		
+//		return res;
+//		
+//		
+//	}
+	
+	
 	/**
 	 * file要素にファイルパスをセットする
 	 * @param string fue_id file要素のid
-	 * @param array fn ファイル名リスト（ ファイル名一つを文字列指定可）
+	 * @param array fps ファイル名リスト（ ファイル名一つを文字列指定可）
 	 * @param object option addEventのoptionと同じ
 	 */
-	setFilePaths(fue_id,fns,via_dps,option){
-		
-		if(typeof fns == 'string') fns = [fns];
-		if(via_dps == null) via_dps = [''];
-		if(typeof via_dps == 'string') via_dps = [via_dps];
+	setFilePaths(fue_id,fps,option){
 
-		var field = this._fudIdToField(fue_id); // file要素idからフィールドに変換する。
-		var dp = this.dpData[field]['mid']; // ディレクトリパスを取得
-		
-		
-
-		// ファイルパスリストを組み立て
-		var fps = [];
-		for(var i in fns){
-			var fn = fns[i];
-			var via_dp = via_dps[i];
-			var fp = this._joinDpFn(dp,via_dp,fn); // ディレクトリとファイル名を連結してファイルパスを作成
-			fps.push(fp);
-		}
-		
 		// file要素にファイルパスをセットする
-		this.fileUploadK.setFilePaths(fue_id,fps,option);
-		
-		var res = {'fps':fps};
-		
+		var res = this.fileUploadK.setFilePaths(fue_id,fps,option);
+
 		return res;
-		
-		
+
 	}
 	
 	
@@ -354,20 +370,20 @@ class CbFileUploadComponent{
 	 * @return FileData FD
 	 */
 	setFilesToFd(fd,form_type){
-		
+
 		var box = this.fileUploadK.box;
 
 		for(var fu_id in box){
+
 			var fieldInfo = this._getFieldInfoFromFuKey(fu_id); // fu_keyからフィールドInfoを取得する
 			if(fieldInfo.form_type != form_type) continue;
-			
+
 			var files = box[fu_id]['files']; // FDにセット予定のファイルオブジェクトを取得する
 			if(files == null) continue;
 			if(files[0] == null) continue;
 			
 			var fileData = box[fu_id]['fileData']; // エラーチェックのためにフィールドデータを取得 （フィールドデータにはFU要素やDnD由来のMIME,サイズ、ファイル名がセットされている。）
 			if(fileData[0] == null) continue;
-			
 			var fEnt = fileData[0]; // フィールドエンティティを取得 (単一アップロードなので一行目のみ取得)
 			if(fEnt.err_flg == false){ // エラーでない場合
 				fd.append(fieldInfo.field, files[0]); // FDにファイルオブジェクトをセットする

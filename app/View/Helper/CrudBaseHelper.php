@@ -985,9 +985,45 @@ class CrudBaseHelper extends FormHelper {
 
 	}
 	
+	/**
+	 * 画像TD要素出力 1型
+	 * 値は画像ファイルパスの方式に対応
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 */
+	public function tdImage1(&$ent, $field){
+		
+		$orig_fp = $ent[$field];
+		$href = '';
+		$thum_src = '';
+		
+		if(!empty($orig_fp)){
+			$href = $orig_fp;
+			$thum_src = str_replace('/orig/', '/thum/', $orig_fp);
+		}else{
+			$href = 'javascript void(0)';
+			$thum_src = 'img/icon/none.gif';
+		}
+		
+		$td_html = "
+			<td>
+				<input type='hidden' name='{$field}' value='{$orig_fp}' data-inp-ex='image1'>
+				<label for='{$field}'>
+					<a href='{$href}' target='brank'>
+						<img src='{$thum_src}' >
+					</a>
+				</label>
+			</td>
+		";
+
+		$this->setTd($td_html,$field);
+		
+	}
+	
 	
 	
 	/**
+	 * 非推奨 // ■■■□□□■■■□□□■■■□□□
 	 * 画像TD要素出力オプションの初期化
 	 *
 	 * @note
@@ -1003,6 +1039,7 @@ class CrudBaseHelper extends FormHelper {
 	}
 	
 	/**
+	 * 非推奨 //　■■■□□□■■■□□□■■■□□□
 	 * サムネイル画像のTD要素を出力する。（オリジナル画像へのリンクあり）
 	 * @param array $ent エンティティ
 	 * @param string $field ﾌｨｰﾙﾄﾞ

@@ -384,38 +384,6 @@ class CrudBase{
 		
 	}
 
-// ■■■□□□■■■□□□■■■□□□
-//	/**
-//	 * ガシェット・コンポーネントのファクトリーメソッド
-//	 * @return CrudBaseGadgetKj ガシェット・コンポーネント
-//	 */
-//	_factoryCrudBaseGadgetKj(){
-//		
-//		var cbGadgetKj;
-//
-//		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
-//		var t = typeof CrudBaseGadgetKj;
-//		if(t == null || t == 'undefined'){
-//			// 「空」実装
-//			cbGadgetKj = {
-//					'reset':function(){}
-//			}
-//			return cbGadgetKj
-//		}
-//		
-//		// 検索条件入力要素にガシェットを組み込む
-//		var kjElms = this.getKjElms(); // 検索条件入力要素リストを取得する
-//		cbGadgetKj = new CrudBaseGadgetKj(kjElms); // ガシェット管理クラス
-//		cbGadgetKj.onGadgetsToElms();// 各検索入力要素にガシェットを組み込み
-//		
-//		this.datepicker_ja(); // jQuery UIカレンダーを日本語化する
-//		jQuery.datetimepicker.setLocale('ja');// 日時ピッカーを日本語化<jquery.datetimepicker.full.min.js>
-//
-//		return cbGadgetKj;
-//
-//	}
-	
-
 	
 	/**
 	 * CrudBase・ファイルアップロードコンポーネントのファクトリーメソッド
@@ -980,7 +948,7 @@ class CrudBase{
 		}
 
 		// 登録パラメータにセット
-		var form_type = this.getValueFromForm(form,'form_type');// フォーム種別
+		var form_type = this.getValueFromForm(form,'form_type');// フォーム種別 (新規入力 or 複製)
 		regParam['form_type'] = form_type;
 		regParam['ni_tr_place'] = this.param.ni_tr_place;// 新規入力追加場所フラグ
 	
@@ -1111,7 +1079,6 @@ class CrudBase{
 		
 		var reg_param_json = JSON.stringify(regParam);
 		fd.append('reg_param_json',reg_param_json);
-
 		
 		jQuery.ajax({
 			type: "post",
@@ -1123,7 +1090,7 @@ class CrudBase{
 			contentType: false,
 
 		}).done((str_json, type) => {
-			
+
 			this._toggleRegBtn('edit',1);// 登録ボタンを押せるようにする
 			
 			var ent = null;
@@ -1161,19 +1128,18 @@ class CrudBase{
 				// TR要素にエンティティの値をセットする
 				this._setEntityToEditTr(ent,tr);
 
+
 				// 登録後にコールバック関数を非同期で実行する
 				if(afterCallBack != null){
 					window.setTimeout(()=>{
 						afterCallBack(ent);
 					}, 1);
 				}
-				
+
 				// 編集後の行は青くする
 				tr.css('background-color','#d7e6fd');
 	
 				this.closeForm('edit');// フォームを閉じる
-				
-
 			}
 
 		}).fail((jqXHR, statusText, errorThrown) => {
@@ -2179,8 +2145,9 @@ class CrudBase{
 		this.entToBinds(tr,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
 		this.entToBinds(tr,ent,'name',option);// エンティティをname属性バインド要素群へセットする
 		
-		// 画像をTR要素に表示する
-		this.cbFileUploadComp.setImageToTr(tr,ent,this.param.viaDpFnMap);
+		// 画像をTR要素に表示する // ■■■□□□■■■□□□■■■□□□
+		// this.cbFileUploadComp.setImageToTr(tr,ent,this.param.viaDpFnMap); ■■■□□□■■■□□□■■■□□□
+		
 	}
 
 	_nl2brEx(v){
@@ -2344,6 +2311,18 @@ class CrudBase{
 	_getEntByForm2(inp,form,f){
 
 		var tagName = inp.get(0).tagName; // 入力要素のタグ名を取得する
+		
+		// 入力拡張コードを取得する
+		var inp_ex = inp.attr('data-inp-ex');
+		
+		if(inp_ex){
+			switch(inp_ex){
+				case 'image1': // 画像1型
+					return inp.attr('data-fp');
+				case 'image_fuk': // 画像1型
+					return inp.attr('data-fp');
+			}
+		}
 
 		// 値を取得する
 		var v = null;
@@ -2722,20 +2701,37 @@ class CrudBase{
 			xss = res.xss;
 		}
 		
+		// 拡張型の入力要素への反映
+		var inp_ex = elm.attr('data-inp-ex');
+		if(inp_ex){
+			switch(inp_ex){
+			case 'image1':
+				console.log('test=Ａ1');//■■■□□□■■■□□□■■■□□□)
+				this._setEntToImage1(elm, field, val1); // 画像1型
+				break;
+			case 'image_fuk':
+				console.log('test=Ａ2');//■■■□□□■■■□□□■■■□□□)
+				this._setEntToImageFuk(elm, field, val1); // 画像FUK型
+				break;
+			}
+			return;
+		}
+		
 		// 値を入力フォームにセットする。
 		if(tag_name == 'INPUT' || tag_name == 'SELECT'){
 
 			// type属性を取得
 			var typ = elm.attr('type');
 
-			if(typ=='file'){
+			// ■■■□□□■■■□□□■■■□□□
+//			if(typ=='file'){
+//
+//				// アップロードファイル要素用の入力フォームセッター
+//				this._setToFormForFile(option.form_type,option.par,field,val1,ent,option);
+//
+//			}
 
-				// アップロードファイル要素用の入力フォームセッター
-				this._setToFormForFile(option.form_type,option.par,field,val1,ent,option);
-
-			}
-
-			else if(typ=='checkbox'){
+			if(typ=='checkbox'){
 				if(val1 ==0 || val1==null || val1==''){
 					elm.prop("checked",false);
 				}else{
@@ -2790,6 +2786,81 @@ class CrudBase{
 		
 		
 	}
+	
+	
+	/**
+	 * 画像1型
+	 * @param jQuery elm 入力要素
+	 * @param string field フィールド
+	 * @param string fp 画像パス
+	 */
+	_setEntToImage1(elm, field, fp){
+		
+		// 画像1型のHTML構造
+		//	<td>
+		//		<input type='hidden' name='{$field}' value='{$orig_fp}' data-inp-ex='image1' data-fp='' >
+		//		<label for='{$field}'>
+		//			<a href='{$href}' target='brank'>
+		//				<img src='{$thum_src}' >
+		//			</a>
+		//		</label>
+		//	</td>
+		
+		elm.val(fp);
+		
+		var orig_href = '';
+		var img_src = '';
+		if(this._empty(fp)){
+			orig_href = "javascript void(0)";
+			img_src = "img/icon/none.gif";
+		}else{
+			orig_href = fp;
+			img_src = fp.replace('/orig/', '/thum/');
+		}
+		
+		// 弟要素のlabelを取得
+		var label = elm.next();
+		
+		// アンカー要素をlabelから取得し、ファイルパスをセットする
+		var aElm = label.find('a');
+		aElm.attr('href', orig_href);
+		
+		// IMG要素にサムネイルパスをセットする
+		var imgElm = aElm.children().eq(0);	// IMG要素を取得
+		imgElm.attr('src', img_src);
+		
+		elm.attr('data-fp', fp); // 「type='file'」に対応
+
+		// ■■■□□□■■■□□□■■■□□□
+//		var fue_id = null;
+
+//		// file要素にファイルパスをセットする
+//		this.cbFileUploadComp.setFilePaths(fue_id, fp);
+
+	}
+	
+	
+	/**
+	 * 画像FUK型
+	 * @param jQuery elm 入力要素
+	 * @param string field フィールド
+	 * @param string fp 画像パス
+	 */
+	_setEntToImageFuk(elm, field, fp){
+		
+		elm.attr('data-fp', fp); // 「type='file'」に対応
+
+		var fue_id = elm.attr('id');
+		
+		console.log('test=Ａ3');//■■■□□□■■■□□□■■■□□□)
+		console.log('fue_id=' + fue_id);//■■■□□□■■■□□□■■■□□□)
+		console.log(fp);//■■■□□□■■■□□□■■■□□□)
+
+		// file要素にファイルパスをセットする
+		this.cbFileUploadComp.setFilePaths(fue_id, fp);
+
+	}
+	
 	
 	/**
 	 * 値に表示フィルターをかける
@@ -2944,43 +3015,42 @@ class CrudBase{
 	}
 	
 
-	/**
-	 * アップロードファイル要素用の入力フォームセッター
-	 * @param string form_type フォーム種別
-	 * @param jQuery form フォーム要素
-	 * @param string field フィールド
-	 * @param variant v 値
-	 * @param ent データのエンティティ
-	 * @param object option editShow(),newInpShowからのoption 
-	 */
-	_setToFormForFile(form_type,form,field,v,ent,option){
 
-		// ▼フィールドに紐づくfile要素のid属性を取得する
-		var fue_id = null; // file要素のid属性
-		for(var i in this.fieldData){
-			var fEnt = this.fieldData[i];
-			if(fEnt.field == field){
-				var inp = fEnt['inp_' + form_type];
-				if(inp == null) break;
-				if(inp['elm'] == null) break;
-				var elm = inp['elm'];
-				fue_id = elm.attr('id');
-				break;
-			}
-		}
-		
-		// ▼経由ディレクトリパスを取得
-		var via_dp = '';
-		if(this.param.viaDpFnMap[field] != null){
-			var via_dp_field = this.param.viaDpFnMap[field];
-			via_dp = ent[via_dp_field];
-		}
-		
-		// file要素にファイルプレビューを表示する
-		var res = this.cbFileUploadComp.setFilePaths(fue_id,v,via_dp);
-		var dpData = res['dpData']
-
-	}
+	
+// ■■■□□□■■■□□□■■■□□□
+//	/**
+//	 * アップロードファイル要素用の入力フォームセッター
+//	 * @param string form_type フォーム種別
+//	 * @param jQuery form フォーム要素
+//	 * @param string field フィールド
+//	 * @param variant v 値
+//	 * @param ent データのエンティティ
+//	 * @param object option editShow(),newInpShowからのoption 
+//	 */
+//	_setToFormForFile(form_type, form, field, fp, ent, option){
+//		
+//		
+//		// ▼ fue_idの取得 | フィールドに紐づくfile要素のid属性を取得する
+//		var fue_id = null; // file要素のid属性
+//		for(var i in this.fieldData){
+//			var fEnt = this.fieldData[i];
+//			if(fEnt.field == field){
+//				var inp = fEnt['inp_' + form_type];
+//				if(inp == null) break;
+//				if(inp['elm'] == null) break;
+//				var elm = inp['elm'];
+//				fue_id = elm.attr('id');
+//				break;
+//			}
+//		}
+//
+//		// file要素にファイルパスをセットする
+//		this.cbFileUploadComp.setFilePaths(fue_id,fp);
+//
+//
+//	}
+	
+	
 
 	/**
 	 * フィールド名を指定してフィールドエンティティを取得する
@@ -4254,14 +4324,10 @@ class CrudBase{
 	 * @param string hyo_elm_id 表要素ID   複数の表IDを指定するときはコンマで連結する
 	 */
 	reactInit(hyo_elm_id){		
-		// ■■■□□□■■■□□□■■■□□□
+
 		var d1 = new Date();
 		var t1 = d1.getTime();
-		
 
-//		console.log('this.fieldData');//■■■□□□■■■□□□■■■□□□)
-//		console.log(this.fieldData);//■■■□□□■■■□□□■■■□□□)
-//		
 		// フィールド配列を取得する
 		var fields = this._getFields();
 		
@@ -4271,7 +4337,7 @@ class CrudBase{
 		var d2 = new Date();
 		var t2 = d1.getTime();
 		var t3 = t2 - t1;
-		console.log('タイム：' + t3);//■■■□□□■■■□□□■■■□□□)
+
 	}
 	
 	/**
