@@ -8,8 +8,8 @@ App::uses('PagenationForCake', 'Vendor/CrudBase');
  * @note
  * ネコ画面ではネコ一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2018-10-10
- * @version 3.2.2
+ * @date 2015-9-16 | 2019-2-17
+ * @version 3.2.3
  *
  */
 class NekoController extends CrudBaseController {
@@ -233,11 +233,9 @@ class NekoController extends CrudBaseController {
 	 * また、DBから実際に削除する抹消にも対応している。
 	 */
 	public function ajax_delete(){
-		App::uses('Sanitize', 'Utility');
-	
+
  		$this->autoRender = false;//ビュー(ctp)を使わない。
-// 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
-	
+
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
 		$ent0 = json_decode($json,true);
@@ -263,11 +261,10 @@ class NekoController extends CrudBaseController {
 			$this->Neko->delete($ent['id']); // 削除
 		}
 		$this->Neko->commit();//コミット
+		
+		$json_str =json_encode($ent);//JSONに変換
 	
-		$ent=Sanitize::clean($ent, array('encode' => true));//サニタイズ（XSS対策）
-		$json_data=json_encode($ent);//JSONに変換
-	
-		return $json_data;
+		return $json_str;
 	}
 	
 	

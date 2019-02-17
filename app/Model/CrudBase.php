@@ -3,8 +3,8 @@
 /**
  * CrudBaseのロジッククラス
  * 
- * @version 2.3.0
- * @date 2016-1-21 | 2018-10-8
+ * @version 2.3.1
+ * @date 2016-1-21 | 2019-2-17
  * @history
  * 2018-10-8 v2.2.0 アップロードファイル関連の大幅修正
  * 2018-10-3 v2.2.0 アップロードファイルの抹消処理を追加
@@ -533,7 +533,10 @@ class CrudBase{
 			// ▼ファイルパスリストをループし、ファイルパスに紐づくファイルを削除する。
 			$fps = $delEnt['fps'];
 			foreach($fps as $fp){
-				unlink($fp);
+				if(file_exists($fp)){
+					unlink($fp);
+					
+				}
 			}
 			 
 		}
