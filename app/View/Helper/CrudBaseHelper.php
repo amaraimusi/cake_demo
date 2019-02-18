@@ -977,10 +977,11 @@ class CrudBaseHelper extends FormHelper {
 	 * 値は画像ファイルパスの方式に対応
 	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
+	 * @param string $midway_dp 中間ディレクトリパス
 	 */
-	public function tdImage(&$ent, $field){
+	public function tdImage(&$ent, $field, $midway_dp = ''){
 		
-		$orig_fp = $ent[$field];
+		$orig_fp = $midway_dp . $ent[$field];
 		$href = '';
 		$thum_src = '';
 		
