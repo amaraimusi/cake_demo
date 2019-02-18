@@ -16,6 +16,7 @@ class SubImgAgg {
 	 * @param array $param パラメータ
 	 *  - note_field ノートフィールド名
 	 *  - img_field 画像フィールド名
+	 *  - midway_dp 中間ディレクトリパス
 	 * @return array 集約後のデータ
 	 */
 	public function agg(&$data, $param){
@@ -23,12 +24,15 @@ class SubImgAgg {
 		// パラメータの初期化
 		if(empty($param['note_field'])) $param['note_field'] = 'note';
 		if(empty($param['img_field'])) $param['img_field'] = 'img_fn';
+		if(empty($param['midway_dp'])) $param['midway_dp'] = '../';
 
 		// データを集約する
 		$data2 = $this->aggByNote($data,$param);
 		
 		// サブ画像リストHTMLを作成
-		$data2 = $this->makeSubImgListHtml($data2,$param);
+		$data2 = $this->makeSubImgListHtml($data2, $param);
+		
+		
 
 		return $data2;
 	}
@@ -74,13 +78,35 @@ class SubImgAgg {
 	 * @param array $data
 	 * @param array $param パラメータ
 	 *  - img_field 画像フィールド名
+	 *  - midway_dp 中間ディレクトリパス
 	 * @return array サブ画像リストHTMLをセットした$data
 	 */
 	private function makeSubImgListHtml(&$data,&$param){
 		
+		$img_field = $param['img_field']; // 画像パスのフィールド
+		$midway_dp = $param['midway_dp'];
 		
 		foreach($data as &$ent){
 			
+			$sub_img_list_html = "";
+			if(empty($ent['childs'])){
+				$ent['sub_img_list_html'] = $sub_img_list_html;
+				
+			}else{
+				$sub_img_list_html = "<td class='td_sub_img_list td_image'>";
+				foreach($ent['childs'] as $cEnt){
+					$orig_fp = $midway_dp . $cEnt[$img_field];
+					$mid_fp = str_replace('/orig/', '/mid/', $orig_fp);
+					$sub_img_list_html .= "
+						<div style='display:inline-block'>
+							<img src='{$mid_fp}' class='' style='width: 160px; height: 160px;'><br>
+							<a href='{$orig_fp}' class='btn btn-link btn-xs' target='blank'>拡大</a>
+						</div>
+					";
+				}
+				$sub_img_list_html .= "</td>";
+				$ent['sub_img_list_html'] = $sub_img_list_html;
+			}
 		}
 		unset($ent);
 		
