@@ -204,10 +204,12 @@ class NekoController extends CrudBaseController {
 		$ent = $this->Neko->saveEntity($ent,$regParam);
 		$this->Neko->commit();//コミット
 
+		// CBBXS-1025
 		// ファイルアップロードの一括作業
 		App::uses('FileUploadK','Vendor/CrudBase/FileUploadK');
 		$fileUploadK = new FileUploadK();
 		$res = $fileUploadK->putFile1($_FILES, 'img_fn', $ent['img_fn']);
+		// CBBXE
 		
 		if(!empty($res['err_msg'])) $errs[] = $res['err_msg'];
 		
