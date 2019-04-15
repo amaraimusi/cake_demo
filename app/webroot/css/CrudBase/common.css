@@ -248,7 +248,7 @@ border-radius: 35px;
 	display:inline-block;
 	margin-right:0px;
 }
-.cbf_inp_wrap_long .cbf_input input{
+.cbf_inp_wrap_long .cbf_input input[type='text']{
 	width:100%;
 }
 .cbf_inp_wrap_long .cbf_input textarea{

@@ -420,7 +420,7 @@ foreach($data as $i=>$ent){
 			<div class="cbf_inp_wrap_long">
 				<div class='cbf_inp_label' >備考： </div>
 				<div class='cbf_input'>
-					<textarea name="note" maxlength="1000" title="1000文字以内で入力してください" style="height:100px;width:100%"></textarea>
+					<textarea name="note" maxlength="1000" title="1000文字以内で入力してください" data-folding-ta="40" style="height:100px;width:100%"></textarea>
 					<label class="text-danger" for="note"></label>
 				</div>
 			</div>

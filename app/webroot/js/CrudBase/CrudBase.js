@@ -12,8 +12,8 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2019-2-19
- * @version 2.7.6
+ * @date 2016-9-21 | 2019-4-15
+ * @version 2.7.7
  * @histroy
  * 2018-10-21 v2.6.6 検索をGETクエリ方式にする
  * 2018-10-21 v2.6.0 フォームをアコーディオン形式にする。
@@ -128,6 +128,12 @@ class CrudBase{
 		});
 		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
+		
+		// 折り畳みテキストエリア | FoldingTa.js
+		this.foldingTaE = new FoldingTa();
+		this.foldingTaE.init({'form_slt':'#ajax_crud_edit_form'});
+		this.foldingTaN = new FoldingTa();
+		this.foldingTaN.init({'form_slt':'#ajax_crud_new_inp_form'});
 		
 		// テーブル変形
 		if(this.param.device_type == 'sp') this.tableTransform(1);
@@ -649,8 +655,8 @@ class CrudBase{
 			
 		}
 		
-		// パスワード編集機能
-		this.crudBasePasswordEdit.showForm('new_inp');
+		this.crudBasePasswordEdit.showForm('new_inp'); // パスワード編集機能
+		this.foldingTaN.reflection(); // 折り畳み式テキストエリアに反映
 		
 	}
 
@@ -706,8 +712,9 @@ class CrudBase{
 			this._showForm(form,elm,option);			
 		}
 
-		// パスワード編集機能
-		this.crudBasePasswordEdit.showForm('edit');
+		
+		this.crudBasePasswordEdit.showForm('edit'); // パスワード編集機能
+		this.foldingTaE.reflection(); // 折り畳み式テキストエリアに反映
 
 	}
 
