@@ -441,7 +441,6 @@ foreach($data as $i=>$ent){
 					生成日時: <span class="created"></span><br>
 					ユーザー名: <span class="update_user"></span><br>
 					IPアドレス: <span class="ip_addr"></span><br>
-					ユーザーエージェント: <span class="user_agent"></span><br>
 				</aside>
 			</div>
 		</div>
