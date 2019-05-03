@@ -4,7 +4,7 @@
  * @note リクエストを1件ずつ、実行するバッチ処理
  * 
  * @date 2019-4-23 | 2019-5-3
- * @version 1.1.0
+ * @version 1.1.1
  */
 class ReqBatch{
 	
@@ -291,7 +291,8 @@ class ReqBatch{
 	asynSuccess(res){
 		// 非同期処理レスポンスコールバック
 		if(this.param.asyn_res_cb){
-			this.param.asyn_res_cb(res);
+			var index = this.main_index - 1;
+			this.param.asyn_res_cb(index , res);
 		}
 
 		this._successCountAndShow(); // 成功数えと表示
