@@ -3,8 +3,8 @@
  * 
  * @note リクエストを1件ずつ、実行するバッチ処理
  * 
- * @date 2019-4-23 | 2019-5-3
- * @version 1.1.1
+ * @date 2019-4-23 | 2019-5-4
+ * @version 1.1.3
  */
 class ReqBatch{
 	
@@ -18,6 +18,7 @@ class ReqBatch{
 	 *  - interval インターバル(ミリ秒） デフォルト1000ms
 	 *  - fail_limit 失敗限界数   失敗数が失敗限界数を超えると強制停止
 	 *  - asyn_res_cb function 非同期処理レスポンスコールバック
+	 *  - asyn_param 非同期コールバックに付加するパラメータ
 	 *  - complete_cb 完了コールバック
 	 */
 	init(param){
@@ -42,6 +43,7 @@ class ReqBatch{
 		if(param['interval'] == null) param['interval'] = 1000;
 		if(param['ajax_url'] == null && param['asyn_cb'] == null) throw new Error("Empty 'ajax_url' and 'asyn_cb' !");
 		if(param['fail_limit'] == null) param['fail_limit'] = 5;
+		if(param['asyn_param'] == null) param['asyn_param'] = null;
 		
 		
 		return param;
@@ -59,6 +61,7 @@ class ReqBatch{
 		// 当機能のHTMLを作成および埋込
 		var html = this._createHtml(); 
 		this.tDiv.html(html);
+		this.tDiv.show();
 		
 		// ▼機能や区分の要素を取得
 		this.successDiv = this.tDiv.find('.req_batch_success'); // 成功メッセージ
@@ -182,7 +185,7 @@ class ReqBatch{
 			// 外・非同期処理が設定されていれば実行
 			if(this.param.asyn_cb){
 				var ent = this.data[this.main_index];
-				this.param.asyn_cb(this.main_index, ent); // 外・非同期処理
+				this.param.asyn_cb(this.main_index, ent, this.param.asyn_param); // 外・非同期処理
 				
 			}else{
 				this._asynForInner(); // 内・非同期処理を実行
