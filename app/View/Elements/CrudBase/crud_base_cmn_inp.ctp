@@ -1,5 +1,5 @@
 
-<div id="hiddens_data" style="display:none">
+<div id="hiddens_data" >
 <?php
 
 
@@ -23,7 +23,6 @@ $this->CrudBase->hiddenX('debug_mode',$debug_mode );
 $this->CrudBase->hiddenX('row_exc_flg',$row_exc_flg );
 $this->CrudBase->hiddenX('def_kjs_json',$def_kjs_json );
 $this->CrudBase->hiddenX('kjs_json',$kjs_json );
-$this->CrudBase->hiddenX('via_dp_fn_json',$via_dp_fn_json);
 $this->CrudBase->hiddenX('err_types_json',$err_types_json);
 
 ?>

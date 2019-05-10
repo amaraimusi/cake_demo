@@ -12,9 +12,10 @@
  * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
  * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
  * 
- * @date 2016-9-21 | 2019-4-15
- * @version 2.7.7
+ * @date 2016-9-21 | 2019-5-11
+ * @version 2.7.8
  * @histroy
+ * 2018-10-21 v2.7.8 getKjsを追加。およびバグ修正。
  * 2018-10-21 v2.6.6 検索をGETクエリ方式にする
  * 2018-10-21 v2.6.0 フォームをアコーディオン形式にする。
  * 2018-10-9 v2.5.6 ノート詳細開き機能
@@ -1140,9 +1141,13 @@ class CrudBase{
 					}, 1);
 				}
 
-				// 編集後の行は青くする
-				tr.css('background-color','#d7e6fd');
-	
+				var kjs = this._getKjs(); // 検索条件情報を取得する
+				if(kjs.kj_delete_flg != 1 && ent.delete_flg == 1){
+					tr.css('background-color','#808080');
+				}else{
+					tr.css('background-color','#d7e6fd');// 編集後の行は青くする
+				}
+
 				this.closeForm('edit');// フォームを閉じる
 			}
 
@@ -3418,7 +3423,7 @@ class CrudBase{
 
 		// 検索条件情報が省略されている場合はHTMLの埋込JSONから取得する。
 		if(kjs==null){
-			var kjs_json = $('#kjs_json').html();
+			var kjs_json = $('#kjs_json').val();
 			kjs = JSON.parse(kjs_json);
 		}
 
@@ -4321,6 +4326,17 @@ class CrudBase{
 	initCbGtaCash(page_code, xids){
 		if(this.cbGtaCash == null) return;
 		this.cbGtaCash.init(page_code, xids);
+	}
+	
+	/**
+	 * 検索条件情報を取得する
+	 */
+	_getKjs(){
+		if(this.kjs == null){
+			var kjs_json = jQuery('#kjs_json').val();
+			this.kjs = JSON.parse(kjs_json);
+		}
+		return this.kjs;
 	}
 	
 }
