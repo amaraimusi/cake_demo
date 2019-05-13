@@ -1,7 +1,7 @@
 /**
  * ボタンサイズ変更【CrudBase用】
- * @version 1.0.0
- * @date 2018-10-27
+ * @version 1.1.4
+ * @date 2018-10-27 | 2019-5-13 ボタン表示切替に対応
  */
 class CbBtnSizeChanger{
 	
@@ -13,29 +13,39 @@ class CbBtnSizeChanger{
 	 * - save_flg 保存フラグ 0:保存しない , 1:保存する（デフォルト）
 	 * - 
 	 */
-	constructor(param, cnfData){
-		
-		this.saveKeys = ['cnfData']; // ローカルストレージへ保存と読込を行うparamのキー。
-		this.ls_key = "CbBtnSizeChanger"; // ローカルストレージにparamを保存するときのキー。
+	constructor(param, p_cnfData){
+
+		// ローカルストレージキーを作成
+		var url = location.href;
+		var url = url.split(/[?#]/)[0]; // URLからクエリ部分を除去する
+		this.ls_key = url + "-CbBtnSizeChanger_1.1.4"; // ローカルストレージにparamを保存するときのキー。
+
 		this.param = this._setParamIfEmpty(param);
 		
-		// 設定データの初期化
-		var cnfData = this._initCnfData(this.param, cnfData);
+		// デフォルト設定データに引数設定データをマージして初期設定データを作成する。
+		this.iniCnfData = this._makeIniCnfData(p_cnfData);
 		
+		// 設定データの初期化
+		var cnfData = this._initCnfData(this.iniCnfData);
+
 		// 設定フォームを作成
 		var cnf_html = this._createCnfFormHtml(cnfData);
 		var mainForm = jQuery(this.param.main_slt); // 設定フォーム
 		mainForm.html(cnf_html);
 		
-		// 設定フォームにチェックイベント（クリックイベント）を組み込む
+		// 設定フォームにラジオボタンのチェックイベント（クリックイベント）を組み込む
 		this._setCheckEvent(mainForm, cnfData);
+		
+		// 表示切替チェックボックスにクリックイベントを組み込み
+		this._setVisibleCbClickEvent(mainForm, cnfData);
 		
 		// サブイベントをセットする
 		this._setSubEvents(mainForm);
 		
-		// 保存フラグがONであるなら、設定データのボタンサイズ設定を各ボタンへ反映
+		// 保存フラグがONである場合
 		if(this.param.save_flg == 1){
-			this._changeSizeAll(cnfData);
+			this._changeSizeAll(cnfData); // 一覧各ボタンのサイズを設定データに合わせて変更する
+			this._changeBtnVisibleAll(cnfData); // 一覧各ボタンを設定データに合わせて表示切替する。
 		}
 		
 		this.mainForm = mainForm;
@@ -44,26 +54,49 @@ class CbBtnSizeChanger{
 	}
 	
 	/**
+	 * デフォルト設定データに引数設定データをマージして初期設定データを作成する。
+	 */
+	_makeIniCnfData(p_cnfData){
+		var defCnfData = this._getDefaultCnfData(); // デフォルト設定データを取得する
+		jQuery.extend(defCnfData, p_cnfData); // デフォルト設定データに引数設定データをマージ
+		
+		var iniCnfData = defCnfData; // 初期設定データ
+		return iniCnfData;
+		
+	}
+	
+	
+	/**
+	 * デフォルト設定データを取得する
+	 */
+	_getDefaultCnfData(){
+		var defCnfData = [
+			{'slt':'.row_edit_btn','wamei':'編集ボタン','visible':true ,'def_size':'btn-xs','size':'btn-xs'},
+			{'slt':'.row_copy_btn','wamei':'複製ボタン','visible':true ,'def_size':'btn-xs','size':'btn-xs'},
+			{'slt':'.row_delete_btn','wamei':'削除ボタン','visible':true ,'def_size':'btn-xs','size':'btn-xs'},
+			{'slt':'.row_eliminate_btn','wamei':'抹消ボタン','visible':false ,'def_size':'btn-xs','size':'btn-xs'},
+			{'slt':'.row_exc_btn','wamei':'行入替ボタン(↑↓ボタン)','visible':true ,'def_size':'btn-xs','size':'btn-xs'},
+			{'slt':'.row_enabled_btn','wamei':'有効ボタン','visible':false ,'def_size':'btn-xs','size':'btn-xs'},
+			
+		];
+		
+		// ▼ セレクタからコード文字列を取得する
+		for(var i in defCnfData){
+			var cnfEnt = defCnfData[i];
+			cnfEnt['code'] = this._getCodeFromSlt(cnfEnt.slt);
+		}
+
+		return defCnfData;
+	}
+	
+	
+	/**
 	 * If Param property is empty, set a value.
 	 */
 	_setParamIfEmpty(param){
 		
 		if(param == null) param = {};
-	
-		// ▼ ローカルストレージで保存していたパラメータをセットする
-		var param_json = localStorage.getItem(this.ls_key);
-		if(!this._empty(param_json)){
-			var lsParam = JSON.parse(param_json);
-			if(lsParam){
-				for(var i in this.saveKeys){
-					var s_key = this.saveKeys[i];
-					param[s_key] = lsParam[s_key];
-				}
-			}
-		}
-		
-		if(param['cnfData'] == null) param['cnfData'] = {};
-		
+
 		if(param['main_slt'] == null) param['main_slt'] = '#CbBtnSizeChanger';
 		
 		// ラジオボタンデータ
@@ -84,40 +117,20 @@ class CbBtnSizeChanger{
 	
 	/**
 	 * 設定データの生成
-	 * @param param
-	 * @param string cnfData 設定データ(引数）
+	 * @param array iniCnfData 初期設定データ
 	 * @return object 設定データ
 	 */
-	_initCnfData(param, cnfDataP){
-		
-		var cnfData = param.cnfData;
-		if(this._empty(cnfDataP)) cnfDataP = {};
-		
-		jQuery.extend(cnfData, cnfDataP);
+	_initCnfData(iniCnfData){
 
+		var cnfData = this._loadCnfData();
 		if(this._empty(cnfData)) {
-			
-			cnfData = [
-				{'slt':'.row_edit_btn','wamei':'編集ボタン','def_size':'btn-xs','size':'btn-xs'},
-				{'slt':'.row_copy_btn','wamei':'複製ボタン','def_size':'btn-xs','size':'btn-xs'},
-				{'slt':'.row_delete_btn','wamei':'削除ボタン','def_size':'btn-xs','size':'btn-xs'},
-				{'slt':'.row_eliminate_btn','wamei':'抹消ボタン','def_size':'btn-xs','size':'btn-xs'},
-				{'slt':'.row_exc_btn','wamei':'行入替ボタン(↑↓ボタン)','def_size':'btn-xs','size':'btn-xs'},
-				{'slt':'.row_enabled_btn','wamei':'有効ボタン','def_size':'btn-xs','size':'btn-xs'},
-				
-			];
+			cnfData = jQuery.extend(true, {}, iniCnfData); // クローンコピーする
 		}
 		
-		
-		// ▼ セレクタからコード文字列を取得する
-		for(var i in cnfData){
-			var cnfEnt = cnfData[i];
-			cnfEnt['code'] = this._getCodeFromSlt(cnfEnt.slt);
-		}
-
 		return cnfData;
 		
 	}
+	
 	
 	/**
 	 * セレクタからコード文字列を取得する
@@ -145,26 +158,50 @@ class CbBtnSizeChanger{
 	 * @return string 設定フォームHTML
 	 */
 	_createCnfFormHtml(cnfData){
+
+		var html = `
+			<div style='padding:10px;margin-bottom:10px;background-color:#8dbbf3;border-radius:5px;display:inline-block'>
+			<table class='tbl2'><tbody>
+		`;
 		
-		// 設定一覧
-		var html = "<div style='padding:10px;background-color:#8dbbf3;border-radius:5px;display:inline-block'><table class='tbl2'><tbody>";
 		for(var i in cnfData){
 			var cnfEnt = cnfData[i];
-			html += "<tr>";
-			html += "<td>" + cnfEnt.wamei + "</td>";
+			var visible_cb_html = this._createVisibleCbHtml(cnfEnt, i); // 表示切替チェックボックスのHTMLを生成する。
 			var radios_html = this._createRadiosHtml(cnfEnt); // ラジオボタンHTMLを作成
-			html += "<td>" + radios_html + "</td>";
-			html += "</tr>";
+			html += `
+			<tr>
+				<td>${cnfEnt.wamei}</td>
+				<td>${visible_cb_html}</td>
+				<td>${radios_html}</td>
+			</tr>
+			`;
+
 		}
-		html += "</tbody></table>";
 		
-		// 初期に戻すボタン
-		html += "<input id='cbbsc_def_btn' type='button' value='初期に戻す' class='btn btn-default btn-xs' >";
-		html += "<input id='cbbsc_close_btn' type='button' value='閉じる' class='btn btn-default btn-xs' >";
-		html += "</div>";
+		html += `
+				</tbody></table>
+				<input id='cbbsc_def_btn' type='button' value='初期に戻す' class='btn btn-default btn-xs' >
+				<input id='cbbsc_close_btn' type='button' value='閉じる' class='btn btn-default btn-xs' >
+			</div>
+		`;
 		
 		return html;
 	}
+	
+	
+	/**
+	 * 表示切替チェックボックスのHTMLを生成する。
+	 * @param object cnfEnt 設定エンティティ
+	 * @param int index インデックス
+	 * @return string 表示切替チェックボックスのHTML
+	 */
+	_createVisibleCbHtml(cnfEnt, index){
+		var checked = '';
+		if(cnfEnt.visible == true) checked = 'checked';
+		var html = `<label><input type='checkbox' class='cbsc_visible_cb' data-index='${index}' ${checked}> 表示</label>`;
+		return html;
+	}
+	
 	
 	/**
 	 * ラジオボタンHTMLを作成
@@ -215,6 +252,7 @@ class CbBtnSizeChanger{
 		}
 	}
 	
+	
 	/**
 	 * ラジオボタンのチェックイベント
 	 */
@@ -235,7 +273,7 @@ class CbBtnSizeChanger{
 		});
 		
 		if(this.param.save_flg == 1){
-			this._saveParam(); // 設定を保存する
+			this._saveCnfData(); // 設定を保存する
 		}
 		
 	}
@@ -299,6 +337,76 @@ class CbBtnSizeChanger{
 		}
 	}
 	
+	
+	/**
+	 * 表示切替チェックボックスにクリックイベントを組み込み
+	 * @param jQuery mainForm 設定フォーム・jQueryオブジェクト
+	 * @param object cnfData 設定データ
+	 */
+	_setVisibleCbClickEvent(mainForm, cnfData){
+		
+		for(var i in cnfData){
+			var cnfEnt = cnfData[i];
+			var slt = `.cbsc_visible_cb[data-index='${i}']`;
+			mainForm.find(slt).click((evt)=>{
+				var cb = jQuery(evt.currentTarget);
+				this.visibleCbClickEvent(cb); // 表示切替チェックボックスにクリックイベント
+			});
+		}
+		
+	}
+	
+	
+	/**
+	 * 表示切替チェックボックスにクリックイベント
+	 */
+	visibleCbClickEvent(cb){
+		var index = cb.attr('data-index');
+		var visible = cb.prop('checked');
+
+		var cnfEnt = this.cnfData[index];
+		cnfEnt['visible'] = visible;
+		
+		this._changeBtnVisible(cnfEnt); // ボタン類の表示切替
+		
+		if(this.param.save_flg == 1){
+			this._saveCnfData(); // 設定を保存する
+		}
+	}
+	
+	
+	/**
+	 * ボタン類の表示切替
+	 * @param object cnfEnt 設定エンティティ
+	 */
+	_changeBtnVisible(cnfEnt){
+		
+		var visible = cnfEnt.visible;
+		
+		jQuery(cnfEnt.slt).each((i,btn) => {
+			
+			btn = jQuery(btn);
+			if(visible == true){
+				btn.show();
+			}else{
+				btn.hide();
+			}
+		});
+
+	}
+	
+	
+	/**
+	 * 一覧各ボタンを設定データに合わせて表示切替する。
+	 * @param array cnfData 設定データ
+	 */
+	_changeBtnVisibleAll(cnfData){
+		for(var i in cnfData){
+			var cnfEnt = cnfData[i];
+			this._changeBtnVisible(cnfEnt); // ボタン類の表示切替
+		}
+	}
+	
 
 	/**
 	 * サブイベントをセットする
@@ -324,21 +432,23 @@ class CbBtnSizeChanger{
 	_returnToInit(){
 		
 		// ▼設定データを初期に戻す
+		this.cnfData = jQuery.extend(true, {}, this.iniCnfData); // クローンコピーする
 		var cnfData = this.cnfData;
-		for(var i in cnfData){
-			var cnfEnt = cnfData[i];
-			if(cnfEnt['def_size'] == null) cnfEnt['def_size'] = 'btn-xs';
-			cnfEnt.size = cnfEnt.def_size;
-		}
 		
 		// 設定データのボタンサイズ設定を各ボタンへ反映
 		this._changeSizeAll(cnfData);
 		
+		// 一覧各ボタンを設定データに合わせて表示切替する。
+		this._changeBtnVisibleAll(cnfData);
+		
 		// ラジオボタンに設定データを反映する
 		this._setCnfDataToRadios(cnfData);
+		
+		// 表示切替チェックボックスに設定データを反映する
+		this._setCnfDataToVisibleCb(cnfData);
 
 		// ローカルストレージに設定を保存
-		this._saveParam();
+		this._saveCnfData();
 	}
 	
 	
@@ -358,33 +468,53 @@ class CbBtnSizeChanger{
 		}
 		
 	}
+	
+	
+	/**
+	 * 表示切替チェックボックスに設定データを反映する
+	 */
+	_setCnfDataToVisibleCb(cnfData){
+		for(var i in cnfData){
+			var cnfEnt = cnfData[i];
+			
+			// 表示切替チェックボックス要素を取得する
+			var slt = `.cbsc_visible_cb[data-index='${i}']`;
+			var cb = this.mainForm.find(slt);
+			
+			// 表示切替チェックボックス要素に設定データのチェックをセットする。
+			if(cnfEnt.visible){
+				cb.prop('checked', true);
+			}else{
+				cb.prop('checked', false);
+			}
 
+		}
+	}
+
+	
+	/**
+	 * ローカルストレージから設定データを読み取り
+	 * @return array 設定データ
+	 */
+	_loadCnfData(){
+		var cnfData = {}; // 設定データ
+		
+		// ローカルストレージで保存していた設定JSONを取得する
+		var cnf_json = localStorage.getItem(this.ls_key);
+		if(!this._empty(cnf_json)){
+			var cnfData = JSON.parse(cnf_json);
+		}
+		return cnfData;
+	}
 
 	/**
 	 * ローカルストレージにパラメータを保存する
 	 */
-	_saveParam(){
-		
-		this.param['cnfData'] = this.cnfData;
-		var lsParam = {};
-		for(var i in this.saveKeys){
-			var s_key = this.saveKeys[i];
-			lsParam[s_key] = this.param[s_key];
-		}
-		var param_json = JSON.stringify(lsParam);
-		localStorage.setItem(this.ls_key,param_json);
+	_saveCnfData(){
+
+		var cnf_json = JSON.stringify(this.cnfData);
+		localStorage.setItem(this.ls_key, cnf_json);
 	}
-	
-	
-	/**
-	 * ローカルストレージで保存しているパラメータをクリアする
-	 */
-	_clear(){
-		localStorage.removeItem(this.ls_key);
-	}
-
-
-
 
 	// Check empty.
 	_empty(v){
@@ -399,4 +529,35 @@ class CbBtnSizeChanger{
 			return false;
 		}
 	}
+	
+	
+	/**
+	 * 設定データのセッター
+	 * 
+	 * @note 外部モジュールから設定データを変更できるメソッド。
+	 * @param array pCnfData 設定データ
+	 */
+	setCnfData(pCnfData){
+
+		// 初期データへ引数設定データをマージする
+		this.iniCnfData = this._makeIniCnfData(pCnfData);
+
+		// ▼ セレクタからコード文字列を取得する
+		for(var i in this.iniCnfData){
+			var cnfEnt = this.iniCnfData[i];
+			cnfEnt['code'] = this._getCodeFromSlt(cnfEnt.slt);
+		}
+		
+		// ローカルストレージのデータが空である場合、フォームは一覧の各ボタンを初期状態に戻す
+		var lsCnfData = this._loadCnfData();
+		if(this._empty(lsCnfData)){
+			this._returnToInit(); // 初期状態に戻す
+		}
+		
+	}
+	
+	
+	
+	
+	
 }
