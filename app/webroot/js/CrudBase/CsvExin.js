@@ -1,8 +1,8 @@
 /**
  * 専属CSV読込 csv_exin
  * 
- * @date 2019-4-7 | 2019-5-16
- * @version 1.0.1
+ * @date 2019-4-7 | 2019-5-17
+ * @version 1.1.0
  * 
  */
 class CsvExin{
@@ -11,6 +11,35 @@ class CsvExin{
 	/**
 	 * 初期化
 	 * @param array csvFieldData CSVフィールドデータ
+	 * 
+	 * 	{
+	 * 		field:'DBフィールド名',
+	 * 		clm_name:'CSV列名',
+	 * 		clm_alias_names:[
+	 * 			'別名1',
+	 * 			'別名2',
+	 * 		],
+	 * 		req_flg:CSVに必須の列なら「1」。無くてもいいなら「0」,
+	 * 		type:'型',
+	 * 	},
+	 * 	{
+	 * 		field:'facility_name',
+	 * 		clm_name:'施設名',
+	 * 		clm_alias_names:[
+	 * 			'',
+	 * 			'',
+	 * 		],
+	 * 		req_flg:1,
+	 * 		type:'varchar',
+	 * 	},
+	 * 	{
+	 * 		field:'prefectures_id',
+	 * 		clm_name:'都道府県名',
+	 * 		clm_alias_names:[
+	 * 			'都道府県',
+	 * 			'',
+	 * 		],
+	 * 
 	 * @param object csvParam CSVパラメータ
 	 *  - ajax_url AJAX通信先URL
 	 */
@@ -134,8 +163,6 @@ class CsvExin{
 		if(err_msg){
 			this._errShow(err_msg);
 			return;
-		}else{
-			this.bulkRegBtn.show(); // 一括登録ボタンを表示
 		}
 		
 		// 列ヘッダーフラグとID列フラグを取得する
@@ -143,19 +170,32 @@ class CsvExin{
 		csvParam['clm_header_flg'] = res.clm_header_flg; // 列ヘッダーフラグ ← 1:CSVデータに列名が存在する
 		csvParam['id_clm_flg'] = res.id_clm_flg; // ID列フラグ ← 一番左側の列はid列
 		
-		// 2次元配列からデータを作成
-		var data = this._createDataFromD2ary(d2ary, csvFieldData, csvParam);
-		this.data = data; // 送信のために保持する。
+		// インデックスハッシュマップを作成。キーは列名配列インデックス、値はCSVフィールドデータインデックス
+		var d1heads = d2ary[0]; // 列名配列を取得
+		var indexHm = this._makeIndexHashmap(d1heads, csvFieldData);
 		
+		// 列名チェック
+		err_msg = this._checkClmName(d1heads, csvFieldData, indexHm);
+		if(err_msg){
+			this._errShow(err_msg);
+			return;
+		}
+
+		// 2次元配列からデータを作成
+		var data = this._createDataFromD2ary(d2ary, csvFieldData, indexHm);
+		this.data = data; // 送信のために保持する。
+
 		// XSSサニタイズ
 		var data2 = $.extend(true, {}, data); // クローン
 		data2 = this._xss_sanitize(data2);
 		
 		// HTMLテーブルを組み立て表示
-		var table_html = this._makeTableHtml(data2, csvFieldData);
+		var table_html = this._makeTableHtml(data2, csvFieldData, indexHm);
 		var previewElm = this.mainElm.find('#csv_exin_preview');
 		previewElm.show();
 		previewElm.html(table_html);
+		
+		this.bulkRegBtn.show(); // 一括登録ボタンを表示
 		
 	}
 	
@@ -190,8 +230,8 @@ class CsvExin{
 		}
 		
 		// 先頭行の1列目はCSVフィールドデータの列名2である。
-		var wamei2 = csvFieldData[1]['wamei'];
-		if(c1 == wamei2){
+		var clm_name2 = csvFieldData[1]['clm_name'];
+		if(c1 == clm_name2){
 			res.clm_header_flg = 1;
 			return res;
 		}
@@ -204,47 +244,134 @@ class CsvExin{
 	 * 2次元配列からデータを作成
 	 * @param array d2ary 2次元配列
 	 * @param array csvFieldData CSVフィールドデータ
-	 * @param object csvParam CSVパラメータ
+	 * @param object indexHm インデックスハッシュマップ
+	 * @param array 登録データ
 	 */
-	_createDataFromD2ary(d2ary, csvFieldData, csvParam){
+	_createDataFromD2ary(d2ary, csvFieldData, indexHm){
 		
-		var data = [];
+		var data = []; // 登録データ
 
-		var clm_header_flg = csvParam.clm_header_flg; // 列ヘッダーフラグ
-		var id_clm_flg = csvParam.id_clm_flg; // ID列フラグ
-		
-		
+		// 2次元配列から登録データを作成する処理
 		for(var i in d2ary){
 			
+			if(i==0) continue; // 列の行は飛ばす
+			
+			var d1ary = d2ary[i]; // CSVの一次元配列
 			var ent = {};
 			
-			// 列ヘッダーフラグがON（列行が存在する）なら飛ばす
-			if(i == 0 && clm_header_flg == 1){
-				continue;
-			}
-			
-			var d1ary = d2ary[i];
+			// 登録データのエンティティを作成する処理
+			for(var d1_i in indexHm){
+				
+				// インデックスハッシュマップとCSVフィールドデータからフィールド名を取得する
+				var cf_i = indexHm[d1_i];
+				var cfEnt = csvFieldData[cf_i];
+				var field = cfEnt.field; // フィールド名
+				var value = d1ary[d1_i]; // 値
+				ent[field] = value; // エンティティにセット
 
-			for(var c_i in csvFieldData){
-
-				var cfEnt = csvFieldData[c_i];
-				if(id_clm_flg==0){
-					if(c_i==0){
-						ent['id'] = null;
-					}else{
-						ent[cfEnt.field] = d1ary[c_i - 1];
-					}
-				}else{
-					ent[cfEnt.field] = d1ary[c_i];
-				}
 			}
-			
 			data.push(ent);
-
 		}
 
 		return data;
 		
+	}
+	
+	
+	/**
+	 * インデックスハッシュマップを作成。キーは列名配列インデックス、値はCSVフィールドデータインデックス
+	 * @param array d1heads 列名配列
+	 * @param array csvFieldData CSVフィールドデータ
+	 * @return object インデックスハッシュマップ
+	 */
+	_makeIndexHashmap(d1heads, csvFieldData){
+		var indexHm = {}; // インデックスハッシュマップ
+		
+		for(var d1_index in d1heads){
+			var csv_clm_name = d1heads[d1_index]; // CSVの列名
+			csv_clm_name = csv_clm_name.trim();
+	
+			for(var cf_i in csvFieldData){
+				var cfEnt = csvFieldData[cf_i]; // CSVフィールドエンティティ
+
+				// 列名が一致するならインデックスをセットする
+				if(cfEnt.clm_name == csv_clm_name){
+					indexHm[d1_index] = cf_i;
+				}else{
+					
+					if(cfEnt.clm_alias_names == null) continue; // 別名リストが空なら次のループ
+					
+					// 列名が一致しならいなら別名リスト内に一致があるが調べる。
+					for(var an_i in cfEnt.clm_alias_names){
+						var alias_name = cfEnt.clm_alias_names[an_i];
+						if(alias_name == null || alias_name == '') continue;
+						
+						// 別名と一致するならインデックスをセットする。
+						if(alias_name == csv_clm_name){
+							indexHm[d1_index] = cf_i;
+							continue;
+						}
+					}
+				}
+			}
+		}
+
+		return indexHm;
+	}
+	
+	
+	/**
+	 * 列名チェック
+	 * @param array d1heads 列名配列
+	 * @param array csvFieldData CSVフィールドデータ
+	 * @param object indexHm インデックスハッシュマップ
+	 * @param string エラーメッセージ
+	 */
+	_checkClmName(d1heads, csvFieldData, indexHm){
+		var err_msg = null
+		
+		// 列名に重複があるかチェックする。
+		for(var i1 in d1heads){
+			var clm_name1 = d1heads[i1];
+			var c = 0;
+			for(var i2 in d1heads){
+				var clm_name2 = d1heads[i2];
+				if(clm_name1 == clm_name2){
+					c++;
+				}
+			}
+			if(c >= 2){
+				err_msg = '列名「' + clm_name1 + '」が重複しています。同じ列名は使えません';
+				return err_msg;
+			}
+			
+		}
+		
+		// 逆インデックスマップを作成。   キーはCSVフィールドデータのインデックス、値は列配列インデックス
+		var rIndexHm = {}; // 逆インデックスマップ
+		for(var d1_i in indexHm){
+			var cf_i = indexHm[d1_i];
+			rIndexHm[cf_i] = d1_i;
+		}
+		
+		// 必須列名チェック
+		var errClmNames = []; // エラー列名リスト
+		for(var cf_i in csvFieldData){
+			
+			// 逆インデックスマップに存在しない場合、必須チェックを行う。エラーなら列名リストに追加
+			if(rIndexHm[cf_i] == null){
+				var cfEnt = csvFieldData[cf_i];
+				if(cfEnt.req_flg == true){
+					errClmNames.push(cfEnt.clm_name);
+				}
+			}
+		}
+		if(errClmNames.length > 0){
+			var err_clms_str = errClmNames.join(',');
+			err_msg = "次の列名は必須です。→" + err_clms_str;
+		}
+
+		return err_msg;
 	}
 	
 	
@@ -383,17 +510,20 @@ class CsvExin{
 	 * HTMLテーブルのhtmlを作成
 	 * @param array data 2次元配列データ
 	 * @param array csvFieldData CSVフィールドデータ
+	 * @param object indexHm インデックスハッシュマップ   キーは列名配列インデックス、値はCSVフィールドデータインデックス
 	 * @return string テーブルのhtml
 	 */
-	_makeTableHtml(data, csvFieldData){
+	_makeTableHtml(data, csvFieldData, indexHm){
 		var html = "<table id='csv_exin_table' class='tbl2' style='white-space:nowrap;'>";
 		
 		// 列部分を組み立て
 		html += "<thead><tr>";
-		for(var c_i in csvFieldData){
-			var cfEnt = csvFieldData[c_i];
-			html += "<th>" + cfEnt.wamei + "</th>";
+		for(var d1_i in indexHm){
+			var cf_i = indexHm[d1_i];
+			var cfEnt = csvFieldData[cf_i];
+			html += "<th>" + cfEnt.clm_name + "</th>"; 
 		}
+
 		html += "</tr></thead><tbody>";
 		
 		for(var i in data){
