@@ -12,8 +12,8 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.2.7
- * @date 2018-7-6 | 2019-2-19
+ * @version 1.2.8
+ * @date 2018-7-6 | 2019-5-20
  * @history 
  *  - 2018-10-2 var 1.2.6 「Now Loading...」メッセージを表示する
  *  - 2018-9-18 var 1.2.5 コールバックパラメータを追加（pacb_param)
@@ -1002,7 +1002,7 @@ class FileUploadK{
 				return;
 			}
 			
-			resOutput(res); // レスポンス出力
+			callback(res); // レスポンス出力
 			
 			
 		})
