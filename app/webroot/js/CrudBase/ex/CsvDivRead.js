@@ -19,6 +19,7 @@ class CsvDivRead{
 	 *  - zip_upload_ajax_url ZIPアップロードAjaxURL
 	 *  - csv_read_ajax_url CSV読込保存AjaxURL
 	 *  - batch_data_num 一括データ処理数
+	 *  - zip_clear_flg ZIPファイル群クリアフラグ（危険） true:作業終了zipファイル群を削除, false:削除しない(デフォ）
 	 */
 	init(param){
 		param = this._setParamIfEmpty(param);
@@ -63,6 +64,7 @@ class CsvDivRead{
 		if(param['offset'] == null) param['offset'] = 0;
 		if(param['req_batch_count'] == null) param['req_batch_count'] = 0; // リクエストバッチ回数
 		if(param['stack_mem_size'] == null) param['stack_mem_size'] = 0; // 累積サイズ
+		if(param['zip_clear_flg'] == null) param['zip_clear_flg'] = false; // ZIPファイル群クリアフラグ
 		
 		return param;
 	}
