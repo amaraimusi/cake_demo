@@ -4,7 +4,7 @@ require_once('IDao.php');
  * 専属CSV読込 csv_exin
  * 
  * @date 2019-1-9 | 2019-5-27
- * @version 1.1.0
+ * @version 1.1.1
  */
 class CsvExin{
 
@@ -79,6 +79,9 @@ class CsvExin{
 			
 			// テーブルフィールドフィルター: テーブルに存在しないフィールドをデータから除去する
 			$mainData = $this->tableFieldFilter($main_table_name, $mainData);
+			
+			// データをサニタイズする
+			$this->sql_sanitize($mainData);
 			
 			// データからINSERTとUPDATEのSQL文を生成する
 			$res = $this->createInsertAndUpdate($main_table_name, $mainData);
@@ -309,6 +312,9 @@ class CsvExin{
 			// 追加、または更新の対象データだけ取得
 			$masterData2 = $this->filterMasterData($masterData);
 			if(empty($masterData2)) continue;
+			
+			// DBサニタイズ
+			$this->sql_sanitize($masterData2);
 			
 			// INSERTとUPDATEのSQLを作成
 			$table_name = $box['table_name'];
@@ -694,6 +700,31 @@ class CsvExin{
 		
 		return $data2;
 		
+	}
+	
+		
+	/**
+	* SQLインジェクションサニタイズ(配列用)
+	*
+	* @note
+	* SQLインジェクション対策のためデータをサニタイズする。
+	* 高速化のため、引数は参照（ポインタ）にしている。
+	*
+	* @param array サニタイズデコード対象のデータ
+	* @return void
+	*/
+	private function sql_sanitize(&$data){
+		
+		if(is_array($data)){
+			foreach($data as &$val){
+				$this->sql_sanitize($val);
+			}
+			unset($val);
+		}elseif(gettype($data)=='string'){
+			$data = addslashes($data);// SQLインジェクション のサニタイズ
+		}else{
+			// 何もしない
+		}
 	}
 	
 	
