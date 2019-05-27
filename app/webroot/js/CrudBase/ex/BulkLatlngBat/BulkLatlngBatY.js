@@ -6,7 +6,7 @@
  * ReqBatch.jsは「リクエスト分散バッチ処理」と呼ばれるバッチ処理系のライブラリ
  * 
  * @date 2019-4-26
- * @version 1.0.0
+ * @version 1.0.1
  */
 class BulkLatlngBatY{
 	
@@ -45,7 +45,7 @@ class BulkLatlngBatY{
 		if(param['req_batch_ajax_url'] == null) throw new Error("'req_batch_ajax_url' is empty!");
 		if(param['get_data_ajax_url'] == null) throw new Error("'get_data_ajax_url' is empty!");
 		if(param['interval'] == null) param['interval'] = 600;
-		if(param['fail_limit'] == null) param['fail_limit'] = 100;
+		if(param['fail_limit'] == null) param['fail_limit'] = 45000;
 		
 		return param;
 	}
