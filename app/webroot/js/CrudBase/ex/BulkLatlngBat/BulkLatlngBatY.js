@@ -16,10 +16,13 @@ class BulkLatlngBatY{
 	 * - req_batch_ajax_url リクエスト分散バッチ用のAjax URL
 	 * - get_data_ajax_url データ取得用のAjax URL
 	 * - interval スレッド間隔
+	 * - exe_limit 処理制限数
 	 * - fail_limit 失敗制限
+	 * @param jQuery tDiv トップ要素
 	 */
-	init(param){
+	init(param, tDiv){
 		param = this._setParamIfEmpty(param);
+		this.tDiv = tDiv
 		
 		this.reqBatch = new ReqBatch(); // リクエスト分散バッチ処理
 		this.reqBatch.init({
@@ -30,6 +33,8 @@ class BulkLatlngBatY{
 			ajax_url:param.req_batch_ajax_url,
 			asyn_res_cb:this.asynRes,
 		});
+		
+		this.resDiv = this.tDiv.find('#blly_res'); // レスメッセージ
 		
 		this.param = param;
 	}
@@ -45,6 +50,7 @@ class BulkLatlngBatY{
 		if(param['req_batch_ajax_url'] == null) throw new Error("'req_batch_ajax_url' is empty!");
 		if(param['get_data_ajax_url'] == null) throw new Error("'get_data_ajax_url' is empty!");
 		if(param['interval'] == null) param['interval'] = 600;
+		if(param['exe_limit'] == null) param['exe_limit'] = 20000;
 		if(param['fail_limit'] == null) param['fail_limit'] = 45000;
 		
 		return param;
@@ -56,7 +62,10 @@ class BulkLatlngBatY{
 	 */
 	start(){
 
-		var sendData = {a:'1'};
+		this.resDiv.show();
+		this.resDiv.html('お待ちください...');
+		
+		var sendData = this.param;
 		var send_json = JSON.stringify(sendData);//データをJSON文字列にする。
 
 		// AJAX
@@ -75,6 +84,8 @@ class BulkLatlngBatY{
 				jQuery("#err").append(res_json);
 				return;
 			}
+			
+			this.resDiv.hide();
 			
 			var data = res; // 緯度経度が空の求人データ
 			

@@ -47,7 +47,7 @@ class BulkLatlngBat{
 		
 		// 一括緯度経度取得・バッチ処理 | ReqBatch.js | リクエストを1件ずつ、実行するバッチ処理 | Yahoo API版
 		this.bulkLatlngBatY = new BulkLatlngBatY();
-		this.bulkLatlngBatY.init(param.paramY);
+		this.bulkLatlngBatY.init(param.paramY, this.tDiv);
 		
 		// 一括緯度経度取得・バッチ処理 Google API版
 		this.bulkLatlngBatG = new BulkLatlngBatG();
@@ -87,7 +87,8 @@ class BulkLatlngBat{
 		<div id="bllby_w"><!-- Yahoo API版 -->
 			<strong>一括緯度経度取得・バッチ処理</strong> 
 			<input type="button" value="閉" class="btn btn-default btn-xs" onclick="jQuery('#bulk_latlng_bat_w').hide();" /><br>
-			<input type="button" id="bllby_start_btn" value="バッチ処理開始" class="btn btn-success" title="YahooのAPIを利用して緯度経度が未設定のデータに緯度経度をセットしていきます。" />
+			<input type="button" id="bllby_start_btn" value="バッチ処理開始" class="btn btn-success" title="YahooのAPIを利用して緯度経度が未設定のデータに緯度経度をセットしていきます。&#13;一度に処理できる件数は最大20000件です。" />
+			<div id="blly_res" class="text-success" style="display:none"></div>
 			<div id="bulk_latlng_bat_y" class="console" style="display:none"></div>
 		</div>
 		
@@ -132,6 +133,7 @@ class BulkLatlngBat{
 	 */
 	_addClickStartBtnY(startBtnY){
 		startBtnY.click((evt)=>{
+			this.startBtnY.hide();
 			this.bulkLatlngBatY.start();
 		});
 	}
@@ -155,6 +157,7 @@ class BulkLatlngBat{
 	 */
 	_addClickStartBtnG(startBtnG){
 		startBtnG.click((evt)=>{
+			this.startBtnG.hide();
 			this.bulkLatlngBatG.start();
 		});
 	}
