@@ -8,8 +8,8 @@
  * - BulkLatlngBatG.js
  * - ReqBatch.js
  * 
- * @date 2019-5-24
- * @version 1.0.0
+ * @date 2019-5-24 | 2019-5-29
+ * @version 1.1.0
  * @license MIT
  */
 class BulkLatlngBat{
@@ -109,10 +109,10 @@ class BulkLatlngBat{
 				<div class="col-md-2">今月の推定利用料金: $<span id="bllbg_used_fee" title="今月分の推定料金">0</span></div>
 				<div class="col-md-8"></div>
 			</div>
+			<div>緯度経度・未設定件数: <span id="bllbg_data_count" title="緯度または経度が0や空であるデータの件数" style="font-weight:bold">100000</span>件</div>
 			<div class="row" style="margin-top:5px;">
-				<div class="col-md-2">対象データ数: <span id="bllbg_data_count" title="処理対象のデータ数。緯度または経度が0や空だと処理対象データになる。">100000</span>件</div>
-				<div class="col-md-10">
-					実行数: <input id="bllbg_exe_count" type="textbox" value="100" style="width:6em" title="実行するデータ数">
+				<div class="col-md-12">
+					実行数: <input id="bllbg_exe_count" type="number" value="100" min="0" max="100" step="1" style="width:6em" title="実行するデータ数">
 					推定料金: $<span id="bllbg_fee">9999</span>
 					<input id="bllbg_start" type="button" value="バッチ処理開始" class="btn btn-danger btn-xs" title="Google版・一括緯度経度取得処理を開始する">
 				</div>
@@ -143,7 +143,8 @@ class BulkLatlngBat{
 	 */
 	_addClickShowChkG(showChkG){
 		showChkG.click((evt)=>{
-			this.bulkLatlngBatG.openAndGetData();
+			var cb = jQuery(evt.currentTarget);
+			this.bulkLatlngBatG.openAndGetData(cb);
 		});
 	}
 	

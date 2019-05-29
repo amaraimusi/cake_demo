@@ -5,8 +5,8 @@
  * ReqBatch.jsに依存。
  * ReqBatch.jsは「リクエスト分散バッチ処理」と呼ばれるバッチ処理系のライブラリ
  * 
- * @date 2019-4-26
- * @version 1.0.1
+ * @date 2019-4-26 | 2019-5-29
+ * @version 1.1.0
  */
 class BulkLatlngBatY{
 	

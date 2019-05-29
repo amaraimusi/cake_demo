@@ -11,8 +11,8 @@
  * ReqBatch.jsに依存。
  * ReqBatch.jsは「リクエスト分散バッチ処理」と呼ばれるバッチ処理系のライブラリ
  * 
- * @date 2019-5-4
- * @version 1.0.0
+ * @date 2019-5-4 | 2019-5-29
+ * @version 1.1.0
  */
 class BulkLatlngBatG{
 	
@@ -22,7 +22,9 @@ class BulkLatlngBatG{
 	 * - get_data_ajax_url データ取得用のAjax URL
 	 * - save_ajax_url 保存Ajax URL
 	 * - interval スレッド間隔
+	 * - exe_limit 処理制限数
 	 * - fail_limit 失敗制限
+	 * - unit_cost 単価 2019年時点では1リクエスト $0.006
 	 */
 	init(param){
 		param = this._setParamIfEmpty(param);
@@ -44,8 +46,10 @@ class BulkLatlngBatG{
 		this.tDiv = jQuery('#bllbg_w');
 		this.nowLoadElm = jQuery('#bllbg_now_loding'); // ローディングメッセージ要素
 		this.dataCntElm = this.tDiv.find('#bllbg_data_count'); // 対象データ数要素
-		this.exeCntElm = this.tDiv.find('#bllbg_exe_count'); // 実行数要素
+		this.exeCntTb = this.tDiv.find('#bllbg_exe_count'); // 実行数テキストボックス要素
 		this.feeElm = this.tDiv.find('#bllbg_fee'); // 推定料金
+		
+		this._addChangeExeCntTb(this.exeCntTb); //  実行数テキストボックス要素にチェンジイベントを組み込む
 		
 		this.param = param;
 		
@@ -62,22 +66,41 @@ class BulkLatlngBatG{
 		if(param['get_data_ajax_url'] == null) throw new Error("'get_data_ajax_url' is empty!");
 		if(param['save_ajax_url'] == null) throw new Error("'save_ajax_url' is empty!");
 		if(param['interval'] == null) param['interval'] = 600;
+		if(param['exe_limit'] == null) param['exe_limit'] = 20000;
 		if(param['fail_limit'] == null) param['fail_limit'] = 100;
+		if(param['unit_cost'] == null) param['unit_cost'] = 0.006;
 		
 		return param;
 	}
 	
 	
 	/**
-	 * 機能を開くとともに対象データを取得する
+	 * 実行数テキストボックス要素にチェンジイベントを組み込む
+	 * @param jQuery exeCntTb 実行数テキストボックス要素
 	 */
-	openAndGetData(){
+	_addChangeExeCntTb(exeCntTb){
+		exeCntTb.change((evt)=>{
+			let exeCntTb = jQuery(evt.currentTarget);
+			let exe_count = exeCntTb.val(); // 実行数
+
+			// 推定料金を算出して出力
+			let fee = exe_count * this.param.unit_cost;
+			fee = Math.round(fee * 1000) / 1000; // 切り捨て
+			this.feeElm.text(fee);
+			
+		});
+	}
+	
+	
+	/**
+	 * 機能を開くとともに対象データを取得する
+	 * @param jQuery cb 表示用チェックボックス要素
+	 */
+	openAndGetData(cb){
 		
-		if(this.tDiv.css('display') == 'none'){
-			if(this.data == null){
-				this.nowLoadElm.show(); // ローディングメッセージの表示 | 「Now Loading ...」の表示
-				this._getDataFromBackend(); // バックエンドから対象データを取得する
-			}
+		if(cb.prop('checked')){
+			this.nowLoadElm.show(); // ローディングメッセージの表示 | 「Now Loading ...」の表示
+			this._getDataFromBackend(); // バックエンドから対象データを取得する
 			
 		}else{
 			this.tDiv.hide();
@@ -91,7 +114,7 @@ class BulkLatlngBatG{
 	 */
 	_getDataFromBackend(){
 
-		var sendData={'a':1};
+		var sendData=this.param;
 		var send_json = JSON.stringify(sendData);
 
 		// バックエンドから対象データを取得する  | AJAX
@@ -110,11 +133,12 @@ class BulkLatlngBatG{
 				jQuery("#err").append(res_json);
 				return;
 			}
-			this.data = res; // レスポンスを対象データにセットする
+			this.data = res.data; // レスポンスを対象データにセットする
+			var unset_count = res.unset_count; // 緯度経度・未設定数
 			var data_count = this.data.length; // 対象データ数を取得
 			var exe_count = data_count; // 実行数
-			if(exe_count > 1000) exe_count = 1000; // 実行数は1000件を上限とする
-			var fee = exe_count * 0.006;
+			//if(exe_count > 1000) exe_count = 1000; // 実行数は1000件を上限とする
+			var fee = exe_count * this.param.unit_cost;
 			fee = Math.round(fee * 1000) / 1000; // 切り捨て
 			
 			// パラメータへセット
@@ -125,8 +149,9 @@ class BulkLatlngBatG{
 			// DOM要素への反映
 			this.nowLoadElm.hide();
 			this.tDiv.show();
-			this.dataCntElm.html(data_count);
-			this.exeCntElm.val(exe_count);
+			this.dataCntElm.html(unset_count);
+			this.exeCntTb.val(exe_count);
+			this.exeCntTb.attr('max',exe_count);
 			this.feeElm.html(fee);
 			
 		})
@@ -143,7 +168,7 @@ class BulkLatlngBatG{
 	 */
 	start(){
 		
-		var exe_count = this.exeCntElm.val();
+		var exe_count = this.exeCntTb.val();
 		if(!exe_count.match(/^[0-9]*$/)){
 			alert('半角数字を入力してください。');
 			return;
@@ -184,7 +209,7 @@ class BulkLatlngBatG{
 	 * @param object res 非同期処理のレスポンスデータ
 	 */
 	asynRes(res){
-		console.log(res);
+		//console.log(res);
 	}
 	
 	
@@ -209,15 +234,14 @@ class BulkLatlngBatG{
 					// 緯度経度
 					ent['lat'] = result.geometry.location.lat();
 					ent['lng'] = result.geometry.location.lng();
-					
-					self._saveToDb(ent); // DBに保存する
 
-					
 				}else{
 					var fail_msg = `「${address}」の緯度経度は見つかりませんでした。:` + status;
 					self.reqBatch.asynFail(fail_msg); // 非同期処理・失敗
 
 				}
+				
+				self._saveToDb(ent); // DBに保存する(緯度経度取得に失敗しても更新日時の更新のためDB保存する
 			});
 		
 	}
