@@ -12,7 +12,7 @@
  * ReqBatch.jsは「リクエスト分散バッチ処理」と呼ばれるバッチ処理系のライブラリ
  * 
  * @date 2019-5-4 | 2019-5-29
- * @version 1.1.0
+ * @version 1.1.1
  */
 class BulkLatlngBatG{
 	
@@ -168,6 +168,7 @@ class BulkLatlngBatG{
 	 */
 	start(){
 		
+		
 		var exe_count = this.exeCntTb.val();
 		if(!exe_count.match(/^[0-9]*$/)){
 			alert('半角数字を入力してください。');
@@ -177,9 +178,15 @@ class BulkLatlngBatG{
 		
 		var data = this.data;
 		data = this._removeOverData(data, exe_count); // データを実行数だけにする | 多すぎる分は除去
-
+		
+		if(this.data.length == 0){
+			return; // 0件なら処理中断
+		}
+		
 		// バッチ処理開始
 		this.reqBatch.start(data);
+		
+		
 
 	}
 	

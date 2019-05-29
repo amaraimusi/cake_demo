@@ -6,7 +6,7 @@
  * ReqBatch.jsは「リクエスト分散バッチ処理」と呼ばれるバッチ処理系のライブラリ
  * 
  * @date 2019-4-26 | 2019-5-29
- * @version 1.1.0
+ * @version 1.1.1
  */
 class BulkLatlngBatY{
 	
@@ -85,9 +85,16 @@ class BulkLatlngBatY{
 				return;
 			}
 			
-			this.resDiv.hide();
+			
 			
 			var data = res; // 緯度経度が空の求人データ
+			
+			// 0件処理
+			if(data.length == 0){
+				this.resDiv.html('処理対象データは0件です。');
+				return;
+			}
+			this.resDiv.hide();
 			
 			// ★  バッチ処理開始
 			this.reqBatch.start(data);
