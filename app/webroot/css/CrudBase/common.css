@@ -7,6 +7,8 @@
 body {
 	padding-bottom: 40px;
 }
+/* ‰¡‚¢‚Á‚Ï‚¢‚ÉL‚°‚é | bootstrap‚ÌƒnƒbƒN */
+.container {width: auto;}
 .sidebar-nav {
 	padding: 9px 0;
 }

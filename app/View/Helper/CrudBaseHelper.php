@@ -79,11 +79,12 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap-theme.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'CrudBase/common',
+				'CrudBase/common.css?ver=1.1.0',
 				'clm_show_hide',					// 列表示切替
 				'CrudBase/FileUploadK.css?ver=1.0.1',	
 				'CrudBase/CalendarViewK.css',
 				'CrudBase/CrudBaseBulkAdd.css',
+				'CrudBase/ReqBatch.css',
 		);
 	}
 	
@@ -96,7 +97,8 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'CrudBase/dist/CrudBase.min.js?ver=2.8.2',
+				'CrudBase/dist/CrudBase.min.js?ver=2.8.3',
+				
 		);
 	}
 	
