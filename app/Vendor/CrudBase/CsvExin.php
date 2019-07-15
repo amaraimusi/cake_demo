@@ -1,13 +1,16 @@
 <?php
+
+require_once('InputCheckValid.php');
 require_once('IDao.php');
 /**
  * 専属CSV読込 csv_exin
  * 
- * @date 2019-1-9 | 2019-5-27
- * @version 1.1.1
+ * @date 2019-1-9 | 2019-7-13
+ * @version 1.2.0
  */
 class CsvExin{
 
+    var $icv; // 入力チェックバリデーション | InputCheckValid
 	var $dao;
 	var $update_user; // 更新ユーザー
 	var $ip_addr; // 更新者のIPアドレス
@@ -15,10 +18,13 @@ class CsvExin{
 	
 	/**
 	 * コンストラクタ
+	 * @param $icv InputCheckValid 入力チェックバリデーション
 	 * @param IDao $dao データベースアクセスオブジェクト
 	 * @param string $update_user 更新ユーザー
 	 */
-	public function __construct(IDao &$dao, $update_user = 'none'){
+	public function __construct($icv, IDao &$dao, $update_user = 'none'){
+	    if(empty($icv)) $icv = new InputCheckValid();
+	    $this->icv = $icv;
 		$this->dao = $dao;
 		$this->update_user = $update_user;
 		$this->ip_addr = $_SERVER["REMOTE_ADDR"];
@@ -37,6 +43,8 @@ class CsvExin{
 	public function reg(&$csvExinData){
 		
 		$data = $csvExinData['data'];
+		if(empty($data)) return ['ins_cnt' => 0, 'upd_cnt' => 0,];
+		
 		$csvFieldData = $csvExinData['csvFieldData'];
 		$csvParam = $csvExinData['csvParam'];
 		$masterBoxs = []; // マスターボックスリスト ←マスター関連のデータ
@@ -56,63 +64,67 @@ class CsvExin{
 			
 			// DBから値リストに紐づくIDを含むデータをマスタデータとして取得する
 			$box['masterData'] = $this->getMasterDataFromDb($box);
-			
+
 		}
 		unset($box);
 
-		$this->dao->begin();
-		try {
-			
-			// マスターデータをDB登録
-			$masterBoxs = $this->regMasterData($masterBoxs);
-			
-			// IDマッピングを作成
-			$masterBoxs = $this->makeIdMap($masterBoxs);
+		// マスターデータをDB登録
+		$masterBoxs = $this->regMasterData($masterBoxs);
+		
+		// IDマッピングを作成
+		$masterBoxs = $this->makeIdMap($masterBoxs);
 
-			// 登録メインデータを作成
-			$mainData = $this->createMainData($data, $masterBoxs, $csvFieldData);
-			
-			// 登録メインデータ加工：追加と上書きに分ける。ついでに共通情報もセット。
-			$main_table_name = $csvParam['main_table_name'];
-			$mainData = $this->prosMainData($mainData, $main_table_name);
-			$this->xss_escape($mainData);
-			
-			// テーブルフィールドフィルター: テーブルに存在しないフィールドをデータから除去する
-			$mainData = $this->tableFieldFilter($main_table_name, $mainData);
-			
-			// データをサニタイズする
-			$this->sql_sanitize($mainData);
-			
-			// データからINSERTとUPDATEのSQL文を生成する
-			$res = $this->createInsertAndUpdate($main_table_name, $mainData);
+		// 登録メインデータを作成
+		$mainData = $this->createMainData($data, $masterBoxs, $csvFieldData);
 
-			
-			// UPDATEを実行
-			$updates = $res['updates'];
-			foreach($updates as $sql){
-				$this->dao->sqlExe($sql);
-			}
-			
-			// INSERTを実行
-			$inserts = $res['inserts'];
-			foreach($inserts as $sql){
-				$this->dao->sqlExe($sql);
-			}
-			
-			$ins_cnt = count($inserts); // 新規追加数
-			$upd_cnt = count($updates); // 上書き数
-			
-		} catch (Exception $e) {
-			$this->dao->rollback();
-			throw $e;
+		// 登録メインデータ加工：追加と上書きに分ける。ついでに共通情報もセット。
+		$main_table_name = $csvParam['main_table_name'];
+		$mainData = $this->prosMainData($mainData, $main_table_name);
+		$this->xss_escape($mainData);
+		
+		// テーブルフィールドフィルター: テーブルに存在しないフィールドをデータから除去する
+		$mainData = $this->tableFieldFilter($main_table_name, $mainData);
+		
+		// データをサニタイズする
+		$this->sql_sanitize($mainData);
+		
+		// データからINSERTとUPDATEのSQL文を生成する
+		$res = $this->createInsertAndUpdate($main_table_name, $mainData);
+		
+		
+		// UPDATEを実行
+		$updates = $res['updates'];
+		foreach($updates as $box){
+		    $this->exeBoxSql($box);
 		}
-		$this->dao->commit();
+		
+		// INSERTを実行
+		$inserts = $res['inserts'];
+		foreach($inserts as $box){
+		    $this->exeBoxSql($box);
+		}
+
+		
+		$ins_cnt = count($inserts); // 新規追加数
+		$upd_cnt = count($updates); // 上書き数
+			
+
 		
 		return [
 				'ins_cnt' => $ins_cnt,
 				'upd_cnt' => $upd_cnt,
 		];
 		
+	}
+	
+	
+	/**
+	 * ボックスデータ内のSQLを実行する
+	 * @param array $box ボックス
+	 */
+	private function exeBoxSql($box){
+	    $sql = $box['sql'];
+	    $res = $this->dao->sqlExe($sql);
 	}
 	
 	
@@ -125,7 +137,7 @@ class CsvExin{
 	private function setMasterBoxsFromFieldData(&$masterBoxs, &$csvFieldData){
 
 		foreach($csvFieldData as $cfEnt){
-			if(empty($cfEnt['master'])) continue;
+			if($cfEnt['join_type'] != 'left') continue;
 			$master = $cfEnt['master'];
 			
 			// テーブル名取得
@@ -322,15 +334,15 @@ class CsvExin{
 			
 			// UPDATEを実行
 			$updates = $res['updates'];
-			foreach($updates as $sql){
-				$this->dao->sqlExe($sql);
+			foreach($updates as $box){
+				$this->exeBoxSql($box);
 			}
 			
 			// INSERTを実行
 			$inserts = $res['inserts'];
 			$newIds=[];
-			foreach($inserts as $sql){
-				$this->dao->sqlExe($sql);
+			foreach($inserts as $box){
+				$this->exeBoxSql($box);
 				$newIdRes = $this->dao->sqlExe("SELECT LAST_INSERT_ID()");
 				$newIds[] = $this->getValueFromAryDepth($newIdRes);
 			}
@@ -380,20 +392,25 @@ class CsvExin{
 		
 		$inserts = array(); // INSERT SQLリスト
 		$updates = array(); // UPDATE SQLリスト
-		foreach($data as &$ent){
+		foreach($data as $ent){
 			
-			
+			$box = [];
 			// IDが空ならINSERT文を組み立て
 			if(empty($ent['id'])){
-				$inserts[] = $this->makeInsertSql($tbl_name, $ent); // INSERT文を作成する
+			    $sql = $this->makeInsertSql($tbl_name, $ent); // INSERT文を作成する
+			    $box['sql'] = $sql;
+			    $box['ent'] = $ent;
+			    $inserts[] = $box;
 			}
 			
 			// IDが存在すればUPDATE文を組み立て
 			else{
-				$updates[] = $this->makeUpdateSql($tbl_name, $ent); // UPDATE文を作成する
+			    $sql = $this->makeUpdateSql($tbl_name, $ent); // UPDATE文を作成する
+			    $box['sql'] = $sql;
+			    $box['ent'] = $ent;
+			    $inserts[] = $box;
 			}
 		}
-		unset($ent);
 		
 		$res = [
 				'inserts' => $inserts,
@@ -465,7 +482,7 @@ class CsvExin{
 		// SQLを実行
 		$sql = "SELECT * FROM {$table_name} WHERE id IN($j_str)";
 		$res = $this->dao->sqlExe($sql);
-		
+
 		if(empty($res)) return $box;
 		
 		// 新規追加ばかりのDBデータ
@@ -543,7 +560,7 @@ class CsvExin{
 				$field = $cfEnt['field'];
 				
 				// マスタテーブルからIDを取ってくるケース
-				if(!empty($cfEnt['master'])){
+				if($cfEnt['join_type'] == 'left'){
 					$master = $cfEnt['master'];
 					$idMap = $masterBoxs[$master]['idMap'];
 					$value = null;
@@ -555,7 +572,7 @@ class CsvExin{
 				}
 				
 				// IDマップがフィールドデータに定義されているケース
-				elseif(!empty($cfEnt['idMap'])){
+				elseif($cfEnt['join_type'] == 'const'){
 					$value = null;
 					if(!empty($ent[$field])) $value = $ent[$field];
 					$x_id = array_search($value, $cfEnt['idMap']);
@@ -576,7 +593,6 @@ class CsvExin{
 			
 			$mainData[] = $mainEnt;
 		}
-		
 		return $mainData;
 	}
 	

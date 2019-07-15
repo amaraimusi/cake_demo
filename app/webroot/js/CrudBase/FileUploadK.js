@@ -12,8 +12,8 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.2.8
- * @date 2018-7-6 | 2019-5-20
+ * @version 1.2.9
+ * @date 2018-7-6 | 2019-7-15
  * @history 
  *  - 2018-10-2 var 1.2.6 「Now Loading...」メッセージを表示する
  *  - 2018-9-18 var 1.2.5 コールバックパラメータを追加（pacb_param)
@@ -850,9 +850,12 @@ class FileUploadK{
 		var label_width = this.box[fue_id]['label_width']
 		var label_height = this.box[fue_id]['label_height']
 		var parLabel = this._getElement(fue_id,'label');
-		parLabel.width(label_width);
-		parLabel.height(label_height);
-		
+		var display = parLabel.css('display');
+		if(display == 'block'){
+			parLabel.width(label_width);
+			parLabel.height(label_height);
+		}
+
 		// ファイルデータもクリアする。
 		this.box[fue_id]['fileData'] = [];
 	}

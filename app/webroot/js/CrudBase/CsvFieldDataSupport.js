@@ -157,7 +157,7 @@ class CsvFieldDataSupport{
 		str += 's';
 
 		return str;
-	};
+	}
 	
 	
 	/**

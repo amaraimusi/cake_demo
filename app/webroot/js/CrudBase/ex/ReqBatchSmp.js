@@ -2,8 +2,8 @@
  * リクエスト分散バッチ処理【シンプル版】
  * 
  * 
- * @date 2019-5-19 | 2019-5-27
- * @version 1.0.3
+ * @date 2019-5-19 | 2019-7-4
+ * @version 1.0.5
  */
 class ReqBatchSmp{
 	
@@ -19,7 +19,8 @@ class ReqBatchSmp{
 	 *  - interval インターバル(ミリ秒） デフォルト1000ms
 	 *  - fail_limit 失敗限界数   失敗数が失敗限界数を超えると強制停止
 	 *  - asyn_param 非同期コールバックに付加するパラメータ
-	 *  - prog_flg 進捗バーフラグ true:自動進捗（デフォ）, false:手動進捗
+	 *  - prog_flg 進捗バーフラグ true:自動進捗（def）, false:手動進捗
+	 *  - start_btn_flg スタートボタン表示フラグ true:表示(def), false:非表示
 	 *  
 	 *  @param object callbacks コールバック情報
 	 *  - thread_cb function スレッドコールバック
@@ -45,6 +46,7 @@ class ReqBatchSmp{
 		this.errDiv = this.tDiv.find('.req_batch_err'); // 一般エラーメッセージ
 		this.prog = this.tDiv.find('.req_batch_prog'); // 進捗バー
 		this.btnsA = this.tDiv.find('.req_batch_btns_a'); // ボタングループA
+		this.cShowBtn = this.tDiv.find('.req_batch_c_show_btn'); // 進捗詳細表示ボタン
 		this.stopBtn = this.tDiv.find('.req_batch_stop_btn'); // 停止ボタン
 		this.failBtn = this.tDiv.find('.req_batch_fail_btn'); // 失敗表示ボタン
 		this.consoleDiv = this.tDiv.find('.req_batch_console'); // コンソール区分
@@ -56,11 +58,11 @@ class ReqBatchSmp{
 		
 		this._addStartClickEvent(this.startBtn); 	// スタートボタンのクリックイベントを追加
 		this._addReloadClickEvent(this.reloadBtn); 	// リロードボタンクリックイベントを追加
+		this._addCShowClickEvent(this.cShowBtn); 	// 進捗詳細表示ボタンクリックイベントを追加
 		this._addStopClickEvent(this.stopBtn); 	// 停止ボタンクリックイベントを追加
 		this._addFailBtnClickEvent(this.failBtn); // 失敗ボタンのクリックイベントを追加 
 		this.prog.hide(); // 進捗バーを隠す
 		this.btnsA.hide();
-		this.consoleDiv.hide(); // コンソール区分を隠す
 		
 		this.param = param;
 		
@@ -82,6 +84,7 @@ class ReqBatchSmp{
 		if(param['main_index'] == null) param['main_index'] = 0;
 		if(param['data_num'] == null) param['data_num'] = -1;
 		if(param['prog_flg'] == null) param['prog_flg'] = true;
+		if(param['start_btn_flg'] == null) param['start_btn_flg'] = true;
 		
 		return param;
 	}
@@ -100,12 +103,14 @@ class ReqBatchSmp{
 	</div>
 	<div class="req_batch_err text-danger"></div>
 	<div><progress class="req_batch_prog"  max="100" style="display:none">■</progress></div>
+	
 	<div class="req_batch_btns_a" class="btn-group">
+		<input type="button" value='進捗詳細' class="req_batch_c_show_btn btn btn-default btn-xs" />
 		<input type="button" value="停止" class="req_batch_stop_btn btn btn-default btn-xs"/>
 		<input type="button" value="失敗(0)" class="req_batch_fail_btn btn btn-default btn-xs"/>
 	</div>
 	<br>
-	<div class="req_batch_console console">
+	<div class="req_batch_console console" style="display:none">
 		<div><span>処理数:</span><span class="req_batch_c_count"></span></div>
 		<div><span>成功:</span><span class="req_batch_c_success_count">0</span></div>
 		<div><span>失敗:</span><span class="req_batch_c_fail_count">0</span></div>
@@ -126,7 +131,6 @@ class ReqBatchSmp{
 		this.startBtn.hide();
 		this.prog.show();
 		this.btnsA.show();
-		this.consoleDiv.show();
 
 		this.prog.val(0);
 
@@ -167,13 +171,27 @@ class ReqBatchSmp{
 	
 	
 	/**
+	 * 進捗詳細表示ボタンクリックイベントを追加
+	 * @param jQuery stopBtn 進捗詳細表示ボタンの要素
+	 */
+	 _addCShowClickEvent(btn){
+		 btn.click((evt)=>{
+			this.consoleDiv.toggle(300);
+		});
+	}
+	
+	
+	/**
 	 * 停止ボタンクリックイベントを追加
 	 * @param jQuery stopBtn 停止ボタンの要素
 	 */
 	_addStopClickEvent(stopBtn){
 		stopBtn.click((evt)=>{
 			this.stopThread(); // スレッド停止
-			this.startBtn.show(); // スタートボタンを再表示
+			if(this.param.start_btn_flg){
+				this.startBtn.show(); // スタートボタンを再表示
+			}
+			
 		});
 	}
 	

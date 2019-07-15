@@ -49,7 +49,6 @@
  *  
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
-
 class CrudBase{
 
 	/**
