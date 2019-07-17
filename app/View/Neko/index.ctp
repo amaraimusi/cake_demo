@@ -111,8 +111,8 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 	</div><!-- main_tools -->
 	
 	<div id="sub_tools">
-		<input type="button" value="ボタンサイズ変更" class="btn btn-default btn-xs" onclick="jQuery('#CbBtnSizeChanger').toggle(300);" />
-		<div id="CbBtnSizeChanger" style="display:none"></div>
+		<!-- CrudBase設定 -->
+		<div id="crud_base_config" style="display:inline-block"></div>
 		
 		<button id="calendar_view_k_btn" type="button" class="btn btn-default btn-xs" onclick="calendarViewKShow()" >
 			<span class="glyphicon glyphicon-time" >カレンダーモード</span></button>

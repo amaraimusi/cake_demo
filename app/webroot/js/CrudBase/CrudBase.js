@@ -7,13 +7,9 @@
  * 削除、編集、新規追加するたびに更新するのが重い場合、適用ボタンで一括適用するモードも備える。
  * 
  * 
- * 
- * 課題
- * td内部へのSetやGetは、先頭要素とtd直下にしか対応していない。
- * 複雑なtd内部にも対応するとなるとコールバックを検討しなければならない。
- * 
- * @date 2016-9-21 | 2019-6-28
- * @version 2.8.3
+ * @license MIT
+ * @date 2016-9-21 | 2019-7-17
+ * @version 2.8.4
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -46,6 +42,7 @@
  *  - drag_and_resize_flg フォームドラッグとリサイズのフラグ 0:OFF , 1:ON(デフォルト)
  *  - form_mode フォームモード 0:ダイアログモード , 1:アコーディオンモード(デフォルト）
  *  - midway_dp リソース配置先用の中間ディレクトリパス
+ *  - configData CrudBaseConfigの設定データ
  *  
  *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
@@ -88,6 +85,12 @@ class CrudBase{
 		// テーブルオブジェクト
 		this.tbl = jQuery('#' + this.param.tbl_slt);
 		
+		// CrudBase設定・コンポーネント
+		this.crudBaseConfig = this._factoryCrudBaseConfig(this.param.configData);
+		
+		// ボタンサイズ変更コンポーネント
+		this.cbBtnSizeChanger = this.crudBaseConfig.cbBtnSizeChanger;
+		
 		// 自動保存機能・コンポーネント
 		this.autoSave = this._factoryCrudBaseAutoSave(); 
 
@@ -102,10 +105,7 @@ class CrudBase{
 		
 		// カレンダー日付ピッカー・ラッパーコンポーネント
 		this.datepickerWrap = this._factoryDatepickerWrap();
-		
-		// ボタンサイズ変更コンポーネント
-		this.cbBtnSizeChanger = this._factoryCbBtnSizeChanger();
-		
+
 		// カレンダービュー
 		this.calendarViewK = this._factoryCalendarViewK();
 		
@@ -302,8 +302,25 @@ class CrudBase{
 		
 		if(param['midway_dp'] == null) param['midway_dp'] = '';
 		
+		if(param['configData'] == null) param['configData'] = {};
 		
 		return param;
+	}
+	
+
+	/**
+	 * CrudBase設定
+	 * @param object configData 設定データ
+	 * @return CrudBaseConfig CrudBase設定・コンポーネント
+	 */
+	_factoryCrudBaseConfig(configData){
+
+		// 自動保存機能の初期化
+		let crudBaseConfig = new CrudBaseConfig();
+		crudBaseConfig.init(null, configData);
+		
+		return crudBaseConfig;
+		
 	}
 	
 	
@@ -448,31 +465,6 @@ class CrudBase{
 		datepickerWrap = new DatepickerWrap(this);
 		
 		return datepickerWrap;
-		
-	}
-	
-	
-	/**
-	 * ボタンサイズ変更コンポーネントのファクトリーメソッド
-	 * @return CbBtnSizeChanger ボタンサイズ変更コンポーネント
-	 */
-	_factoryCbBtnSizeChanger(){
-		var cbBtnSizeChanger;
-		
-		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
-		var t = typeof CbBtnSizeChanger;
-		if(t == null || t == 'undefined'){
-			// 「空」実装
-			cbBtnSizeChanger = {
-					'dummy':function(){},
-			}
-			return cbBtnSizeChanger
-		}
-		
-		// 自動保存機能の初期化
-		cbBtnSizeChanger = new CbBtnSizeChanger();
-		
-		return cbBtnSizeChanger;
 		
 	}
 	
@@ -812,6 +804,11 @@ class CrudBase{
 	 *  - cbAfterReg(ent) 削除登録後に実行するコールバック
 	 */
 	deleteAction(elm,option){
+		
+		// 削除アラートの表示
+		if(this.crudBaseConfig.data.delete_alert_flg == 1){
+			if(!window.confirm('削除しますがよろしいですか？')) return;
+		}
 		
 		if(!(elm instanceof jQuery)) elm = jQuery(elm);
 

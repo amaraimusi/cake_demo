@@ -39,9 +39,8 @@ function init(){
 			'src_code':'neko', // 画面コード（スネーク記法)
 			'kjs':kjs,
 			'ni_tr_place':1,
+			configData:{delete_alert_flg:1} // 削除アラートフラグ    1:一覧行の削除ボタンを押したときアラートを表示する
 		});
-	
-
 
 	// 表示フィルターデータの定義とセット
 	var disFilData = {
