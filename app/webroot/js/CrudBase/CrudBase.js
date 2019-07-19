@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-7-17
- * @version 2.8.4
+ * @date 2016-9-21 | 2019-7-19
+ * @version 2.8.5
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -2696,6 +2696,7 @@ class CrudBase{
 		
 		var tag_name = elm.get(0).tagName; // 入力要素のタグ名を取得する
 		
+		
 		// 値に表示フィルターをかける
 		if(option['dis_fil_flg']){
 			var res = this.displayFilter(val1,field,option.disFilData,xss);
@@ -2716,7 +2717,7 @@ class CrudBase{
 			}
 			return;
 		}
-		
+
 		// 値を入力フォームにセットする。
 		if(tag_name == 'INPUT' || tag_name == 'SELECT'){
 
@@ -2747,8 +2748,10 @@ class CrudBase{
 			}
 
 			else{
-				val1 = this._xssSanitaizeDecode(val1);// XSSサニタイズを解除
-				elm.val(val1);
+				
+				// カスタム型のセット
+				this._setForCustumType(elm,field,val1,ent,option);
+
 			}
 
 		}
@@ -2777,6 +2780,36 @@ class CrudBase{
 		}
 		
 		
+	}
+	
+
+	/**
+	 * カスタム型のセット
+	 * @param elm(string or jQuery object) 要素オブジェクト、またはセレクタ
+	 * @param field フィールド
+	 * @param val1 要素にセットする値
+	 * @param ent エンティティ
+	 * @param option
+	 */
+	_setForCustumType(elm,field,val1,ent,option){
+
+		let val2 = this._xssSanitaizeDecode(val1);// XSSサニタイズを解除
+		let custum_type = elm.attr('data-custum-type'); // カスタム型
+		
+		// リンク型である場合
+		if(custum_type == 'link'){
+			let td= elm.parents('td');
+			let aElm = td.find('a');
+			let url = aElm.attr('data-url-tmp');
+			url = url.replace('%0', val2);
+			aElm.attr('href', url);
+			aElm.html(val1);
+			elm.val(val2);
+			return;
+		}
+		
+		// その他
+		elm.val(val2);
 	}
 	
 	

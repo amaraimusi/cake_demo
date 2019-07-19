@@ -97,7 +97,7 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'CrudBase/dist/CrudBase.min.js?ver=2.8.4',
+				'CrudBase/dist/CrudBase.min.js?ver=2.8.5',
 				
 		);
 	}
@@ -810,18 +810,32 @@ class CrudBaseHelper extends FormHelper {
 		$this->tblPreview($v,$wamei);
 
 	}
-	/**
-	 * プロパティを日本円表記に変換する。
-	 *
-	 * @param string $v プロパティ
-	 * @return string 日本円表示の文字列
-	 */
 	public function propMoney($v){
 		if(!empty($v) || $v===0){
 			$v= '&yen'.number_format($v);
 		}
 		
 		return $v;
+	}
+	
+	
+	/**
+	 * リンクを作成する
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 * @param string $url URL    値に置換する部分は「%0」と表記する。
+	 */
+	public function tdLink(&$ent, $field, $url){
+	    
+	    $v = $ent[$field];
+	    $url2 = str_replace('%0', $v, $url);
+	    
+	    $td = "
+            <td>
+                <input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
+                <a href='{$url2}' data-url-tmp='{$url}' >{$v}</a>
+            </td>";
+	    $this->setTd($td,$field);
 	}
 	
 	
