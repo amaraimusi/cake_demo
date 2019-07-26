@@ -8,9 +8,9 @@
  * - init 初期化
  * - refresh 一覧テーブルをリフレッシュする
  * 
- * @version 1.5
- * 
- * 
+ * @version 1.5.2
+ * @date 2014-4-1 │ 2019-7-26
+ * @license MIT
  * @author k-uehara 
  */
 var ClmShowHide =function(){
@@ -144,6 +144,14 @@ var ClmShowHide =function(){
 
 			//すべての列表示チェックボックスにチェックを入れる。
 			allChecked(tblId,chBoxsId,my.actClmData);
+
+		});
+
+		//「すべてはずす」ボタンにイベントを追加。
+		$("#" + tblId + "_all_uncheck_btn").click(function(event){
+
+			//すべての列表示チェックボックスからチェックをはずす
+			allUnchecke(tblId,chBoxsId,my.actClmData);
 
 		});
 
@@ -303,6 +311,32 @@ var ClmShowHide =function(){
 
 
 	/**
+	 * すべての列表示チェックボックスからチェックをはずす
+	 */
+	function allUnchecke(tblId,chBoxsId,clmData){
+		
+		// チェックボックス群要素のjQueyオブジェクトを取得する
+		var chBox = $('#' + my.props.chBoxsId);
+		
+		for (var i in clmData) {
+
+			// チェックボックス要素を取得する
+			var cb = chBox.find("[index=" + i + "]");
+
+			if(cb[0]){
+				var checked= cb.prop('checked');
+	
+				if(checked==true){
+					cb.prop('checked', false);//列表示チェックボックスにチェックをはずす
+					my.clm_hide_csh(tblId,i);//列を隠す
+				}
+			}
+		}
+
+	};
+
+
+	/**
 	 * 列の表示状態をローカルストレージに保存
 	 */
 	function saveClmData(tblId,chBoxsId,unique){
@@ -356,6 +390,10 @@ var ClmShowHide =function(){
 		//すべてチェックボタンを作成
 		var allCheckedBtn="<div class='csh_func_btn'><input type='button' value='すべてチェック' id='" + tblId + "_all_checked_btn' class='btn btn-primary btn-xs' /></div>";
 		cbs.append(allCheckedBtn);
+		
+		//すべてはずすボタンを作成
+		var allUncheckBtn="<div class='csh_func_btn'><input type='button' value='すべてはずす' id='" + tblId + "_all_uncheck_btn' class='btn btn-primary btn-xs' /></div>";
+		cbs.append(allUncheckBtn);		
 
 		//「初期に戻す」ボタンを作成
 		var defaultBtn="<div class='csh_func_btn'><input type='button' value='初期に戻す' id='" + tblId + "_default_btn' class='btn btn-primary btn-xs' /></div>";
