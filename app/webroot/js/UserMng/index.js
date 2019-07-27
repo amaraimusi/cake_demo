@@ -90,10 +90,7 @@ function init(){
 			editReg(); // 登録処理
 		}
 	});
-	
-	// リアクト機能の初期化■■■□□□■■■□□□■■■□□□開発中
-	crudBase.reactInit('user_mng_tbl, hyo2');
-	
+
 	// CrudBase一括追加機能の初期化
 	var today = new Date().toLocaleDateString();
 	crudBase.crudBaseBulkAdd.init(

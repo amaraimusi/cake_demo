@@ -96,9 +96,6 @@ function init(){
 		}
 	});
 	
-	// リアクト機能の初期化■■■□□□■■■□□□■■■□□□開発中
-	crudBase.reactInit('neko_tbl, hyo2');
-	
 	// CrudBase一括追加機能の初期化
 	var today = new Date().toLocaleDateString();
 	crudBase.crudBaseBulkAdd.init(
