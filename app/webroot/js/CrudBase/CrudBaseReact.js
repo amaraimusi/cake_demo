@@ -1,5 +1,5 @@
 /**
- * CrudBase用リアクティブ機能
+ * CrudBase用リアクティブ機能（未完成）
  * 
  * @note
  * 行/エンティティ単位で要素をバインドすることができる。
@@ -50,8 +50,6 @@ class CrudBaseReact{
 		}
 		this.hyoIds = hyoIds;
 		
-//		console.log(this.fields);//■■■□□□■■■□□□■■■□□□)
-//		console.log(this.hyoIds);//■■■□□□■■■□□□■■■□□□)
 	}
 	
 	/**
@@ -60,7 +58,6 @@ class CrudBaseReact{
 	 * 各表の行/エンティティを同期する
 	 */
 	reactivatingOfRow(){
-//		console.log('test=Ａ');//■■■□□□■■■□□□■■■□□□)
 	}
 
 }

@@ -115,7 +115,7 @@ class BulkLatlngBatY{
 	 * @param object res 非同期処理のレスポンスデータ
 	 */
 	asynRes(res){
-		console.log(res);//■■■□□□■■■□□□■■■□□□)
+		console.log(res);
 	}
 
 }

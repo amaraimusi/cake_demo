@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-7-26
- * @version 2.8.6
+ * @date 2016-9-21 | 2019-7-27
+ * @version 2.8.7
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -126,6 +126,12 @@ class CrudBase{
 		
 		// CSVフィールドデータ補助クラス
 		this.csvFieldDataSupport = new CsvFieldDataSupport();
+		
+		// ページネーションジャンプ
+		let pagenationJumpT = new PagenationJump(); // 上側ページネーション
+		pagenationJumpT.init();
+		let pagenationJumpB = new PagenationJump(); // 下側ページネーション
+		pagenationJumpB.init({xid:'pagenation_jump_b'});
 		
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
@@ -4318,11 +4324,6 @@ class CrudBase{
 		var fields = this._getFields();
 		
 		this.crudBaseReact.init(fields, hyo_elm_id);
-		
-		// ■■■□□□■■■□□□■■■□□□
-		var d2 = new Date();
-		var t2 = d1.getTime();
-		var t3 = t2 - t1;
 
 	}
 	
