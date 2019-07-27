@@ -130,12 +130,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 <div id="new_inp_form_point"></div><!-- 新規入力フォーム表示地点 -->
 
 
-<div style="margin-top:8px;">
-	<div style="display:inline-block">
-		<?php echo $pages['page_index_html'];//ページ目次 ?>
-	</div>
-	<div style="display:inline-block">件数:<?php echo $data_count ?></div>
-</div>
+<?php echo $this->element('CrudBase/pagenation_t');?>
 
 <div id="calendar_view_k"></div>
 
@@ -211,6 +206,9 @@ foreach($data as $i=>$ent){
 ?>
 </tbody>
 </table>
+
+<?php echo $this->element('CrudBase/pagenation_b');?>
+<br>
 
 <button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_bottom');">
 	<span class="glyphicon glyphicon-plus-sign" title="新規入力"> 追加</span></button>
