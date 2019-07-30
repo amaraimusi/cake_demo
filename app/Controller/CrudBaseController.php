@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.7.5";
+	var $version = "2.7.8";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -438,7 +438,6 @@ class CrudBaseController extends AppController {
 		$this->PagenationForCake = new PagenationForCake();
 		$pages = $this->PagenationForCake->createPagenationData($pages,$data_count,$base_url , $pagenation_param,$this->table_fields,$kjs);
 		
-
 		$kjs_json = json_encode($kjs,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
 		// 行入替機能フラグを取得する
@@ -1823,18 +1822,30 @@ class CrudBaseController extends AppController {
 
 		$fp = $path_tmpl;
 		
+		if(empty($date)){
+			$date = date('Y-m-d H:i:s');
+		}
+		$u = strtotime($date);
+		
 		// ファイル名を置換
 		$fn = $FILES[$field]['name']; // ファイル名を取得
+		
+		// ファイル名が半角英数字でなければ、日時をファイル名にする。（日本語ファイル名は不可）
+		if (!preg_match("/^[a-zA-Z0-9-_.]+$/", $fn)) {
+			
+			// 拡張子を取得
+			$pi = pathinfo($fn);
+			$ext = $pi['extension'];
+			if(empty($ext)) $ext = 'png';
+			$fn = date('Y-m-d_his',$u) . '.' . $ext;// 日時ファイル名の組み立て
+		}
+		
 		$fp = str_replace('%fn', $fn, $fp);
 		
 		// フィールドを置換
 		$fp = str_replace('%field', $field, $fp);
 
 		// 日付が空なら現在日時をセットする
-		if(empty($date)){
-			$date = date('Y-m-d H:i:s');
-		}
-		$u = strtotime($date);
 		$Y = date('Y',$u);
 		$m = date('m',$u);
 		$d = date('d',$u);
