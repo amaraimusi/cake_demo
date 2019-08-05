@@ -1,8 +1,8 @@
 /**
  * CSVフィールドデータ補助クラス
  * 
- * @version 0.8
- * @date 2019-6-28
+ * @version 0.9
+ * @date 2019-6-28 | 2019-7-27
  * @auther kenji uehara
  * @license MIT
  */
@@ -104,6 +104,14 @@ class CsvFieldDataSupport{
 			// エクスポートフラグが未セットならtrueをセット
 			if(ent.export_flg == null) ent['export_flg'] = true;
 			
+			// 入力タイプ
+			if(ent.inp_type == null){
+				if(ent['id_field'] == null){
+					ent['inp_type'] = 'text';
+				}else{
+					ent['inp_type'] = 'select';
+				}
+			}
 			
 		}
 		
