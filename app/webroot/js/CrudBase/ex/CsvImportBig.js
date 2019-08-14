@@ -4,8 +4,8 @@
  * @note
  * FileUploadK.jsとReqBatchSmp.jsに依存
  * 
- * @date 2019-5-19 | 2019-7-15
- * @version 2.0.0
+ * @date 2019-5-19 | 2019-8-12
+ * @version 2.0.1
  * 
  */
 class CsvImportBig{
@@ -30,11 +30,17 @@ class CsvImportBig{
 		var html = this._createHtml(); 
 		this.tDiv.html(html);
 		
+		// ファイル配置イベント関数をセットする
+		let funcFileputEvent = this.fileputEvent.bind(this);
+		let fukCallbacks = {
+				fileputEvent:funcFileputEvent
+		}
+		
 		// ファイルアップロードオブジェクト | ZIPのアップロード
 		this.fileUploadK = new FileUploadK({
 				'ajax_url':param.zip_upload_ajax_url,
 				'prog_slt':'#sdr_fuk_prog',
-				'err_slt':'#sdr_err',});
+				'err_slt':'#sdr_err',}, fukCallbacks);
 		this.fileUploadK.addEvent('sdr_file');
 		
 		this.fukUploadBtn = this.tDiv.find("#sdr_fuk_upload_btn"); // ZIPファイルアップロードボタン
@@ -80,6 +86,7 @@ class CsvImportBig{
 		if(param['zip_clear_flg'] == null) param['zip_clear_flg'] = false; // ZIPファイル群クリアフラグ
 		if(param['csv_row_no'] == null) param['csv_row_no'] = 1; // CSV行番
 		if(param['err_count'] == null) param['err_count'] = 0; // エラーカウント
+		if(param['reg_count'] == null) param['reg_count'] = 0; // 登録件数
 		
 		let date_str = this._dateFormat(null, 'Ymdhis');
 		if(param['err_log_fp'] == null) param['err_log_fp'] = 'log/csv_import_big' + date_str + '.log'; // エラーログファイルパス
@@ -98,26 +105,36 @@ class CsvImportBig{
 			<input type="file" id="sdr_file" accept="application/zip" title="CSVのZIPファイルをドラッグ＆ドロップ" style="display:none" />
 		</label>
 
-		<div id="sdr_zip_send_w" >
+		<div id="sdr_zip_send_w" style="display:none">
 			<input id="sdr_fuk_upload_btn" type="button" value="ZIPを送信" class="btn btn-warning">
 			<progress id="sdr_fuk_prog" value="0" max="100"></progress>
 		</div>
+		<div id="sdr_err" class="text-danger"></div>
 		<div id="sdr_success_msg" class="text-success"></div>
 		<input id="sdr_reload_btn" type="button" class="btn btn-primary" value="リロード" style="display:none">
-		<div id="sdr_req_batch"></div>
 		<div id="sdr_log_w" style="display:none;padding:3px">
 			<div class="text-danger">エラー数: <span id="sdr_log_err_count">0</span></div>
 			<a id="sdr_log_dl" href="" target="blank" download="download.txt" class="btn btn-info btn-xs">エラーログ・ダウンロード</a>
 			<input id="sdr_log_show" type="button" value="エラーログ表示" class="btn btn-info btn-xs" />
 		</div>
-		<div id="sdr_err" class="text-danger"></div>
 		<div id="sdr_log_text_w" style="display:none">
 			<input id="sdr_log_text_close" type="button" value="閉じる" class="btn btn-default btn-xs" />
 			<pre id="sdr_log_text"></pre>
 		</div>
+		<div id="sdr_req_batch"></div>
 	</div>
 		`;
 		return html;
+	}
+	
+	
+	/**
+	 * ファイル配置直後イベント
+	 * @param box ファイル情報ボックス
+	 */
+	fileputEvent(box){
+		this.zipSendW.show();
+		this.logW.hide();
 	}
 	
 	
@@ -149,7 +166,6 @@ class CsvImportBig{
 			// ZIPファイルをサーバーにアップロードする。
 			var func = this.afterZipUpload.bind(this);
 			this.fileUploadK.uploadByAjax(func,withData);
-			
 			
 		});
 	}
@@ -275,14 +291,25 @@ class CsvImportBig{
 	 */
 	threadCsvRead(res){
 		var param = res.data;
-		
-		
+
 		// 終了フラグがONならスレッドを停止
 		if(param.end_flg == true){
+			let reg_count = param.reg_count; // 登録件数
+			if(param.err_count == 0){
+				// 入力エラーが0件である場合
+				let msg = `${reg_count}件登録しました。CSV読込処理は、すべて終了しました。「リロード」ボタンを押して一覧を更新してください。`;
+				this._showMsg(msg);
+				
+				this.reloadBtn.show(); // リロードボタンを表示
+			}else{
+				// 入力エラーが1件以上である場合
+				let msg = `${reg_count}件登録しましたが入力エラーのため登録できないデータもありました。登録したデータを削除するには「一括削除」機能を利用してしてください。`;
+				this._showMsg();
+				this._showErr(msg);
+				this.logW.show();
+			}
 			this.reqBatchSmp.advanceProg(100); // 進捗バーを100%にする
-			this.succMsg.html('CSV読込処理は、すべて終了しました。「リロード」ボタンを押して一覧を更新してください。');
 			this.reqBatchSmp.stopThread();
-			this.reloadBtn.show(); // リロードボタンを表示
 			
 			return;
 		}
@@ -316,8 +343,6 @@ class CsvImportBig{
 		txt_fp += 'txt'; // 拡張子であるtxtを付け足す。
 		this.logDl.attr('href', param.err_log_fp);
 		this.logDl.attr('download', txt_fp);
-		
-		this.logW.show();
 
 	}
 	
@@ -328,6 +353,15 @@ class CsvImportBig{
 	 */
 	_showErr(err_msg){
 		this.errDiv.append(err_msg + '<br>');
+	}
+	
+	
+	/**
+	 * メッセージを表示する
+	 * @param string msg メッセージ
+	 */
+	_showMsg(msg){
+		this.succMsg.html(msg);
 	}
 	
 	

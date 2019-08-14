@@ -12,8 +12,8 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.2.9
- * @date 2018-7-6 | 2019-7-15
+ * @version 1.3.0
+ * @date 2018-7-6 | 2019-8-13
  * @history 
  *  - 2018-10-2 var 1.2.6 「Now Loading...」メッセージを表示する
  *  - 2018-9-18 var 1.2.5 コールバックパラメータを追加（pacb_param)
@@ -53,8 +53,15 @@ class FileUploadK{
 	 *          拡張子配列指定: array('jpg','png')
 	 *          拡張子コンマ連結: 'jpg,png,gif'
 	 * - valid_mime_flg バリデーションMIMEフラグ 0:バリデーション行わない(デフォ) , 1:バリデーションを行う
+	 * 
+	 * @param callbacks
+	 * - function fileputEvent(box) ファイル配置イベント    DnD直後およびファイル選択直後のイベント
 	 */
-	constructor(param){
+	constructor(param, callbacks){
+		
+		// コールバック関数群
+		if(callbacks == null) callbacks = {};
+		this.callbacks = callbacks;
 		
 		this.active_fue_id;// ファイルアップロード要素のid属性(イベント中）
 		
@@ -157,6 +164,11 @@ class FileUploadK{
 			var files = evt.dataTransfer.files; 
 			this.box[fue_id]['files'] = files;
 			this._preview(fue_id,'files',option); // プレビュー表示
+
+			// コールバックを実行する
+			if(this.callbacks.fileputEvent != null){
+				this.callbacks.fileputEvent(this.box);
+			}
 			
 		},false);
 		// ドラッグオーバーイベントを発動させないようにする。
@@ -173,6 +185,11 @@ class FileUploadK{
 			if(files == null || files.length == 0) return;// ファイル件数が0件なら処理抜け
 			this.box[fue_id]['files'] = files;
 			this._preview(fue_id,'files',option); // プレビュー表示
+			
+			// コールバックを実行する
+			if(this.callbacks.fileputEvent != null){
+				this.callbacks.fileputEvent(this.box);
+			}
 			
 		});
 		

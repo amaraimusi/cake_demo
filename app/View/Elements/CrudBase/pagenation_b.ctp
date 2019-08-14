@@ -1,8 +1,8 @@
 
-<div style="margin-top:8px;">
-<div style="display:inline-block">
-<?php echo $pages['page_index_html'];//ページ目次 ?>
-	</div>
+<div  class="pagenation_w" style="margin-top:8px;">
+	<div style="display:inline-block">
+	<?php echo $pages['page_index_html'];//ページ目次 ?>
+		</div>
 	<div id='pagenation_jump_b' 
 		data-row-limit='<?php echo $pages['row_limit']; ?>' 
 		data-count='<?php echo $data_count; ?>' 

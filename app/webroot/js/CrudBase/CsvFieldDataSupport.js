@@ -1,8 +1,8 @@
 /**
  * CSVフィールドデータ補助クラス
  * 
- * @version 0.9
- * @date 2019-6-28 | 2019-7-27
+ * @version 0.9.1
+ * @date 2019-6-28 | 2019-8-13
  * @auther kenji uehara
  * @license MIT
  */
@@ -60,6 +60,9 @@ class CsvFieldDataSupport{
 			
 			// 必須フラグが未セットならfalseをセット
 			if(ent.req_flg == null) ent['req_flg'] = false;
+			
+			// 列必須が未セットなら必須フラグをセット
+			if(ent.req_clm == null) ent['req_clm'] = ent['req_flg'];
 			
 			// JOINタイプが未セットならnullをセット
 			if(ent.join_type == null) ent['join_type'] = null;

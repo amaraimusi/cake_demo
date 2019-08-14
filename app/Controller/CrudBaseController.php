@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.7.8";
+	var $version = "2.7.9";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';

@@ -1,7 +1,7 @@
 
-<div style="margin-top:8px;">
-<div style="display:inline-block">
-<?php echo $pages['page_index_html'];//ページ目次 ?>
+<div class="pagenation_w" style="margin-top:8px;">
+	<div style="display:inline-block">
+		<?php echo $pages['page_index_html'];//ページ目次 ?>
 	</div>
 	<div id='pagenation_jump' 
 		data-row-limit='<?php echo $pages['row_limit']; ?>' 
