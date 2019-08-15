@@ -5,8 +5,8 @@ require_once('IDao.php');
 /**
  * 専属CSV読込 csv_exin
  * 
- * @date 2019-1-9 | 2019-7-13
- * @version 1.2.0
+ * @date 2019-1-9 | 2019-8-16
+ * @version 1.2.1
  */
 class CsvExin{
 
@@ -334,15 +334,15 @@ class CsvExin{
 			
 			// UPDATEを実行
 			$updates = $res['updates'];
-			foreach($updates as $box){
-				$this->exeBoxSql($box);
+			foreach($updates as $boxU){
+				$this->exeBoxSql($boxU);
 			}
 			
 			// INSERTを実行
 			$inserts = $res['inserts'];
 			$newIds=[];
-			foreach($inserts as $box){
-				$this->exeBoxSql($box);
+			foreach($inserts as $boxI){
+				$this->exeBoxSql($boxI);
 				$newIdRes = $this->dao->sqlExe("SELECT LAST_INSERT_ID()");
 				$newIds[] = $this->getValueFromAryDepth($newIdRes);
 			}
@@ -474,6 +474,9 @@ class CsvExin{
 	 * @return array マスターデータ
 	 */
 	private function setNewEntToMasterData($newIds, $box){
+		if(empty($box['table_name'])){
+			debug($box);//■■■□□□■■■□□□)
+		}
 		$table_name = $box['table_name'];
 		
 		// IN句部分を組み立て
