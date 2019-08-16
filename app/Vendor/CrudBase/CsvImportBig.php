@@ -528,7 +528,7 @@ class CsvImportBig{
 				$line = fgets ($fp);
 				$csv_row_no++;
 				if($line == false){
-				    if($i == 0) $end_flg = true; 
+					if($i == 0) $end_flg = true; 
 					break; // ファイル内テキストが末尾に達したら処理抜け
 				}
 				

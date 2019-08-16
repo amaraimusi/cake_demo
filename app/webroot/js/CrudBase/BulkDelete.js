@@ -1,8 +1,8 @@
 /**
  * 一括削除クラス
- * @date 2019-7-27
+ * @date 2019-7-27 | 2019-8-16
  * @license MIT
- * @version 1.0.0
+ * @version 1.0.1
  */
 class BulkDelete{
 	
@@ -215,7 +215,17 @@ class BulkDelete{
 		
 		// 入力区分から条件情報を取得する
 		let kjs = this._getKjsFromInps();
+
+		this.deleteByKjs(kjs); // 検索条件を指定して削除を実行する
 		
+	}
+
+	
+	/**
+	 * 検索条件を指定して削除を実行する
+	 * @param object kjs 検索条件情報
+	 */
+	deleteByKjs(kjs){
 		let sendData = {kjs:kjs};
 		sendData = this._escapeForAjax(sendData); // Ajax送信データ用エスケープ。実体参照（&lt; &gt; &amp; &）を記号に戻す。
 		sendData = this._ampTo26(sendData); // PHPのJSONデコードでエラーになるので、＆を%26に一括変換する
@@ -244,8 +254,10 @@ class BulkDelete{
 			this._showErr(jqXHR.responseText);
 			alert(statusText);
 		});
-		
 	}
+	
+	
+	
 	
 	
 	/**

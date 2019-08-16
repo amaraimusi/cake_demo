@@ -4,8 +4,8 @@
  * @note
  * FileUploadK.jsとReqBatchSmp.jsに依存
  * 
- * @date 2019-5-19 | 2019-8-12
- * @version 2.0.1
+ * @date 2019-5-19 | 2019-8-16
+ * @version 2.0.2
  * 
  */
 class CsvImportBig{
@@ -20,9 +20,14 @@ class CsvImportBig{
 	 *  - csv_read_ajax_url CSV読込保存AjaxURL
 	 *  - batch_data_num 一括データ処理数
 	 *  - zip_clear_flg ZIPファイル群クリアフラグ（危険） true:作業終了zipファイル群を削除, false:削除しない(デフォ）
+	 * @param object coms コンポーネントリスト
+	 *  - bulkDelete 一括削除オブジェクト | BulkDelete.js 指定すると一旦削除ができる。(省略可）
 	 */
-	init(param){
+	init(param,coms){
 		param = this._setParamIfEmpty(param);
+		
+		if(coms == null) coms = {};
+		this.coms = coms;
 
 		this.tDiv = jQuery('#' + param.div_xid); //  This division
 		
@@ -48,6 +53,7 @@ class CsvImportBig{
 		this.succMsg = this.tDiv.find("#sdr_success_msg"); // 正常メッセージ区分 
 		this.reloadBtn = this.tDiv.find("#sdr_reload_btn"); // リロードボタン
 		this.errDiv = this.tDiv.find("#sdr_err"); // エラー区分
+		this.delBtn = this.tDiv.find("#sdr_bulk_delete_btn"); // 削除ボタン
 		
 		// ログ関連
 		this.logW = this.tDiv.find("#sdr_log_w"); // ログのラッパー区分
@@ -57,9 +63,11 @@ class CsvImportBig{
 		this.logTextW = this.tDiv.find("#sdr_log_text_w"); // ログテキストのラッパー区分
 		this.logTextCloseBtn = this.tDiv.find("#sdr_log_text_close"); // ログテキスト閉じるボタン
 		this.logText = this.tDiv.find("#sdr_log_text"); //エラーログテキスト区分
+		
 
 		this._addReloadBtnClickEvent(this.reloadBtn); // リロードボタンにクリックイベントを組み込む
 		this._addFukUploadBtnClickEvent(this.fukUploadBtn); // ZIPファイルアップロードボタンにクリックイベントを組み込む
+		this._addDelBtnClickEvent(this.delBtn); // 削除ボタンにクリックイベントを組み込む
 		this._addLogShowClickEvent(this.logShow); // ログ表示ボタンにクリックイベントを組み込む
 		this._addLogTextCloseClickEvent(this.logTextCloseBtn); // ログテキスト閉じるボタンにクリックイベントを組み込む
 		
@@ -88,6 +96,7 @@ class CsvImportBig{
 		if(param['err_count'] == null) param['err_count'] = 0; // エラーカウント
 		if(param['reg_count'] == null) param['reg_count'] = 0; // 登録件数
 		
+		
 		let date_str = this._dateFormat(null, 'Ymdhis');
 		if(param['err_log_fp'] == null) param['err_log_fp'] = 'log/csv_import_big' + date_str + '.log'; // エラーログファイルパス
 		 
@@ -113,7 +122,10 @@ class CsvImportBig{
 		<div id="sdr_success_msg" class="text-success"></div>
 		<input id="sdr_reload_btn" type="button" class="btn btn-primary" value="リロード" style="display:none">
 		<div id="sdr_log_w" style="display:none;padding:3px">
-			<div class="text-danger">エラー数: <span id="sdr_log_err_count">0</span></div>
+			<div class="text-danger" style="margin-bottom:10px">
+				エラー数: <span id="sdr_log_err_count">0</span>
+				<input type="button" id="sdr_bulk_delete_btn" class="btn btn-danger btn-xs" value = "登録分を一旦削除する" title="登録した分をDBから削除します。(入力エラーのある行は登録していません。)" >
+			</div>
 			<a id="sdr_log_dl" href="" target="blank" download="download.txt" class="btn btn-info btn-xs">エラーログ・ダウンロード</a>
 			<input id="sdr_log_show" type="button" value="エラーログ表示" class="btn btn-info btn-xs" />
 		</div>
@@ -223,6 +235,28 @@ class CsvImportBig{
 	
 	
 	/**
+	 * 削除ボタンにクリックイベントを組み込む
+	 * @param jQuery btn 削除ボタン
+	 */
+	_addDelBtnClickEvent(btn){
+		btn.click((evt)=>{
+			this._delBtnClickEvent(); // 削除ボタンにクリックイベント
+		});
+	}
+	
+	/**
+	 * 削除ボタンにクリックイベント
+	 */
+	_delBtnClickEvent(){
+		if(this.coms.bulkDelete == null) return;
+		let csv_fn = this.param.csv_fn;
+		let kjs = {csv_fn:csv_fn};
+		this.coms.bulkDelete.deleteByKjs(kjs); // 検索条件を指定して削除を実行する
+
+	}
+	
+	
+	/**
 	 * ログ表示ボタンにクリックイベントを組み込む
 	 * @param jQuery logShow ログ表示ボタン
 	 */
@@ -303,10 +337,15 @@ class CsvImportBig{
 				this.reloadBtn.show(); // リロードボタンを表示
 			}else{
 				// 入力エラーが1件以上である場合
-				let msg = `${reg_count}件登録しましたが入力エラーのため登録できないデータもありました。登録したデータを削除するには「一括削除」機能を利用してしてください。`;
-				this._showMsg();
+				let msg = `${reg_count}件登録しましたが入力エラーのため登録できないデータもありました。`;
+				this._showMsg('');
 				this._showErr(msg);
 				this.logW.show();
+				
+				// 一括削除オブジェクトが空であるなら削除ボタンを空にする
+				if(this.coms.bulkDelete == null){
+					this.delBtn.hide();
+				}
 			}
 			this.reqBatchSmp.advanceProg(100); // 進捗バーを100%にする
 			this.reqBatchSmp.stopThread();

@@ -391,7 +391,7 @@ class InputCheckValid{
         }
         
         //日付を年月日時分秒に分解する。
-        $aryA =preg_split( '|[ /:_-]|', $value );
+        $aryA =preg_split( '/[-: \/]/', $value );
         if(count($aryA)!=6){
             return "{$validEnt['field_name']}は日時型（Y-m-d h:i:sもしくはY/m/d h:i:s)で入力してください。→{$value}";
         }
