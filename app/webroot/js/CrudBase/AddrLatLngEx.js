@@ -4,9 +4,9 @@
  * @note
  * Yahoo ジオコーダに対応
  * 
- * @date 2019-8-2
+ * @date 2019-8-2 | 2019-8-16
  * @license MIT
- * @version 1.0.0
+ * @version 1.0.1
  */
 class AddrLatLngEx{
 	
@@ -99,8 +99,8 @@ class AddrLatLngEx{
 		let html = `
 		<input class='allex_f_show_btn btn btn-primary btn-xs' type="button" value='住所緯度経度・編集' />
 		<div class='allex_func_div' style="display:none">
-			<div class='cbf_input'style="margin-right:16px">
-				住所: <input type="text" name="${param.address_field}" class="allex_address valid" value=""  maxlength="200" title="200文字以内で入力してください" style="width:300px;" />
+			<div style="width:100%">
+				住所: <input type="text" name="${param.address_field}" class="allex_address valid" value=""  maxlength="200" title="200文字以内で入力してください" style="width:100%;" />
 				<label class="text-danger" for="${param.address_field}"></label>
 			</div>
 			<div class='cbf_input' style="margin-right:8px">
