@@ -97,7 +97,7 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'CrudBase/dist/CrudBase.min.js?ver=2.9.2',
+				'CrudBase/dist/CrudBase.min.js?ver=2.9.3',
 				
 		);
 	}
@@ -489,15 +489,38 @@ class CrudBaseHelper extends FormHelper {
 	
 	
 	
-	
 	/**
 	 * 月・日付範囲検索
-	 * 
+	 *
 	 * @param array $kjs 検索条件データ
 	 * @param string $field フィールド名
 	 * @param string $wamei フィールド和名
 	 */
 	public function inputKjMoDateRng($kjs,$field,$wamei){
+
+		// 年月を取得
+		$kj_field_ym = $field . '_ym';
+		$ym = $kjs[$kj_field_ym];
+		
+		$kj_field1 = $field . '1';
+		$date1 =  $kjs[$kj_field1];
+		
+		$kj_field2 = $field . '2';
+		$date2 =  $kjs[$kj_field2];
+		
+		echo "<div id='{$field}' class='range_ym_ex' data-wamei='{$wamei}' data-def-ym='{$ym}' data-def1='{$date1}' data-def2='{$date2}' style='margin-right:40px'></div>";
+		
+	}
+	
+	
+	/**
+	 * 月・日付範囲検索(非推奨）
+	 * 
+	 * @param array $kjs 検索条件データ
+	 * @param string $field フィールド名
+	 * @param string $wamei フィールド和名
+	 */
+	public function inputKjMoDateRngOld($kjs,$field,$wamei){
 
 
 		$kj_date_ym = $field.'_ym';

@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-8-16
- * @version 2.9.2
+ * @date 2016-9-21 | 2019-8-18
+ * @version 2.9.4
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -133,6 +133,11 @@ class CrudBase{
 		let pagenationJumpB = new PagenationJump(); // 下側ページネーション
 		pagenationJumpB.init({xid:'pagenation_jump_b'});
 		
+		// 年月による日付範囲入力【拡張】 | RangeYmEx.js
+		let rngYmEx = new RangeYmEx();
+		rngYmEx.init();
+		
+		// -----------
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
 		// 折り畳みテキストエリア | FoldingTa.js
