@@ -1,8 +1,8 @@
 /**
  * 年月による日付範囲入力 | RangeYm.js
- * @date 2019-8-17
+ * @date 2019-8-17 | 2019-8-18
  * @license MIT
- * @version 1.1.3
+ * @version 1.1.4
  */
 class RangeYm{
 	
@@ -294,9 +294,9 @@ class RangeYm{
 	 * 例) 2012-2-3 → 2012-02-03
 	 * 例) 2012-12-12 → 2012-12-12
 	 * 
-	 * @param string ym 年月文字列
+	 * @param string date_str 日付文字列
 	 * @param string delim 区切り文字（デフォルトはハイフン）
-	 * @return yyyy-mm型の年月文字列
+	 * @return yyyy-mm-dd型の日付文字列
 	 */
 	_yyyymmdd(date_str, delim){
 		if(date_str == null) return date_str;
