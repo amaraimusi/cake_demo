@@ -37,7 +37,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<div class="btn-group">
 			<a href="" class="ini_rtn btn btn-info btn-xs" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
 				<span class="glyphicon glyphicon-certificate"  ></span></a>
-			<button type="button" class="btn btn-default btn-xs" title="詳細検索項目を表示する" onclick="jQuery('.cb_kj_detail').toggle(300)">詳細</button>
+			<button type="button" class="btn btn-default btn-xs" title="詳細検索項目を表示する" onclick="jQuery('.cb_kj_detail').toggle(300)">詳細検索</button>
 		</div>
 		
 		<div class="cb_kj_detail" style="display:none">
