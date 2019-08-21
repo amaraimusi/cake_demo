@@ -852,6 +852,7 @@ class FileUploadK{
 		// FU要素を取得し、中身をクリアする。
 		var fue = this._getElement(fue_id,'fue');
 		fue.val('');
+		fue.attr('data-fp', ''); // 既存も空にする
 		
 		// 初期メッセージ要素を再表示する。
 		var fukMsg = this._getElement(fue_id,'fuk_msg');

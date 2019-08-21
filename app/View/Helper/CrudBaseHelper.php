@@ -9,8 +9,8 @@ App::uses('FrontAHelperX', 'View/Helper/CrudBaseComponent');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.8.1
- * @date 2016-7-27 | 2019-2-13
+ * @version 1.8.2
+ * @date 2016-7-27 | 2019-8-20
  * @author k-uehara
  *
  */
@@ -1046,6 +1046,40 @@ class CrudBaseHelper extends FormHelper {
 		$this->setTd($td_html,$field);
 		
 	}
+	
+	
+	/**
+	 * 画像TD要素出力 プレーンタイプ
+	 * 
+	 * @note
+	 * origディレクトリの画像を表示
+	 * リンクなどもないシンプルタイプ。
+	 * 画像サイズもそのまま表示。
+	 * 
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 */
+	public function tdImagePlain(&$ent, $field){
+
+		$orig_fp = $ent[$field];
+		
+		if(empty($orig_fp)){
+			$orig_fp = 'img/icon/none.gif';
+		}
+		
+		$td_html = "
+			<td>
+				<input type='hidden' name='{$field}' value='{$orig_fp}' data-inp-ex='image1'>
+				<label for='{$field}'>
+					<img src='{$orig_fp}' >
+				</label>
+			</td>
+		";
+		
+		$this->setTd($td_html,$field);
+		
+	}
+	
 	
 	
 	/**

@@ -1059,7 +1059,7 @@ class CrudBase{
 		// FDにファイルオブジェクトをセットする。
 		var fd = new FormData();
 		fd = this.cbFileUploadComp.setFilesToFd(fd,'edit');
-		
+
 		// Ajax送信前のコールバックを実行する
 		if(beforeCallBack){
 
@@ -1114,6 +1114,9 @@ class CrudBase{
 				console.log(str_json);
 				jQuery("#err").html(str_json);
 			}
+			
+			console.log('entレス');//■■■□□□■■■□□□)
+			console.log(ent);//■■■□□□■■■□□□)
 
 			// 編集中の行にエンティティを反映する。
 			if(ent){
@@ -2229,11 +2232,7 @@ class CrudBase{
 					return;
 				});
 			}
-			
 
-			
-
-			
 			ent2[f] = v;
 		}
 
@@ -2720,6 +2719,7 @@ class CrudBase{
 		if(inp_ex){
 			switch(inp_ex){
 			case 'image1':
+				console.log('A101');//■■■□□□■■■□□□)
 				this._setEntToImage1(elm, field, val1); // 画像1型
 				break;
 			case 'image_fuk':
@@ -2859,13 +2859,23 @@ class CrudBase{
 		// 弟要素のlabelを取得
 		var label = elm.next();
 		
+		console.log('label');//■■■□□□■■■□□□)
+		console.log(label.html());//■■■□□□■■■□□□)
+		
 		// アンカー要素をlabelから取得し、ファイルパスをセットする
 		var aElm = label.find('a');
-		aElm.attr('href', orig_href);
+		if(aElm[0]){
+			aElm.attr('href', orig_href);
+		}
 		
+		console.log('img_src＝' + img_src);//■■■□□□■■■□□□)
 		// IMG要素にサムネイルパスをセットする
-		var imgElm = aElm.children().eq(0);	// IMG要素を取得
-		imgElm.attr('src', img_src);
+		//var imgElm = aElm.children().eq(0);	// IMG要素を取得 // ■■■□□□■■■□□□
+		var imgElm = label.find('img'); // IMG要素を取得
+		if(imgElm[0]){
+			imgElm.attr('src', img_src);
+		}
+		
 
 		elm.attr('data-fp', fp); // 「type='file'」に対応
 
