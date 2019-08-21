@@ -9,7 +9,7 @@
  * 
  * @license MIT
  * @date 2016-9-21 | 2019-8-21
- * @version 2.9.5
+ * @version 2.9.6
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -4093,6 +4093,10 @@ class CrudBase{
 	 * @param btnElm 詳細ボタン要素
 	 */
 	openNoteDetail(btnElm,field){
+		
+		if(!(btnElm instanceof jQuery)){
+			btnElm = jQuery(btnElm);
+		}
 		
 		if(field == null) field = 'note';
 		

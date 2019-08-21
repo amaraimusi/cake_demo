@@ -9,8 +9,8 @@ App::uses('FrontAHelperX', 'View/Helper/CrudBaseComponent');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.8.2
- * @date 2016-7-27 | 2019-8-20
+ * @version 1.8.3
+ * @date 2016-7-27 | 2019-8-21
  * @author k-uehara
  *
  */
@@ -97,7 +97,7 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'CrudBase/dist/CrudBase.min.js?ver=2.9.5',
+				'CrudBase/dist/CrudBase.min.js?ver=2.9.6',
 				
 		);
 	}
@@ -893,7 +893,7 @@ class CrudBaseHelper extends FormHelper {
 		// ノート詳細開きボタンのHTMLを作成
 		$note_detail_open_html = '';
 		if($long_over_flg) {
-			$note_detail_open_html = "<input type='button' class='btn btn-default btn-xs' value='...' onclick='openNoteDetail(this)' />";
+			$note_detail_open_html = "<input type='button' class='btn btn-default btn-xs' value='...' onclick=\"crudBase.openNoteDetail(this, '{$field}')\" />";
 		}
 		
 		$td = "
