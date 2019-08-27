@@ -1,8 +1,8 @@
 /**
  * 専属CSV読込 csv_exin
  * 
- * @date 2019-4-7 | 2019-5-17
- * @version 1.1.0
+ * @date 2019-4-7 | 2019-8-28
+ * @version 1.1.1
  * 
  */
 class CsvExin{
@@ -53,8 +53,9 @@ class CsvExin{
 		// 各種フォーム要素を埋め込む
 		var html = `
 			<div id="csv_exin_step1">
-				<label><input type="radio" name="csv_exin_str_code" value='utf-8' />UTF-8</label>
-				<label><input type="radio" name="csv_exin_str_code" value='Shift_JIS' />Shift-Jis(ExcelのCSV)</label>
+				<label><input type="radio" name="csv_exin_str_code" value='utf-8' checked />UTF-8</label>
+				<label style="font-weight:normal;color:#808080" title="iosの波ダッシュ「〜」はWindowsのShift-jisにおいて文字化けします。">
+					<input type="radio" name="csv_exin_str_code" value='Shift_JIS' />Shift-Jis(非推奨)</label>
 				<input id="csv_exin_file" type="file" multiple disabled>
 			</div>
 			<aside>基本的に上書きでDB登録されますが、idが空のレコードもしくはDBに存在しないidのレコードは「新規追加」になります。</aside>
