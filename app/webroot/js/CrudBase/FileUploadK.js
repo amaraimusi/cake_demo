@@ -853,7 +853,7 @@ class FileUploadK{
 		var fue = this._getElement(fue_id,'fue');
 		fue.val('');
 		fue.attr('data-fp', ''); // 既存も空にする
-		
+
 		// 初期メッセージ要素を再表示する。
 		var fukMsg = this._getElement(fue_id,'fuk_msg');
 		var fuk_msg_text = this.box[fue_id]['fuk_msg_text'];

@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-8-21
- * @version 2.9.6
+ * @date 2016-9-21 | 2019-8-28
+ * @version 2.9.7
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -2879,13 +2879,13 @@ class CrudBase{
 	 */
 	_setEntToImageFuk(elm, field, fp){
 
-		elm.attr('data-fp', fp); // 「type='file'」に対応
-
 		var fue_id = elm.attr('id');
 		var option = {'midway_dp':this.param.midway_dp};
 		
 		// file要素にファイルパスをセットする
 		this.cbFileUploadComp.setFilePaths(fue_id, fp, option);
+		
+		elm.attr('data-fp', fp); // 「type='file'」に対応
 
 	}
 	
