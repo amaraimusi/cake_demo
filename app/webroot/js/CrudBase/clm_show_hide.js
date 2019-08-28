@@ -8,8 +8,8 @@
  * - init 初期化
  * - refresh 一覧テーブルをリフレッシュする
  * 
- * @version 1.5.2
- * @date 2014-4-1 │ 2019-7-26
+ * @version 1.6.0
+ * @date 2014-4-1 │ 2019-8-28
  * @license MIT
  * @author k-uehara 
  */
@@ -96,6 +96,9 @@ var ClmShowHide =function(){
 		// メンバへ列データをセットする
 		this.defClmData = defClmData;
 		this.actClmData = actClmData;
+		
+		// 列名からタグを除去する
+		actClmData = _removeTagOfClmName(actClmData);
 
 
 		//列表示チェックボックスを作成
@@ -128,7 +131,6 @@ var ClmShowHide =function(){
 			}
 
 		}
-
 
 
 		//保存ボタンにイベントを追加。
@@ -243,6 +245,25 @@ var ClmShowHide =function(){
 		
 	}
 	
+	
+	/**
+	 * 列名からタグを除去する
+	 * @parma array actClmData 列データ
+	 * @return array 列名からリンク部分を除去した列データ
+	 */
+	function _removeTagOfClmName(actClmData){
+
+		for(let i in actClmData){
+			let ent =actClmData[i];
+			let clm_name = ent.clm_name;
+			
+			// 列名からタグを除去
+			ent.clm_name = clm_name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,'');
+		}
+		
+		return actClmData;
+	}
+
 
 
 	/**
@@ -363,6 +384,7 @@ var ClmShowHide =function(){
 	function createClmShowCheckBox_csh(tblId,chBoxsId,clmData){
 		var cbs=$("#" + chBoxsId);
 		cbs.empty();
+
 		for (var i in clmData) {
 			
 			var clm_ent=clmData[i];
@@ -375,8 +397,8 @@ var ClmShowHide =function(){
 			if(clm_ent.show_flg==1){
 				checked='checked'
 			}
-
-			var cb="<div class='csh_cb_div'><input type='checkbox' class='csh_cb' " + checked + " index='" + i + "' /><label>"  + clm_ent['clm_name'] + "</label></div>";
+			let xid = 'csh_cb' + i;
+			var cb="<div class='csh_cb_div'><input id='" + xid + "' type='checkbox' class='csh_cb' " + checked + " index='" + i + "' /><label for='" + xid + "'>"  + clm_ent['clm_name'] + "</label></div>";
 
 			cbs.append(cb);
 		}
