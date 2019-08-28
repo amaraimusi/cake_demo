@@ -56,7 +56,7 @@ class CsvExin{
 				<label><input type="radio" name="csv_exin_str_code" value='utf-8' checked />UTF-8</label>
 				<label style="font-weight:normal;color:#808080" title="iosの波ダッシュ「〜」はWindowsのShift-jisにおいて文字化けします。">
 					<input type="radio" name="csv_exin_str_code" value='Shift_JIS' />Shift-Jis(非推奨)</label>
-				<input id="csv_exin_file" type="file" multiple disabled>
+				<input id="csv_exin_file" type="file" multiple >
 			</div>
 			<aside>基本的に上書きでDB登録されますが、idが空のレコードもしくはDBに存在しないidのレコードは「新規追加」になります。</aside>
 			<div id="csv_exin_step2" style="display:none">

@@ -13,12 +13,13 @@ require_once('LogEx.php');
  * 数十MBクラスのCSVファイルを分割して読み込む。
  * CSVファイルのzipにのみ対応。（生のCSVファイルには未対応）
  * CsvImportBig.jsと連動。
+ * 日本語ファイル名に対応。
  * 
  * @component
  * CsvExin.php
  * 
- * @date 2019-5-20 | 2019-8-13
- * @version 1.1.4
+ * @date 2019-5-20 | 2019-8-28
+ * @version 1.1.5
  * @license MIT
  *
  */
@@ -81,6 +82,9 @@ class CsvImportBig{
 			return $this->err($param, "ZIPの解凍に失敗しました。");
 		}
 		
+		// 日本語ファイル名を半悪英数字に変更
+		$this->jpFnRename($zip_dp);
+		
 		$csv_fn = $this->getCsvFilePath($zip_dp); // ZIPディレクトリ内からCSVファイル名を取得する。
 
 		// 空チェック
@@ -125,6 +129,55 @@ class CsvImportBig{
 		
 
 		return $param;
+	}
+	
+	
+	/**
+	 * 日本語ファイル名を半悪英数字に変更
+	 *
+	 * @note
+	 * 指定ディレクトリ内の日本語ファイル名を日時から生成したファイル名に一括変更する。
+	 *
+	 * @param string $dp ディレクトリパス
+	 * @param string $sep セパレータ（省略可）
+	 * @return array ファイル名変更情報
+	 */
+	private function jpFnRename($dp, $sep='/'){
+		
+		$resData = []; // レスポンスデータ
+		
+		// ディレクトリパスの末尾にセパレータがなければ付け足す。
+		$one = mb_substr($dp, -1);
+		if($one != $sep) $dp .= $sep;
+		
+		$fns = scandir($dp);
+		foreach($fns as $i => $fn){
+			if($fn == '.' || $fn == '..') continue;
+			if (!preg_match("/^[a-zA-Z0-9-_.]+$/", $fn)) {
+				
+				$old_fp = $dp . $fn; // 旧ファイルパス
+				
+				// 拡張子を取得
+				$pi = pathinfo($fn);
+				$ext = $pi['extension'];
+				
+				// 新ファイルパス
+				$date_str = date('Ymd_his');
+				$new_fp = "{$dp}{$date_str}_{$i}.{$ext}";
+				
+				rename ($old_fp, $new_fp); // ファイル名変更
+				
+				$ent = ['old_fp'=>$old_fp, 'new_fp'=>$new_fp,];
+				$resData[] = $ent;
+				
+			}else{
+				$old_fp = $dp . $fn;
+				$ent = ['old_fp'=>$old_fp, 'new_fp'=>$old_fp,];
+				$resData[] = $ent;
+			}
+		}
+		
+		return $resData;
 	}
 	
 	
