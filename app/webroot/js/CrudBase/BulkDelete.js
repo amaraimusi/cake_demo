@@ -62,10 +62,10 @@ class BulkDelete{
 		let inps_html = this._makeInpsHtml(delCnds);
 		
 		let html = `
-	<input class='bulk_del_f_show_btn btn btn-primary btn-xs' type="button" value='一括削除' />
+	<input class='bulk_del_f_show_btn btn btn-primary btn-xs' type="button" value='条件指定・一括削除' />
 	<div class='bulk_del_func_div' style="display:none">
 		<div style="display:inline-block;padding:10px;border:solid 4px #5bd59e;border-radius:5px;margin-bottom:10px">
-			<p>一括削除</p>
+			<p>条件指定・一括削除</p>
 			<div class="bulk_del_inps" style="padding-bottom:16px">${inps_html}</div>
 			<input class="bulk_del_start_btn btn btn-danger btn-xs" type='button' value="削除実行" />
 			<div class="bulk_del_res text-success"></div>

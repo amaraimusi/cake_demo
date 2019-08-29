@@ -2,26 +2,40 @@
 <div id="help_csh" >
 <div class="help_x">
 
+	当ヘルプは各画面で共通する機能のヘルプです。<br>
+	画面によっては存在しない機能もあります。<br>
+	<br>
+	
 	<div id="help_x_div1">
-		<a href="#crudbase_help2" class="livipage btn btn-info btn-sm">追加/編集/複製/削除/抹消</a>
-		<a href="#crudbase_help3" class="livipage btn btn-info btn-sm">検索/詳細検索</a>
-		<a href="#crudbase_help4" class="livipage btn btn-info btn-sm">初期戻し機能</a>
-		<a href="#crudbase_help5" class="livipage btn btn-info btn-sm">列表示切替機能</a>
-		<a href="#crudbase_help6" class="livipage btn btn-info btn-sm">セッションクリア機能</a>
-		<a href="#crudbase_help7" class="livipage btn btn-info btn-sm">スマホ用一覧</a>
-		<a href="#crudbase_help8" class="livipage btn btn-info btn-sm">ページネーション</a>
-		<a href="#crudbase_help9" class="livipage btn btn-info btn-sm">一括削除/有効</a>
-		<a href="#crudbase_help10" class="livipage btn btn-info btn-sm">ソート機能</a>
-		<a href="#crudbase_help11" class="livipage btn btn-info btn-sm">行入替機能</a>
-		<a href="#crudbase_help13" class="livipage btn btn-info btn-sm">CSVエスポート機能</a>
-		<a href="#crudbase_help_err" class="livipage btn btn-info btn-sm">よくあるエラー対処法</a>
-		<a href="#crudbase_help_version" class="livipage btn btn-info btn-sm">バージョン</a>
+		<a href="#crudbase_help2" class="livipage btn btn-info btn-xs">追加/編集/複製/削除/抹消</a>
+		<a href="#crudbase_help3" class="livipage btn btn-info btn-xs">検索/詳細検索</a>
+		<a href="#crudbase_help4" class="livipage btn btn-info btn-xs">初期戻し機能</a>
+		<a href="#crudbase_help5" class="livipage btn btn-info btn-xs">列表示切替機能</a>
+		<a href="#crudbase_help6" class="livipage btn btn-info btn-xs">セッションクリア機能</a>
+		<a href="#crudbase_help7" class="livipage btn btn-info btn-xs">スマホ用一覧</a>
+		<a href="#crudbase_help8" class="livipage btn btn-info btn-xs">ページネーション</a>
+		<a href="#crudbase_help9" class="livipage btn btn-info btn-xs">まとめて削除</a>
+		<a href="#crudbase_help9_2" class="livipage btn btn-info btn-xs">まとめて削除</a>
+		<a href="#crudbase_help9_3" class="livipage btn btn-info btn-xs">DBからも完全削除（抹消）</a>
+		<a href="#crudbase_help10" class="livipage btn btn-info btn-xs">ソート機能</a>
+		<a href="#crudbase_help11" class="livipage btn btn-info btn-xs">行入替機能</a>
+		<a href="#crudbase_help13" class="livipage btn btn-info btn-xs">CSVエスポート機能</a>
+		<a href="#crudbase_help_err" class="livipage btn btn-info btn-xs">よくあるエラー対処法</a>
+		<a href="#crudbase_help_version" class="livipage btn btn-info btn-xs">バージョン</a>
 		
 	</div>
 	<hr>
 
 	<div id="crudbase_help2">
 	<h4>追加/編集/複製/削除/抹消</h4>
+	一覧の基本操作として新規追加、編集、複製、削除、抹消があります。<br>
+	各行の最右側にこれらのボタンは表示されています。<br> 
+	<br> 
+	
+	「ボタン設定」からボタンのサイズや表示を切り替えることができます。<br> 
+	「ボタン設定」はツールボックス内の「設定」からアクセスできます。<br> 
+	<br> 
+	
 	「追加」、「編集」、「削除」は基本的なCRUD機能です。<br>
 	ただ「削除」は削除フラグをONにするだけで実際にDBから消去するわけではありません。<br>
 	「抹消」はデータそのものをデータベースから消去します。 削除フラグがONのデータのみ抹消できます。（一度削除してから抹消という流れ）<br>
@@ -32,7 +46,6 @@
 	<h4>検索/詳細検索</h4>
 	検索機能は2種類あり、メインの検索と詳細検索から構成されています。<br>
 	メイン検索は複数の特定列（主に文字系）を検索対象にしています。
-	メイン検索の入力項目にカーソルをあてると詳しいどこを検索しているか分かります。<br>
 	詳細検索は各列ごとに細かい検索指定ができます。<br>
 	</div>
 	
@@ -63,7 +76,7 @@
 	列表示を初期に戻します。<br>
 	また「列表示を保存」ボタンによる保存状態も解除します。<br>
 	<br>
-	<aside>列名リンク部分をクリックすると、一覧の並び替えが可能です。</aside>
+	
 	</div>
 	
 	<div id="crudbase_help6">
@@ -93,10 +106,37 @@
 		
 		
 	<div id="crudbase_help9">
-		<h4>一括削除/有効</h4>
-		まとめて削除および有効にする機能です。<br>
-		一覧の左側チェックボックスにチェックを入れ、一覧の下にある「削除」または「有効」ボタンを押します。<br>
-	</div>		
+		<h4>まとめて削除</h4>
+		一覧の行をまとめて削除する機能です。<br>
+		ID列左側に存在するチェックボックスにチェックを入れ、一覧の下にある「削除」ボタンを押します。<br>
+		※となりにある「有効」ボタンは削除したデータをまとめて復元するときに使用します。<br>
+	</div>	
+		
+		
+	<div id="crudbase_help9_2">
+		<h4>まとめて復元（有効）</h4>
+		削除したデータをまとめて復元する機能です。<br>
+		まずは、削除状態にある行を一覧表示させる必要があります。<br>
+		削除状態の行を表示させるには、詳細検索から「有効」となっている箇所を「削除」に切り替えて検索します。<br>
+		<br>
+		削除状態の行が一覧表示されましたら、ID列左側に存在するチェックボックスにチェックを入れます。<br>
+		そして一覧の下にある「有効」ボタンを押すると削除状態の行が有効化、つまり復元されます。<br>
+	</div>
+	
+	<div id="crudbase_help9_3">
+		<h4>DBから完全削除（抹消）</h4>	
+		通常の「削除」ボタンは、削除状態にするだけであり、DBから完全に削除されるわけではありません。<br>
+		DBから完全に抹消するには以下のようにします。<br>
+		<br>
+		
+		まずは、削除状態にある行を一覧表示させる必要があります。<br>
+		削除状態の行を表示させるには、詳細検索から「有効」となっている箇所を「削除」に切り替えて検索します。<br>
+		すると行の最右側に「抹消」ボタンが表示されます。このボタンを押すとDBからも完全に消えます。<br>
+		<br>
+	</div>
+	
+	
+	
 		
 		
 	<div id="crudbase_help10">
@@ -119,9 +159,10 @@
 		検索結果をCSV形式でダウンロードできます。<br>
 		画面内の一覧は検索結果数が多いと行数制限をかけ、すべての行を表示しないようにしていますが、
 		CSVダウンロードはすべての行を出力します。<br>
+		<br>
+		当機能は画面によっては存在しないこともあります。
 	</div>		
 	
-
 
 </div>
 </div>
@@ -146,6 +187,7 @@
 
 <div id="crudbase_help_version">
 <p>バージョン情報</p>
+ヘルプの更新日: 2019年8月<br>
 システムバージョン: <?php echo $version; ?><br>
 PHP:<?php echo phpversion() ?><br>
 CakePHP: <?php echo Configure::version(); ?><br>
