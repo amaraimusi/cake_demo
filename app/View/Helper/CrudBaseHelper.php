@@ -97,7 +97,7 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'CrudBase/dist/CrudBase.min.js?ver=2.9.8',
+				'CrudBase/dist/CrudBase.min.js?ver=3.0.1',
 				
 		);
 	}

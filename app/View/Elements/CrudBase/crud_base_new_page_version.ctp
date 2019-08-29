@@ -5,7 +5,7 @@ if(!empty($new_version_flg)){
 	<div>新バージョン：<?php echo $this_page_version ?></div>
 	<div class="text-danger">当画面は新しいバージョンに変更されています。
 	セッションクリアボタンを押してください。</div>
-	<a href="?ini=1&amp;sc=1" class="btn btn-danger btn-xs">セッションクリア</a>
+	<input type="button" class="btn btn-danger btn-xs" value="セッションクリア" onclick="sessionClear()" >
 </div>
 <?php 
 }

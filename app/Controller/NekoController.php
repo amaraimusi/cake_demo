@@ -45,7 +45,7 @@ class NekoController extends CrudBaseController {
 	public $edit_validate = array();
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '1.9.1';
+	public $this_page_version = '1.9.2';
 
 	
 	

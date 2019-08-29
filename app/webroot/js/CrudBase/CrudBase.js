@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-8-28
- * @version 3.0.0
+ * @date 2016-9-21 | 2019-8-29
+ * @version 3.0.1
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -4380,6 +4380,19 @@ class CrudBase{
 			this.kjs = JSON.parse(kjs_json);
 		}
 		return this.kjs;
+	}
+	
+	
+	/**
+	 * セッションクリア
+	 */
+	sessionClear(){
+		
+		// 列表示切替機能を初期化
+		this.csh.reset();
+		
+		// リロード
+		location.href = '?ini=1&sc=1';
 	}
 	
 }

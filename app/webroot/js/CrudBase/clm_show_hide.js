@@ -292,7 +292,6 @@ var ClmShowHide =function(){
 				}
 			}
 
-
 		}
 
 		//ローカルストレージの列データをクリア

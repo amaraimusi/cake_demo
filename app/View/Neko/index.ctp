@@ -8,7 +8,7 @@ $this->assign('css', $this->Html->css($cssList));
 
 // JSファイルのインクルード
 $jsList = $this->CrudBase->getJsList();
-$jsList[] = 'Neko/index'; // 当画面専用JavaScript
+$jsList[] = 'Neko/index.js?v=1.0.0'; // 当画面専用JavaScript
 $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 ?>
@@ -117,7 +117,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<button id="calendar_view_k_btn" type="button" class="btn btn-default btn-xs" onclick="calendarViewKShow()" >
 			<span class="glyphicon glyphicon-time" >カレンダーモード</span></button>
 		
-		<button type="button" class="btn btn-default btn-xs" onclick="session_clear()" >セッションクリア</button>
+		<button type="button" class="btn btn-default btn-xs" onclick="sessionClear()" >セッションクリア</button>
 	
 		<button id="table_transform_tbl_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(0)" style="display:none">一覧の変形・テーブルモード</button>	
 		<button id="table_transform_div_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(1)" >一覧の変形・スマホモード</button>

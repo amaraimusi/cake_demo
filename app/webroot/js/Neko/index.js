@@ -279,19 +279,14 @@ function saveRequest(){
 
 
 /**
- * セッションをクリアする
- * 
- * @note
- * ついでに列表示切替機能も初期化する
+ * セッションクリア
  * 
  */
-function session_clear(){
+function sessionClear(){
+	crudBase.sessionClear();
 	
-	// 列表示切替機能を初期化
-	crudBase.csh.reset();
-	
-	location.href = '?ini=1&sc=1';
 }
+
 
 /**
  * テーブル変形
