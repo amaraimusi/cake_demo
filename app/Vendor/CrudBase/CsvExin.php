@@ -38,9 +38,10 @@ class CsvExin{
 	 *  - csvFieldData CSVフィールドデータ
 	 *  - csvParam CSVパラメータ
 	 *      - main_table_name メインテーブル名
+	 * @param bool $empty_update_flg 空更新フラグ  true:空値更新する, false:空は更新しない
 	 * @return レスポンス（新規追加数、上書き数）
 	 */
-	public function reg(&$csvExinData){
+	public function reg(&$csvExinData, $empty_update_flg=true){
 		
 		$data = $csvExinData['data'];
 		if(empty($data)) return ['ins_cnt' => 0, 'upd_cnt' => 0,];
@@ -71,6 +72,8 @@ class CsvExin{
 		// マスターデータをDB登録
 		$masterBoxs = $this->regMasterData($masterBoxs);
 		
+		debug($masterBoxs['JobType']);//■■■□□□■■■□□□)
+		
 		// IDマッピングを作成
 		$masterBoxs = $this->makeIdMap($masterBoxs);
 
@@ -89,7 +92,7 @@ class CsvExin{
 		$this->sql_sanitize($mainData);
 		
 		// データからINSERTとUPDATEのSQL文を生成する
-		$res = $this->createInsertAndUpdate($main_table_name, $mainData);
+		$res = $this->createInsertAndUpdate($main_table_name, $mainData, $empty_update_flg);
 		
 		
 		// UPDATEを実行
@@ -318,19 +321,20 @@ class CsvExin{
 	private function regMasterData(&$masterBoxs){
 		
 		foreach($masterBoxs as &$box){
-			
 			$masterData = $box['masterData'];
 			
 			// 追加、または更新の対象データだけ取得
 			$masterData2 = $this->filterMasterData($masterData);
 			if(empty($masterData2)) continue;
-			
+
 			// DBサニタイズ
 			$this->sql_sanitize($masterData2);
 			
 			// INSERTとUPDATEのSQLを作成
 			$table_name = $box['table_name'];
-			$res = $this->createInsertAndUpdate($table_name, $masterData2);
+			$res = $this->createInsertAndUpdate($table_name, $masterData2, false);
+			
+			debug($res);//■■■□□□■■■□□□)
 			
 			// UPDATEを実行
 			$updates = $res['updates'];
@@ -380,9 +384,10 @@ class CsvExin{
 	 * データからINSERTとUPDATEのSQL文を生成する
 	 * @param string $tbl_name テーブル名
 	 * @param array $data エンティティ配列型のデータ
+	 * @param bool $empty_update_flg 空更新フラグ  true:空値更新する, false:空は更新しない
 	 * @return array|string[][]
 	 */
-	private function createInsertAndUpdate($tbl_name, $data){
+	private function createInsertAndUpdate($tbl_name, $data, $empty_update_flg){
 		if(empty($data)) return array();
 		
 		// 列名群文字列を組み立て
@@ -405,10 +410,10 @@ class CsvExin{
 			
 			// IDが存在すればUPDATE文を組み立て
 			else{
-			    $sql = $this->makeUpdateSql($tbl_name, $ent); // UPDATE文を作成する
+				$sql = $this->makeUpdateSql($tbl_name, $ent, $empty_update_flg); // UPDATE文を作成する
 			    $box['sql'] = $sql;
 			    $box['ent'] = $ent;
-			    $inserts[] = $box;
+			    $updates[] = $box;
 			}
 		}
 		
@@ -449,14 +454,17 @@ class CsvExin{
 	 * UPDATE文を作成する
 	 * @param string $tbl_name テーブル名
 	 * @param array $ent 登録データのエンティティ
+	 * @param bool $empty_update_flg 空更新フラグ  true:空値更新する, false:空は更新しない
 	 * @return string UPDATE文
 	 */
-	private function makeUpdateSql($tbl_name, &$ent){
+	private function makeUpdateSql($tbl_name, &$ent, $empty_update_flg){
 		if(empty($ent['id'])) throw new Exception('makeUpdateSql: idが空です。');
 		
 		$vals_str = '';
 		foreach($ent as $field => $value){
-			if($value === null) continue;
+			if($empty_update_flg == false){
+				if($value === null) continue;
+			}
 			$vals_str .= "{$field}='{$value}',";
 		}
 			
@@ -518,6 +526,7 @@ class CsvExin{
 	 * @return array IDマッピングをセットしたマスターボックスリスト
 	 */
 	private function makeIdMap(&$masterBoxs){
+
 		foreach($masterBoxs as &$box){
 			$masterData = $box['masterData'];
 			$field = $box['field'];
