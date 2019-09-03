@@ -605,7 +605,7 @@ class CsvImportBig{
 				$csvTexts[] = $break_row_str;
 				
 				// CSV行番をセット
-				$csvRowNos[] = $csv_row_no2;
+				$csvRowNos[] = $csv_row_no2 + 1; // テキストエディタは行番号1から始まるので1を加算
 				$csv_row_no2 = $csv_row_no;
 				
 				

@@ -4,8 +4,8 @@
  * @note
  * FileUploadK.jsとReqBatchSmp.jsに依存
  * 
- * @date 2019-5-19 | 2019-8-16
- * @version 2.0.2
+ * @date 2019-5-19 | 2019-9-2
+ * @version 2.0.3
  * 
  */
 class CsvImportBig{
@@ -32,7 +32,7 @@ class CsvImportBig{
 		this.tDiv = jQuery('#' + param.div_xid); //  This division
 		
 		// 当機能のHTMLを作成および埋込
-		var html = this._createHtml(); 
+		var html = this._createHtml(param); 
 		this.tDiv.html(html);
 		
 		// ファイル配置イベント関数をセットする
@@ -107,7 +107,9 @@ class CsvImportBig{
 	/**
 	 * 当機能のHTMLを作成および埋込
 	 */
-	_createHtml(){
+	_createHtml(param){
+		
+		
 		let html = `
 	<div>
 		<label for="sdr_file" class="fuk_label" style="display:inline-block;background-color:#ddb9dd;border-radius:5px;padding:4px;">

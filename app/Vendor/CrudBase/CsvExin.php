@@ -72,8 +72,6 @@ class CsvExin{
 		// マスターデータをDB登録
 		$masterBoxs = $this->regMasterData($masterBoxs);
 		
-		debug($masterBoxs['JobType']);//■■■□□□■■■□□□)
-		
 		// IDマッピングを作成
 		$masterBoxs = $this->makeIdMap($masterBoxs);
 
@@ -333,9 +331,7 @@ class CsvExin{
 			// INSERTとUPDATEのSQLを作成
 			$table_name = $box['table_name'];
 			$res = $this->createInsertAndUpdate($table_name, $masterData2, false);
-			
-			debug($res);//■■■□□□■■■□□□)
-			
+
 			// UPDATEを実行
 			$updates = $res['updates'];
 			foreach($updates as $boxU){
@@ -482,9 +478,7 @@ class CsvExin{
 	 * @return array マスターデータ
 	 */
 	private function setNewEntToMasterData($newIds, $box){
-		if(empty($box['table_name'])){
-			debug($box);//■■■□□□■■■□□□)
-		}
+
 		$table_name = $box['table_name'];
 		
 		// IN句部分を組み立て
