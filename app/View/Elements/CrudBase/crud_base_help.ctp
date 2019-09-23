@@ -14,8 +14,9 @@
 		<a href="#crudbase_help6" class="livipage btn btn-info btn-xs">セッションクリア機能</a>
 		<a href="#crudbase_help7" class="livipage btn btn-info btn-xs">スマホ用一覧</a>
 		<a href="#crudbase_help8" class="livipage btn btn-info btn-xs">ページネーション</a>
+		<a href="#crudbase_help9_0" class="livipage btn btn-info btn-xs">削除した行を復元する（元に戻す）</a>
 		<a href="#crudbase_help9" class="livipage btn btn-info btn-xs">まとめて削除</a>
-		<a href="#crudbase_help9_2" class="livipage btn btn-info btn-xs">まとめて削除</a>
+		<a href="#crudbase_help9_2" class="livipage btn btn-info btn-xs">まとめて復元（有効）</a>
 		<a href="#crudbase_help9_3" class="livipage btn btn-info btn-xs">DBからも完全削除（抹消）</a>
 		<a href="#crudbase_help10" class="livipage btn btn-info btn-xs">ソート機能</a>
 		<a href="#crudbase_help11" class="livipage btn btn-info btn-xs">行入替機能</a>
@@ -103,6 +104,15 @@
 		そのため検索結果数が多い場合、ページ分割されると共にページ目次が表示されます。<br>
 		なお、表示する行数は検索項目で指定できます。<br>
 	</div>		
+		
+		
+	<div id="crudbase_help9_0">
+		<h4>削除した行を復元する（元に戻す）</h4>
+		一覧の各行に存在する「削除」ボタンを押すとその行は削除されますが、削除した行は元に戻すことが可能です。<br>
+		元に戻すには、まず削除状態にある行を一覧表示させる必要があります。<br>
+		詳細検索ボタンを押して詳細検索区画を開き、「有効」となっているセレクトボックスを「削除」もしくは「すべて表示」に変更して検索を実行します。<br>
+		すると削除された行が表示されますので、その行の「有効」ボタンを押すと復元されます。<br>
+	</div>	
 		
 		
 	<div id="crudbase_help9">
