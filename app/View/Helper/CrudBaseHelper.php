@@ -9,8 +9,8 @@ App::uses('FrontAHelperX', 'View/Helper/CrudBaseComponent');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.8.3
- * @date 2016-7-27 | 2019-8-21
+ * @version 1.8.4
+ * @date 2016-7-27 | 2019-9-17
  * @author k-uehara
  *
  */
@@ -97,7 +97,7 @@ class CrudBaseHelper extends FormHelper {
 				'bootstrap.min',
 				'jquery-ui.min',
 				'Layouts/default',
-				'CrudBase/dist/CrudBase.min.js?ver=3.0.1',
+				'CrudBase/dist/CrudBase.min.js?ver=3.0.2',
 				
 		);
 	}
@@ -846,7 +846,7 @@ class CrudBaseHelper extends FormHelper {
 	 * リンクを作成する
 	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
-	 * @param string $url URL    値に置換する部分は「%0」と表記する。
+	 * @param string $url URL    URLの変値部分は「%0」と表記する。
 	 */
 	public function tdLink(&$ent, $field, $url){
 	    
@@ -859,6 +859,29 @@ class CrudBaseHelper extends FormHelper {
                 <a href='{$url2}' data-url-tmp='{$url}' >{$v}</a>
             </td>";
 	    $this->setTd($td,$field);
+	}
+	
+	
+	/**
+	 * 外部URL（ホームページURLなど）
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 * @param string $link_text  リンクテキスト(省略するとURLがセットされる）
+	 */
+	public function tdOuterUrl(&$ent, $field, $link_text=null){
+		
+		$v = $ent[$field];
+		
+		if(empty($link_text)){
+			$link_text = $v;
+		}
+
+		$td = "
+            <td>
+                <input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
+                <a href='{$v}' data-url-tmp='{$v}' target='_blank'>{$link_text}</a>
+            </td>";
+		$this->setTd($td,$field);
 	}
 	
 	

@@ -1,7 +1,7 @@
 /**
  * CrudBase設定クラス
- * @date 2019-7-17
- * @version 1.0.0
+ * @date 2019-7-17 | 2019-9-23
+ * @version 1.0.1
  */
 class CrudBaseConfig{
 	
@@ -295,15 +295,15 @@ class CrudBaseConfig{
 	 */
 	_addClickDefBtn(defBtn){
 		defBtn.click((evt)=>{
-			this._clickDefBtn();
+			this.reset();
 		});
 	}
 	
 	
 	/**
-	 * 初期戻しボタンのクリックイベント
+	 * 設定のリセット
 	 */
-	_clickDefBtn(){
+	reset(){
 		
 		// 初期データのクローンを設定データにセットする
 		this.data = $.extend(true, {}, this.defData);
