@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-9-23
- * @version 3.0.2
+ * @date 2016-9-21 | 2019-10-12
+ * @version 3.0.3
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -3886,10 +3886,30 @@ class CrudBase{
 			sort_no ++;
 		}
 		
+		this._btnsDisabledSwich(true);
+		
+		// 自動保存後のコーバック
+		var afterCallBack = function(){
+			this._btnsDisabledSwich(false);
+		}.bind(this);
+		
 		var option = {
 				'reflect_on_tbl':1, // 1:HTMLテーブルにdataを反映する
+				'afterCallBack':afterCallBack,
 		}
 		this.saveRequest(data,option);// 自動保存の依頼をする
+	}
+	
+	
+	/**
+	 * 行のボタン群の有効、無効を切替
+	 */
+	_btnsDisabledSwich(flg){
+		jQuery(".row_edit_btn").prop('disabled', flg);
+		jQuery(".row_copy_btn").prop('disabled', flg);
+		jQuery(".row_delete_btn").prop('disabled', flg);
+		jQuery(".row_enabled_btn").prop('disabled', flg);
+		jQuery(".row_eliminate_btn").prop('disabled', flg);
 	}
 	
 	
