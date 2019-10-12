@@ -1,7 +1,7 @@
 /**
  * ボタンサイズ変更【CrudBase用】
- * @version 1.1.4
- * @date 2018-10-27 | 2019-5-13 ボタン表示切替に対応
+ * @version 1.1.5
+ * @date 2018-10-27 | 2019-10-13 ボタン表示切替に対応
  */
 class CbBtnSizeChanger{
 	
@@ -416,7 +416,7 @@ class CbBtnSizeChanger{
 		
 		// ▼「初期に戻す」ボタンにイベントをセットする
 		mainForm.find("#cbbsc_def_btn").click((e)=>{
-			this._returnToInit(); // 初期に戻す
+			this.clearReset(); // 初期に戻す
 		});
 		
 		// ▼「閉じる」ボタンにイベントをセットする
@@ -429,7 +429,7 @@ class CbBtnSizeChanger{
 	/**
 	 * 初期に戻す
 	 */
-	_returnToInit(){
+	clearReset(){
 		
 		// ▼設定データを初期に戻す
 		this.cnfData = jQuery.extend(true, {}, this.iniCnfData); // クローンコピーする
@@ -551,7 +551,7 @@ class CbBtnSizeChanger{
 		// ローカルストレージのデータが空である場合、フォームは一覧の各ボタンを初期状態に戻す
 		var lsCnfData = this._loadCnfData();
 		if(this._empty(lsCnfData)){
-			this._returnToInit(); // 初期状態に戻す
+			this.clearReset(); // 初期状態に戻す
 		}
 		
 	}

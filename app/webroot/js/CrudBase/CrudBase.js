@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-10-12
- * @version 3.0.3
+ * @date 2016-9-21 | 2019-10-13
+ * @version 3.0.4
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -4413,6 +4413,8 @@ class CrudBase{
 		
 		// CrudBase設定をリセット
 		this.crudBaseConfig.reset();
+		
+		this.cbBtnSizeChanger.clearReset();
 		
 		// リロード
 		location.href = '?ini=1&sc=1';
