@@ -1,0 +1,18 @@
+<?php
+class CrudBaseConfig{
+	
+
+	/**
+	 * DB設定
+	 * @return string[] DB設定情報
+	 */
+	public function getDbConfig(){
+		$dbConfig = [
+			'user'=>'root',
+			'pw'=>'test',
+		]; 
+		
+		return $dbConfig;
+	}
+	
+}
