@@ -8,6 +8,7 @@ class CrudBaseConfig{
 	 */
 	public function getDbConfig(){
 		$dbConfig = [
+			'db_name'=>'animal_park',
 			'user'=>'root',
 			'pw'=>'test',
 		]; 

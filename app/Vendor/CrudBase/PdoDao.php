@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * PDOのDAO（データベースアクセスオブジェクト）
+ * 
+ * @date 2019-10-26
+ * @version 1.0.0
+ * @license MIT
+ * @author Kenji Uehara
+ *
+ */
 class PdoDao
 {
 	
@@ -13,11 +22,9 @@ class PdoDao
 		
 		$cbf = new CrudBaseConfig();
 		$dbConf = $cbf->getDbConfig();
-		
-		
-		$dao = null;
+
 		try {
-			$dao = new PDO('mysql:host=localhost;dbname=uwatemp;charset=utf8',$dbConf['user'],$dbConf['pw'],
+			$dao = new PDO("mysql:host=localhost;dbname={$dbConf['db_name']};charset=utf8",$dbConf['user'],$dbConf['pw'],
 				array(PDO::ATTR_EMULATE_PREPARES => false));
 
 		} catch (PDOException $e) {
