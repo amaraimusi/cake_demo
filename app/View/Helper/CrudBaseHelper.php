@@ -9,8 +9,8 @@ App::uses('FrontAHelperX', 'View/Helper/CrudBaseComponent');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.8.4
- * @date 2016-7-27 | 2019-9-17
+ * @version 1.8.5
+ * @date 2016-7-27 | 2019-11-21
  * @author k-uehara
  *
  */
@@ -96,6 +96,7 @@ class CrudBaseHelper extends FormHelper {
 				'jquery-2.1.4.min',
 				'bootstrap.min',
 				'jquery-ui.min',
+				'vue.min.js',
 				'Layouts/default',
 				'CrudBase/dist/CrudBase.min.js?ver=3.0.4',
 				
@@ -1462,14 +1463,14 @@ class CrudBaseHelper extends FormHelper {
 		
 		$def_op_name = '';
 		
-		echo "<select  name='{$name}' {$optionStr} >\n";
+		echo "<select  name='{$name}' {$optionStr} >";
 		
 		if($empty!==null){
 			$selected = '';
 			if($value===null){
 				$selected='selected';
 			}
-			echo "<option value='' {$selected}>{$empty}</option>\n";
+			echo "<option value='' {$selected}>{$empty}</option>";
 		}
 		
 		foreach($list as $v=>$n){
@@ -1480,11 +1481,43 @@ class CrudBaseHelper extends FormHelper {
 			
 			$n = str_replace(array('<','>'),array('&lt;','&gt;'),$n);
 
-			echo "<option value='{$v}' {$selected}>{$n}</option>\n";
+			echo "<option value='{$v}' {$selected}>{$n}</option>";
 			
 		}
 		
-		echo "</select>\n";
+		echo "</select>";
+	}
+	
+	
+	/**
+	 * Vue.js用のセレクトボックスを作成
+	 * @param array $list 選択肢
+	 * @param string $property SELECTのname属性
+	 * @param string $empty_str 未選択状態に表示する選択肢名。nullをセットすると未選択項目は表示しない
+	 *
+	 */
+	public function selectForVue($list, $property, $empty_str = null){
+		
+		$options_str = '';
+		
+		// 空選択
+		if(!empty($empty_str)){
+			$options_str .= "<option value='' >{$empty_str}</option>";
+		}
+		
+		// オプション部分
+		foreach($list as $key => $value){
+			$options_str .= "<option value='{$key}' >{$value}</option>";
+		}
+		
+		
+		$html = "
+			<select v-model='{$property}'>
+				{$options_str}
+			</select>
+		";
+		
+		echo $html;
 	}
 	
 	

@@ -3,9 +3,7 @@
 <html>
 <head>
 	<?php echo $this->Html->charset("utf-8"); ?>
-	<title>
-		<?php echo $title_for_layout; ?>
-	</title>
+	<title>ログイン</title>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
