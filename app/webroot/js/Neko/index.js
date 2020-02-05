@@ -96,9 +96,6 @@ function init(){
 		}
 	});
 	
-	// リアクト機能の初期化■■■□□□■■■□□□■■■□□□開発中
-	crudBase.reactInit('neko_tbl, hyo2');
-	
 	// CrudBase一括追加機能の初期化
 	var today = new Date().toLocaleDateString();
 	crudBase.crudBaseBulkAdd.init(
@@ -282,19 +279,14 @@ function saveRequest(){
 
 
 /**
- * セッションをクリアする
- * 
- * @note
- * ついでに列表示切替機能も初期化する
+ * セッションクリア
  * 
  */
-function session_clear(){
+function sessionClear(){
+	crudBase.sessionClear();
 	
-	// 列表示切替機能を初期化
-	crudBase.csh.reset();
-	
-	location.href = '?ini=1&sc=1';
 }
+
 
 /**
  * テーブル変形
@@ -304,15 +296,6 @@ function tableTransform(mode_no){
 
 	crudBase.tableTransform(mode_no);
 
-}
-
-/**
- * ノート詳細を開く
- * @param btnElm 詳細ボタン要素
- */
-function openNoteDetail(btnElm){
-	btnElm = jQuery(btnElm);
-	crudBase.openNoteDetail(btnElm);
 }
 
 /**

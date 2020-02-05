@@ -3,6 +3,8 @@
 require_once('InputCheckValid.php');
 require_once('IDao.php');
 require_once('CsvExin.php');
+require_once('LogEx.php');
+
 
 /**
  * 大型CSVインポート | CSV分割読込
@@ -11,12 +13,13 @@ require_once('CsvExin.php');
  * 数十MBクラスのCSVファイルを分割して読み込む。
  * CSVファイルのzipにのみ対応。（生のCSVファイルには未対応）
  * CsvImportBig.jsと連動。
+ * 日本語ファイル名に対応。
  * 
  * @component
  * CsvExin.php
  * 
- * @date 2019-5-20 | 2019-7-15
- * @version 1.1.3
+ * @date 2019-5-20 | 2019-8-28
+ * @version 1.1.5
  * @license MIT
  *
  */
@@ -24,6 +27,7 @@ class CsvImportBig{
 	
     var $icv; // 入力チェックバリデーション | InputCheckValid
     var $csvExin; // CsvExin.php 専属CSV読込 csv_exin
+    var $log; // LogEx.php
     
     /**
      * コンストラクタ
@@ -36,6 +40,8 @@ class CsvImportBig{
         $log_fp = $param['log_fp'];
         $this->icv = new InputCheckValid(['log_flg'=>1, 'log_fp'=>$log_fp]);
         $this->csvExin = new CsvExin($this->icv, $dao, $param['update_user']);
+        
+        $this->log = new LogEx();
     }
     
     
@@ -55,8 +61,13 @@ class CsvImportBig{
 		$zip_dp = $param['zip_dp']; // ZIPディレクトリパス
 		mkdir($zip_dp); // ZIPディレクトリを作成。 ZIPの配置と展開先
 		
-		// zipファイルをサーバーの作業ディレクトリパスの場所へ配置
+		// ZIPフィル名を取得、半角英数字でなければ日時からのファイル名を代わりにセットする。
 		$zip_fn = $_FILES[0]['name']; // ZIPファイル名
+		if (!preg_match("/^[a-zA-Z0-9-_.]+$/", $zip_fn)) {
+			$zip_fn = date('Ymdhis') . '.zip';
+		}
+		
+		// zipファイルをサーバーの作業ディレクトリパスの場所へ配置
 		$tmp_name = $_FILES[0]['tmp_name'];
 		move_uploaded_file($tmp_name, $zip_dp . $zip_fn);
 
@@ -70,6 +81,9 @@ class CsvImportBig{
 		} else {
 			return $this->err($param, "ZIPの解凍に失敗しました。");
 		}
+		
+		// 日本語ファイル名を半悪英数字に変更
+		$this->jpFnRename($zip_dp);
 		
 		$csv_fn = $this->getCsvFilePath($zip_dp); // ZIPディレクトリ内からCSVファイル名を取得する。
 
@@ -86,6 +100,9 @@ class CsvImportBig{
 		$heads = $this->makeHeads($head_str);// 列名配列を取得する
 		$csvFieldData = $param['csvFieldData']; // CSVフィールドデータ
 		
+		// 列名のクリーニング。「:」など、特定文字から右側の文字を切り捨てる。
+		$heads = $this->cleaningHeads($heads);
+	
 		// インデックスハッシュマップを作成 | キーはフィールド、値はインデックス（0からの列順）
 		$idxHm = $this->makeIdxHm($heads, $csvFieldData);
 		
@@ -112,6 +129,95 @@ class CsvImportBig{
 		
 
 		return $param;
+	}
+	
+	
+	/**
+	 * 日本語ファイル名を半悪英数字に変更
+	 *
+	 * @note
+	 * 指定ディレクトリ内の日本語ファイル名を日時から生成したファイル名に一括変更する。
+	 *
+	 * @param string $dp ディレクトリパス
+	 * @param string $sep セパレータ（省略可）
+	 * @return array ファイル名変更情報
+	 */
+	private function jpFnRename($dp, $sep='/'){
+		
+		$resData = []; // レスポンスデータ
+		
+		// ディレクトリパスの末尾にセパレータがなければ付け足す。
+		$one = mb_substr($dp, -1);
+		if($one != $sep) $dp .= $sep;
+		
+		$fns = scandir($dp);
+		foreach($fns as $i => $fn){
+			if($fn == '.' || $fn == '..') continue;
+			if (!preg_match("/^[a-zA-Z0-9-_.]+$/", $fn)) {
+				
+				$old_fp = $dp . $fn; // 旧ファイルパス
+				
+				// 拡張子を取得
+				$pi = pathinfo($fn);
+				$ext = $pi['extension'];
+				
+				// 新ファイルパス
+				$date_str = date('Ymd_his');
+				$new_fp = "{$dp}{$date_str}_{$i}.{$ext}";
+				
+				rename ($old_fp, $new_fp); // ファイル名変更
+				
+				$ent = ['old_fp'=>$old_fp, 'new_fp'=>$new_fp,];
+				$resData[] = $ent;
+				
+			}else{
+				$old_fp = $dp . $fn;
+				$ent = ['old_fp'=>$old_fp, 'new_fp'=>$old_fp,];
+				$resData[] = $ent;
+			}
+		}
+		
+		return $resData;
+	}
+	
+	
+	/**
+	 * 列名のクリーニング
+	 * 
+	 * @note
+	 * 「:」など特定文字から右側は切り捨てる。
+	 * 
+	 * @param array $heads 列配列
+	 * @return array クリーニング後の列配列
+	 */
+	private function cleaningHeads($heads){
+		$removeMarks = [':', '：', '※', '(', '（', '【'];
+		foreach($heads as $i => $clm_name){
+			foreach($removeMarks as $remove_mark){
+				$clm_name = $this->removeRight($clm_name, $remove_mark);
+			}
+			$heads[$i] = $clm_name;
+ 		}
+ 		return $heads;
+	}
+	
+	/**
+	 * 印文字から右側を切り捨てる
+	 * @param $s 対象文字列
+	 * @param $mark 印文字
+	 * @return 切り捨て後の文字列
+	 */
+	private function removeRight($s,$mark){
+		
+		if ($s==null || $s==""){
+			return $s;
+		}
+		$a=strpos($s,$mark);
+		if($a==null && $a!==0){
+			return $s;
+		}
+		$s2=substr($s,0,$a);
+		return $s2;
 	}
 	
 	
@@ -400,7 +506,7 @@ class CsvImportBig{
 			$field = $cfEnt['field'];
 			
 			// 必須列である場合
-			if(!empty($cfEnt['req_flg'])){
+			if(!empty($cfEnt['req_clm'])){
 				// インデックスマップに存在しない、つまり列が存在しないならエラー列名リストに追加する。
 				if(!isset($idxHm[$field])){
 					$errClmNames[] = $cfEnt['clm_name'];
@@ -440,11 +546,12 @@ class CsvImportBig{
 	/**
 	 * CSV読込
 	 * @param array $param パラメータ
+	 * @param function $cbAfterValid バリデーション前のデータ加工コールバック
 	 * @return array レスポンス
 	 *  - data CSVデータ
 	 *  - param パラメータ
 	 */
-	public function csvRead($param){
+	public function csvRead($param, $cbAfterValid = null){
 	    
 		$data = []; // CSVデータ
 		$dataA = []; // CSV配列データ
@@ -474,7 +581,7 @@ class CsvImportBig{
 				$line = fgets ($fp);
 				$csv_row_no++;
 				if($line == false){
-				    if($i == 0) $end_flg = true; 
+					if($i == 0) $end_flg = true; 
 					break; // ファイル内テキストが末尾に達したら処理抜け
 				}
 				
@@ -498,7 +605,7 @@ class CsvImportBig{
 				$csvTexts[] = $break_row_str;
 				
 				// CSV行番をセット
-				$csvRowNos[] = $csv_row_no2;
+				$csvRowNos[] = $csv_row_no2 + 1; // テキストエディタは行番号1から始まるので1を加算
 				$csv_row_no2 = $csv_row_no;
 				
 				
@@ -521,8 +628,9 @@ class CsvImportBig{
 		$csvTexts[0] = $this->deleteBom($csvTexts[0]); // UTF8ファイルのテキストに付いているBOMを除去する
 		
 		foreach($csvTexts as $i => $csv_text){
-		    $entX = $this->csvTextToData($csv_text); // CSVテキストを2次元配列に変換する
-		    $dataA[] = $entX[0];;
+			$entX = $this->csvTextToData($csv_text); // CSVテキストを2次元配列に変換する
+			if(empty($entX)) continue;
+			$dataA[] = $entX[0];
 		}
 
 		// 累積サイズに加算
@@ -531,17 +639,21 @@ class CsvImportBig{
 		// 配列データを加工して登録用データを作成する
 		$data = $this->prosData($dataA, $idxHm, $req_batch_count, $csvRowNos, $csv_fn);
 		
+		// バリデーション前にデータ加工コールバックを実行する
+		if($cbAfterValid != null){
+			$data = call_user_func( $cbAfterValid, $data );
+		}
 		
 		// バリデーション
 		$validData = $param['validData'];
 		$err_count = $param['err_count'];
 		foreach($data as &$ent){
-		    $csv_err_msg = $this->icv->validEnt($ent, $validData, $ent['csv_row_no']);
-		    $ent['csv_err_msg'] = $csv_err_msg;
-		    if(!empty($csv_err_msg)) $err_count++;
+			$csv_err_msg = $this->icv->validEnt($ent, $validData, $ent['csv_row_no']);
+			$ent['csv_err_msg'] = $csv_err_msg;
+			if(!empty($csv_err_msg)) $err_count++;
 		}
 		unset($ent);
-
+		
 		$param['csv_row_no'] = $csv_row_no;
 		$param['end_flg'] = $end_flg;
 		$param['offset'] = $offset;
@@ -780,6 +892,8 @@ class CsvImportBig{
 		
 		foreach($dataA as $d_i => $entA){
 			
+			if(count($entA) == 0) continue;
+
 			// 列名行は除外する
 			if($req_batch_count == 0 && $d_i == 0) continue;
 			

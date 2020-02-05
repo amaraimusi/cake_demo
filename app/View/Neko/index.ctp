@@ -8,7 +8,7 @@ $this->assign('css', $this->Html->css($cssList));
 
 // JSファイルのインクルード
 $jsList = $this->CrudBase->getJsList();
-$jsList[] = 'Neko/index'; // 当画面専用JavaScript
+$jsList[] = 'Neko/index.js?v=1.0.0'; // 当画面専用JavaScript
 $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 ?>
@@ -37,7 +37,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<div class="btn-group">
 			<a href="" class="ini_rtn btn btn-info btn-xs" title="この画面を最初に表示したときの状態に戻します。（検索状態、列並べの状態を初期状態に戻します。）">
 				<span class="glyphicon glyphicon-certificate"  ></span></a>
-			<button type="button" class="btn btn-default btn-xs" title="詳細検索項目を表示する" onclick="jQuery('.cb_kj_detail').toggle(300)">詳細</button>
+			<button type="button" class="btn btn-default btn-xs" title="詳細検索項目を表示する" onclick="jQuery('.cb_kj_detail').toggle(300)">詳細検索</button>
 		</div>
 		
 		<div class="cb_kj_detail" style="display:none">
@@ -117,7 +117,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 		<button id="calendar_view_k_btn" type="button" class="btn btn-default btn-xs" onclick="calendarViewKShow()" >
 			<span class="glyphicon glyphicon-time" >カレンダーモード</span></button>
 		
-		<button type="button" class="btn btn-default btn-xs" onclick="session_clear()" >セッションクリア</button>
+		<button type="button" class="btn btn-default btn-xs" onclick="sessionClear()" >セッションクリア</button>
 	
 		<button id="table_transform_tbl_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(0)" style="display:none">一覧の変形・テーブルモード</button>	
 		<button id="table_transform_div_mode" type="button" class="btn btn-default btn-xs" onclick="tableTransform(1)" >一覧の変形・スマホモード</button>
@@ -130,12 +130,7 @@ $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 <div id="new_inp_form_point"></div><!-- 新規入力フォーム表示地点 -->
 
 
-<div style="margin-top:8px;">
-	<div style="display:inline-block">
-		<?php echo $pages['page_index_html'];//ページ目次 ?>
-	</div>
-	<div style="display:inline-block">件数:<?php echo $data_count ?></div>
-</div>
+<?php echo $this->element('CrudBase/pagenation_t');?>
 
 <div id="calendar_view_k"></div>
 
@@ -211,6 +206,9 @@ foreach($data as $i=>$ent){
 ?>
 </tbody>
 </table>
+
+<?php echo $this->element('CrudBase/pagenation_b');?>
+<br>
 
 <button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_bottom');">
 	<span class="glyphicon glyphicon-plus-sign" title="新規入力"> 追加</span></button>

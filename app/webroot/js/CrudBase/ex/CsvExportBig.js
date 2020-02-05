@@ -4,8 +4,8 @@
  * @note
  * ReqBatchSmp.jsに依存
  * 
- * @date 2019-6-24
- * @version 1.0.0
+ * @date 2019-6-24 | 2019-8-15
+ * @version 1.0.1
  * 
  */
 class CsvExportBig{
@@ -23,6 +23,7 @@ class CsvExportBig{
 	 *  
 	 *  @param object hooks フック群
 	 *  - html_body1 HTMLボディ部1
+	 *  - html_footer1 HTMLフッター部1
 	 *  - startBtnCb1 スタートボタンクリック・コールバック1
 	 */
 	init(param, hooks){
@@ -82,6 +83,7 @@ class CsvExportBig{
 		
 		if(hooks == null) hooks = {};
 		if(hooks['html_body1'] == null) hooks['html_body1'] = ''; // HTMLボディ部1
+		if(hooks['html_footer1'] == null) hooks['html_footer1'] = ''; // HTMLフッター部1
 		
 		return hooks;
 	}
@@ -110,6 +112,7 @@ class CsvExportBig{
 			</div>
 			<div id="csv_e_big_req_batch"></div>
 			<div id="csv_e_big_err" class="text-danger"></div>
+			${hooks.html_footer1}
 		</div>
 	</div>
 		`;

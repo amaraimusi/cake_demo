@@ -9,8 +9,8 @@ require_once 'ThumbnailEx.php';
  * 「<input type = 'file'>」であるファイルアップロードのフォーム要素から送られてきたファイルデータを指定場所に保存する。
  * ファイルチェックや、画像形式ならサムネイル画像作成も行う。
  * 
- * @date 2018-6-30 | 2018-10-23
- * @version 1.1.2
+ * @date 2018-6-30 | 2019-7-30
+ * @version 1.1.3
  * @history
  * 2018-10-23 ver 1.1.2 セパレータから始まるディレクトリの時に起こるバグを修正
  * 2018-8-23 ver1.1 optionにfn(ファイル名)を指定できるようにした。
@@ -565,7 +565,7 @@ class FileUploadK{
 				$thum_dp = $this->plusHomePath($thum_dp); // ファイルパスの先頭がセパレータであるならホームルートパスを付加する。
 
 				$thum_fp = $this->connectPath($thum_dp,$fEnt['fn']); // ディレクトリパスとファイル名を連結する。
-				
+
 				$thum_width = null;
 				if(!empty($thEnt['thum_width'])) $thum_width = $thEnt['thum_width'];
 				$thum_height = null;

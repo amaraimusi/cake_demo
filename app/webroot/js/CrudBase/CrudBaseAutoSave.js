@@ -1,7 +1,7 @@
 /**
  * CrudBase 自動保存機能
- * @version 1.0
- * @date 2018-3-2
+ * @version 1.0.1
+ * @date 2018-3-2 | 2019-10-12
  */
 class CrudBaseAutoSave{
 	
@@ -30,6 +30,7 @@ class CrudBaseAutoSave{
 	 * @param data 保存対象データ   省略した場合、HTMLテーブルのデータを保存する。
 	 * @parma option 
 	 *  - reflect_on_tbl 0:HTMLテーブルにdataを反映しない , 1:HTMLテーブルにdataを反映する
+	 *  - afterCallBack 自動保存後に実行するコールバック
 	 */
 	saveRequest(data,option){
 		
@@ -39,7 +40,8 @@ class CrudBaseAutoSave{
 		if(option==null) option = {};
 		if(option['reflect_on_tbl']==null) option['reflect_on_tbl'] = 0;
 		if(option['interval']==null) option['interval'] = 3000;
-
+		if(option['afterCallBack']==null) option['afterCallBack'] = null;
+		this.option = option;
 		
 		// setTimeoutの処理を一旦キャンセルする。
 		if(this.set_timeout_hdl != null){
@@ -91,6 +93,12 @@ class CrudBaseAutoSave{
 				jQuery("#err").html(str_json);
 				return;
 			}
+			
+			// 自動保存後コールバックを実行する
+			if(this.option.afterCallBack){
+				this.option.afterCallBack();
+			}
+			
 		})
 		.fail((jqXHR, statusText, errorThrown) => {
 			this.msgElm.html('自動保存のエラー2');

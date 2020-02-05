@@ -4,8 +4,8 @@ require_once('IDao.php');
 /**
  * CsvExportBig | 大型CSVダウンロード
  * 
- * @version 0.8.0 DB関連は未実装
- * @date 2019-6-26
+ * @version 1.0.1 DB関連は未実装
+ * @date 2019-6-26 | 2019-8-15
  * @author kenji uehara
  * @license MIT
  *
@@ -144,10 +144,41 @@ class CsvExportBig{
 			
 			// 日付差が指定日数以上なら、ファイル削除を行う
 			if($day_num <= $diff_day){
-				unlink($fp);
+				//unlink($fp);
+				$this->removeDirectory($fp);
 			}
 		}
 	}
+	
+	
+	/**
+	 * ディレクトリごとファイルを削除する。（階層化のファイルまで削除可能）
+	 * @param string $dir 削除対象ディレクトリ
+	 */
+	private function removeDirectory($dir) {
+		
+		// ディレクトリでないなら即削除
+		if (!is_dir($dir)) {
+			unlink($dir);
+			return;
+		}
+		
+		if ($handle = opendir($dir)) {
+			while (false !== ($item = readdir($handle))) {
+				if ($item != "." && $item != "..") {
+					$dp = $dir . '/' . $item;
+					if (is_dir($dp)) {
+						$this->removeDirectory($dp);
+					} else {
+						unlink($dp);
+					}
+				}
+			}
+			closedir($handle);
+			rmdir($dir);
+		}
+	}
+	
 	
 	
 	/**
@@ -441,7 +472,7 @@ class CsvExportBig{
 		// JOIN部分文字列を組み立て
 		$join_str = ""; // JOIN部分文字列 
 		foreach($cfData2 as $tbl_name => $cfEnt){
-			$join_str .= "LEFT JOIN {$cfEnt['tbl_name']} ON {$mani_tbl_name}.{$cfEnt['id_field']} = {$cfEnt['tbl_name']}.id";
+			$join_str .= " LEFT JOIN {$cfEnt['tbl_name']} ON {$mani_tbl_name}.{$cfEnt['id_field']} = {$cfEnt['tbl_name']}.id";
 		}
 
 		return $join_str;

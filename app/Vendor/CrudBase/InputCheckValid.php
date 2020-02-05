@@ -3,8 +3,8 @@ require_once ('LogEx.php');
 /**
  * 入力チェックバリデーション | InputCheckValid
  * 
- * @date 2019-7-11 | 2019-7-15
- * @version 1.0.1
+ * @date 2019-7-11 | 2019-8-28
+ * @version 1.0.2
  * @license MIT
  * @author k_uehara
  *
@@ -129,7 +129,7 @@ class InputCheckValid{
         
         // 行番が指定されている場合、行情報を追記する。
         if($row_no !== null){
-            $err_line = $row_no . '行目: ' . $err_line;
+            $err_line = 'テキストファイルの' . $row_no . '行目: ' . $err_line;
         }
         
         // ログファイルにエラー行を出力
@@ -391,7 +391,7 @@ class InputCheckValid{
         }
         
         //日付を年月日時分秒に分解する。
-        $aryA =preg_split( '|[ /:_-]|', $value );
+        $aryA =preg_split( '/[-: \/]/', $value );
         if(count($aryA)!=6){
             return "{$validEnt['field_name']}は日時型（Y-m-d h:i:sもしくはY/m/d h:i:s)で入力してください。→{$value}";
         }

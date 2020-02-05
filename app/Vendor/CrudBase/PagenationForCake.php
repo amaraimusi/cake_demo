@@ -12,8 +12,8 @@
  * - ページネーション情報としてページ目次、ソート用リンク、データ件数等を出力する。
  * 
  * @author k-uehara
- * @version 1.5.5
- * @date 2010-4-1 | 2019-1-28
+ * @version 1.5.6
+ * @date 2010-4-1 | 2019-7-27
  *
  */
 class PagenationForCake{
@@ -51,6 +51,7 @@ class PagenationForCake{
 		$res = $this->_createIndexHtml2($pages,$all_data_cnt,$path,$params,$kjs_uq);
 
 		$pages['page_index_html'] = $res['mokuji'];;
+		$pages['def_url'] = $res['def_url'];
 		$pages['page_prev_link'] = $res['page_prev_link'];
 		$pages['page_next_link'] = $res['page_next_link'];
 		$pages['page_top_link'] = $res['page_top_link'];
@@ -206,6 +207,9 @@ class PagenationForCake{
 					$strParams=$strParams.'&'.$key.'='.$val;
 			}
 		}
+		
+		// デフォルトURLを作成
+		$def_url = "{$pageName}?page_no=1{$strParams}&act_flg=2&{$kjs_uq}";
 
 		//▼最戻リンクを作成
 		$page_top_link = '';
@@ -280,6 +284,7 @@ class PagenationForCake{
 		
 		$res=array(
 				'mokuji'=>$html,
+				'def_url'=>$def_url,
 				'page_prev_link'=>$page_prev_link,
 				'page_next_link'=>$page_next_link,
 				'page_top_link'=>$page_top_link,

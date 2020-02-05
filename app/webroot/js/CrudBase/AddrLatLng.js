@@ -1,36 +1,45 @@
 /**
  * 住所緯度経度・編集機能
- * @date 2019-4-11
- * @version 1.0.0
+ * 
+ * @note
+ * GoogleジオコードAPIを使用
+ * 
+ * @date 2019-4-11 | 2019-8-4
+ * @version 1.1.0
  */
 class AddrLatLng{
-	
+
 	/**
 	 * コンストラクタ
 	 * 
 	 * @param object param
-	 * - map_xid マップのID属性名
-	 * - wrap_xid ラッパーのID属性名
-	 * - address_tb_xid 住所テキストボックスのID属性
-	 * - lat_tb_xid 緯度テキストボックスのID属性
-	 * - lng_tb_xid 経度テキストボックスのID属性
-	 * - err_xid エラー表示要素のID属性
+	 * - div_xid 当機能埋込先区分のid属性
+	 * - wrap_slt ラッパー要素のセレクタ
+	 * - map_slt 地図要素のセレクタ
+	 * - address_tb_slt 住所テキストボックスのセレクタ
+	 * - lat_tb_slt 緯度テキストボックスのセレクタ
+	 * - lng_tb_slt 経度的巣tボックスのセレクタ
+	 * - err_slt エラー要素のセレクタ
 	 * - zoom Mapsの初期ズーム
-	 * 
 	 */
 	constructor(param){
 		param = this._setParamIfEmpty(param);
+		this.tDiv = jQuery('#' + param.div_xid); //  This division
+		
 		this.param = param;
 		this.map; // Mapsオブジェクト
 		this.infoWindow1; // 吹き出しウィンドウ
 		this.marker; // マーカーオブジェクト
 		this.geocoder; // ジオコーディングオブジェクト | google.maps.Geocoder(); | 住所から緯度経度取得に利用
 		this.init_flg = false; // 初期化済みフラグ
-		this.wrapElm = jQuery('#' + param.wrap_xid);
-		this.addrElm = jQuery('#' + param.address_tb_xid);
-		this.latElm = jQuery('#' + param.lat_tb_xid);
-		this.lngElm = jQuery('#' + param.lng_tb_xid);
-		this.errElm = jQuery('#' + param.err_xid);
+		
+		this.wrapDiv = this.tDiv.find(param.wrap_slt); // ラッパー要素
+		this.addrElm = this.tDiv.find(param.address_tb_slt); // 住所テキストボックス
+		this.latElm = this.tDiv.find(param.lat_tb_slt); // 緯度テキストボックス
+		this.lngElm = this.tDiv.find(param.lng_tb_slt); // 経度テキストボックス
+		this.errElm = this.tDiv.find(param.err_slt); // エラー要素
+		
+		
 	}
 	
 	
@@ -40,16 +49,17 @@ class AddrLatLng{
 	_setParamIfEmpty(param){
 		
 		if(param == null) param = {};
+		if(param['div_xid'] == null) param['div_xid'] = 'addr_lat_lng';
+		if(param['wrap_slt'] == null) param['wrap_slt'] = '.allex_map_w';
+		if(param['map_slt'] == null) param['map_slt'] = '.allex_map';
+		if(param['address_tb_slt'] == null) param['address_tb_slt'] = '.allex_address';
+		if(param['lat_tb_slt'] == null) param['lat_tb_slt'] = '.allex_lat';
+		if(param['lng_tb_slt'] == null) param['lng_tb_slt'] = '.allex_lng';
+		if(param['err_slt'] == null) param['err_slt'] = '.allex_err';
 		
-		if(param['map_xid'] == null) throw new Error("Empty 'map_xid'!");
-		if(param['wrap_xid'] == null) throw new Error("Empty 'wrap_xid'!");
-		if(param['address_tb_xid'] == null) throw new Error("Empty 'address_tb_xid'!");
-		if(param['lat_tb_xid'] == null) throw new Error("Empty 'lat_tb_xid'!");
-		if(param['lng_tb_xid'] == null) throw new Error("Empty 'lng_tb_xid'!");
-		if(param['err_xid'] == null) param['err_xid'] = 'err';
+		if(param['def_lat'] == null) param['def_lat'] = 35.670528; // 東京都２丁目１３?１０ ユニマットアネックスビル7F
+		if(param['def_lng'] == null) param['def_lng'] = 139.72014;
 		
-		if(param['def_lat'] == null) param['def_lat'] = 35.36063613713634; // デフォルト緯度： 富士山の位置がデフォルト
-		if(param['def_lng'] == null) param['def_lng'] = 138.72732639312744;
 		if(param['lat'] == null) param['lat'] = param.def_lat;
 		if(param['lng'] == null) param['lng'] = param.def_lng;
 		if(param['zoom'] == null) param['zoom'] = 15;
@@ -63,19 +73,19 @@ class AddrLatLng{
 	 */
 	init(){
 
-		var param = this.param;
+		let param = this.param;
 		
-		var mapElm = jQuery('#' + param.map_xid)
-
+		let mapElm = this.tDiv.find(param.map_slt);
+		
 		// 地図を作成
-		var map = new google.maps.Map( mapElm[0], {
+		let map = new google.maps.Map( mapElm[0], {
 			center: new google.maps.LatLng(param.lat, param.lng ),
 			zoom: param.zoom ,
 		});
 		this.map = map;
 		
 		// マーカーの作成
-		var marker = new google.maps.Marker( {
+		let marker = new google.maps.Marker( {
 			map: map ,
 			position: new google.maps.LatLng( param.lat, param.lng ) ,
 		}) ;
@@ -96,10 +106,10 @@ class AddrLatLng{
 	 * @param argument レスポンス
 	 */
 	_clickOnMap(argument){
-		var latLng = argument.latLng;
-		var lat = latLng.lat();
-		var lng = latLng.lng();
-		var place_id = argument.placeId;
+		let latLng = argument.latLng;
+		let lat = latLng.lat();
+		let lng = latLng.lng();
+		let place_id = argument.placeId;
 
 		// テキストボックスに緯度経度をセットする
 		this.latElm.val(lat);
@@ -116,7 +126,7 @@ class AddrLatLng{
 	 * @param jQuery btnElm ボタン要素
 	 */
 	addrLatLngShowMap(btnElm){
-		this.wrapElm.show();
+		this.wrapDiv.show();
 		this._errShow(''); // エラーメッセージをクリア
 		
 		if(this.init_flg == false){
@@ -124,16 +134,16 @@ class AddrLatLng{
 		}
 		
 
-		var param = this.param;
+		let param = this.param;
 		
 		// 緯度経度を取得する
-		var lat = this.latElm.val();
-		var lng = this.lngElm.val();
+		let lat = this.latElm.val();
+		let lng = this.lngElm.val();
 		if(this._empty(lat)) lat = param.def_lat;
 		if(this._empty(lng)) lng = param.def_lng;
 		
 		// 地図の中心位置を移動
-		var latLng = new google.maps.LatLng( lat, lng );
+		let latLng = new google.maps.LatLng( lat, lng );
 		this.map.setCenter(latLng);
 		
 		// マーカーの位置移動
@@ -169,7 +179,7 @@ class AddrLatLng{
 		this._errShow(''); // エラーメッセージをクリア
 
 		// 住所、地名、ランドマークなどを入力
-		var address_text = this.addrElm.val();
+		let address_text = this.addrElm.val();
 		
 		if(this._empty(address_text)){
 			this._errShow('住所を入力してください');
@@ -180,16 +190,16 @@ class AddrLatLng{
 		if(this.geocoder == null){
 			this.geocoder = new google.maps.Geocoder(); 
 		}
-		var geocoder = this.geocoder;
+		let geocoder = this.geocoder;
 	
 		// 住所、地名、ランドマークなどから正規住所、プレースID、緯度経度を取得する
 		geocoder.geocode({address: address_text}, (results, status) => {
 			if (status === 'OK' && results[0]){
-				var result = results[0];
+				let result = results[0];
 
 				// 住所の緯度経度を取得
-				var lat = result.geometry.location.lat();
-				var lng = result.geometry.location.lng();
+				let lat = result.geometry.location.lat();
+				let lng = result.geometry.location.lng();
 				
 				// 緯度経度テキストボックスへセット
 				this.latElm.val(lat);
@@ -228,17 +238,17 @@ class AddrLatLng{
 	addrLatLngEditShow(){
 		if(this.init_flg==false) return;
 		
-		var param = this.param;
+		let param = this.param;
 		this._errShow(''); // エラーメッセージをクリア
 		
 		// 緯度経度を取得する
-		var lat = this.latElm.val();
-		var lng = this.lngElm.val();
+		let lat = this.latElm.val();
+		let lng = this.lngElm.val();
 		if(this._empty(lat)) lat = param.def_lat;
 		if(this._empty(lng)) lng = param.def_lng;
 		
 		// 地図の中心位置を移動
-		var latLng = new google.maps.LatLng( lat, lng );
+		let latLng = new google.maps.LatLng( lat, lng );
 		this.map.setCenter(latLng);
 		
 		// マーカーの位置移動

@@ -5,8 +5,8 @@ require_once('IDao.php');
 /**
  * 専属CSV読込 csv_exin
  * 
- * @date 2019-1-9 | 2019-7-13
- * @version 1.2.0
+ * @date 2019-1-9 | 2019-12-26
+ * @version 1.3.0
  */
 class CsvExin{
 
@@ -38,9 +38,10 @@ class CsvExin{
 	 *  - csvFieldData CSVフィールドデータ
 	 *  - csvParam CSVパラメータ
 	 *      - main_table_name メインテーブル名
+	 * @param bool $empty_update_flg 空更新フラグ  true:空値更新する, false:空は更新しない
 	 * @return レスポンス（新規追加数、上書き数）
 	 */
-	public function reg(&$csvExinData){
+	public function reg(&$csvExinData, $empty_update_flg=true){
 		
 		$data = $csvExinData['data'];
 		if(empty($data)) return ['ins_cnt' => 0, 'upd_cnt' => 0,];
@@ -89,7 +90,7 @@ class CsvExin{
 		$this->sql_sanitize($mainData);
 		
 		// データからINSERTとUPDATEのSQL文を生成する
-		$res = $this->createInsertAndUpdate($main_table_name, $mainData);
+		$res = $this->createInsertAndUpdate($main_table_name, $mainData, $empty_update_flg);
 		
 		
 		// UPDATEを実行
@@ -123,8 +124,8 @@ class CsvExin{
 	 * @param array $box ボックス
 	 */
 	private function exeBoxSql($box){
-	    $sql = $box['sql'];
-	    $res = $this->dao->sqlExe($sql);
+		$sql = $box['sql'];
+		$res = $this->dao->sqlExe($sql);
 	}
 	
 	
@@ -242,16 +243,9 @@ class CsvExin{
 		$sql = "SELECT * FROM {$table_name} WHERE {$field} IN($j_str)";
 		$res = $this->dao->sqlExe($sql);
 		
-		// DBデータ
-		$dbData = [];
-		if(!empty($res)){
-			foreach($res as $i => $ary){
-				$dbData[] = $ary[$table_name];
-			}
-		}
+		$dbData = $this->normalizeDataStruct($res); // データ構造を正規化する
 		
 		$next_sort_no = $box['next_sort_no'];
-		
 		
 		$masterData=[];// マスターデータを作成
 		
@@ -318,31 +312,30 @@ class CsvExin{
 	private function regMasterData(&$masterBoxs){
 		
 		foreach($masterBoxs as &$box){
-			
 			$masterData = $box['masterData'];
 			
 			// 追加、または更新の対象データだけ取得
 			$masterData2 = $this->filterMasterData($masterData);
 			if(empty($masterData2)) continue;
-			
+
 			// DBサニタイズ
 			$this->sql_sanitize($masterData2);
 			
 			// INSERTとUPDATEのSQLを作成
 			$table_name = $box['table_name'];
-			$res = $this->createInsertAndUpdate($table_name, $masterData2);
-			
+			$res = $this->createInsertAndUpdate($table_name, $masterData2, false);
+
 			// UPDATEを実行
 			$updates = $res['updates'];
-			foreach($updates as $box){
-				$this->exeBoxSql($box);
+			foreach($updates as $boxU){
+				$this->exeBoxSql($boxU);
 			}
 			
 			// INSERTを実行
 			$inserts = $res['inserts'];
 			$newIds=[];
-			foreach($inserts as $box){
-				$this->exeBoxSql($box);
+			foreach($inserts as $boxI){
+				$this->exeBoxSql($boxI);
 				$newIdRes = $this->dao->sqlExe("SELECT LAST_INSERT_ID()");
 				$newIds[] = $this->getValueFromAryDepth($newIdRes);
 			}
@@ -380,9 +373,10 @@ class CsvExin{
 	 * データからINSERTとUPDATEのSQL文を生成する
 	 * @param string $tbl_name テーブル名
 	 * @param array $data エンティティ配列型のデータ
+	 * @param bool $empty_update_flg 空更新フラグ  true:空値更新する, false:空は更新しない
 	 * @return array|string[][]
 	 */
-	private function createInsertAndUpdate($tbl_name, $data){
+	private function createInsertAndUpdate($tbl_name, $data, $empty_update_flg){
 		if(empty($data)) return array();
 		
 		// 列名群文字列を組み立て
@@ -405,10 +399,10 @@ class CsvExin{
 			
 			// IDが存在すればUPDATE文を組み立て
 			else{
-			    $sql = $this->makeUpdateSql($tbl_name, $ent); // UPDATE文を作成する
+				$sql = $this->makeUpdateSql($tbl_name, $ent, $empty_update_flg); // UPDATE文を作成する
 			    $box['sql'] = $sql;
 			    $box['ent'] = $ent;
-			    $inserts[] = $box;
+			    $updates[] = $box;
 			}
 		}
 		
@@ -433,7 +427,9 @@ class CsvExin{
 		foreach($ent as $field => $value){
 			if($value === null) continue;
 			$clms_str .= $field . ',';
-			$vals_str .= "'{$value}',";
+			$val_s = $this->makeSqlVal($value);
+			$vals_str .= $val_s . ',';
+			
 		}
 		
 		// 末尾の一文字であるコンマを削る
@@ -444,20 +440,45 @@ class CsvExin{
 		return $insert_sql;
 	}
 	
+	/**
+	 * 登録系SQLの値部分
+	 * @param unknown $value
+	 */
+	private function makeSqlVal($value){
+		$vals_str = '';
+		if($value === 0){
+			$vals_str = "'0'";
+		}else{
+			if(empty($value)){
+				$vals_str = 'null';
+			}else{
+				$vals_str = "'{$value}'";
+			}
+		}
+		
+		return $vals_str;
+	}
+	
 	
 	/**
 	 * UPDATE文を作成する
 	 * @param string $tbl_name テーブル名
 	 * @param array $ent 登録データのエンティティ
+	 * @param bool $empty_update_flg 空更新フラグ  true:空値更新する, false:空は更新しない
 	 * @return string UPDATE文
 	 */
-	private function makeUpdateSql($tbl_name, &$ent){
+	private function makeUpdateSql($tbl_name, &$ent, $empty_update_flg){
 		if(empty($ent['id'])) throw new Exception('makeUpdateSql: idが空です。');
 		
 		$vals_str = '';
 		foreach($ent as $field => $value){
-			if($value === null) continue;
-			$vals_str .= "{$field}='{$value}',";
+			if($empty_update_flg == false){
+				if($value === null) continue;
+			}
+			
+			$val_s = $this->makeSqlVal($value);
+			
+			$vals_str .= "{$field}={$val_s},";
 		}
 			
 		$vals_str = mb_substr($vals_str,0,mb_strlen($vals_str)-1);// 末尾の一文字であるコンマを削る
@@ -474,6 +495,7 @@ class CsvExin{
 	 * @return array マスターデータ
 	 */
 	private function setNewEntToMasterData($newIds, $box){
+
 		$table_name = $box['table_name'];
 		
 		// IN句部分を組み立て
@@ -485,14 +507,8 @@ class CsvExin{
 
 		if(empty($res)) return $box;
 		
-		// 新規追加ばかりのDBデータ
-		$dbData = [];
-		if(!empty($res)){
-			foreach($res as $i => $ary){
-				$dbData[] = $ary[$table_name];
-			}
-		}
-		
+		$dbData = $this->normalizeDataStruct($res); // データ構造を正規化する
+
 		// マスターデータにDBデータをセットする。
 		$masterData = &$box['masterData'];
 		$field = $box['field'];
@@ -515,6 +531,7 @@ class CsvExin{
 	 * @return array IDマッピングをセットしたマスターボックスリスト
 	 */
 	private function makeIdMap(&$masterBoxs){
+
 		foreach($masterBoxs as &$box){
 			$masterData = $box['masterData'];
 			$field = $box['field'];
@@ -621,12 +638,13 @@ class CsvExin{
 				// DBにidに紐づくレコード（既存エンティティ）が存在するか調べ、存在するなら「上書き」
 				$sql = "SELECT * FROM {$main_table_name} WHERE id = {$mEnt['id']}";
 				$res = $this->dao->sqlExe($sql);
+				$res = $this->normalizeDataStruct($res); // データ構造を正規化する
 				if(empty($res)){
 					$reg_type = 'ins';
 					
 				}else{
 					$reg_type = 'upd';
-					$exiEnt = $res[0][$main_table_name];
+					$exiEnt = $res[0];
 				}
 			}
 			
@@ -693,12 +711,12 @@ class CsvExin{
 		
 		// テーブルからフィールド情報を取得する
 		$res = $this->dao->sqlExe("SHOW FULL COLUMNS FROM {$table_name}");
+		$res = $this->normalizeDataStruct($res); // データ構造を正規化する
 		
 		// フィールド情報からフィールド配列を取得する
 		$fields = []; // フィールド配列
-		foreach($res as $box){
-			$field = $box['COLUMNS']['Field'];
-			$fields[] = $field;
+		foreach($res as $ent){
+			$fields[] = $ent['Field'];;
 		}
 		
 		// テーブルに存在しないフィールドをデータから除去する
@@ -741,6 +759,52 @@ class CsvExin{
 		}else{
 			// 何もしない
 		}
+	}
+	
+	/**
+	 * データ構造を正規化する
+	 * @param array $res DBからのレスポンスデータ
+	 * @return array 正規化したデータ
+	 */
+	private function normalizeDataStruct(&$res){
+		
+		if(empty($res)) return [];
+		
+		$depth = $this->arrayDepthSmp($res); // 配列の階層の深さを調べる
+		if($depth == 2){
+			return $res;
+		}
+		
+		$data2 = [];
+		foreach($res as $i => $ary){
+			$data2[] = $ary[key($ary)];
+		}
+		
+		return $data2;
+		
+	}
+	
+	
+	
+	/**
+	 * 配列の階層の深さを調べる（高速版）
+	 *
+	 * @note
+	 * 配列の先頭からのみ深度を調べる。
+	 * 処理は速いが、階層にばらつきのある配列には向かない。
+	 * 行列データなどに。
+	 *
+	 * @param array $ary 対象配列
+	 * @param number $depth 深度（再起呼び出しで使用するので省略すること）
+	 * @return number 階層数
+	 */
+	private function arrayDepthSmp(&$ary, $depth=0){
+		if(is_array($ary)){
+			$depth++;
+			$first_key = key($ary);
+			$depth = $this->arrayDepthSmp($ary[$first_key], $depth);
+		}
+		return $depth;
 	}
 	
 	

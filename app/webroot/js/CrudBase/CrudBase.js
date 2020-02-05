@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-7-19
- * @version 2.8.5
+ * @date 2016-9-21 | 2019-10-13
+ * @version 3.0.4
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -127,6 +127,17 @@ class CrudBase{
 		// CSVフィールドデータ補助クラス
 		this.csvFieldDataSupport = new CsvFieldDataSupport();
 		
+		// ページネーションジャンプ
+		let pagenationJumpT = new PagenationJump(); // 上側ページネーション
+		pagenationJumpT.init();
+		let pagenationJumpB = new PagenationJump(); // 下側ページネーション
+		pagenationJumpB.init({xid:'pagenation_jump_b'});
+		
+		// 年月による日付範囲入力【拡張】 | RangeYmEx.js
+		let rngYmEx = new RangeYmEx();
+		rngYmEx.init();
+		
+		// -----------
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
 		// 折り畳みテキストエリア | FoldingTa.js
@@ -1048,7 +1059,7 @@ class CrudBase{
 		// FDにファイルオブジェクトをセットする。
 		var fd = new FormData();
 		fd = this.cbFileUploadComp.setFilesToFd(fd,'edit');
-		
+
 		// Ajax送信前のコールバックを実行する
 		if(beforeCallBack){
 
@@ -2218,11 +2229,7 @@ class CrudBase{
 					return;
 				});
 			}
-			
 
-			
-
-			
 			ent2[f] = v;
 		}
 
@@ -2847,15 +2854,18 @@ class CrudBase{
 		
 		// 弟要素のlabelを取得
 		var label = elm.next();
-		
+
 		// アンカー要素をlabelから取得し、ファイルパスをセットする
 		var aElm = label.find('a');
-		aElm.attr('href', orig_href);
-		
-		// IMG要素にサムネイルパスをセットする
-		var imgElm = aElm.children().eq(0);	// IMG要素を取得
-		imgElm.attr('src', img_src);
+		if(aElm[0]){
+			aElm.attr('href', orig_href);
+		}
 
+		var imgElm = label.find('img'); // IMG要素を取得
+		if(imgElm[0]){
+			imgElm.attr('src', img_src);
+		}
+		
 		elm.attr('data-fp', fp); // 「type='file'」に対応
 
 	}
@@ -2869,13 +2879,13 @@ class CrudBase{
 	 */
 	_setEntToImageFuk(elm, field, fp){
 
-		elm.attr('data-fp', fp); // 「type='file'」に対応
-
 		var fue_id = elm.attr('id');
 		var option = {'midway_dp':this.param.midway_dp};
 		
 		// file要素にファイルパスをセットする
 		this.cbFileUploadComp.setFilePaths(fue_id, fp, option);
+		
+		elm.attr('data-fp', fp); // 「type='file'」に対応
 
 	}
 	
@@ -3876,10 +3886,30 @@ class CrudBase{
 			sort_no ++;
 		}
 		
+		this._btnsDisabledSwich(true);
+		
+		// 自動保存後のコーバック
+		var afterCallBack = function(){
+			this._btnsDisabledSwich(false);
+		}.bind(this);
+		
 		var option = {
 				'reflect_on_tbl':1, // 1:HTMLテーブルにdataを反映する
+				'afterCallBack':afterCallBack,
 		}
 		this.saveRequest(data,option);// 自動保存の依頼をする
+	}
+	
+	
+	/**
+	 * 行のボタン群の有効、無効を切替
+	 */
+	_btnsDisabledSwich(flg){
+		jQuery(".row_edit_btn").prop('disabled', flg);
+		jQuery(".row_copy_btn").prop('disabled', flg);
+		jQuery(".row_delete_btn").prop('disabled', flg);
+		jQuery(".row_enabled_btn").prop('disabled', flg);
+		jQuery(".row_eliminate_btn").prop('disabled', flg);
 	}
 	
 	
@@ -4083,6 +4113,10 @@ class CrudBase{
 	 * @param btnElm 詳細ボタン要素
 	 */
 	openNoteDetail(btnElm,field){
+		
+		if(!(btnElm instanceof jQuery)){
+			btnElm = jQuery(btnElm);
+		}
 		
 		if(field == null) field = 'note';
 		
@@ -4318,11 +4352,6 @@ class CrudBase{
 		var fields = this._getFields();
 		
 		this.crudBaseReact.init(fields, hyo_elm_id);
-		
-		// ■■■□□□■■■□□□■■■□□□
-		var d2 = new Date();
-		var t2 = d1.getTime();
-		var t3 = t2 - t1;
 
 	}
 	
@@ -4371,6 +4400,24 @@ class CrudBase{
 			this.kjs = JSON.parse(kjs_json);
 		}
 		return this.kjs;
+	}
+	
+	
+	/**
+	 * セッションクリア
+	 */
+	sessionClear(){
+		
+		// 列表示切替機能を初期化
+		this.csh.reset();
+		
+		// CrudBase設定をリセット
+		this.crudBaseConfig.reset();
+		
+		this.cbBtnSizeChanger.clearReset();
+		
+		// リロード
+		location.href = '?ini=1&sc=1';
 	}
 	
 }

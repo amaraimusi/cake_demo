@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿#!/bin/bash
 #read pw
 pw="aka3siro3"

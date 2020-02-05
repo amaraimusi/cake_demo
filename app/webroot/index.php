@@ -1,12 +1,4 @@
 <?php
-
-
-function debugX($data){
-	echo '<pre>';
-	var_dump($data);//■■■□□□■■■□□□■■■□□□)
-	echo '</pre>';
-}
-
 /**
  * Index
  *
