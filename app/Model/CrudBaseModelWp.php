@@ -7,7 +7,7 @@
  * 各モデルで共通する処理を記述する。
  * saveメソッドを備える。
  * 
- * @version 2.0.0
+ * @version 2.0.1
  * @date 2017-4-28 | 2020-2-28
  * @author k-uehara
  * @license MIT
@@ -17,7 +17,6 @@ class CrudBaseModelWp{
 
 	private $whiteList = null; // ホワイトリスト（テーブルのフィールド一覧）
 	
-	protected $useTabe = '';
 	private $old_tbl_name = '';
 	
 	/**
@@ -42,7 +41,6 @@ class CrudBaseModelWp{
 		if(!is_string($tbl_name)) throw new Exception('$tbl_name is not string!');
 		if($this->old_tbl_name != $tbl_name){
 			$this->whiteList = $this->getWhiteList($tbl_name);
-			$this->useTabe = $tbl_name;
 			$this->old_tbl_name = $tbl_name;
 		}
 		$option = $this->ifSetOption($option);
@@ -110,25 +108,29 @@ class CrudBaseModelWp{
 	 *  - 0(デフォルト): 	INSERTする際、IDを除去（mysqlのautoincrementでID生成） 
 	 *  - 1: 			IDを除去しない
 	 * - debug: 	0(デフォルト):SQLをダンプしない   1:SQLをダンプする
+	 * - get_res_flg 0(デフォルト）:レスポンスデータは不要,   1:レスポンスデータを返す。
 	 */
 	public function saveAll($data, $tbl_name, $option=null){
 		if (empty($tbl_name)) throw new Exception('Empty $tbl_name !');
 		if(!is_string($tbl_name)) throw new Exception('$tbl_name is not string!');
 		if($this->old_tbl_name != $tbl_name){
 			$this->whiteList = $this->getWhiteList($tbl_name);
-			$this->useTabe = $tbl_name;
 			$this->old_tbl_name = $tbl_name;
 		}
 		
 		$option = $this->ifSetOption($option);
-
+		
+		$resData = []; // レスポンスデータ
+		$get_res_flg = $option['get_res_flg'];
+		
 		// トランザクションフラグが有効である場合
 		if(!empty($option['atomic'])){
 			global $wpdb;
 			try {
 				$wpdb->get_results("BEGIN");
 				foreach($data as $ent){
-					$this->save($ent, $tbl_name, $option);
+					$resEnt = $this->save($ent, $tbl_name, $option);
+					if($get_res_flg==1) $resData[] = $resEnt;
 				}
 				$wpdb->get_results("COMMIT");
 				
@@ -141,11 +143,12 @@ class CrudBaseModelWp{
 		// トランザクションフラグが無効である場合
 		else{
 			foreach($data as $ent){
-				$this->save($ent, $tbl_name, $option);
+				$resEnt = $this->save($ent, $tbl_name, $option);
+				if($get_res_flg==1) $resData[] = $resEnt;
 			}
 		}
-		
-		
+
+		return $resData;
 
 	}
 	
@@ -516,6 +519,10 @@ class CrudBaseModelWp{
 		
 		if(!isset($option['debug'])){
 			$option['debug'] = 0;
+		}
+		
+		if(!isset($option['get_res_flg'])){
+			$option['get_res_flg'] = 0;
 		}
 		
 		
