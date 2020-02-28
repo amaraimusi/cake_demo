@@ -1,23 +1,24 @@
 <?php
 
 /**
- * 基本CRUDのモデル
+ * 基本CRUDのモデル(WordPress用）
  * 
  * @note
  * 各モデルで共通する処理を記述する。
  * saveメソッドを備える。
  * 
- * @version 1.0
- * @date 2017-4-28
+ * @version 2.0.0
+ * @date 2017-4-28 | 2020-2-28
  * @author k-uehara
+ * @license MIT
  *
  */
 class CrudBaseModelWp{
+
+	private $whiteList = null; // ホワイトリスト（テーブルのフィールド一覧）
 	
-	
-	protected $useTable = null; // 仕様テーブル
-	
-	protected $whiteList = null; // ホワイトリスト（テーブルのフィールド一覧）
+	protected $useTabe = '';
+	private $old_tbl_name = '';
 	
 	/**
 	 * エンティティをDB保存する。
@@ -27,36 +28,40 @@ class CrudBaseModelWp{
 	 * エンティティのフィールドはDBフィールドと厳密に一致させる必要はない。存在しないフィールドは無視する。
 	 * 
 	 * @param array $ent DB保存するエンティティ
+	 * @param string $tbl_name テーブル名
 	 * @param array $option
-	 * - table: 	テーブル名:	テーブル名を指定する場合。デフォルトは$useTableメンバのテーブル名でる。
 	 * - sanitaize: サニタイズ: 	true(デフォルト):SQLインジェクションを施す。
 	 * - id_ins_flg:ID INSERTフラグ: 
-	 *  - 0(デフォルト): 	INSERTする際、IDを除去（mysqlのautoincrementでID生成） 
-	 *  - 1: 			IDを除去しない
-	 *  - debug: 	0(デフォルト):SQLをダンプしない   1:SQLをダンプする
+	 *    - 0: (デフォルト)INSERTする際、IDを除去（mysqlのautoincrementでID生成） 
+	 *    - 1: IDを除去しない
+	 * - debug: 	0(デフォルト):SQLをダンプしない   1:SQLをダンプする
 	 *  
 	 */
-	public function save($ent,$option=null){
-		
+	public function save($ent, $tbl_name, $option=null){
+		if (empty($tbl_name)) throw new Exception('Empty $tbl_name !');
+		if(!is_string($tbl_name)) throw new Exception('$tbl_name is not string!');
+		if($this->old_tbl_name != $tbl_name){
+			$this->whiteList = $this->getWhiteList($tbl_name);
+			$this->useTabe = $tbl_name;
+			$this->old_tbl_name = $tbl_name;
+		}
 		$option = $this->ifSetOption($option);
-		
-		
-		$table = $option['table']; // テーブル名を取得
 
 		// サニタイズフラグがONである場合、SQLサニタイズを施す。
 		if(!empty($option['sanitaize'])){
 			$this->sql_sanitize($ent);
 		}
-
+		
 		// エンティティのIDが空でない場合
 		$res_ent = array();
 		if(!empty($ent['id'])){
 			// IDに紐づく既存レコードを取得する
-			$eEnt = $this->getEntity($ent['id'],$table);
-
+			$eEnt = $this->getEntity($ent['id'], $tbl_name);
+			
 			// 既存レコードが空である場合
 			if(empty($eEnt)){
-				return $this->insertEntity($ent,$table,$option);// INSERTメソッドを呼び出す
+				return $this->insertEntity($ent, $tbl_name, $option);// INSERTメソッドを呼び出す
+
 			}
 			
 			// 既存レコードをエンティティの値要素をセットする
@@ -68,13 +73,13 @@ class CrudBaseModelWp{
 
 
 			// 既存レコードをUPDATE
-			$res_ent = $this->updateEntity($eEnt,$table,$option);
+			$res_ent = $this->updateEntity($eEnt, $tbl_name, $option);
 		}
 
 		
 		// エンティティのIDが空である場合、INSERTを実行する
 		else{
-			$res_ent= $this->insertEntity($ent,$table,$option);// INSERTメソッドを呼び出す
+			$res_ent= $this->insertEntity($ent, $tbl_name, $option);// INSERTメソッドを呼び出す
 		}
 		
 		// SQLサニタイズデコード
@@ -97,8 +102,8 @@ class CrudBaseModelWp{
 	 * データはエンティティの配列である。
 	 * 
 	 * @param array $data DBへ保存するデータ: エンティティの配列
+	 * @param string $tbl_name テーブル名
 	 * @param array $option
-	 * - table: 	テーブル名:	テーブル名を指定する場合。デフォルトは$useTableメンバのテーブル名でる。
 	 * - sanitaize: サニタイズ: 	true(デフォルト):SQLインジェクションを施す。
 	 * - atomic:  	トランザクション:	false(デフォルト):内部でトランザクションを行わない
 	 * - id_ins_flg:ID INSERTフラグ: 
@@ -106,16 +111,24 @@ class CrudBaseModelWp{
 	 *  - 1: 			IDを除去しない
 	 * - debug: 	0(デフォルト):SQLをダンプしない   1:SQLをダンプする
 	 */
-	public function saveAll($data, $option){
-		$option = $this->ifSetOption($option);
+	public function saveAll($data, $tbl_name, $option=null){
+		if (empty($tbl_name)) throw new Exception('Empty $tbl_name !');
+		if(!is_string($tbl_name)) throw new Exception('$tbl_name is not string!');
+		if($this->old_tbl_name != $tbl_name){
+			$this->whiteList = $this->getWhiteList($tbl_name);
+			$this->useTabe = $tbl_name;
+			$this->old_tbl_name = $tbl_name;
+		}
 		
+		$option = $this->ifSetOption($option);
+
 		// トランザクションフラグが有効である場合
 		if(!empty($option['atomic'])){
 			global $wpdb;
 			try {
 				$wpdb->get_results("BEGIN");
 				foreach($data as $ent){
-					$this->save($ent,$option);
+					$this->save($ent, $tbl_name, $option);
 				}
 				$wpdb->get_results("COMMIT");
 				
@@ -128,7 +141,7 @@ class CrudBaseModelWp{
 		// トランザクションフラグが無効である場合
 		else{
 			foreach($data as $ent){
-				$this->save($ent,$option);
+				$this->save($ent, $tbl_name, $option);
 			}
 		}
 		
@@ -149,7 +162,6 @@ class CrudBaseModelWp{
 	 * @param array $data 入力データ（保存対象データ）
 	 * @param string or array  $condition 条件(文字列、配列の２通り指定可）
 	 * @param array $option
-	 * - table テーブル名:	テーブル名を指定する場合。デフォルトは$useTableメンバのテーブル名でる。
 	 * - sanitaize サニタイズ: trueの場合、SQLインジェクションを施す。（デフォルトではtrue)
 	 * - atomic  トランザクション false:内部でトランザクションを行わない  true:トランザクションを行う。
 	 * - delete_field 無効フラグのフィールド名（デフォルト=delete_flg)
@@ -221,7 +233,7 @@ class CrudBaseModelWp{
 
 		}
 		
-		$this->saveAll($regData, $option);
+		$this->saveAll($regData, $tbl_name, $option);
 
 	}
 	
@@ -391,13 +403,13 @@ class CrudBaseModelWp{
 	/**
 	 * 条件で対象テーブルを検索して既存データを取得する
 	 * @param array $condition 条件
-	 * @param array $table テーブル名
+	 * @param array $tbl_name テーブル名
 	 * @return array 既存データ
 	 */
-	private function existData($condition,$table){
+	private function existData($condition,$tbl_name){
 		
-		if(empty($table)){
-			$err_msg = '$table is empty!';
+		if(empty($tbl_name)){
+			$err_msg = '$tbl_name is empty!';
 			var_dump('Erorr:'.$err_msg);
 			throw new Exception($err_msg);
 		}
@@ -414,7 +426,7 @@ class CrudBaseModelWp{
 		$sql = 
 			"
 			SELECT *
-			FROM {$table}
+			FROM {$tbl_name}
 			WHERE 1=1 {$wh}
 			";
 		
@@ -447,19 +459,16 @@ class CrudBaseModelWp{
 	/**
 	 * DBからIDに紐づくエンティティを取得する
 	 * @param int $id
+	 * @param string $tbl_name テーブル名
 	 * @return array エンティティ
 	 */
-	private function getEntity($id,$table=null){
-
-		if(empty($table)){
-			$table = $this->useTable;
-		}
+	private function getEntity($id, $tbl_name){
 		
 		global $wpdb;
 		$ent = $wpdb->get_row(
 			"
 			SELECT *
-			FROM {$table}
+			FROM {$tbl_name}
 			WHERE id = '{$id}'
 			"
 		);
@@ -492,11 +501,7 @@ class CrudBaseModelWp{
 		if($option==null){
 			$option = array();
 		}
-		
-		if(!isset($option['table'])){
-			$option['table'] = $this->useTable;
-		}
-		
+
 		if(!isset($option['sanitaize'])){
 			$option['sanitaize'] = true;
 		}
@@ -523,7 +528,7 @@ class CrudBaseModelWp{
 	/**
 	 * エンティティのINSERT
 	 * @param array $ent_p エンティティ
-	 * @param array $table テーブル名
+	 * @param array $tbl_name テーブル名
 	 * @param array $opation オプション（省略可）
 	 * - id_ins_flg: ID INSERTフラグ: 
 	 *  - 0(デフォルト): INSERTする際、IDを除去（mysqlのautoincrementでID生成） 
@@ -532,13 +537,8 @@ class CrudBaseModelWp{
 	 * 
 	 * @return 追加した新レコード（エンティティ）
 	 */
-	private function insertEntity($ent_p,$table,$option=array()){
+	private function insertEntity($ent_p, $tbl_name, $option=array()){
 		
-		// ホワイトリスト（テーブルのフィールド名リスト）を取得する
-		if(empty($this->whiteList)){
-			
-			$this->whiteList = $this->getWhiteList($table);
-		}
 		$whiteList = $this->whiteList;
 		
 		// エンティティをホワイトリストでフィルタリングする。
@@ -558,32 +558,31 @@ class CrudBaseModelWp{
 	
 		//  該当テーブルへ保存する
 		global $wpdb;
-
+		
 		// デバッグモードのSQLダンプ準備
 		if(!empty($option['debug'])){
 			$wpdb->show_errors();
 		}
 		
 		// ★INSERT実行
-		$result = $wpdb->insert( $table, $ent_s);
+		$result = $wpdb->insert( $tbl_name, $ent_s);
 		
 		// デバッグモードのSQLダンプ出力
 		if(!empty($option['debug'])){
 			$wpdb->print_error();
 		}
-		
 
 		// 最新行を取得する
 		$sql = 				
 			"
 			SELECT *
-			FROM {$table}
+			FROM {$tbl_name}
 			ORDER BY id
 			DESC LIMIT 1
 			";
+		
 		$entStd = $wpdb->get_row($sql);
 		
-
 		$ent = (array)$entStd;
 		
 		return $ent;
@@ -593,13 +592,10 @@ class CrudBaseModelWp{
 	
 	/**
 	 * ホワイトリスト（テーブルのフィールド名リスト）を取得する
-	 * @param string $table テーブル名
+	 * @param string $tbl_name テーブル名
 	 * @return array ホワイトリスト
 	 */
-	private function getWhiteList($table=null){
-		if(empty($table)){
-			$table = $this->useTable;
-		}
+	private function getWhiteList($tbl_name){
 		
 		// 該当テーブルから列情報を取得する。
 		global $wpdb;
@@ -608,7 +604,7 @@ class CrudBaseModelWp{
 				SHOW 
 				FULL 
 				COLUMNS 
-				FROM {$table}
+				FROM {$tbl_name}
 				"
 		);
 		
@@ -627,10 +623,10 @@ class CrudBaseModelWp{
 	/**
 	 * エンティティのUPDATE
 	 * @param array $ent エンティティ
-	 * @param array $table テーブル名
+	 * @param array $tbl_name テーブル名
 	 * @return array エンティティ
 	 */
-	private function updateEntity($ent,$table,$option){
+	private function updateEntity($ent,$tbl_name,$option){
 
 		global $wpdb;
 		
@@ -642,7 +638,7 @@ class CrudBaseModelWp{
 		
 		$id = $ent['id'];
 		$result = $wpdb->update(
-				$table,
+				$tbl_name,
 				$ent,
 				array( 'id' => $id )// WHERE条件
 				);
@@ -761,14 +757,14 @@ class CrudBaseModelWp{
 
 	/**
 	 * テーブル名にプリフィックスを付加する
-	 * @param プロとテーブル名（プリフィックスなしのテーブル名）
+	 * @param string $proto_tbl_name プロとテーブル名（プリフィックスなしのテーブル名）
 	 * @return string プリフィックスを付加したテーブル名
 	 */
 	protected function prefixTableName($proto_tbl_name){
 		global $wpdb;
 		$prefix = $wpdb->prefix; // プリフィックス
-		$table_name = $prefix.'enqnx_'.$proto_tbl_name;
-		return $table_name;
+		$tbl_name = $prefix.'enqnx_'.$proto_tbl_name;
+		return $tbl_name;
 	}
 	
 	
