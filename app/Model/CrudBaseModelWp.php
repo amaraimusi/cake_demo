@@ -7,8 +7,8 @@
  * 各モデルで共通する処理を記述する。
  * saveメソッドを備える。
  * 
- * @version 2.0.1
- * @date 2017-4-28 | 2020-2-28
+ * @version 2.0.2
+ * @date 2017-4-28 | 2020-3-10
  * @author k-uehara
  * @license MIT
  *
@@ -574,6 +574,14 @@ class CrudBaseModelWp{
 		// ★INSERT実行
 		$result = $wpdb->insert( $tbl_name, $ent_s);
 		
+		// エラー処理
+		if($result==false){
+			var_dump('INSERTエラー');
+			var_dump($wpdb->print_error());
+			var_dump($ent_s);
+			die();
+		}
+		
 		// デバッグモードのSQLダンプ出力
 		if(!empty($option['debug'])){
 			$wpdb->print_error();
@@ -649,6 +657,14 @@ class CrudBaseModelWp{
 				$ent,
 				array( 'id' => $id )// WHERE条件
 				);
+		
+		// エラー処理
+		if($result==false){
+			var_dump('UPDATEエラー');
+			var_dump($wpdb->print_error());
+			var_dump($ent_s);
+			die();
+		}
 		
 		// デバッグモードのSQLダンプ出力
 		if(!empty($option['debug'])){

@@ -8,8 +8,7 @@ App::uses('PagenationForCake', 'Vendor/CrudBase');
  * @note
  * ネコ画面ではネコ一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2019-2-17
- * @version 3.2.3
+ * @date 2015-9-16 | 2020-3-1
  *
  */
 class NekoController extends CrudBaseController {
@@ -44,15 +43,17 @@ class NekoController extends CrudBaseController {
 	/// 編集用バリデーション
 	public $edit_validate = array();
 	
+	public $login_flg = 0; // ログインフラグ 0:ログイン不要, 1:ログイン必須
+	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '1.9.2';
+	public $this_page_version = '3.2.4';
 
 	
 	
 	public function beforeFilter() {
 
 		// 未ログイン中である場合、未認証モードの扱いでページ表示する。
-		if(empty($this->Auth->user())){
+		if($this->login_flg == 0 && empty($this->Auth->user())){
 			$this->Auth->allow(); // 未認証モードとしてページ表示を許可する。
 		}
 		
@@ -173,10 +174,9 @@ class NekoController extends CrudBaseController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		$errs = array(); // エラーリスト
 
-// 		// 認証中でなければエラー
-// 		if(empty($this->Auth->user())){
-// 			return 'Error:login is needed.';// 認証中でなければエラー
-// 		}
+		if($this->login_flg == 1 && empty($this->Auth->user())){
+			return 'Error:login is needed.';// 認証中でなければエラー
+		}
 		
 		// 未ログインかつローカルでないなら、エラーアラートを返す。
 		if(empty($this->Auth->user()) && $_SERVER['SERVER_NAME']!='localhost'){
@@ -236,7 +236,11 @@ class NekoController extends CrudBaseController {
 	 */
 	public function ajax_delete(){
 
- 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		if($this->login_flg == 1 && empty($this->Auth->user())){
+			return 'Error:login is needed.';// 認証中でなければエラー
+		}
 
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
@@ -281,8 +285,10 @@ class NekoController extends CrudBaseController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		App::uses('Sanitize', 'Utility');
-		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
+		if($this->login_flg == 1 && empty($this->Auth->user())){
+			return 'Error:login is needed.';// 認証中でなければエラー
+		}
 		
 		$json=$_POST['key1'];
 		
