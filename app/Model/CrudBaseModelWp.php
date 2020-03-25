@@ -7,8 +7,8 @@
  * 各モデルで共通する処理を記述する。
  * saveメソッドを備える。
  * 
- * @version 2.0.2
- * @date 2017-4-28 | 2020-3-10
+ * @version 2.0.3
+ * @date 2017-4-28 | 2020-3-25
  * @author k-uehara
  * @license MIT
  *
@@ -575,12 +575,14 @@ class CrudBaseModelWp{
 		$result = $wpdb->insert( $tbl_name, $ent_s);
 		
 		// エラー処理
-		if($result==false){
+		if(empty($result) && $result !==0){
 			var_dump('INSERTエラー');
+			var_dump($tbl_name);
 			var_dump($wpdb->print_error());
-			var_dump($ent_s);
+			var_dump( $wpdb->last_query );
 			die();
 		}
+		
 		
 		// デバッグモードのSQLダンプ出力
 		if(!empty($option['debug'])){
@@ -641,28 +643,37 @@ class CrudBaseModelWp{
 	 * @param array $tbl_name テーブル名
 	 * @return array エンティティ
 	 */
-	private function updateEntity($ent,$tbl_name,$option){
+	private function updateEntity($ent_p,$tbl_name,$option){
 
 		global $wpdb;
 		
+		// エンティティをホワイトリストでフィルタリングする。
+		$ent = array();
+		$whiteList = $this->whiteList;
+		foreach($whiteList as $white_field){
+			if(isset($ent_p[$white_field])){
+				$ent[$white_field] = $ent_p[$white_field];
+			}
+		}
 		
 		// デバッグモードのSQLダンプ準備
 		if(!empty($option['debug'])){
 			$wpdb->show_errors();
 		}
-		
+
 		$id = $ent['id'];
 		$result = $wpdb->update(
 				$tbl_name,
 				$ent,
 				array( 'id' => $id )// WHERE条件
 				);
-		
+
 		// エラー処理
-		if($result==false){
+		if(empty($result) && $result !==0){
 			var_dump('UPDATEエラー');
+			var_dump($tbl_name);
 			var_dump($wpdb->print_error());
-			var_dump($ent_s);
+			var_dump( $wpdb->last_query );
 			die();
 		}
 		
