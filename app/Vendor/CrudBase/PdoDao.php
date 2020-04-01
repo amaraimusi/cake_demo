@@ -1,10 +1,12 @@
 <?php
 require_once 'IDao.php';
+require_once 'CrudBaseConfig.php';
+
 /**
  * PDOのDAO（データベースアクセスオブジェクト）
  * 
- * @date 2019-10-26
- * @version 1.0.0
+ * @date 2019-10-26 | 2020-4-1
+ * @version 1.1.0
  * @license MIT
  * @author Kenji Uehara
  *
@@ -16,7 +18,7 @@ class PdoDao implements IDao
 	
 	/**
 	 * DAO(データベースアクセスオブジェクト）を取得する
-	 * @return \dev_tool\model\PDO
+	 * @return object Dao
 	 */
 	public function getDao(){
 		
@@ -41,14 +43,18 @@ class PdoDao implements IDao
 		return $dao;
 	}
 	
-	public function sqlExe($sql){
+	/**
+	 * SQLを実行してデータを取得する
+	 * @return boolean|PDOStatement[][]
+	 */
+	public function getData($sql){
 		$dao = $this->getDao();
 		$stmt = $dao->query($sql);
 		if($stmt === false) {
-			debug('SQLエラー→' . $sql);
+			var_dump('SQLエラー→' . $sql);
 			return false;
 		}
-
+		
 		$data = [];
 		foreach ($stmt as $row) {
 			$ent = [];
@@ -62,6 +68,41 @@ class PdoDao implements IDao
 		
 		return $data;
 	}
+	
+	/**
+	 * 単純なクエリー実行（SELECT用ではない）
+	 * @param string $sql
+	 * {@inheritDoc}
+	 * @see IDao::sqlExe()
+	 */
+	public function sqlExe($sql){
+		return $this->dao->query($sql);
+	}
+	
+	/**
+	 * 単純なクエリー実行（SELECT用ではない）
+	 * @param string $sql
+	 * @return string エラーメッセージ
+	 */
+	public function query($sql){
+		$err_msg = '';
+		$res = $this->dao->query($sql);
+		if($res === false){
+			$errInfo = $this->dao->errorInfo();
+			$err_msg = "
+				<pre>
+					SQLエラー→{$sql}
+					$errInfo[0]
+					$errInfo[1]
+					$errInfo[2]
+				</pre>
+			";
+			var_dump($err_msg);
+		}
+		return $err_msg;
+	}
+	
+	
 	
 	public function begin(){
 		$dao = $this->getDao();
