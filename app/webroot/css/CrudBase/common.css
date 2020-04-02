@@ -51,6 +51,9 @@ aside{
 	border: 1px #bdbfdf dotted;
 	color:#393656;
 }
+.tbl2 tr:nth-child(even){
+	background-color:#e2e3f1;
+}
 .tbl2 td{
 	padding:5px;
 	border: 1px #bdbfdf dotted;
