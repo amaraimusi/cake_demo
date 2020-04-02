@@ -9,10 +9,10 @@ App::uses('FrontAHelperX', 'View/Helper/CrudBaseComponent');
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 
  * 
- * @version 1.8.5
- * @date 2016-7-27 | 2019-11-21
+ * @version 1.8.6
+ * @since 2016-7-27 | 2020-4-2
  * @author k-uehara
- *
+ * @license MIT
  */
 
 class CrudBaseHelper extends FormHelper {
@@ -847,19 +847,41 @@ class CrudBaseHelper extends FormHelper {
 	 * リンクを作成する
 	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
-	 * @param string $url URL    URLの変値部分は「%0」と表記する。
+	 * @param string $url URL	URLの変値部分は「%0」と表記する。
 	 */
 	public function tdLink(&$ent, $field, $url){
-	    
-	    $v = $ent[$field];
-	    $url2 = str_replace('%0', $v, $url);
-	    
-	    $td = "
-            <td>
-                <input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
-                <a href='{$url2}' data-url-tmp='{$url}' >{$v}</a>
-            </td>";
-	    $this->setTd($td,$field);
+		
+		$v = $ent[$field];
+		$url2 = str_replace('%0', $v, $url);
+		
+		$td = "
+			<td>
+				<input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
+				<a href='{$url2}' data-url-tmp='{$url}' >{$v}</a>
+			</td>";
+		$this->setTd($td,$field);
+	}
+	
+	
+	/**
+	 * リンクを作成する | クエリ別
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 * @param string $q_field クエリ・フィールド名
+	 * @param string $url URL	URLの変値部分は「%0」と表記する。
+	 */
+	public function tdLinkQ(&$ent, $field, $url, $q_field){
+		
+		$v = $ent[$field];
+		$q_v = $ent[$q_field];
+		$url2 = str_replace('%0', $q_v, $url);
+		
+		$td = "
+			<td>
+				<input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
+				<a href='{$url2}' data-url-tmp='{$url}' >{$v}</a>
+			</td>";
+		$this->setTd($td,$field);
 	}
 	
 	
@@ -878,10 +900,10 @@ class CrudBaseHelper extends FormHelper {
 		}
 
 		$td = "
-            <td>
-                <input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
-                <a href='{$v}' data-url-tmp='{$v}' target='_blank'>{$link_text}</a>
-            </td>";
+			<td>
+				<input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
+				<a href='{$v}' data-url-tmp='{$v}' target='_blank'>{$link_text}</a>
+			</td>";
 		$this->setTd($td,$field);
 	}
 	
