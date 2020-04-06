@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2019-10-13
- * @version 3.0.4
+ * @date 2016-9-21 | 2020-4-6
+ * @version 3.0.5
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -85,17 +85,17 @@ class CrudBase{
 		// テーブルオブジェクト
 		this.tbl = jQuery('#' + this.param.tbl_slt);
 		
+		// 行入替機能・コンポーネント(※バグがあるので_factoryCrudBaseConfigより上で実行する）
+		this.rowExchange = this._factoryCrudBaseRowExchange();
+		
 		// CrudBase設定・コンポーネント
 		this.crudBaseConfig = this._factoryCrudBaseConfig(this.param.configData);
-		
+
 		// ボタンサイズ変更コンポーネント
 		this.cbBtnSizeChanger = this.crudBaseConfig.cbBtnSizeChanger;
 		
 		// 自動保存機能・コンポーネント
 		this.autoSave = this._factoryCrudBaseAutoSave(); 
-
-		// 行入替機能・コンポーネント
-		this.rowExchange = this._factoryCrudBaseRowExchange();
 
 		// 列表示切替機能・コンポーネント
 		this.csh = this._factoryClmShowHide(); 
