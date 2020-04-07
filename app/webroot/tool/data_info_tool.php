@@ -23,9 +23,11 @@
 
 
 <?php 
+$server_name=$_SERVER['SERVER_NAME'];
+if($server_name != 'localhost') die('ローカル環境 only');
+	
 $home_dp = dirname(dirname(__DIR__));
 require_once $home_dp . '/Vendor/CrudBase/PdoDao.php';
-
 
 $pdoDao = new PdoDao();
 $dao = $pdoDao->getDao();
