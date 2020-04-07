@@ -25,8 +25,7 @@
 <?php 
 $home_dp = dirname(dirname(__DIR__));
 require_once $home_dp . '/Vendor/CrudBase/PdoDao.php';
-// var_dump(dirname(dirname(__DIR__))) ;//■■■□□□■■■□□□)
-// require_once 'CrudBase/PdoDao.php';
+
 
 $pdoDao = new PdoDao();
 $dao = $pdoDao->getDao();
