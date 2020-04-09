@@ -74,18 +74,18 @@ class CrudBaseHelper extends FormHelper {
 	 * @return array CSSファイルリスト
 	 */
 	public function getCssList(){
-		return array(
-				'bootstrap.min',
-				'bootstrap-theme.min',
-				'jquery-ui.min',
-				'Layouts/default',
-				'CrudBase/common.css?ver=1.1.0',
-				'clm_show_hide',					// 列表示切替
-				'CrudBase/FileUploadK.css?ver=1.0.1',	
-				'CrudBase/CalendarViewK.css',
-				'CrudBase/CrudBaseBulkAdd.css',
-				'CrudBase/ReqBatch.css',
-		);
+		return [
+			'bootstrap.min',
+			'bootstrap-theme.min',
+			'jquery-ui.min',
+			'Layouts/default',
+			'CrudBase/common.css?ver=1.1.0',
+			'clm_show_hide.css?ver=1.0.1',					// 列表示切替
+			'CrudBase/FileUploadK.css?ver=1.0.1',	
+			'CrudBase/CalendarViewK.css',
+			'CrudBase/CrudBaseBulkAdd.css',
+			'CrudBase/ReqBatch.css',
+		];
 	}
 	
 	/**
