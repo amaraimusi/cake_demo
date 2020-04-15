@@ -24,6 +24,7 @@ $this->CrudBase->hiddenX('row_exc_flg',$row_exc_flg );
 $this->CrudBase->hiddenX('def_kjs_json',$def_kjs_json );
 $this->CrudBase->hiddenX('kjs_json',$kjs_json );
 $this->CrudBase->hiddenX('err_types_json',$err_types_json);
+$this->CrudBase->hiddenX('new_version_flg',$new_version_flg);
 
 ?>
 </div>

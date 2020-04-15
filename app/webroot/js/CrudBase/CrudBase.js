@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2020-4-6
- * @version 3.0.5
+ * @date 2016-9-21 | 2020-4-15
+ * @version 3.0.6
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -169,6 +169,12 @@ class CrudBase{
 		
 		// 検索関連の入力要素にEnterイベントを組み込む
 		this._addEventForKjsEnter();
+		
+		// 新バージョンである場合、強制的にセッションクリア
+		let new_version_flg = jQuery('#new_version_flg').val();
+		if(new_version_flg != 0){
+			this.sessionClear();
+		}
 		
 	}
 
