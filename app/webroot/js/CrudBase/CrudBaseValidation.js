@@ -4,8 +4,8 @@
  * @note
  * InputCheckAの後継
  * 
- * @version 5.0.0
- * @date 2009-7-9 | 2020-3-12
+ * @version 5.0.1
+ * @date 2009-7-9 | 2020-4-15
  * @license MIT
  */
 class CrudBaseValidation{
@@ -124,7 +124,7 @@ class CrudBaseValidation{
 	 */
 	isHiragana(value){
 		
-		var regexp = /^[ぁ-ん]*$/;
+		var regexp = /^[ぁ-んー]*$/;
 		if(!regexp.test(value)){
 			return false;
 		}
