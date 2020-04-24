@@ -20,7 +20,7 @@
 <body>
 <div id="header" ><h1>DBテーブル情報閲覧ツール | ワクガンス</h1></div>
 
-
+<p>バージョン 2.0.0</p>
 
 <?php 
 $server_name=$_SERVER['SERVER_NAME'];
@@ -33,7 +33,7 @@ $pdoDao = new PdoDao();
 $dao = $pdoDao->getDao();
 
 $param = $_GET;
-if(empty($param['tbl_name'])) $param['tbl_name'] = 'wp_posts';
+if(empty($param['tbl_name'])) $param['tbl_name'] = 'clients';
 if(empty($param['limit'])) $param['limit'] = 4;
 if(empty($param['where'])) $param['where'] = null;
 
@@ -61,6 +61,8 @@ try {
 	$data = filterData($data);
 	
 	createTable($data);
+	echo '-------------------下記・詳細---------------------------<br>';
+	createTableDtl($data);
 	
 
 	
@@ -73,7 +75,6 @@ try {
 
 
 <?php 
-
 
 function filterData($data){
 	$data2 = [];
@@ -98,7 +99,32 @@ function filterData($data){
 }
 
 
+
+
+
 function createTable($data){
+	
+	$keys = array_keys($data[0]);
+	$head_html = "<th>{$keys[0]}</th><th>{$keys[4]}</th>";
+	
+	$body_html = '';
+	foreach($data as $ent){
+		$body_html .= "<tr><td>{$ent['Field']}</td><td>{$ent['Comment']}</td></tr>'";
+	}
+	
+	$html = "
+		<table border='1'>
+			<thead><tr>{$head_html}</tr></thead>
+			<tbody>{$body_html}</tbody>
+		</table>
+	";
+	
+	echo $html;
+}
+
+
+
+function createTableDtl($data){
 
 	$keys = array_keys($data[0]);
 	$head_html = "<th>" . implode("</th><th>",$keys) . "</th>";
