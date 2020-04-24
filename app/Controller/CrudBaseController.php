@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.7.9";
+	var $version = "2.8.0";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -68,7 +68,6 @@ class CrudBaseController extends AppController {
 	 * @param string $name 	対応するモデル名（キャメル記法）
 	 * @param array $option
 	 *  - request 	HTTPリクエスト
-	 *  - func_new_version 新バージョンチェック機能   0:OFF(デフォルト) , 1:ON
 	 *  - func_csv_export CSVエクスポート機能 0:OFF ,1:ON(デフォルト)
 	 *  - func_file_upload ファイルアップロード機能 0:OFF , 1:ON(デフォルト)
 	 *  - sql_dump_flg SQLダンプフラグ   true:SQLダンプを表示（デバッグモードである場合。デフォルト） , false:デバッグモードであってもSQLダンプを表示しない。
@@ -113,17 +112,22 @@ class CrudBaseController extends AppController {
 		
  		// 新バージョンであるかチェック。新バージョンである場合セッションクリアを行う。２回目のリクエスト（画面表示）から新バージョンではなくなる。
 		$new_version_chg = 0; // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更
-		if($option['func_new_version'] != 0){
+		//if($option['func_new_version'] != 0){
 			$system_version = $this->checkNewPageVersion($this->this_page_version);
 			if(!empty($system_version)){
 				$new_version_chg = 1;
 				$this->sessionClear();
 			}
-		}
+		//}
 
 		//URLクエリ（GET)にセッションクリアフラグが付加されている場合、当画面に関連するセッションをすべてクリアする。
 		if(!empty($this->request->query['sc'])){
 			$this->sessionClear();
+		}
+		
+		// 新バージョンならリダイレクト
+		if(!empty($new_version_chg)){
+			$this->redirect(array('controller' => $name, 'action' => 'index'));
 		}
 
 		//フィールドデータが画面コントローラで定義されている場合、以下の処理を行う。
@@ -222,6 +226,7 @@ class CrudBaseController extends AppController {
 				'version'=>$this->version, 	// CrudBaseのバージョン
 				'userInfo'=>$userInfo, 		// ユーザー情報
 				'new_version_chg'=>$new_version_chg, // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更
+				'new_version_flg' => $new_version_chg, // 当ページの新バージョンフラグ   0:バージョン変更なし  1:新バージョン
 				'debug_mode'=>$debug_mode, 	// デバッグモード	CakePHPのデバッグモードと同じもの
 				'csh_ary'=>$csh_ary, 		// 列表示配列	列表示切替機能用
 				'csh_json'=>$csh_json, 		// 列表示配列JSON	 列表示切替機能用
@@ -230,7 +235,8 @@ class CrudBaseController extends AppController {
 				'pages'=>$pages, 			// ページネーションパラメータ
 				'act_flg'=>$act_flg, 		// アクティブフラグ	null:初期表示 , 1:検索アクション , 2:ページネーションアクション , 3:列ソートアクション
 				'sql_dump_flg'=>$sql_dump_flg, // SQLダンプフラグ
-
+				'header' => 'header', // header.ctpの埋め込み
+				'this_page_version' => $this->this_page_version,// 当ページのバージョン
 		);
 		
 		
@@ -327,8 +333,6 @@ class CrudBaseController extends AppController {
 		$mains_ses_key = $page_code.'_mains_cb';//主要パラメータのセッションキー
 		$ini_cnds_ses_key = $page_code.'_ini_cnds';// 初期条件データのセッションキー
 		
-		
-
 		$this->Session->delete($fd_ses_key);
 		$this->Session->delete($tf_ses_key);
 		$this->Session->delete($err_ses_key);
@@ -337,6 +341,8 @@ class CrudBaseController extends AppController {
 		$this->Session->delete($csv_ses_key);
 		$this->Session->delete($mains_ses_key);
 		$this->Session->delete($ini_cnds_ses_key);
+		
+		$this->log('セッションをクリアしました。');
 
 	}
 
@@ -358,6 +364,7 @@ class CrudBaseController extends AppController {
 
 		//セッションキーに紐づくフィールドデータを取得する
 		$field_data=$this->Session->read($fd_ses_key);
+		
 
 		$table_fields=array();//一覧列情報
 

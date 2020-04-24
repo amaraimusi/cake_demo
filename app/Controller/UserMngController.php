@@ -8,8 +8,7 @@ App::uses('PagenationForCake', 'Vendor/CrudBase');
  * @note
  * ユーザー管理画面ではユーザー管理一覧を検索閲覧、編集など多くのことができます。
  * 
- * @date 2015-9-16 | 2018-10-10
- * @version 3.2.2
+ * @date 2015-9-16 | 2020-4-24
  *
  */
 class UserMngController extends CrudBaseController {
@@ -45,7 +44,7 @@ class UserMngController extends CrudBaseController {
 	public $edit_validate = array();
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '1.9.1';
+	public $this_page_version = '1.9.2';
 
 	public function beforeFilter() {
 
@@ -111,10 +110,6 @@ class UserMngController extends CrudBaseController {
 			'title_for_layout'=>'ユーザー管理',
 			'data'=> $data,
 		));
-		
-		//当画面系の共通セット
-		$this->setCommon();
-
 
 	}
 	
@@ -398,23 +393,6 @@ class UserMngController extends CrudBaseController {
 		}
 	
 		return $data;
-	}
-	
-
-	/**
-	 * 当画面系の共通セット
-	 */
-	private function setCommon(){
-
-		
-		// 新バージョンであるかチェックする。
-		$new_version_flg = $this->checkNewPageVersion($this->this_page_version);
-		
-		$this->set(array(
-				'header' => 'header',
-				'new_version_flg' => $new_version_flg, // 当ページの新バージョンフラグ   0:バージョン変更なし  1:新バージョン
-				'this_page_version' => $this->this_page_version,// 当ページのバージョン
-		));
 	}
 	
 
