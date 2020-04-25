@@ -8,7 +8,7 @@ $this->assign('css', $this->Html->css($cssList));
 
 // JSファイルのインクルード
 $jsList = $this->CrudBase->getJsList();
-$jsList[] = 'Neko/index.js?v=1.0.0'; // 当画面専用JavaScript
+$jsList[] = 'Neko/index.js?v=1.0.1'; // 当画面専用JavaScript
 $this->assign('script', $this->Html->script($jsList,array('charset'=>'utf-8')));
 
 ?>

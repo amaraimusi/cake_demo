@@ -11,7 +11,7 @@ App::uses('AppController', 'Controller');
 class CrudBaseController extends AppController {
 
 	///バージョン
-	var $version = "2.8.0";
+	var $version = "2.8.1";
 
 	///デフォルトの並び替え対象フィールド
 	var $defSortFeild='sort_no';
@@ -123,11 +123,6 @@ class CrudBaseController extends AppController {
 		//URLクエリ（GET)にセッションクリアフラグが付加されている場合、当画面に関連するセッションをすべてクリアする。
 		if(!empty($this->request->query['sc'])){
 			$this->sessionClear();
-		}
-		
-		// 新バージョンならリダイレクト
-		if(!empty($new_version_chg)){
-			$this->redirect(array('controller' => $name, 'action' => 'index'));
 		}
 
 		//フィールドデータが画面コントローラで定義されている場合、以下の処理を行う。

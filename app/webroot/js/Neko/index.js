@@ -112,6 +112,9 @@ function init(){
 			'ta_placeholder':"Excelからコピーしたネコ名、ネコ数値を貼り付けてください。（タブ区切りテキスト）\n(例)\nネコ名A\t100\nネコ名B\t101\n",
 		}
 	);
+	
+	
+	crudBase.newVersionReload(); // 新バージョンリロード
 }
 
 /**
