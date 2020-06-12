@@ -9,8 +9,8 @@ require_once 'ThumbnailEx.php';
  * 「<input type = 'file'>」であるファイルアップロードのフォーム要素から送られてきたファイルデータを指定場所に保存する。
  * ファイルチェックや、画像形式ならサムネイル画像作成も行う。
  * 
- * @date 2018-6-30 | 2019-7-30
- * @version 1.1.3
+ * @date 2018-6-30 | 2020-6-12
+ * @version 1.1.4
  * @history
  * 2018-10-23 ver 1.1.2 セパレータから始まるディレクトリの時に起こるバグを修正
  * 2018-8-23 ver1.1 optionにfn(ファイル名)を指定できるようにした。
@@ -62,7 +62,7 @@ class FileUploadK{
 		$mid_dp = join("/", $ary); // midディレクトリパスを作成
 		$ary[$last_key] = 'thum';
 		$thum_dp = join("/", $ary); // thumディレクトリパスを作成
-		
+
 		// ファイル保管ディレクトリ情報にパラメータをセットする
 		$dpDatas[$filed] = array(
 				'fn' => $fn,
@@ -177,6 +177,7 @@ class FileUploadK{
 				
 				$fn = $fnData[$fue_id][$i];
 				$ext = $this->stringRightRev($fn,'.'); // 拡張子
+				$ext = mb_strtolower($ext); // 小文字化
 				$mime = $files2['type'][$i]; // MIME
 				$size = $files2['size'][$i]; // 容量サイズ
 				$error = $files2['error'][$i];
@@ -549,7 +550,6 @@ class FileUploadK{
 	private function createThumFiles(&$fileData,&$dpDatas){
 		
 		foreach($fileData as $i => &$fEnt){
-			
 			$fue_id = $fEnt['fue_id']; // file要素のID属性
 			
 			if($fEnt['thum_flg'] == false) continue;
