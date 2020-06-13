@@ -672,6 +672,10 @@ class CrudBaseBulkAdd{
 		var err_msg = res.err_msg;
 		if(err_msg != ''){
 			self._err(err_msg);
+			var regBtn = self.regbtn;
+			regBtn.val('一括追加');
+			regBtn.prop('disabled',false);
+
 			return;
 		}
 		
