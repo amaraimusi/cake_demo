@@ -8,8 +8,8 @@
  * - init 初期化
  * - refresh 一覧テーブルをリフレッシュする
  * 
- * @version 1.6.0
- * @date 2014-4-1 │ 2019-8-28
+ * @version 1.6.1
+ * @date 2014-4-1 │ 2020-6-16
  * @license MIT
  * @author k-uehara 
  */
@@ -256,6 +256,7 @@ var ClmShowHide =function(){
 		for(let i in actClmData){
 			let ent =actClmData[i];
 			let clm_name = ent.clm_name;
+			if(clm_name == null) clm_name = '';
 			
 			// 列名からタグを除去
 			ent.clm_name = clm_name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g,'');

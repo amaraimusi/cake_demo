@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2020-4-25
- * @version 3.0.7
+ * @date 2016-9-21 | 2020-6-16
+ * @version 3.0.9
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -162,8 +162,7 @@ class CrudBase{
 		this.hiddensElm; // 埋込データ要素
 		
 		this.formKjsElm; // 検索条件フォーム要素
-		
-		
+	
 		// 初期戻しボタンにURLをセットする
 		this._iniRtnSetUrl();
 		
