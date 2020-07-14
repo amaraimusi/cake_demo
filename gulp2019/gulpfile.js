@@ -9,3 +9,9 @@ gulp.task('CrudBase', function () {
 	.pipe(gulp.dest('../app/webroot/js/CrudBase/dist'));
 });
 
+gulp.task('CrudBaseForCss', function () {
+	gulp.src('../app/webroot/css/CrudBase/*.css')
+	.pipe(concat('CrudBase.min.css'))
+	.pipe(gulp.dest('../app/webroot/css/CrudBase/dist'));
+});
+
