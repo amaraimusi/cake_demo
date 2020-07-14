@@ -79,12 +79,7 @@ class CrudBaseHelper extends FormHelper {
 			'bootstrap-theme.min',
 			'jquery-ui.min',
 			'Layouts/default',
-			'CrudBase/common.css?ver=1.1.1',
-			'clm_show_hide.css?ver=1.0.1',					// 列表示切替
-			'CrudBase/FileUploadK.css?ver=1.0.1',
-			'CrudBase/CalendarViewK.css',
-			'CrudBase/CrudBaseBulkAdd.css',
-			'CrudBase/ReqBatch.css',
+			'CrudBase/dist/CrudBase.min.css?ver=3.0.5',
 		];
 	}
 	
