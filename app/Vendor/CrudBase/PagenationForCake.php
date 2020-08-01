@@ -12,8 +12,8 @@
  * - ページネーション情報としてページ目次、ソート用リンク、データ件数等を出力する。
  * 
  * @author k-uehara
- * @version 1.5.6
- * @date 2010-4-1 | 2019-7-27
+ * @version 1.5.7
+ * @date 2010-4-1 | 2020-8-1
  *
  */
 class PagenationForCake{
@@ -50,7 +50,7 @@ class PagenationForCake{
 		//　ページ目次用のHTMLコードを生成する。
 		$res = $this->_createIndexHtml2($pages,$all_data_cnt,$path,$params,$kjs_uq);
 
-		$pages['page_index_html'] = $res['mokuji'];;
+		$pages['page_index_html'] = $res['mokuji'];
 		$pages['def_url'] = $res['def_url'];
 		$pages['page_prev_link'] = $res['page_prev_link'];
 		$pages['page_next_link'] = $res['page_next_link'];
@@ -59,7 +59,6 @@ class PagenationForCake{
 		$pages['query_str'] = $res['query_str'];
 		
 		$pages['sorts']=$sorts;
-		$pages['page_no']=$pages['page_no'];//現在ページ
 		$pages['all_data_cnt']=$all_data_cnt;//全データ数
 		if(isset($pages['row_limit'])){
 			$pages['all_page_cnt']=ceil($pages['all_data_cnt'] / $pages['row_limit']);//全ページ数
@@ -182,8 +181,18 @@ class PagenationForCake{
 	 */
 	private function _createIndexHtml($page_no,$params,$data_cnt,$row_limit_cnt,$midasi_cnt=8,$pageName="list.php",$kjs_uq){
 
-		if($data_cnt==0) return null;
-		if(!isset($row_limit_cnt)) return null;
+		$res=[
+				'mokuji'=>'',
+				'def_url'=>'',
+				'page_prev_link'=>'',
+				'page_next_link'=>'',
+				'page_top_link'=>'',
+				'page_last_link'=>'',
+				'query_str'=>'',
+		];
+		
+		if($data_cnt==0) return $res;
+		if(!isset($row_limit_cnt)) return $res;
 		if(empty($pageName)) $pageName="list.php";
 		
 		//▼ページネーションを構成する総リンク数をカウントする。
@@ -282,16 +291,13 @@ class PagenationForCake{
 		// クエリ文字列
 		$query_str = "page_no=0{$strParams}&{$kjs_uq}";
 		
-		$res=array(
-				'mokuji'=>$html,
-				'def_url'=>$def_url,
-				'page_prev_link'=>$page_prev_link,
-				'page_next_link'=>$page_next_link,
-				'page_top_link'=>$page_top_link,
-				'page_last_link'=>$page_last_link,
-				'query_str'=>$query_str,
-				
-		);
+		$res['mokuji'] = $html;
+		$res['def_url'] = $def_url;
+		$res['page_prev_link'] = $page_prev_link;
+		$res['page_next_link'] = $page_next_link;
+		$res['page_top_link'] = $page_top_link;
+		$res['page_last_link'] = $page_last_link;
+		$res['query_str'] = $query_str;
 
 		return $res;
 	}
