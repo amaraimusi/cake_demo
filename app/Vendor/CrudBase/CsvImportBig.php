@@ -18,8 +18,8 @@ require_once('LogEx.php');
  * @component
  * CsvExin.php
  * 
- * @date 2019-5-20 | 2019-8-28
- * @version 1.1.5
+ * @date 2019-5-20 | 2020-11-4
+ * @version 1.1.6
  * @license MIT
  *
  */
@@ -85,17 +85,17 @@ class CsvImportBig{
 		// 日本語ファイル名を半悪英数字に変更
 		$this->jpFnRename($zip_dp);
 		
-		$csv_fn = $this->getCsvFilePath($zip_dp); // ZIPディレクトリ内からCSVファイル名を取得する。
-
-		// 空チェック
-		if(empty($csv_fn)) return $this->err($param, "ZIP解凍先にCSVファイルが存在しません。");
+		$csv_fp = $this->getCsvFilePath($zip_dp); // ZIPディレクトリ内からCSVファイルパスを取得する。
+		if(empty($csv_fp)) return $this->err($param, "ZIP解凍先にCSVファイルが存在しません。");
+		$pi = pathinfo($csv_fp);
+		$csv_fn = $pi['basename'];
 		
 		// CSVファイル名が半角英数字（一部記号）でなければエラー。
 		if (!preg_match("/^[a-zA-Z0-9-_.]+$/", $csv_fn)) {
 			return $this->err($param, "CSVファイル名は半角英数字にしてください。（日本語ファイル名は不可です。）");
 		}
 		
-		$csv_fp = $zip_dp . $csv_fn; // CSVファイルパス
+		
 		$head_str = $this->getHeadsFromTextfile($csv_fp); // テキストファイルの先頭行文字列を取得する
 		$heads = $this->makeHeads($head_str);// 列名配列を取得する
 		$csvFieldData = $param['csvFieldData']; // CSVフィールドデータ
@@ -203,9 +203,9 @@ class CsvImportBig{
 	
 	/**
 	 * 印文字から右側を切り捨てる
-	 * @param $s 対象文字列
-	 * @param $mark 印文字
-	 * @return 切り捨て後の文字列
+	 * @param string $s 対象文字列
+	 * @param string $mark 印文字
+	 * @return string 切り捨て後の文字列
 	 */
 	private function removeRight($s,$mark){
 		
@@ -227,10 +227,11 @@ class CsvImportBig{
 	 * @return string CSVファイルパス
 	 */
 	private function getCsvFilePath($zip_dp){
-		$fps = $this->scandir2($zip_dp);
+		$fps = $this->getFilepathInDeepDir($zip_dp);// ディレクトリ階層化の全ファイル名を取得する
 		foreach($fps as $fp){
 			$path_param = pathinfo($fp);
-			$ext = $path_param['extension']; // 拡張子を取得する
+			$ext = '';
+			if(!empty($path_param['extension'])) $ext = $path_param['extension'];
 			$ext = mb_strtolower($ext); // 小文字化
 			if($ext == 'csv'){
 				return $fp;
@@ -238,6 +239,37 @@ class CsvImportBig{
 		}
 		return null;
 		
+	}
+	
+	/**
+	 * ディレクトリ内の全階層を深く探り、ファイルパスリストを取得する
+	 * @param string $dp ディレクトリパス
+	 * @param [] $list ファイル名リスト（内部処理用なのでセット不要)
+	 * @return [] ファイルパスリスト
+	 */
+	private function getFilepathInDeepDir($dp, $list=[] ) {
+		if(empty($dp)) return [];
+		
+		// ディレクトリパスの末尾が「/」または「\」なら取り除く
+		$end_one = mb_substr($dp, -1);
+		if($end_one == '/' || $end_one == '\\') {
+			$dp = mb_substr($dp, 0, mb_strlen($dp)-1);// 末尾の一文字を削る
+		}
+		
+		if ($handle = opendir("{$dp}")) {
+			while (false !== ($item = readdir($handle))) {
+				if ($item != "." && $item != "..") {
+					if (is_dir("{$dp}/{$item}")) {
+						$list = $this->getFilepathInDeepDir("{$dp}/{$item}", $list);
+					} else {
+						$list[] = "{$dp}/{$item}";
+					}
+				}
+			}
+			closedir($handle);
+			
+		}
+		return $list;
 	}
 	
 	
@@ -333,7 +365,8 @@ class CsvImportBig{
 	 */
 	private function err($param, $err_msg){
 		$param['err_msg'] = $err_msg;
-		$this->removeDirectory($param['zip_dp']); // 作業ファイルをクリアする
+		
+		//$this->removeDirectory($param['zip_dp']); // 作業ファイルをクリアする
 // 		$work_dp = $param['work_dp']; // 作業ディレクトリパス
 // 		$this->dirClearEx($work_dp); // ディレクトリ内のファイルをまとめて削除する。
 		return $param;
@@ -398,12 +431,13 @@ class CsvImportBig{
 	 * @param string $dir 削除対象ディレクトリ
 	 */
 	private function removeDirectory($dir) {
+		if(empty($dir)) return;
 		if ($handle = opendir($dir)) {
 			while (false !== ($item = readdir($handle))) {
 				if ($item != "." && $item != "..") {
 					$dp = $dir . '/' . $item;
 					if (is_dir($dp)) {
-						removeDirectory($dp);
+						$this->removeDirectory($dp);
 					} else {
 						unlink($dp);
 					}
