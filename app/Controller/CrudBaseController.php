@@ -570,8 +570,10 @@ class CrudBaseController extends AppController {
 	public function getUserInfo(){
 
 		$userInfo = $this->Auth->user();
-
-		$userInfo['update_user'] = $userInfo['username'];// 更新ユーザー
+		
+		$update_user = '';
+		if(!empty($userInfo['username'])) $update_user = $userInfo['username'];
+		$userInfo['update_user'] = $update_user;// 更新ユーザー
 		$userInfo['ip_addr'] = $_SERVER["REMOTE_ADDR"];// IPアドレス
 		$userInfo['user_agent'] = $_SERVER['HTTP_USER_AGENT']; // ユーザーエージェント
 

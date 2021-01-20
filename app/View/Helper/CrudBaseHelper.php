@@ -788,7 +788,8 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function tdFlg(&$ent,$field,$list=array('OFF','ON')){
 		
-		$v = $ent[$field];
+	    $v = '';
+	    if(!empty($ent[$field])) $v = $ent[$field];
 		
 		// ▼ 0か1に書き換える
 		if($v == null || $v == '') $v = 0;
@@ -1061,6 +1062,8 @@ class CrudBaseHelper extends FormHelper {
 	 */
 	public function tdImage(&$ent, $field, $midway_dp = ''){
 		
+	    if(empty($ent[$field])) return null;
+	    
 		$orig_fp = $midway_dp . $ent[$field];
 		$href = '';
 		$thum_src = '';
