@@ -586,7 +586,6 @@ class CsvExin{
 	 * 一括登録処理
 	 */
 	_bulkReg(){
-
 		var csvParam = this.csvParam;
 		var data = this.data;
 		
@@ -644,6 +643,8 @@ class CsvExin{
 		if (typeof data == 'string'){
 			if ( data.indexOf('&') != -1) {
 				return data.replace(/&/g, '%26');
+			}else if(data.indexOf('%') != -1){
+				return data.replace(/%/g, '%25');;
 			}else{
 				return data;
 			}
