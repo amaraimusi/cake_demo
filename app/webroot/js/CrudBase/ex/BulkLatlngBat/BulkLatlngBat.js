@@ -81,12 +81,12 @@ class BulkLatlngBat{
 	 */
 	_buildHtml(){
 		let html = `
-	<button type="button" onclick="$('#bulk_latlng_bat_w').toggle(300);" class="btn btn-default btn-xs" title="一括緯度経度取得・バッチ処理   緯度経度が空の求人データに対し、住所から緯度経度を取得する">
+	<button type="button" onclick="$('#bulk_latlng_bat_w').toggle(300);" class="btn btn-secondary btn-xs" title="一括緯度経度取得・バッチ処理   緯度経度が空の求人データに対し、住所から緯度経度を取得する">
 		一括緯度経度</button>
 	<div id="bulk_latlng_bat_w" style="min-width:500px;border:solid 3px #207144;padding:15px;display:none">
 		<div id="bllby_w"><!-- Yahoo API版 -->
 			<strong>一括緯度経度取得・バッチ処理</strong> 
-			<input type="button" value="閉" class="btn btn-default btn-xs" onclick="jQuery('#bulk_latlng_bat_w').hide();" /><br>
+			<input type="button" value="閉" class="btn btn-secondary btn-xs" onclick="jQuery('#bulk_latlng_bat_w').hide();" /><br>
 			<input type="button" id="bllby_start_btn" value="バッチ処理開始" class="btn btn-success" title="YahooのAPIを利用して緯度経度が未設定のデータに緯度経度をセットしていきます。&#13;一度に処理できる件数は最大20000件です。" />
 			<div id="blly_res" class="text-success" style="display:none"></div>
 			<div id="bulk_latlng_bat_y" class="console" style="display:none"></div>

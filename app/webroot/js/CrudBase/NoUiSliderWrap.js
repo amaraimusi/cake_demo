@@ -34,11 +34,11 @@ var NoUiSliderWrap = function(){
 		
 		this.props=param;
 		
-		var slider = $(param.slider).get(0);//スライダー要素オブジェクトを取得
+		var slider = jQuery(param.slider).get(0);//スライダー要素オブジェクトを取得
 		this.slider=slider;
 			
-		var v1=$(param.tb1).val();
-		var v2=$(param.tb2).val();
+		var v1=jQuery(param.tb1).val();
+		var v2=jQuery(param.tb2).val();
 		
 		
 		//noUiSliderスライダーの生成と設定をする。
@@ -62,24 +62,24 @@ var NoUiSliderWrap = function(){
 			var v2=Math.round(v2);
 			
 			if(v1!=0 || v2!=0){
-				$(param.tb1).val(v1);
-				$(param.tb2).val(v2);
-				$(param.value_preview).html(v1 + '～' + v2);
+				jQuery(param.tb1).val(v1);
+				jQuery(param.tb2).val(v2);
+				jQuery(param.value_preview).html(v1 + '～' + v2);
 			}else{
-				$(param.tb1).val('');
-				$(param.tb2).val('');
-				$(param.value_preview).html('OFF');
+				jQuery(param.tb1).val('');
+				jQuery(param.tb2).val('');
+				jQuery(param.value_preview).html('OFF');
 			}
 			
 		});
 		
 		//テキストボックスの値を変更したときに、スライダーにも反映させる。
-		$(param.tb1).blur(function(e){
+		jQuery(param.tb1).blur(function(e){
 			myself.reload();
 		});
 		
 		//テキストボックスの値を変更したときに、スライダーにも反映させる。（右の値）
-		$(param.tb2).blur(function(e){
+		jQuery(param.tb2).blur(function(e){
 			myself.reload();
 		});
 		
@@ -91,8 +91,8 @@ var NoUiSliderWrap = function(){
 	 * 数値テキストボックスに合わせて、スライドバーを修正する。
 	 */
 	this.reload=function(){
-		var v1=$(this.props.tb1).val();
-		var v2=$(this.props.tb2).val();
+		var v1=jQuery(this.props.tb1).val();
+		var v2=jQuery(this.props.tb2).val();
 		this.slider.noUiSlider.set([v1,v2]);
 	};
 };

@@ -211,7 +211,7 @@ class CbGtaCash{
 		
 		// 翻訳ボタン要素にクリックイベントを組み込む
 		cgcBtn.click(evt=>{
-			var btnElm = $(evt.currentTarget);
+			var btnElm = jQuery(evt.currentTarget);
 			this.apiTranseAction(btnElm);
 		});
 	}

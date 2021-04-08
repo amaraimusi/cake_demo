@@ -1,5 +1,5 @@
 /**
- * CrudBase.js
+ *  CRUD基本クラス | CrudBase.js
  * 
  * @note
  * CRUDのベース。
@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2020-6-16
- * @version 3.0.9
+ * @date 2016-9-21 | 2020-8-29
+ * @version 3.1.1
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -20,41 +20,38 @@
  * v1.7 WordPressに対応
  * 2016-9-21 v1.0.0
  * 
- * @param object param
- *  - src_code	画面コード（スネーク記法）
- *  - src_code_c	画面コード（キャメル記法）
- *  - tbl_slt	CRUD対象テーブルセレクタ
- *  - edit_form_slt	編集フォームセレクタ
- *  - new_form_slt	新規フォームセレクタ
- *  - delete_form_slt	削除フォームセレクタ
- *  - contents_slt	コンテンツセレクタ	コンテンツ全体を表すセレクタでフォームの位置調整で利用する。省略時すると画面windowを基準に位置調整する。
- *  - edit_reg_url	編集登録サーバーURL
- *  - new_reg_url	新規登録サーバーURL
- *  - delete_reg_url	削除登録サーバーURL
- *  - auto_save_url	自動保存サーバーURL
- *  - form_position	フォーム位置 auto:自動, left:左側表示, center:中央表示, right:右側表示,max:横幅いっぱい
- *  - form_width	フォーム横幅	数値で指定。未指定（null)である場合、autoと同様になる。ただしform_positionがmaxなら横幅最大になる。
- *  - form_height	フォーム縦幅	上記と同じ
- *  - form_z_index	重なり順序(cssのz-indexと同じ)
- *  - valid_msg_slt	バリデーションメッセージセレクタ
- *  - auto_close_flg	自動閉フラグ	0:自動で閉じない（デフォルト）  1:フォームの外側をクリックすると自動的に閉じる
- *  - ni_tr_place	新規入力追加場所フラグ 0:末尾(デフォルト） , 1:先頭
- *  - drag_and_resize_flg フォームドラッグとリサイズのフラグ 0:OFF , 1:ON(デフォルト)
- *  - form_mode フォームモード 0:ダイアログモード , 1:アコーディオンモード(デフォルト）
- *  - midway_dp リソース配置先用の中間ディレクトリパス
- *  - configData CrudBaseConfigの設定データ
- *  
- *  @param array fieldData フィールドデータ（フィールド名の配列。フィード名の順番は列並びと一致していること）
  */
 class CrudBase{
 
 	/**
 	 * コンストラクタ
 	 * 
-	 * @param param
-	 * - flg
+	 * @param {} param crudBaseData
+	 *  - src_code	画面コード（スネーク記法）
+	 *  - src_code_c	画面コード（キャメル記法）
+	 *  - tbl_slt	CRUD対象テーブルセレクタ
+	 *  - edit_form_slt	編集フォームセレクタ
+	 *  - new_form_slt	新規フォームセレクタ
+	 *  - delete_form_slt	削除フォームセレクタ
+	 *  - contents_slt	コンテンツセレクタ	コンテンツ全体を表すセレクタでフォームの位置調整で利用する。省略時すると画面windowを基準に位置調整する。
+	 *  - edit_reg_url	編集登録サーバーURL
+	 *  - new_reg_url	新規登録サーバーURL
+	 *  - delete_reg_url	削除登録サーバーURL
+	 *  - auto_save_url	自動保存サーバーURL
+	 *  - form_position	フォーム位置 auto:自動, left:左側表示, center:中央表示, right:右側表示,max:横幅いっぱい
+	 *  - form_width	フォーム横幅	数値で指定。未指定（null)である場合、autoと同様になる。ただしform_positionがmaxなら横幅最大になる。
+	 *  - form_height	フォーム縦幅	上記と同じ
+	 *  - form_z_index	重なり順序(cssのz-indexと同じ)
+	 *  - valid_msg_slt	バリデーションメッセージセレクタ
+	 *  - auto_close_flg	自動閉フラグ	0:自動で閉じない（デフォルト）  1:フォームの外側をクリックすると自動的に閉じる
+	 *  - ni_tr_place	新規入力追加場所フラグ 0:末尾(デフォルト） , 1:先頭
+	 *  - drag_and_resize_flg フォームドラッグとリサイズのフラグ 0:OFF , 1:ON(デフォルト)
+	 *  - form_mode フォームモード 0:ダイアログモード , 1:アコーディオンモード(デフォルト）
+	 *  - midway_dp リソース配置先用の中間ディレクトリパス
+	 *  - configData CrudBaseConfigの設定データ
+	 *  - その他多数...
 	 */
-	constructor(param,fieldData){
+	constructor(param){
 
 		// --- 初期化: CrudBaseBaseクラスのメンバを初期化する ----
 		
@@ -63,10 +60,10 @@ class CrudBase{
 
 		// フォーム情報の取得と初期化
 		this.formInfo = this._initFormInfo(this.param);
-
+		
 		// フィールドデータにプロパティを追加する
 		this.fieldData = this._addMoreFieldData(this.param.tbl_slt,this.fieldData);
-
+		
 		// フィールドデータへフォーム内の要素情報をセットする
 		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'new_inp');
 		this.fieldData = this._setFieldDataFromForm(this.fieldData,this.formInfo,'edit');
@@ -89,7 +86,7 @@ class CrudBase{
 		this.rowExchange = this._factoryCrudBaseRowExchange();
 		
 		// CrudBase設定・コンポーネント
-		this.crudBaseConfig = this._factoryCrudBaseConfig(this.param.configData);
+		this.crudBaseConfig = this._factoryCrudBaseConfig(this.param);
 
 		// ボタンサイズ変更コンポーネント
 		this.cbBtnSizeChanger = this.crudBaseConfig.cbBtnSizeChanger;
@@ -169,6 +166,13 @@ class CrudBase{
 		// 検索関連の入力要素にEnterイベントを組み込む
 		this._addEventForKjsEnter();
 		
+		// 一覧のチェックボックス複数選択による一括処理
+		this.pwms = new ProcessWithMultiSelection({
+				tbl_slt:this.param.tbl_slt,
+				ajax_url:this.param.pwms_ajax_url,
+				csrf_token:this.param.csrf_token,
+		});
+		
 
 
 	}
@@ -178,7 +182,7 @@ class CrudBase{
 	 */
 	newVersionReload(){
 		// 新バージョンである場合、強制的にセッションクリア
-		let new_version_flg = jQuery('#new_version_flg').val();
+		let new_version_flg =this.param.new_version_flg;
 		if(new_version_flg != 0){
 			this._clear();
 			location.reload(true);
@@ -195,10 +199,16 @@ class CrudBase{
 		if(param == null){
 			param = {};
 		}
+		
+		if(param['csrf_token'] == null){
+			let csrf_token = jQuery('#csrf_token').val();
+			if(csrf_token == null) throw new Error('csrf_token is empty!');
+			param['csrf_token'] = csrf_token;
+		}
 
 		// 画面コード（スネーク記法）
 		if(param['src_code'] == null){
-			throw new Exception("'src_code' is empty!")
+			param['src_code'] = param.model_name_s;
 		}
 
 		// 画面コード （キャメル）
@@ -312,13 +322,6 @@ class CrudBase{
 			param['device_type'] = this.judgDeviceType(); // デバイスタイプ（PC/SP）の判定
 		}
 
-		// エラータイプリスト
-		if(param['errTypes'] == null){
-			var err_types_json = jQuery('#err_types_json').val();
-			param['errTypes'] = jQuery.parseJSON(err_types_json);
-		}
-		
-		
 		if(param['drag_and_resize_flg'] == null) param['drag_and_resize_flg'] = 1;
 		
 		// フォームモード
@@ -328,20 +331,24 @@ class CrudBase{
 		
 		if(param['configData'] == null) param['configData'] = {};
 		
+		if(param['pwms_ajax_url'] == null) param['pwms_ajax_url'] = param.main_model_name_s + '/ajax_pwms';
+		
+		
+		
 		return param;
 	}
 	
 
 	/**
 	 * CrudBase設定
-	 * @param object configData 設定データ
+	 * @param {} crudBaseData
 	 * @return CrudBaseConfig CrudBase設定・コンポーネント
 	 */
-	_factoryCrudBaseConfig(configData){
+	_factoryCrudBaseConfig(crudBaseData){
 
 		// 自動保存機能の初期化
 		let crudBaseConfig = new CrudBaseConfig();
-		crudBaseConfig.init(null, configData);
+		crudBaseConfig.init(null, crudBaseData);
 		
 		return crudBaseConfig;
 		
@@ -378,10 +385,10 @@ class CrudBase{
 	 * @reutrn CrudBaseRowExchange 行入替機能・コンポーネント
 	 */
 	_factoryCrudBaseRowExchange(){
-		var rowExchange;
+		let rowExchange;
 		
 		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
-		var t = typeof CrudBaseRowExchange;
+		let t = typeof CrudBaseRowExchange;
 		if(t == null || t == 'undefined'){
 			// 「空」実装
 			rowExchange = {
@@ -396,7 +403,7 @@ class CrudBase{
 		});
 		
 		// 行入替機能のボタン表示切替
-		var row_exc_flg = jQuery('#row_exc_flg').val();
+		let row_exc_flg =this.param.row_exc_flg;
 		this.rowExcBtnShow(row_exc_flg);
 		
 		return rowExchange;
@@ -408,10 +415,10 @@ class CrudBase{
 	 */
 	_factoryClmShowHide(){
 		
-		var csh;
+		let csh;
 		
 		// クラス（JSファイル）がインポートされていない場合、「空」の実装をする。
-		var t = typeof ClmShowHide;
+		let t = typeof ClmShowHide;
 		if(t == null || t == 'undefined'){
 			// 「空」実装
 			csh = {}
@@ -420,9 +427,9 @@ class CrudBase{
 		
 		// 列表示切替機能の初期化
 		csh=new ClmShowHide();//列表示切替
-		var csh_json = jQuery('#csh_json').val();
-		var iniClmData = JSON.parse(csh_json);//列表示配列  1:初期表示   0:初期非表示
-		var csh_unique_key = 'rkt_' + this.param.src_code + '_index'; // 画面別ユニークキー
+		let iniClmData = this.param.csh_ary; //列表示配列  1:初期表示   0:初期非表示
+		
+		let csh_unique_key = 'rkt_' + this.param.src_code + '_index'; // 画面別ユニークキー
 		csh.init(this.param.tbl_slt,'clm_cbs',iniClmData,csh_unique_key);
 		return csh;
 		
@@ -685,12 +692,12 @@ class CrudBase{
 	 * @param callBack フォームに一覧の行データを自動セットしたあとに呼び出されるコールバック関数(省略可）
 	 */
 	editShow(elm,option,callBack){
-		
+
 		if(option == null) option = {};
 
 		var tr = jQuery(elm).parents('tr'); // 先祖をさかのぼりtr要素を取得する
 
-		this.activeTr = tr;; // アクティブTR要素にセット
+		this.activeTr = tr; // アクティブTR要素にセット
 
 		var info = this.formInfo['edit'];
 
@@ -966,7 +973,11 @@ class CrudBase{
 		
 		var regParam = {}; // 登録パラメータ
 		
-		// WordPressの場合
+		// トークンの取得(Laravelなど）
+		let token = this.param.csrf_token;
+		fd.append( "_token", token );
+		
+		// WordPressの場合■■■□□□■■■□□□後日でwp_nonceをcsrf_tokenに変更する
 		if(option['wp_action']){
 			regParam['action'] = option['wp_action'];
 			if(option['wp_nonce']) regParam['nonce'] = option['wp_nonce'];
@@ -982,7 +993,6 @@ class CrudBase{
 
 		// 諸パラメータから追加行インデックスを決定する
 		var add_row_index = this._decAddRowIndex(form,form_type,option);
-
 
 		jQuery.ajax({
 			type: "post",
@@ -1056,7 +1066,7 @@ class CrudBase{
 	 * - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
 	 * 
 	 */
-	editReg(beforeCallBack,afterCallBack,option){
+	editReg(beforeCallBack, afterCallBack, option){
 		// バリデーション
 		var res = this._validationCheckForm('edit');
 		if(res == false) return;
@@ -1092,6 +1102,10 @@ class CrudBase{
 		
 		var json = JSON.stringify(ent);//データをJSON文字列にする。
 		fd.append( "key1", json );
+		
+		// トークンの取得(Laravelなど）
+		let token = this.param.csrf_token;
+		fd.append( "_token", token );
 
 		// WordPressの場合
 		if(option['wp_action']){
@@ -1152,7 +1166,8 @@ class CrudBase{
 
 				// TR要素にエンティティの値をセットする
 				this._setEntityToEditTr(ent,tr);
-
+				
+				this._offNoteDetail(tr);
 
 				// 登録後にコールバック関数を非同期で実行する
 				if(afterCallBack != null){
@@ -1178,7 +1193,20 @@ class CrudBase{
 		});
 	}
 
-
+	_offNoteDetail(tr){
+		tr.find('.note_detail').each((i,elm)=>{
+			
+			elm = jQuery(elm);
+			let td =elm.parent('td');
+			elm.hide();
+			let field = elm.attr('data-field');
+			td.find('.' + field).show(); // フィールド要素を表示
+			
+			td.find('.note_detail_open_btn').hide(); // 「閉じる」ボタンを隠す
+			
+			
+		});
+	}
 
 	/**
 	 * 行番号を指定して削除登録を行う。
@@ -1278,20 +1306,20 @@ class CrudBase{
 		if(exempts==null) exempts=[];
 		
 		//デフォルト検索条件JSONを取得およびパースする。
-		var def_kjs_json=$('#def_kjs_json').val();
-		var defKjs=jQuery.parseJSON(def_kjs_json);
+		let defKjs = this.param.defKjs; // デフォルト検索条件データ
 		
-		for(var key in defKjs){
+		for(let key in defKjs){
 			
 			//リセット対象外でなければ、検索条件入力フォームをリセットする。
 			if(exempts.indexOf(key) < 0){
-				$('#' + key).val(defKjs[key]);
+				jQuery('#' + key).val(defKjs[key]);
 			}
 			
 		}
 		
 		// 検索条件要素の各種ガシェットをリセットする
-		this.cbGadgetKj.reset();
+		if(this.cbGadgetKj) this.cbGadgetKj.reset();
+		
 		
 	}
 	
@@ -1412,7 +1440,7 @@ class CrudBase{
 	 * 削除登録
 	 * 
 	 * @param option オプション
-	 *  - caller_type 呼び出し元タイプ 0:削除フォールから呼び出し（デフォ） , 1:直接呼出し , 
+	 *  - caller_type 呼び出し元タイプ 0:削除フォームから呼び出し（デフォ） , 1:直接呼出し , 
 	 *  - wp_action :WPアクション	WordPressでは必須
 	 *  - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
 	 *  - cbBeforeReg(ent) 削除登録前に実行するコールバック
@@ -1524,9 +1552,10 @@ class CrudBase{
 
 		var json = JSON.stringify(ent);//データをJSON文字列にする。
 		fd.append( "key1", json );
-
-
-
+		
+		// トークンの取得(Laravelなど）
+		let token = this.param.csrf_token;
+		fd.append( "_token", token );
 		
 		jQuery.ajax({
 			type: "post",
@@ -2169,8 +2198,7 @@ class CrudBase{
 		if(xss_flg == 1){
 			ent = this._xssSanitaizeEncode(ent);
 		}
-		
-		
+
 		this.entToBinds(tr,ent,'class',option);// エンティティをclass属性バインド要素群へセットする
 		this.entToBinds(tr,ent,'name',option);// エンティティをname属性バインド要素群へセットする
 
@@ -2611,7 +2639,6 @@ class CrudBase{
 		// バインド要素リストにエンティティをセットする
 		for(var i in this.fieldData){
 			var field = this.fieldData[i].field;
-
 			if(ent[field] === undefined) continue;
 
 			var elms = bindElms[field];
@@ -2768,7 +2795,7 @@ class CrudBase{
 			}
 
 			else{
-				
+
 				// カスタム型のセット
 				this._setForCustumType(elm,field,val1,ent,option);
 
@@ -2927,28 +2954,20 @@ class CrudBase{
 		
 		switch (filEnt.fil_type) {
 		case 'select':
-
-
 			res.val1 = this.disFilSelect(val1,field,filEnt.option);// 表示フィルター・SELECTリスト
-			
-
 			break;
 			
 		case 'delete_flg':
-
 			res.val1 = this.disFilDeleteFlg(val1,field,filEnt.option);// 表示フィルター・削除フラグ
 			res.xss = 0;
 			break;
 			
 		case 'flg':
-
 			res.val1 = this.disFilFlg(val1,field,filEnt.option);// 表示フィルター・フラグ
 			res.xss = 0;
-
 			break;
 			
 		case 'money':
-
 			res.val1 = this.disFilMoney(val1,field,filEnt.option);// 表示フィルター・金額
 			res.xss =0;
 			break;
@@ -2985,7 +3004,7 @@ class CrudBase{
 				list = option['list'];
 			}
 		}
-		
+
 		var display_value = ""; // 表示する値
 		if(list[val1] != null){
 			display_value = list[val1];
@@ -3405,6 +3424,12 @@ class CrudBase{
 	 * 検索実行
 	 */
 	searchKjs(){
+		
+		// 検索入力のバリデーション
+		if(this.cbValidationJq.checkAll()){
+			alert('検索入力に不備があります。確認してください。');
+			return;
+		}
 
 		// URLからパラメータを取得する
 		var param = this._getUrlQuery();
@@ -3475,26 +3500,24 @@ class CrudBase{
 
 		// 検索条件情報が省略されている場合はHTMLの埋込JSONから取得する。
 		if(kjs==null){
-			var kjs_json = $('#kjs_json').val();
-			kjs = JSON.parse(kjs_json);
+			kjs = this.param.kjs;
 		}
 
 		// デフォルト検索条件が省略されている場合はHTMLの埋込JSONから取得する。
 		if(defKjs==null){
-			var def_kjs_json = $('#def_kjs_json').val();
-			defKjs = JSON.parse(def_kjs_json);
+			let defKjs = this.param.defKjs; // デフォルト検索条件データ
 		}
 
 		// 比較対象外フィールドマッピング
-		var outFieldMap = {};
-		for(var i in outFields){
-			var field = outFields[i];
+		let outFieldMap = {};
+		for(let i in outFields){
+			let field = outFields[i];
 			outFieldMap[field] = 1;
 		}
 
-		var is_def_flg = 1; // 検索初期状態
+		let is_def_flg = 1; // 検索初期状態
 
-		for(var field in defKjs){
+		for(let field in defKjs){
 
 			// 対象外フィールドに存在するフィールドであればコンテニュー。
 			if(outFieldMap[field]){
@@ -3506,12 +3529,12 @@ class CrudBase{
 			}else{
 
 				// null,null,空文字はnullとして扱う。
-				var kjs_value = kjs[field];
+				let kjs_value = kjs[field];
 				if(this._emptyNotZero(kjs_value)){
 					kjs_value = null;
 				}
 				
-				var def_value = defKjs[field];
+				let def_value = defKjs[field];
 				if(this._emptyNotZero(def_value)){
 					def_value = null;
 				}
@@ -3885,16 +3908,16 @@ class CrudBase{
 	 */
 	rowExchangeAfter(){
 
-		var data = this.getDataFromTbl();// Htmlテーブルからデータを取得
+		let data = this.getDataFromTbl();// Htmlテーブルからデータを取得
 		
-		var page_no = jQuery("#page_no").val() * 1;
-		var limit = jQuery("#row_limit").val() * 1;
-
+		let page_no = this.param.pages.page_no * 1;
+		let limit = this.param.pages.row_limit * 1;
+		
 		// データに順番をセットする
-		var sort_no = (page_no * limit) + 1;
+		let sort_no = (page_no * limit) + 1;
 		
-		for(var i in data){
-			var ent = data[i];
+		for(let i in data){
+			let ent = data[i];
 			ent['sort_no'] = sort_no;
 			sort_no ++;
 		}
@@ -3902,11 +3925,11 @@ class CrudBase{
 		this._btnsDisabledSwich(true);
 		
 		// 自動保存後のコーバック
-		var afterCallBack = function(){
+		let afterCallBack = function(){
 			this._btnsDisabledSwich(false);
 		}.bind(this);
 		
-		var option = {
+		let option = {
 				'reflect_on_tbl':1, // 1:HTMLテーブルにdataを反映する
 				'afterCallBack':afterCallBack,
 		}
@@ -4099,7 +4122,7 @@ class CrudBase{
 		var draggableDiv = form.draggable();
 		
 		//ドラッグ移動を組み込むとテキスト選択ができなくなるので、パネルボディ部分をテキスト選択可能にする。
-		$('.panel-body',draggableDiv).mousedown((ev) => {
+		jQuery('.panel-body',draggableDiv).mousedown((ev) => {
 			  draggableDiv.draggable('disable');
 			}).mouseup((ev) => {
 			  draggableDiv.draggable('enable');
@@ -4147,7 +4170,7 @@ class CrudBase{
 		var noteDetailElm = td.find('.note_detail');
 		if(!noteDetailElm[0]){
 			maked = 0;
-			var note_detail_html = "<div class='note_detail'></div>";
+			var note_detail_html = `<div class='note_detail' data-field='${field}'></div>`;
 			td.append(note_detail_html);
 			noteDetailElm = td.find('.note_detail');
 		}
@@ -4246,8 +4269,8 @@ class CrudBase{
 		
 		var hiddensElm = this._getHiddensElm(); // hiddenデータ要素を取得（埋込データ要素）
 
-		var referer_url = hiddensElm.find('#referer_url').val(); // リファラURL
-		var now_url = hiddensElm.find('#now_url').val(); // 現在URL
+		let referer_url = this.param.referer_url; // リファラURL
+		let now_url = this.param.now_url; // 現在URL
 		
 		// GETクエリ部分を取り除いたURLを取得する
 		var r_url_b = this._stringLeft(referer_url, '?', 1);
@@ -4409,8 +4432,7 @@ class CrudBase{
 	 */
 	_getKjs(){
 		if(this.kjs == null){
-			var kjs_json = jQuery('#kjs_json').val();
-			this.kjs = JSON.parse(kjs_json);
+			this.kjs = this.param.kjs;
 		}
 		return this.kjs;
 	}
@@ -4440,6 +4462,18 @@ class CrudBase{
 		
 		this.cbBtnSizeChanger.clearReset();
 	}
+	
+	/**
+	 * 検索条件のバリデーション・jQuery版
+	 * @param string per_xid 親要素のid属性値（親要素のセレクタ）
+	 * @param {} crudBaseData
+	 * @param [function] バリデーションメソッド群
+	 */
+	setKjsValidationForJq(per_xid, crudBaseData, validMethods){
+		this.cbValidationJq = new CrudBaseValidationJQuery(per_xid, crudBaseData, validMethods);
+	}
+	
+	
 	
 	
 }

@@ -328,6 +328,7 @@ class PagenationForCake{
 	//ソートリンクリストを作成
 	private function _createSorts($sort_field,$sort_desc,$fields,$page_no,$row_limit,$path,$params,$kjs_uq){
 
+
 		//その他パラメータコードを作成する。
 		$strParams='';
 		if(!empty($params)){
@@ -351,7 +352,10 @@ class PagenationForCake{
 
 		//現在ソートフィールドがnullでない場合、以下の処理を行う。
 		if(!empty($sort_field)){
-			$fName=$fields[$sort_field];//フィールド和名
+			
+			$fName = '順番';
+			if(!empty($fields[$sort_field])) $fName= $fields[$sort_field];//フィールド和名
+			 
 
 			//現在ソート方法と逆順を取得。フィールド和名に並び順を示すアイコン文字を入れる。
 			$revSortType=1;

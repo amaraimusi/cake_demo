@@ -17,35 +17,35 @@
  */
 
 
-$(function(){
+jQuery(function(){
 
 	imgCompactK();
 });
 
 
 function imgCompactK(){
-	$('.img_compact_k').each(function(){
+	jQuery('.img_compact_k').each(function(){
 		
-		$(this).attr('class','');
+		jQuery(this).attr('class','');
 		
-		$(this).css ({'width':'160px',
+		jQuery(this).css ({'width':'160px',
 			'height':'160px'
 		});
 		
-		$(this).click(function() {
+		jQuery(this).click(function() {
 			
-			var w = $(this).css('width');
+			var w = jQuery(this).css('width');
 			if(w=='160px'){
-				$(this).attr('class','img-responsive');
+				jQuery(this).attr('class','img-responsive');
 				
-				$(this).css ({
+				jQuery(this).css ({
 					'width':'auto',
 					'height':'auto'
 				});
 			}else{
-				$(this).attr('class','');
+				jQuery(this).attr('class','');
 				
-				$(this).css ({'width':'160px',
+				jQuery(this).css ({'width':'160px',
 					'height':'160px'
 				});
 			}

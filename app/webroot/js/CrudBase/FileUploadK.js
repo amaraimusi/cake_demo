@@ -314,7 +314,7 @@ class FileUploadK{
 		html += "<span class='fuk_preview' style='display:inline-block'></span>";
 		
 		// クリアボタン用を追加
-		html += "<div class='fuk_clear_btn_w'><input type='button' value='Clear' class='btn btn-default btn-xs fuk_clear_btn' " +
+		html += "<div class='fuk_clear_btn_w'><input type='button' value='Clear' class='btn btn-secondary btn-sm fuk_clear_btn' " +
 				"data-fue-id='" + fue_id + "' /></div>";
 		
 		parLabel.append(html);

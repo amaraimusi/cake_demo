@@ -132,7 +132,7 @@ class CsvImportBig{
 			<input id="sdr_log_show" type="button" value="エラーログ表示" class="btn btn-info btn-xs" />
 		</div>
 		<div id="sdr_log_text_w" style="display:none">
-			<input id="sdr_log_text_close" type="button" value="閉じる" class="btn btn-default btn-xs" />
+			<input id="sdr_log_text_close" type="button" value="閉じる" class="btn btn-secondary btn-xs" />
 			<pre id="sdr_log_text"></pre>
 		</div>
 		<div id="sdr_req_batch"></div>

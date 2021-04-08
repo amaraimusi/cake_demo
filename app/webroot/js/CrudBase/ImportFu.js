@@ -226,7 +226,7 @@ var ImportFu =function(param){
 			"	<div id='" + param.pre_fn_xid + "' class='imp_fu_pre_fn'></div>" + 
 			"	<div class='imp_fu_pre_btns' style='margin-top:10px'>" +
 			"		<input type='button' class='imp_fu_pre_exe_btn btn btn-success btn' value='アップロード' />" +
-			"		<input type='button' class='imp_fu_pre_cancel_btn btn btn-default btn' value='キャンセル' />" +
+			"		<input type='button' class='imp_fu_pre_cancel_btn btn btn-secondary btn' value='キャンセル' />" +
 			"	</div>" + 
 			"</div>";
 		fu_wrap.append(preview_html);

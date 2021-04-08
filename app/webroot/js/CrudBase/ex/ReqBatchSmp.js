@@ -105,9 +105,9 @@ class ReqBatchSmp{
 	<div><progress class="req_batch_prog"  max="100" style="display:none">■</progress></div>
 	
 	<div class="req_batch_btns_a" class="btn-group">
-		<input type="button" value='進捗詳細' class="req_batch_c_show_btn btn btn-default btn-xs" />
-		<input type="button" value="停止" class="req_batch_stop_btn btn btn-default btn-xs"/>
-		<input type="button" value="失敗(0)" class="req_batch_fail_btn btn btn-default btn-xs"/>
+		<input type="button" value='進捗詳細' class="req_batch_c_show_btn btn btn-secondary btn-xs" />
+		<input type="button" value="停止" class="req_batch_stop_btn btn btn-secondary btn-xs"/>
+		<input type="button" value="失敗(0)" class="req_batch_fail_btn btn btn-secondary btn-xs"/>
 	</div>
 	<br>
 	<div class="req_batch_console console" style="display:none">
@@ -389,7 +389,7 @@ class ReqBatchSmp{
 	_addFail(main_index, fail_text){
 		var html = `
 			<div style="display:inline-block">
-				<input type="button" class="btn btn-default btn-xs" value="失敗 ${main_index}" onclick="jQuery('#req_batch_fail${main_index}').toggle(300)">
+				<input type="button" class="btn btn-secondary btn-xs" value="失敗 ${main_index}" onclick="jQuery('#req_batch_fail${main_index}').toggle(300)">
 				<div id="req_batch_fail${main_index}" style="display:none">${fail_text}</div>
 			</div>
 		`;

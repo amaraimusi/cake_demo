@@ -18,7 +18,8 @@ class CrudBaseAutoSave{
 		this.msgElm = jQuery('#crud_base_auto_save_msg'); // 自動保存メッセージ要素
 		this.data; // 保存するデータ
 		this.set_timeout_hdl; // setTimeout関数のハンドラ
-
+		this.crudBaseData = crudBase.param;
+		
 	}
 	
 	/**
@@ -71,19 +72,28 @@ class CrudBaseAutoSave{
 			var data = this.crudBase.getDataHTbl();// Htmlテーブルからデータを取得
 		}
 		data = this.crudBase.escapeForAjax(data); // Ajax送信データ用エスケープ。実体参照（&lt; &gt; &amp; &）を記号に戻す。
-		var json_str = JSON.stringify(data);//データをJSON文字列にする。
-		var url = this.crudBase.param.auto_save_url; // 自動保存サーバーURL
+		let json_str = JSON.stringify(data);//データをJSON文字列にする。
+		let url = this.crudBase.param.auto_save_url; // 自動保存サーバーURL
+		
+		let fd = new FormData(); // 送信フォームデータ
+		fd.append( "key1", json_str );
+		
+		// CSRFトークンを送信フォームデータにセットする。
+		let token = this.crudBaseData.csrf_token;
+		fd.append( "_token", token );
 		
 		// AJAX
 		jQuery.ajax({
-			type: "POST",
+			type: "post",
 			url: url,
-			data: "key1="+json_str,
+			data: fd,
 			cache: false,
 			dataType: "text",
+			processData: false,
+			contentType: false,
 		})
 		.done((str_json, type) => {
-			var res;
+			let res;
 			try{
 				res =jQuery.parseJSON(str_json);
 				this.msgElm.html('');

@@ -24,7 +24,7 @@
  * 	 //▼リロード対策（サブミット時に呼び出す）
  * 	function reload2(){
  *  	var d=new Date;
- * 		$('#reload').val(d);
+ * 		jQuery('#reload').val(d);
  * 	}
  * 
  * 2.入力画面のサブミット時に上記のreload2()関数を呼び出すこと。

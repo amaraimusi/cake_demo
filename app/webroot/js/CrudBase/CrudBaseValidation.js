@@ -54,6 +54,30 @@ class CrudBaseValidation{
 	
 	
 	/**
+	 * 整数のチェック
+	 * @note
+	 * null, 空文字は正常と見なす。
+	 * 文字列型の整数値も正常と見なす。
+	 * 半角スペースが混じっていればエラーと見なす。
+	 * 符号付き整数（+100, -100）は正常と見なす。
+	 * 
+	 * @param mixed value
+	 * @return true:正常  false:エラー
+	 */
+	isInteger(value){
+		
+		if(value === null) return true;
+		if(value === '') return true;
+		
+		if(Number.isNaN(value)) return false;
+		let value2 = Number(value); // 数値型に変換
+		if(Number.isInteger(value2) ) return true; // 整数判定
+		
+		return false;
+	}
+	
+	
+	/**
 	 * 日付チェック
 	 * 
 	 * @note

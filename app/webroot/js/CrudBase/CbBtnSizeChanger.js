@@ -1,20 +1,27 @@
 /**
  * ボタンサイズ変更【CrudBase用】
- * @version 1.1.5
- * @date 2018-10-27 | 2019-10-13 ボタン表示切替に対応
+ * @version 1.2.2
+ * @date 2018-10-27 | 2020-9-17
  */
 class CbBtnSizeChanger{
 	
 	/**
 	 * コンストラクタ
 	 * 
-	 * @param object cnfData 設定データ（省略可）
-	 * @param object param
-	 * - save_flg 保存フラグ 0:保存しない , 1:保存する（デフォルト）
+	 * @param {} crudBaseData
 	 * - 
 	 */
-	constructor(param, p_cnfData){
+	constructor(crudBaseData){
+		
+		this.crudBaseData = crudBaseData;
 
+		let param = {};
+		let p_cnfData = {};
+		
+		this.kj_delete_flg = crudBaseData.kjs.kj_delete_flg; // 削除フラグ -1:すべて, 0:有効, 1:削除(無効）
+		this.kj_delete_flg =  this.kj_delete_flg * 1; // 数値変換
+		if(this._empty(this.kj_delete_flg)) this.kj_delete_flg = 0;
+		
 		// ローカルストレージキーを作成
 		var url = location.href;
 		var url = url.split(/[?#]/)[0]; // URLからクエリ部分を除去する
@@ -50,6 +57,9 @@ class CbBtnSizeChanger{
 		
 		this.mainForm = mainForm;
 		this.cnfData = cnfData;
+
+
+
 		
 	}
 	
@@ -71,12 +81,12 @@ class CbBtnSizeChanger{
 	 */
 	_getDefaultCnfData(){
 		var defCnfData = [
-			{'slt':'.row_edit_btn','wamei':'編集ボタン','visible':true ,'def_size':'btn-xs','size':'btn-xs'},
-			{'slt':'.row_copy_btn','wamei':'複製ボタン','visible':true ,'def_size':'btn-xs','size':'btn-xs'},
-			{'slt':'.row_delete_btn','wamei':'削除ボタン','visible':true ,'def_size':'btn-xs','size':'btn-xs'},
-			{'slt':'.row_eliminate_btn','wamei':'抹消ボタン','visible':false ,'def_size':'btn-xs','size':'btn-xs'},
-			{'slt':'.row_exc_btn','wamei':'行入替ボタン(↑↓ボタン)','visible':true ,'def_size':'btn-xs','size':'btn-xs'},
-			{'slt':'.row_enabled_btn','wamei':'有効ボタン','visible':false ,'def_size':'btn-xs','size':'btn-xs'},
+			{'slt':'.row_edit_btn','wamei':'編集ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_copy_btn','wamei':'複製ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_delete_btn','wamei':'削除ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_eliminate_btn','wamei':'抹消ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_exc_btn','wamei':'行入替ボタン(↑↓ボタン)','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_enabled_btn','wamei':'有効ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
 			
 		];
 		
@@ -102,7 +112,7 @@ class CbBtnSizeChanger{
 		// ラジオボタンデータ
 		if(param['radioData'] == null){
 			param['radioData'] = [
-				{'value':'btn-xs', 'wamei':' 極小'},
+				{'value':'btn-sm', 'wamei':' 極小'},
 				{'value':'btn-sm', 'wamei':' 小　'},
 				{'value':'', 'wamei':' 普通'},
 				{'value':'btn-lg', 'wamei':' 大　'},
@@ -180,8 +190,8 @@ class CbBtnSizeChanger{
 		
 		html += `
 				</tbody></table>
-				<input id='cbbsc_def_btn' type='button' value='初期に戻す' class='btn btn-default btn-xs' >
-				<input id='cbbsc_close_btn' type='button' value='閉じる' class='btn btn-default btn-xs' >
+				<input id='cbbsc_def_btn' type='button' value='初期に戻す' class='btn btn-secondary btn-sm' >
+				<input id='cbbsc_close_btn' type='button' value='閉じる' class='btn btn-secondary btn-sm' >
 			</div>
 		`;
 		
@@ -306,7 +316,7 @@ class CbBtnSizeChanger{
 		// ▼ ボタンサイズのclass属性をいったん除去する
 		var radioData = this.param.radioData; // ラジオボタンデータ
 		for(var i in radioData){
-			var class_str = radioData[i].value; // ボタンサイズのclass属性  btn-xs, btn-sm, btn-lg
+			var class_str = radioData[i].value; // ボタンサイズのclass属性  btn-sm, btn-sm, btn-lg
 			if(class_str == '') continue;
 			if(btn.hasClass(class_str)){
 				if(size == class_str) return; // 変更不要であるなら処理抜け
@@ -380,19 +390,198 @@ class CbBtnSizeChanger{
 	 * @param object cnfEnt 設定エンティティ
 	 */
 	_changeBtnVisible(cnfEnt){
-		
-		var visible = cnfEnt.visible;
+
+		let visible = cnfEnt.visible;
+		let code = cnfEnt.code;
+
+		let row_exc_cond_sort = this._judgeRowExcCondSort(); // 「順番」関連の条件による表示判定
 		
 		jQuery(cnfEnt.slt).each((i,btn) => {
 			
 			btn = jQuery(btn);
-			if(visible == true){
-				btn.show();
-			}else{
-				btn.hide();
+			
+			switch (code) {
+				case 'row_enabled_btn':
+					this._changeBtnForEnabledBtn(btn, visible); // ボタン切替・有効ボタン
+					break;
+				case 'row_delete_btn':
+					this._changeBtnForDeleteBtn(btn, visible); // ボタン切替・削除ボタン
+					break;
+				case 'row_eliminate_btn':
+					this._changeBtnForEliminateBtn(btn, visible); // ボタン切替・抹消ボタン
+					break;
+				case 'row_exc_btn':
+					this._changeBtnForRowExc(btn, visible, row_exc_cond_sort); // ボタン切替・行入替ボタン
+					break;
+				default:
+					this._changeBtnForOther(btn, visible); // ボタン切替・その他ボタン
+					break;
 			}
+
+
 		});
 
+	}
+	
+	
+	/**
+	 * 「順番」関連の条件による表示判定
+	 * @return bool 行入替ボタンの表示判定 false:非
+	 */
+	_judgeRowExcCondSort(){
+		let main_model_name = this.crudBaseData.main_model_name; // モデル名	例⇒Neko
+		let sort_field = this.crudBaseData.pages.sort_field; // ソートフィールド	例→Neko.sort
+		let sort_desc = this.crudBaseData.pages.sort_desc; // ソート並び順 0:昇順, 1:降順
+
+		if(sort_desc == 1) return false; // ソート並び順が降順ならボタン非表示
+		if(sort_field == 'sort') return true; 
+		if(sort_field == 'sort_no') return true; 
+		if(sort_field == main_model_name + '.sort') return true; 
+		if(sort_field == main_model_name + '.sort_no') return true; 
+		
+		return false;
+
+	}
+	
+	
+	/**
+	 * ボタン切替・有効ボタン
+	 */
+	_changeBtnForEnabledBtn(btn, visible){
+		
+		//	delete_flg==0	設定OFF	⇒非表示
+		//	delete_flg==-1	設定OFF	⇒非表示
+		//	delete_flg==1	設定OFF	⇒非表示
+		//	delete_flg==0	設定ON	⇒非表示
+		//	delete_flg==-1	設定ON	⇒表示
+		//	delete_flg==1	設定ON	⇒表示
+		if(visible == false){
+			btn.hide();
+		}else{
+			switch (this.kj_delete_flg) {
+			case 0:
+				btn.hide();
+				break;
+			case -1:
+				btn.show();
+				break;
+			case 1:
+				btn.show();
+				break;
+			}
+		}
+
+	}
+	
+	
+	/**
+	 * ボタン切替・削除ボタン
+	 */
+	_changeBtnForDeleteBtn(btn, visible){
+		
+		//		delete_flg==0	設定OFF	⇒非表示
+		//		delete_flg==-1	設定OFF	⇒非表示
+		//		delete_flg==1	設定OFF	⇒非表示
+		//		delete_flg==0	設定ON	⇒表示
+		//		delete_flg==-1	設定ON	⇒表示
+		//		delete_flg==1	設定ON	⇒非表示
+		
+		if(visible == false){
+			btn.hide();
+		}else{
+			switch (this.kj_delete_flg) {
+			case 0:
+				btn.show();
+				break;
+			case -1:
+				btn.show();
+				break;
+			case 1:
+				btn.hide();
+				break;
+			}
+		}
+
+	}
+	
+	
+	/**
+	 * ボタン切替・抹消ボタン
+	 */
+	_changeBtnForEliminateBtn(btn, visible){
+		
+		//	delete_flg==0	設定OFF	⇒非表示
+		//	delete_flg==-1	設定OFF	⇒非表示
+		//	delete_flg==1	設定OFF	⇒非表示
+		//	delete_flg==0	設定ON	⇒非表示
+		//	delete_flg==-1	設定ON	⇒非表示
+		//	delete_flg==1	設定ON	⇒表示
+				
+		if(visible == false){
+			btn.hide();
+		}else{
+			switch (this.kj_delete_flg) {
+			case 0:
+				btn.hide();
+				break;
+			case -1:
+				btn.hide();
+				break;
+			case 1:
+				btn.show();
+				break;
+			}
+		}
+
+	}
+	
+	
+	/**
+	 * ボタン切替・行入替ボタン
+	 */
+	_changeBtnForRowExc(btn, visible, row_exc_cond_sort){
+		//	delete_flg==0	設定OFF	⇒非表示
+		//	delete_flg==-1	設定OFF	⇒非表示
+		//	delete_flg==1	設定OFF	⇒非表示
+		//	delete_flg==0	設定ON	⇒非表示
+		//	delete_flg==-1	設定ON	⇒非表示
+		//	delete_flg==1	設定ON	⇒さらなる条件
+		
+		if(visible == false){
+
+			btn.hide();
+		}else{
+			switch (this.kj_delete_flg) {
+			case 0:
+				if(row_exc_cond_sort == true){
+					btn.show();
+				}else{
+					btn.hide();
+				}
+				break;
+			case -1:
+				btn.hide();
+				break;
+			case 1:
+				btn.hide();
+				break;
+			default:
+				break;
+			}
+		}
+		
+	}
+	
+	
+	/**
+	 * ボタン切替・その他ボタン
+	 */
+	_changeBtnForOther(btn, visible){
+		if(visible == true){
+			btn.show();
+		}else{
+			btn.hide();
+		}
 	}
 	
 	

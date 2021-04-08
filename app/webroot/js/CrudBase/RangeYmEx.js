@@ -1,3 +1,4 @@
+
 /**
  * 年月による日付範囲入力【拡張】 | RangeYmEx.js
  * 
@@ -17,8 +18,8 @@ class RangeYmEx{
 	init(param){
 		
 		let boxs = {};
-		
 		jQuery('.range_ym_ex').each((i, elm)=>{
+			
 			elm = jQuery(elm);
 			
 			// 各種属性を取得

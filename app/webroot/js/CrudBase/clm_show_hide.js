@@ -63,9 +63,9 @@ var ClmShowHide =function(){
 		
 		// テーブルヘッダー要素から列名を取得して、デフォルト列データにセットする。
 		var i=0;
-		$.each($('#' + tblId + " thead tr th"), function() {
+		$.each(jQuery('#' + tblId + " thead tr th"), function() {
 
-			var clm_name=$(this).html();
+			var clm_name=jQuery(this).html();
 			try{
 				defClmData[i]['clm_name']=clm_name;
 			}catch( e ){
@@ -106,9 +106,9 @@ var ClmShowHide =function(){
 
 
 		//列表示チェックボックスのクリックイベント。
-		$(".csh_cb").click(function(event){
-			var checked=$(this).prop('checked');
-			var index=$(this).attr('index');
+		jQuery(".csh_cb").click(function(event){
+			var checked=jQuery(this).prop('checked');
+			var index=jQuery(this).attr('index');
 
 			//列表示の切替処理
 			if(checked==true){
@@ -134,7 +134,7 @@ var ClmShowHide =function(){
 
 
 		//保存ボタンにイベントを追加。
-		$("#" + tblId + "_save_btn").click(function(event){
+		jQuery("#" + tblId + "_save_btn").click(function(event){
 
 			//列の表示状態をローカルストレージに保存
 			saveClmData(tblId,chBoxsId,unique);
@@ -142,7 +142,7 @@ var ClmShowHide =function(){
 		});
 
 		//「すべてチェック」ボタンにイベントを追加。
-		$("#" + tblId + "_all_checked_btn").click(function(event){
+		jQuery("#" + tblId + "_all_checked_btn").click(function(event){
 
 			//すべての列表示チェックボックスにチェックを入れる。
 			allChecked(tblId,chBoxsId,my.actClmData);
@@ -150,7 +150,7 @@ var ClmShowHide =function(){
 		});
 
 		//「すべてはずす」ボタンにイベントを追加。
-		$("#" + tblId + "_all_uncheck_btn").click(function(event){
+		jQuery("#" + tblId + "_all_uncheck_btn").click(function(event){
 
 			//すべての列表示チェックボックスからチェックをはずす
 			allUnchecke(tblId,chBoxsId,my.actClmData);
@@ -158,7 +158,7 @@ var ClmShowHide =function(){
 		});
 
 		//「初期に戻す」ボタンにイベントを追加。
-		$("#" + tblId + "_default_btn").click(function(event){
+		jQuery("#" + tblId + "_default_btn").click(function(event){
 
 			//列表示チェックボックスを初期状態に戻す。
 			defaultClmCb(tblId,chBoxsId,unique);
@@ -178,7 +178,7 @@ var ClmShowHide =function(){
 	this.getCshAry = function(){
 		
 		// チェックボックス群要素のjQueyオブジェクトを取得する
-		var chBox = $('#' + my.props.chBoxsId);
+		var chBox = jQuery('#' + my.props.chBoxsId);
 		
 		
 
@@ -273,7 +273,7 @@ var ClmShowHide =function(){
 	function defaultClmCb(tblId,chBoxsId,unique){
 		
 		// チェックボックス群要素のjQueyオブジェクトを取得する
-		var chBox = $('#' + my.props.chBoxsId);
+		var chBox = jQuery('#' + my.props.chBoxsId);
 		
 		for(var i in my.defClmData){
 
@@ -309,7 +309,7 @@ var ClmShowHide =function(){
 	function allChecked(tblId,chBoxsId,clmData){
 		
 		// チェックボックス群要素のjQueyオブジェクトを取得する
-		var chBox = $('#' + my.props.chBoxsId);
+		var chBox = jQuery('#' + my.props.chBoxsId);
 		
 		for (var i in clmData) {
 
@@ -337,7 +337,7 @@ var ClmShowHide =function(){
 	function allUnchecke(tblId,chBoxsId,clmData){
 		
 		// チェックボックス群要素のjQueyオブジェクトを取得する
-		var chBox = $('#' + my.props.chBoxsId);
+		var chBox = jQuery('#' + my.props.chBoxsId);
 		
 		for (var i in clmData) {
 
@@ -368,8 +368,8 @@ var ClmShowHide =function(){
 		var j_clmData=JSON.stringify(clmData);
 		localStorage.setItem(unique + '_clmData',j_clmData);
 
-		$('#csh_msg').show();
-		$('#csh_msg').fadeOut(3000);
+		jQuery('#csh_msg').show();
+		jQuery('#csh_msg').fadeOut(3000);
 	};
 
 
@@ -382,7 +382,7 @@ var ClmShowHide =function(){
 	 * @param clmData 列データ
 	 */
 	function createClmShowCheckBox_csh(tblId,chBoxsId,clmData){
-		var cbs=$("#" + chBoxsId);
+		var cbs=jQuery("#" + chBoxsId);
 		cbs.empty();
 
 		for (var i in clmData) {
@@ -406,19 +406,19 @@ var ClmShowHide =function(){
 		cbs.append("<div style='clear:both'></div>");
 
 		//列表示保存ボタンを作成
-		var saveBtn="<div class='csh_func_btn'><input type='button' value='列表示を保存' id='" + tblId + "_save_btn' class='btn btn-primary btn-xs' /></div>";
+		var saveBtn="<div class='csh_func_btn'><input type='button' value='列表示を保存' id='" + tblId + "_save_btn' class='btn btn-primary btn-sm' /></div>";
 		cbs.append(saveBtn);
 
 		//すべてチェックボタンを作成
-		var allCheckedBtn="<div class='csh_func_btn'><input type='button' value='すべてチェック' id='" + tblId + "_all_checked_btn' class='btn btn-primary btn-xs' /></div>";
+		var allCheckedBtn="<div class='csh_func_btn'><input type='button' value='すべてチェック' id='" + tblId + "_all_checked_btn' class='btn btn-primary btn-sm' /></div>";
 		cbs.append(allCheckedBtn);
 		
 		//すべてはずすボタンを作成
-		var allUncheckBtn="<div class='csh_func_btn'><input type='button' value='すべてはずす' id='" + tblId + "_all_uncheck_btn' class='btn btn-primary btn-xs' /></div>";
+		var allUncheckBtn="<div class='csh_func_btn'><input type='button' value='すべてはずす' id='" + tblId + "_all_uncheck_btn' class='btn btn-primary btn-sm' /></div>";
 		cbs.append(allUncheckBtn);		
 
 		//「初期に戻す」ボタンを作成
-		var defaultBtn="<div class='csh_func_btn'><input type='button' value='初期に戻す' id='" + tblId + "_default_btn' class='btn btn-primary btn-xs' /></div>";
+		var defaultBtn="<div class='csh_func_btn'><input type='button' value='初期に戻す' id='" + tblId + "_default_btn' class='btn btn-primary btn-sm' /></div>";
 		cbs.append(defaultBtn);
 
 
@@ -430,12 +430,12 @@ var ClmShowHide =function(){
 	this.clm_show_csh=function(tblId,index){
 
 
-		var th=$("#" + tblId + " thead tr th").eq(index);
+		var th=jQuery("#" + tblId + " thead tr th").eq(index);
 		th.show();
 
-		$.each($("#" + tblId + " tbody tr"), function() {
+		$.each(jQuery("#" + tblId + " tbody tr"), function() {
 
-			var td=$(this).children();
+			var td=jQuery(this).children();
 			td.eq(index).show();
 
 		});
@@ -446,12 +446,12 @@ var ClmShowHide =function(){
 
 	//列非表示
 	this.clm_hide_csh=function(tblId,index){
-		var th=$("#" + tblId + " thead tr th").eq(index);
+		var th=jQuery("#" + tblId + " thead tr th").eq(index);
 		th.hide();
 
-		$.each($("#" + tblId + " tbody tr"), function() {
+		$.each(jQuery("#" + tblId + " tbody tr"), function() {
 
-			var td=$(this).children();
+			var td=jQuery(this).children();
 			td.eq(index).hide();
 
 		});
@@ -463,7 +463,7 @@ var ClmShowHide =function(){
 	function getClmDataFromCheckbox(){
 
 		// チェックボックス群要素のjQueyオブジェクトを取得する
-		var chBox = $('#' + my.props.chBoxsId);
+		var chBox = jQuery('#' + my.props.chBoxsId);
 
 		// アクティブ列データを取得する
 		var clmData = my.actClmData;

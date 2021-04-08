@@ -1,26 +1,26 @@
 <?php
-require_once('IDao.php');
+require_once('ICrudBaseStrategy.php');
 /**
  * 一括登録
  * 
  * @note
  * 一括追加, 一括編集, 一括複製
  * 
- * @date 2019-1-9
- * @version 1.0
+ * @date 2019-1-9 | 2020-8-25
+ * @version 2.0.0
  */
 class BulkReg{
 
-	var $dao;
+	var $strategy;
 	var $update_user;
 	
 	/**
 	 * コンストラクタ
-	 * @param IDao $dao データベースアクセスオブジェクト
+	 * @param ICrudBaseStrategy.php $strategy フレームワークストラテジー
 	 * @param string $update_user 更新ユーザー
 	 */
-	public function __construct(IDao &$dao, $update_user = 'none'){
-		$this->dao = $dao;
+	public function __construct(ICrudBaseStrategy &$strategy, $update_user = 'none'){
+		$this->strategy = $strategy;
 		$this->update_user = $update_user;
 	}
 	
@@ -69,20 +69,19 @@ class BulkReg{
 		
 		// データからSQLリストを作成する。
 		$sqls = $this->createInsertSqls($tbl_name, $data);
-		
+
 		$newIds = array(); // 新IDリスト
 		
 		$row_index = 1;
 		$err_msg = '';
 		
 		// SQLを実行する
-		$this->dao->begin();
+		$this->strategy->begin();
 		try {
 			foreach($sqls as $sql){
-				$r = $this->dao->sqlExe($sql);
-
+				$r = $this->strategy->sqlExe($sql);
 				// INSERT直後の新idを取得し、新IDリストに詰める。
-				$newIdRes = $this->dao->sqlExe("SELECT LAST_INSERT_ID()");
+				$newIdRes = $this->strategy->selectValue("SELECT LAST_INSERT_ID()");
 				$new_id = $this->getValueFromAryDepth($newIdRes);
 				$newIds[] = $new_id;
 				
@@ -91,10 +90,10 @@ class BulkReg{
 			}
 			
 		} catch (Exception $e) {
-			$this->dao->rollback();
+			$this->strategy->rollback();
 			$err_msg = "データの{$row_index}行目に異常があります。確認してください。";
 		} 
-		$this->dao->commit();
+		$this->strategy->commit();
 		
 		return array(
 				'newIds'=> $newIds,
@@ -202,7 +201,7 @@ class BulkReg{
 			FROM {$tbl_name};
 		";
 		
-		$res = $this->dao->sqlExe($sql);
+		$res = $this->strategy->selectValue($sql);
 		
 		$next_sort_no = 0; // 次順番
 		if(!empty($res)) {
@@ -215,7 +214,7 @@ class BulkReg{
 			}
 		}
 		
-		$res = array('next_sort_no'=>$next_sort_no);
+		$res = ['next_sort_no'=>$next_sort_no];
 
 		return $res;
 	}

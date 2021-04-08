@@ -1,5 +1,5 @@
 
-$( function() {
+jQuery( function() {
 	
 	var cssData={
 		'width':'auto'
@@ -36,7 +36,7 @@ var LiviPage =function(){
 	
 	this.execution=function(p_cssData){
 		//ツールチップ用DIV
-		$(document.body).append("<div id='livipage_tooltip'></div>");
+		jQuery(document.body).append("<div id='livipage_tooltip'></div>");
 
 		
 		//デフォルトCSSデータ
@@ -57,57 +57,57 @@ var LiviPage =function(){
 		}
 		
 		//ツールチップの外をクリックするとツールチップを閉じる
-		$(document).click(
+		jQuery(document).click(
 				function (){
-					$('#livipage_tooltip').hide();
+					jQuery('#livipage_tooltip').hide();
 				});
 		
 		//領域外クリックでツールチップを閉じるが、ツールチップ自体は領域内と判定させ閉じないようにする。
-		$('#livipage_tooltip').click(function(e) {
+		jQuery('#livipage_tooltip').click(function(e) {
 			e.stopPropagation();
 		});
 		
 
 		//対象リンクをクリックするとツールチップを表示させる。
-		$('.livipage').click(
+		jQuery('.livipage').click(
 				function(){
 					
 					//対象セレクタ
-					var slt=$(this).attr('href');
+					var slt=jQuery(this).attr('href');
 
 					//対象要素の右上位置を取得
-					var offset=$(this).offset();
+					var offset=jQuery(this).offset();
 					var left = offset.left;
 					var top = offset.top;
 			
 					//対象要素の外幅を取得
-					var width= $(slt).width();
-					var height= $(slt).height();
+					var width= jQuery(slt).width();
+					var height= jQuery(slt).height();
 					
-					var tt_html=$(slt).html();
+					var tt_html=jQuery(slt).html();
 					
 					//リンクを作成する
-					var link_text=$(this).html();
+					var link_text=jQuery(this).html();
 					var link1="<a href='" + slt + "'>" + link_text + "</a><br>";
 					
 					tt_html = link1 + tt_html;
 					
-					$('#livipage_tooltip').show();
+					jQuery('#livipage_tooltip').show();
 					
 
 					
-					$('#livipage_tooltip').css(cssData);
+					jQuery('#livipage_tooltip').css(cssData);
 					
 					
 					//ツールチップにHTMLをセット
-					$('#livipage_tooltip').html(tt_html);
+					jQuery('#livipage_tooltip').html(tt_html);
 					
 					//ツールチップの位置を算出
 					var tt_left=left;
 					var tt_top=top + 16;
 
 					//ツールチップ要素に位置をセット
-					$('#livipage_tooltip').offset({'top':tt_top,'left':tt_left });
+					jQuery('#livipage_tooltip').offset({'top':tt_top,'left':tt_left });
 					
 					return false;//リンク無効
 				}

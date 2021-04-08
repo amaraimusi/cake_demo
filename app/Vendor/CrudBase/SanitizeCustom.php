@@ -18,8 +18,6 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 
-// ■■■□□□■■■□□□
-//App::uses('ConnectionManager', 'Model');
 
 /**
  * Data Sanitization.
@@ -59,27 +57,6 @@ class SanitizeCustom {
 		return $cleaned;
 	}
 
-	// ■■■□□□■■■□□□
-// /**
-//  * Makes a string SQL-safe.
-//  *
-//  * @param string $string String to sanitize
-//  * @param string $connection Database connection being used
-//  * @return string SQL safe string
-//  */
-// 	public static function escape($string, $connection = 'default') {
-// 		if (is_numeric($string) || $string === null || is_bool($string)) {
-// 			return $string;
-// 		}
-// 		$db = ConnectionManager::getDataSource($connection);
-// 		$string = $db->value($string, 'string');
-// 		$start = 1;
-// 		if ($string{0} === 'N') {
-// 			$start = 2;
-// 		}
-
-// 		return substr(substr($string, $start), 0, -1);
-// 	}
 
 /**
  * Returns given string safe for display as HTML. Renders entities.

@@ -8,37 +8,33 @@
  * 一括無効化、一括有効化などの機能を備えている。
  * 複数選択の方法はチェックボックスにのみ対応している。
  * 
- * @version 1.0
- * @date 2016-2-5
+ * @version 2.0.0
+ * @date 2016-2-5 | 2020-8-13
  * 
- * @param param
- * - tbl_slt HTMLテーブルのセレクタ
- * - cb_slt チェックボックスのセレクタ（class属性名 or name属性名）	省略時："pwms"
- * - id_slt IDのセレクタ（class属性名 or name属性名）	省略時："id"
- * - ajax_url AJAX送信先URL
  */
-var ProcessWithMultiSelection =function(param){
-
-	this.param = param;
-	
-	var myself=this; // Instance of myself.
+class ProcessWithMultiSelection{
 
 	/**
-	 * initialized.
+	 * コンストラクタ
+	 * @param param
+	 * - tbl_slt HTMLテーブルのセレクタ
+	 * - cb_slt チェックボックスのセレクタ（class属性名 or name属性名）	省略時："pwms"
+	 * - id_slt IDのセレクタ（class属性名 or name属性名）	省略時："id"
+	 * - ajax_url AJAX送信先URL
+	 * - csrf_token CSRFトークン
 	 */
-	this.constract=function(){
-		
+	constructor(param){
+
 		// If Option property is empty, set a value.
-		this.param = setOptionIfEmpty(this.param);
+		this.param = this._setOptionIfEmpty(param);
 		
-	};
+	}
+	
 	
 	// If Option property is empty, set a value.
-	function setOptionIfEmpty(param){
+	_setOptionIfEmpty(param){
 		
-		if(param == undefined){
-			param = {};
-		}
+		if(param == undefined) param = {};
 		
 		if(param['tbl_slt'] == undefined){
 			param['tbl_slt'] = 'tbl1';
@@ -56,6 +52,10 @@ var ProcessWithMultiSelection =function(param){
 			throw new Error("'ajax_url' is nothing");
 		}
 		
+		if(param['csrf_token'] == undefined){
+			throw new Error("'csrf_token' is nothing");
+		}
+		
 		return param;
 	};
 	
@@ -65,36 +65,41 @@ var ProcessWithMultiSelection =function(param){
 	 * 一括アクション
 	 * @param kind_no アクション種別番号 10:有効化,  11:無効化
 	 */
-	this.action = function(kind_no){
+	action(kind_no){
 		
 		// チェックされた行のIDをリストで取得する
-		var ids = getIdLintInChecked();
+		let ids = this._getIdLintInChecked();
 		
 		// IDリストが0件なら処理抜け
-		if(ids.length == 0){
-			return;
-		}
-		
+		if(ids.length == 0) return;
+
 		// 無効化である場合、確認ダイアログを表示する
 		if(kind_no == '11'){
-			var rs = confirm('チェックした行を削除してもよろしいですか？');
+			let rs = confirm('チェックした行を削除してもよろしいですか？');
 			if(!rs){
 				return;
 			}
 		}
 		
-		// Ajaxへ送信するデータをセットする
-		var data={'ids':ids,'kind_no':kind_no};
-		var json_str = JSON.stringify(data);//データをJSON文字列にする。
+		let fd = new FormData(); // 送信フォームデータ
+		let data={'ids':ids, 'kind_no':kind_no};// Ajaxへ送信するデータをセットする
+		let json = JSON.stringify(data);
+		fd.append( "key1", json );
+		
+		// CSRFトークンを送信フォームデータにセットする。
+		let token = this.param.csrf_token;
+		fd.append( "_token", token );
 
 		//☆AJAX非同期通信
-		$.ajax({
-			type: "POST",
-			url: myself.param.ajax_url,
-			data: "key1="+json_str,
+		jQuery.ajax({
+			type: "post",
+			url: this.param.ajax_url,
+			data: fd,
 			cache: false,
 			dataType: "text",
-			success: function(res, type) {
+			processData: false,
+			contentType: false,
+			success: (res, type) =>{
 
 				if(res=='success'){
 					
@@ -102,13 +107,13 @@ var ProcessWithMultiSelection =function(param){
 					location.reload(true);
 					
 				}else{
-					$("#err").html(res);
+					jQuery("#err").html(res);
 				}
 				
 
 			},
 			error: function(xmlHttpRequest, textStatus, errorThrown){
-				$('#err').html(xmlHttpRequest.responseText);//詳細エラーの出力
+				jQuery('#err').html(xmlHttpRequest.responseText);//詳細エラーの出力
 				alert(textStatus);
 			}
 		});
@@ -123,33 +128,28 @@ var ProcessWithMultiSelection =function(param){
 	 * @return IDリスト
 	 * 
 	 */
-	function getIdLintInChecked(){
+	_getIdLintInChecked(){
+		let ids = []; // IDリスト
 		
-		var ids = []; // IDリスト
-		
-		var slt = myself.param.tbl_slt + ' tbody tr';
-		$(slt).each(function(){
-			
-			var tr = $(this);
+		let slt = '#' + this.param.tbl_slt + ' tbody tr';
+		jQuery(slt).each((i, elm)=>{
+			let tr = jQuery(elm);
 			
 			// TR要素内からname属性またはclass属性を指定してチェックボックス要素を取得する
-			var cb = getElmByNameOrClass(tr,myself.param.cb_slt);
-			
+			let cb = this._getElmByNameOrClass(tr, this.param.cb_slt);
 			
 			// チェックされている場合のみIDを取得してリストに追加する
-			var checked = cb.prop('checked');
+			let checked = cb.prop('checked');
 			if(checked){
-				
+
 				// TR要素内からname属性またはclass属性を指定してID値を取得する
-				var id = getValueByNameOrClass(tr,myself.param.id_slt);
+				let id = this._getValueByNameOrClass(tr,this.param.id_slt);
 				ids.push(id);
 			}
 			
 		});
-		
-		
+
 		return ids;
-		
 	}
 	
 	/**
@@ -158,8 +158,8 @@ var ProcessWithMultiSelection =function(param){
 	 * @param key name属性名またはclass属性名
 	 * @return 要素<jquery object>
 	 */
-	function getElmByNameOrClass(parElm,key){
-		var elm = parElm.find("[name='" + key + "']");
+	_getElmByNameOrClass(parElm, key){
+		let elm = parElm.find("[name='" + key + "']");
 		if(!elm[0]){
 			elm = parElm.find('.' + key);
 		}
@@ -173,9 +173,9 @@ var ProcessWithMultiSelection =function(param){
 	 * @param key name属性名またはclass属性名
 	 * @return 値
 	 */
-	function getValueByNameOrClass(parElm,key){
-		var v = undefined;
-		var elm = parElm.find("[name='" + key + "']");
+	_getValueByNameOrClass(parElm, key){
+		let v = undefined;
+		let elm = parElm.find("[name='" + key + "']");
 		if(elm[0]){
 			v = elm.val();
 		}else{
@@ -196,42 +196,26 @@ var ProcessWithMultiSelection =function(param){
 	 * 全選択の切替
 	 * @param triggerCb トリガーチェックボックス
 	 */
-	this.switchAllSelection = function(triggerCb){
+	switchAllSelection(triggerCb){
 
 		// トリガーチェックボックスのチェックを取得する
-		var trigCb = $(triggerCb);
-		var trigChecked = trigCb.prop('checked');
+		let trigCb = jQuery(triggerCb);
+		let trigChecked = trigCb.prop('checked');
 		
 		// 一覧をループして全行のチェック切替を行う
-		var slt = myself.param.tbl_slt + ' tbody tr';
-		$(slt).each(function(){
+		let slt = this.param.tbl_slt + ' tbody tr';
+		jQuery(slt).each((i, elm)=>{
 			
-			var tr = $(this);
+			let tr = jQuery(elm);
 			
 			// TR要素内からname属性またはclass属性を指定してチェックボックス要素を取得する
-			var cb = getElmByNameOrClass(tr,myself.param.cb_slt);
+			let cb = this._getElmByNameOrClass(tr, this.param.cb_slt);
 			
 			// チェックを切り替える
-			cb.prop('checked',trigChecked);
+			cb.prop('checked', trigChecked);
 			
 		});
 		
-		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// call constractor method.
-	this.constract();
-};
+}

@@ -149,27 +149,27 @@ class DatepickerWrap{
 
 				//月初日の作成と出力
 				var d1=date + '/1';
-				$('#' + tb_m_start_id).val(d1);
+				jQuery('#' + tb_m_start_id).val(d1);
 
 				//月末日の算出と出力
 				var dt=new Date(d1);
 				var last_d=new Date(dt.getFullYear(), dt.getMonth() + 1, 0);
 				var last_d=DateFormat(last_d, 'yyyy/mm/dd'); // 01月23日
-				$('#' + tb_m_ent_id).val(last_d);
+				jQuery('#' + tb_m_ent_id).val(last_d);
 
 			}
 		};
 
 		//年月ダイアログを適用
-		$('#' + tb_ym_id).ympicker(op);
+		jQuery('#' + tb_ym_id).ympicker(op);
 
 
 		//年月をクリアしたら月初、月末もクリアする。
-		$('#' + tb_ym_id).blur(function () {
-			var v = $('#' + tb_ym_id).val();
+		jQuery('#' + tb_ym_id).blur(function () {
+			var v = jQuery('#' + tb_ym_id).val();
 			if(v =='' || v==null){
-				$('#' + tb_m_start_id).val('');
-				$('#' + tb_m_ent_id).val('');
+				jQuery('#' + tb_m_start_id).val('');
+				jQuery('#' + tb_m_ent_id).val('');
 			}
 		});
 

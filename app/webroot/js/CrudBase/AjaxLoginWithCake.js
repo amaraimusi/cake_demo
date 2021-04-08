@@ -4,8 +4,8 @@
  * @note
  * AjaxLoginWithCakeController.phpと連動
  * 
- * @date 2016-9-12 | 2019-1-18
- * @version 2.0.1 ES6対応 aクエリを廃止
+ * @date 2016-9-12 | 2020-8-5
+ * @version 2.1.0 Laravel7に対応
  */
 
 class AjaxLoginWithCake{
@@ -20,9 +20,9 @@ class AjaxLoginWithCake{
 	 * - logout_url ログアウトURL
 	 * - callback ログイン認証後によびだすコールバック関数
 	 * - form_slt ボタン表示区分へのセレクタ  デフォルト→"#ajax_login_with_cake
+	 * - csrf_token CSRFトークン（Ajaxに必要）
 	 */
 	constructor(param){
-		
 		this.param = this._setParamIfEmpty(param);
 	}
 	
@@ -46,6 +46,8 @@ class AjaxLoginWithCake{
 		
 		if(this._isEmpty(param['form_slt'])) param['form_slt'] = "#ajax_login_with_cake";
 		
+		if(this._isEmpty(param['csrf_token'])) param['csrf_token'] = null;
+		
 		return param;
 	}
 	
@@ -64,7 +66,7 @@ class AjaxLoginWithCake{
 	 */
 	loginCheckEx(param){
 
-		var rGet = this._getUrlQuery();// GETパラメータを取得
+		let rGet = this._getUrlQuery();// GETパラメータを取得
 		
 //		// aパラメータがONの場合に認証機能を有効にする。
 //		if(this._isSet(rGet['a'])){
@@ -82,21 +84,28 @@ class AjaxLoginWithCake{
 		
 		param = this._margeParam(param);
 
-		var data={'dummy':1};
-		var json_str = JSON.stringify(data);//データをJSON文字列にする。
-
+		let data={'dummy':1};
+		let fd = new FormData(); // 送信フォームデータ
+		let json_str = JSON.stringify(data);
+		fd.append( "key1", json_str );
+		
+		// CSRFトークンを送信フォームデータにセットする。
+		fd.append( "_token", param.csrf_token );
+		
 		// AJAX
 		$.ajax({
-			type: "POST",
+			type: "post",
 			url: param.login_check_url,
-			data: "key1="+json_str,
+			data: fd,
 			cache: false,
 			dataType: "text",
+			processData: false,
+			contentType: false,
 		})
 		.done((str_json, type) => {
-
+			let res = {};
 			try{
-				var res = jQuery.parseJSON(str_json);//パース
+				res = jQuery.parseJSON(str_json);//パース
 			}catch(e){
 				alert('エラー' + str_json);
 				throw new Error(str_json);
@@ -123,16 +132,16 @@ class AjaxLoginWithCake{
 	 */
 	_showBtns(res){
 
-		var form_slt = this.param.form_slt;
-		var formElm = jQuery(form_slt);
+		let form_slt = this.param.form_slt;
+		let formElm = jQuery(form_slt);
 
 		if(res.auth_flg == 1 ){
-			var logout_btn_html = this._getLogoutBtnHtml(); // ログアウトボタンのＨＴＭＬを取得
+			let logout_btn_html = this._getLogoutBtnHtml(); // ログアウトボタンのＨＴＭＬを取得
 			formElm.html(logout_btn_html);
 		}
 		
 		else{
-			var login_btn_html = this._getLoginBtnHtml(); // ログインボタンのＨＴＭＬを取得
+			let login_btn_html = this._getLoginBtnHtml(); // ログインボタンのＨＴＭＬを取得
 			formElm.html(login_btn_html);
 		}
 		
@@ -144,11 +153,11 @@ class AjaxLoginWithCake{
 	 */
 	_getLogoutBtnHtml(){
 		
-		var logout_url = this.param.logout_url;
+		let logout_url = this.param.logout_url;
 
-		var btn_html = "";
+		let btn_html = "";
 		if(this.param.btn_type == 1){
-			btn_html = "<span class='text-success'>認証中です </span><a href='" + logout_url + "' id='logout_btn' class='btn btn-default btn-xs'>ログアウト</a>";
+			btn_html = "<span class='text-success'>認証中です </span><a href='" + logout_url + "' id='logout_btn' class='btn btn-secondary btn-sm'>ログアウト</a>";
 		}else{
 			btn_html = "<a href='" + logout_url + "' id='logout_btn'>ログアウト</a>";
 		}
@@ -162,9 +171,9 @@ class AjaxLoginWithCake{
 	 */
 	_getLoginBtnHtml(){
 
-		var login_url = this.param.login_url;
+		let login_url = this.param.login_url;
 
-		var btn_html = "";
+		let btn_html = "";
 		if(this.param.btn_type == 1){
 			btn_html = "<a id='login_btn' href='" + login_url + "' class='btn btn-primary' >ログイン</a>";
 		}else{
@@ -180,17 +189,17 @@ class AjaxLoginWithCake{
 	 * @return object URLクエリデータ
 	 */
 	_getUrlQuery(){
-		query = window.location.search;
+		let query = window.location.search;
 		
 		if(query =='' || query==null){
 			return {};
 		}
-		var query = query.substring(1,query.length);
-		var ary = query.split('&');
-		var data = {};
-		for(var i=0 ; i<ary.length ; i++){
-			var s = ary[i];
-			var prop = s.split('=');
+		query = query.substring(1,query.length);
+		let ary = query.split('&');
+		let data = {};
+		for(let i=0 ; i<ary.length ; i++){
+			let s = ary[i];
+			let prop = s.split('=');
 			
 			data[prop[0]]=prop[1];
 	

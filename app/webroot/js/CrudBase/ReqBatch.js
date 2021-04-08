@@ -108,13 +108,13 @@ class ReqBatch{
 		var html = `
 	<div>
 		<div class="req_batch_success text-success"></div>
-		<input type="button" class="req_batch_reload btn btn-success btn-xs" value="リロード" style="display:none"> 
+		<input type="button" class="req_batch_reload btn btn-success btn-sm" value="リロード" style="display:none"> 
 	</div>
 	<div class="req_batch_err text-danger"></div>
 	<div><progress class="req_batch_prog"  max="100" style="display:none">■</progress></div>
 	<div class="btn-group">
-		<input type="button" value="停止" class="req_batch_stop_btn btn btn-default btn-xs"/>
-		<input type="button" value="失敗(0)" class="req_batch_fail_btn btn btn-default btn-xs"/>
+		<input type="button" value="停止" class="req_batch_stop_btn btn btn-secondary btn-sm"/>
+		<input type="button" value="失敗(0)" class="req_batch_fail_btn btn btn-secondary btn-sm"/>
 	</div>
 	<br>
 	<div class="req_batch_console console">
@@ -321,7 +321,7 @@ class ReqBatch{
 	_addFail(main_index, fail_text){
 		var html = `
 			<div style="display:inline-block">
-				<input type="button" class="btn btn-default btn-xs" value="失敗 ${main_index}" onclick="jQuery('#req_batch_fail${main_index}').toggle(300)">
+				<input type="button" class="btn btn-secondary btn-sm" value="失敗 ${main_index}" onclick="jQuery('#req_batch_fail${main_index}').toggle(300)">
 				<div id="req_batch_fail${main_index}" style="display:none">${fail_text}</div>
 			</div>
 		`;

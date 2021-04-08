@@ -98,7 +98,7 @@ class CsvExportBig{
 	_createHtml(param, hooks){
 		
 		let html = `
-	<input type="button" class="csv_e_big_f_show_btn btn btn-default btn-xs"  value="CSVエクスポート" title="${param.tooltip}">
+	<input type="button" class="csv_e_big_f_show_btn btn btn-secondary btn-xs"  value="CSVエクスポート" title="${param.tooltip}">
 	<div class='csv_e_big_func_div' style="display:none">
 		<div style="display:inline-block;padding:10px;border:solid 4px #5bd59e;border-radius:5px;margin-bottom:10px">
 			<p>大型CSVエクスポート</p>

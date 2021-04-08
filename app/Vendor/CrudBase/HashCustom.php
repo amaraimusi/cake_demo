@@ -323,44 +323,7 @@ class HashCustom {
 		return true;
 	}
 
-	//■■■□□□■■■□□□
-// /**
-//  * Insert $values into an array with the given $path. You can use
-//  * `{n}` and `{s}` elements to insert $data multiple times.
-//  *
-//  * @param array $data The data to insert into.
-//  * @param string $path The path to insert at.
-//  * @param mixed $values The values to insert.
-//  * @return array The data with $values inserted.
-//  * @link https://book.cakephp.org/2.0/en/core-utility-libraries/hash.html#Hash::insert
-//  */
-// 	public static function insert(array $data, $path, $values = null) {
-// 		if (strpos($path, '[') === false) {
-// 			$tokens = explode('.', $path);
-// 		} else {
-// 			$tokens = CakeText::tokenize($path, '.', '[', ']');
-// 		}
 
-// 		if (strpos($path, '{') === false && strpos($path, '[') === false) {
-// 			return static::_simpleOp('insert', $data, $tokens, $values);
-// 		}
-
-// 		$token = array_shift($tokens);
-// 		$nextPath = implode('.', $tokens);
-
-// 		list($token, $conditions) = static::_splitConditions($token);
-
-// 		foreach ($data as $k => $v) {
-// 			if (static::_matchToken($k, $token)) {
-// 				if (!$conditions || static::_matches($v, $conditions)) {
-// 					$data[$k] = $nextPath
-// 						? static::insert($v, $nextPath, $values)
-// 						: array_merge($v, (array)$values);
-// 				}
-// 			}
-// 		}
-// 		return $data;
-// 	}
 
 /**
  * Perform a simple insert/remove operation.

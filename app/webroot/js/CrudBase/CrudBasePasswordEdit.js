@@ -83,7 +83,7 @@ class CrudBasePasswordEdit{
 			
 			// 変更ボタン要素のHTMLを組み立て
 			var xid = 'cbpe_' + form_type + pw_index;
-			var html = `<input type="button" id="${xid}" value="パスワード変更" data-form-type="${form_type}" data-pw-index="${pw_index}" class="btn btn-warning btn-xs" />`;
+			var html = `<input type="button" id="${xid}" value="パスワード変更" data-form-type="${form_type}" data-pw-index="${pw_index}" class="btn btn-warning btn-sm" />`;
 			
 			// パスワード要素の後ろに変更ボタン要素を追加
 			pwElm.after(html);

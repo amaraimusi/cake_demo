@@ -104,7 +104,7 @@ class FoldingTa{
 			var preview_html = `
 				<div class="folding_ta_preview" data-folding-ta-p-i="${i}" ">
 					<div class="folding_ta_midasi" style="display:inline-block;margin-right:5px">${midasi_text}</div>
-					<input type="button" value='...' class="folding_ta_tenkai btn btn-default btn-xs" data-folding-ta-p-i="${i}" style="margin-top:0px" />
+					<input type="button" value='...' class="folding_ta_tenkai btn btn-secondary btn-sm" data-folding-ta-p-i="${i}" style="margin-top:0px" />
 				</div>
 			`;
 			

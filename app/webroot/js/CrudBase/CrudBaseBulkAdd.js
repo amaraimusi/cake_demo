@@ -1,8 +1,8 @@
 /**
  * CrudBase一括追加機能
  * 
- * @date 2019-1-3 | 2019-1-17
- * @version 1.0.1
+ * @date 2019-1-3 | 2020-8-25
+ * @version 1.0.2
  * 
  */
 class CrudBaseBulkAdd{
@@ -33,6 +33,7 @@ class CrudBaseBulkAdd{
 	 *
 	 * @param object param 
 	 *  - string ajax_url			非同期通信先URL
+	 *  - string csrf_token		CSRFトークン
 	 *  - string ta_placeholder		テキストエリアのプレースホルダー
 	 *  - string ta_height			テキストエリア縦幅
 	 */
@@ -81,7 +82,11 @@ class CrudBaseBulkAdd{
 		if(param['ajax_url'] == null){
 			throw new Error('Not empty ajax_url in param!');
 		}
-
+		
+		if(param['csrf_token'] == null){
+			throw new Error('Not empty csrf_token in param!');
+		}
+		
 		if(param['ta_placeholder'] == null){
 			param['ta_placeholder'] = "Excelからコピーした行列を貼り付けてください。\n(例)\nネコ名A\t100\nネコ名B\t101\n";
 		}
@@ -118,7 +123,7 @@ class CrudBaseBulkAdd{
 				<div id="cbba_head" >
 					<h4>一括追加</h4>
 					<div id="cbba_close_btn_w" style="">
-						<input id="cbba_close_btn" type='button' value="閉じる" class="btn btn-primary btn-xs" onclick="" />
+						<input id="cbba_close_btn" type='button' value="閉じる" class="btn btn-primary btn-sm" onclick="" />
 					</div>
 				</div>
 				<div style="clear:both"></div>
@@ -693,19 +698,28 @@ class CrudBaseBulkAdd{
 	_ajax(action_code, sendData, callback){
 		
 		// AJAX通信先URL
-		var ajax_url = this.param.ajax_url;
+		let ajax_url = this.param.ajax_url;
 		
 		// 送信データ
 		sendData['action_code'] = action_code;
 		var json_str = JSON.stringify(sendData);
 		
+		let fd = new FormData(); // 送信フォームデータ
+		fd.append( "key1", json_str );
+		
+		// CSRFトークンを送信フォームデータにセットする。
+		let token = this.param.csrf_token;
+		fd.append( "_token", token );
+		
 		// AJAX
 		jQuery.ajax({
-			type: "POST",
+			type: "post",
 			url: ajax_url,
-			data: "key1="+json_str,
+			data: fd,
 			cache: false,
 			dataType: "text",
+			processData: false,
+			contentType: false,
 		})
 		.done((str_json, type) => {
 			

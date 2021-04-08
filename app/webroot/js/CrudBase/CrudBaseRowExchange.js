@@ -17,7 +17,7 @@ class CrudBaseRowExchange{
 	 * @param param 当クラス専用パラメータ
 	 * @param afterCallback 入替後に実行するコールバック関数
 	 */
-	constructor(crudBase,param,afterCallback){
+	constructor(crudBase, param, afterCallback){
 
 		if(param == null) param = {};
 		
@@ -40,6 +40,7 @@ class CrudBaseRowExchange{
 		
 		this.param = param;
 		
+		this.crudBaseData = crudBase.param; 
 		
 		// 閉じるボタンのクリックイベント
 		this.form.find('.exchange_tr_form_close').click( ()=>{
@@ -68,6 +69,8 @@ class CrudBaseRowExchange{
 		this.form.find('.exchange_tr_shift_down').click( ()=>{
 			this._exchageTrShiftDown(); // 下シフトボタンによる行入替処理
 		});
+		
+
 	}
 
 	
@@ -318,19 +321,19 @@ class CrudBaseRowExchange{
 		
 		var html = 
 			"<div id='" + xid +"_rap'>" +
-			"	<div id='" + xid +"' class='panel panel-primary' style='display:none;width:170px;'>" +
-			"		<div class='panel-heading'>" +
+			"	<div id='" + xid +"' class='card' style='display:none;width:170px;background-color:white'>" +
+			"		<div class='card-header'>" +
 			"			" +
-			"			<div style='display:inline-block;width:80%'>行入替</div>" +
-			"			<div style='display:inline-block;width:15%'>" +
-			"				<button type='button' class='exchange_tr_form_close btn btn-primary btn-sm'>" +
-			"					<span class='glyphicon glyphicon-remove'></span>" +
+			"			<div style='display:inline-block;width:60%'>行入替</div>" +
+			"			<div style='display:inline-block;width:35%;text-align:right'>" +
+			"				<button type='button' class='exchange_tr_form_close close'  aria-label='閉じる'>" +
+			"					<span aria-hidden='true'>&times;</span>" +
 			"				</button>" +
 			"			</div>" +
 			"		</div>" +
-			"		<div class='panel-body' \">" +
-			"			<button type='button' class='exchange_tr_shift_up btn btn-primary btn-sm'><span class='glyphicon glyphicon-arrow-up'></span></button>" +
-			"			<button type='button' class='exchange_tr_shift_down btn btn-primary btn-sm'><span class='glyphicon glyphicon-arrow-down'></span></button>" +
+			"		<div class='card-body' \">" +
+			"			<button type='button' class='exchange_tr_shift_up btn btn-primary btn-sm'>↑</button>" +
+			"			<button type='button' class='exchange_tr_shift_down btn btn-primary btn-sm'>↓</button>" +
 			"			<div style='margin-top:20px'>" +
 			"				<input class='exchange_tr_sort_no' type='number' style='width:60px' min='1' max='9999'  />" +
 			"				<input type='button' value='行入替' class='exchange_tr_btn btn btn-warning btn-sm' />" +

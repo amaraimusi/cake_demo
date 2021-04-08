@@ -97,7 +97,7 @@ class AddrLatLngEx{
 	_createHtml(param){
 		
 		let html = `
-		<input class='allex_f_show_btn btn btn-primary btn-xs' type="button" value='住所緯度経度・編集' />
+		<input class='allex_f_show_btn btn btn-primary btn-sm' type="button" value='住所緯度経度・編集' />
 		<div class='allex_func_div' style="display:none">
 			<div style="width:100%">
 				住所: <input type="text" name="${param.address_field}" class="allex_address valid" value=""  maxlength="200" title="200文字以内で入力してください" style="width:100%;" />
@@ -112,16 +112,16 @@ class AddrLatLngEx{
 				<label class="text-danger" for="lng"></label>
 			</div>
 			
-			<input type="button" class="allex_y_auto_set_btn btn btn-success btn-xs" value="緯度経度取得【Yahoo版】" title="Yahoo APIを利用して住所から緯度経度を取得します。無料機能ですが失敗率は高めです。" />
-			<input type="button" class="allex_by_g_api_btn btn btn-info btn-xs" value="Google APIモード" title="Google APIによる緯度経度取得機能を表示します。" />
+			<input type="button" class="allex_y_auto_set_btn btn btn-success btn-sm" value="緯度経度取得【Yahoo版】" title="Yahoo APIを利用して住所から緯度経度を取得します。無料機能ですが失敗率は高めです。" />
+			<input type="button" class="allex_by_g_api_btn btn btn-info btn-sm" value="Google APIモード" title="Google APIによる緯度経度取得機能を表示します。" />
 			<div class="allex_g_api_div" style="display:none;padding:15px;border:solid 3px #FF7373;border-radius:5px;background-color:#FFEEEE">
 				<div class='cbf_input' style="margin-right:8px">
-					<input type="button" class="allex_auto_set_btn btn btn-danger btn-xs" value="緯度経度設定【Google版】" title="Google APIを利用して住所から緯度経度を取得します。ボタンを押すごとに$0.005の利用料金が発生します。（無料枠あり。2019年時点）" />
-					<input type="button" class="allex_show_map_btn btn btn-primary btn-xs" value="地図から設定" title="地図上をクリックして緯度経度の設定ができます。" />
+					<input type="button" class="allex_auto_set_btn btn btn-danger btn-sm" value="緯度経度設定【Google版】" title="Google APIを利用して住所から緯度経度を取得します。ボタンを押すごとに$0.005の利用料金が発生します。（無料枠あり。2019年時点）" />
+					<input type="button" class="allex_show_map_btn btn btn-primary btn-sm" value="地図から設定" title="地図上をクリックして緯度経度の設定ができます。" />
 				</div>
 			
 				<div class="allex_map_w" style="display:none;">
-					<input type="button" class="allex_map_close_btn btn btn-default btn-xs" value="閉じる" title="地図閉じるボタン" />
+					<input type="button" class="allex_map_close_btn btn btn-secondary btn-sm" value="閉じる" title="地図閉じるボタン" />
 					<div class="allex_map" style="width:100%;height:400px;"></div>
 				</div>
 			</div>
