@@ -18,9 +18,33 @@ class UserMng extends AppModel {
 
 	// CBBXE
 
-
 	/// バリデーションはコントローラクラスで定義
 	public $validate = null;
+	
+	// ホワイトリスト（DB保存時にこのホワイトリストでフィルタリングが施される）
+	public $fillable = [
+		// CBBXS-2009
+			'id',
+			'username',
+			'password',
+			'role',
+			'sort_no',
+			'delete_flg',
+			'update_user',
+			'ip_addr',
+			'created',
+			'modified',
+
+		// CBBXE
+	];
+	
+	// CBBXS-2012
+	const CREATED_AT = 'created';
+	const UPDATED_AT = 'modified';
+
+	// CBBXE
+	
+	private $cb; // CrudBase制御クラス
 	
 	
 	public function __construct() {
@@ -28,6 +52,83 @@ class UserMng extends AppModel {
 		
 		// CrudBaseロジッククラスの生成
 		if(empty($this->CrudBase)) $this->CrudBase = new CrudBase();
+	}
+	
+	
+	/**
+	 * 初期化
+	 * @param CrudBaseController $cb
+	 */
+	public function init($cb){
+		$this->cb = $cb;
+		
+		// ホワイトリストをセット
+		$cbParam = $this->cb->getCrudBaseData();
+		$fields = $cbParam['fields'];
+		$this->fillable = $fields;
+	}
+	
+	/**
+	 * 検索条件とページ情報を元にDBからデータを取得する
+	 * @param array $crudBaseData
+	 * @return number[]|unknown[]
+	 *  - array data データ
+	 *  - int non_limit_count LIMIT制限なし・データ件数
+	 */
+	public function getData($crudBaseData){
+		
+		$fields = $crudBaseData['fields']; // フィールド
+		
+		$kjs = $crudBaseData['kjs'];//検索条件情報
+		$pages = $crudBaseData['pages'];//ページネーション情報
+		
+		$page_no = $pages['page_no']; // ページ番号
+		$row_limit = $pages['row_limit']; // 表示件数
+		$sort_field = $pages['sort_field']; // ソートフィールド
+		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
+		
+		//条件を作成
+		$conditions=$this->createKjConditions($kjs);
+		
+		// オフセットの組み立て
+		$offset=null;
+		if(!empty($row_limit)) $offset = $page_no * $row_limit;
+		
+		// ORDER文の組み立て
+		$order = $sort_field;
+		if(empty($order)) $order='sort_no';
+		if(!empty($sort_desc)) $order .= ' DESC';
+		
+		$option=array(
+			'conditions' => $conditions,
+			'limit' =>$row_limit,
+			'offset'=>$offset,
+			'order' => $order,
+		);
+		
+		//DBからデータを取得
+		$data = $this->find('all',$option);
+		
+		//データ構造を変換（2次元配列化）
+		$data2=array();
+		foreach($data as $i=>$tbl){
+			foreach($tbl as $ent){
+				foreach($ent as $key => $v){
+					$data2[$i][$key]=$v;
+				}
+			}
+		}
+		
+		// LIMIT制限なし・データ件数
+		$non_limit_count = 0;
+		$res = $this->query('SELECT FOUND_ROWS()');
+		if(!empty($res)){
+			$res = reset($res[0]);
+			$non_limit_count= reset($res);
+		}
+		
+		return ['data' => $data2, 'non_limit_count' => $non_limit_count];
+		
 	}
 	
 	/**
@@ -146,7 +247,7 @@ class UserMng extends AppModel {
 		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
 		
 		if(!empty($kjs['kj_main'])){
-			$cnds[]="CONCAT( IFNULL(UserMng.username, '')) LIKE '%{$kjs['kj_main']}%'";
+			$cnds[]="CONCAT( IFNULL(UserMng.user_mng_name, '') ,IFNULL(UserMng.note, '')) LIKE '%{$kjs['kj_main']}%'";
 		}
 		
 		// CBBXS-1003
@@ -161,12 +262,6 @@ class UserMng extends AppModel {
 		}
 		if(!empty($kjs['kj_role']) || $kjs['kj_role'] ==='0' || $kjs['kj_role'] ===0){
 			$cnds[]="UserMng.role = {$kjs['kj_role']}";
-		}
-		if(!empty($kjs['permRoles'])){
-			$perm_roles_c = "'" . implode("','", $kjs['permRoles']) . "'";
-			$cnds[]="UserMng.role IN({$perm_roles_c})";
-		}else{
-			$cnds[]="UserMng.role ='empty'";
 		}
 		if(!empty($kjs['kj_sort_no']) || $kjs['kj_sort_no'] ==='0' || $kjs['kj_sort_no'] ===0){
 			$cnds[]="UserMng.sort_no = {$kjs['kj_sort_no']}";
@@ -292,26 +387,7 @@ class UserMng extends AppModel {
 	 * 権限リストをDBから取得する
 	 */
 	public function getRoleList(){
-		if(empty($this->Role)){
-			App::uses('Role','Model');
-			$this->Role=ClassRegistry::init('Role');
-		}
-		$fields=array('id','role_name');//SELECT情報
-		$conditions=array("delete_flg = 0");//WHERE情報
-		$order=array('sort_no');//ORDER情報
-		$option=array(
-				'fields'=>$fields,
-				'conditions'=>$conditions,
-				'order'=>$order,
-		);
-
-		$data=$this->Role->find('all',$option); // DBから取得
-		
-		// 構造変換
-		if(!empty($data)){
-			$data = Hash::combine($data, '{n}.Role.id','{n}.Role.role_name');
-		}
-		
+		$data = Configure::read('roleList');
 		return $data;
 	}
 

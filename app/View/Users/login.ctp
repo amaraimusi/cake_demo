@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 	<?php echo $this->Html->charset("utf-8"); ?>
 	<title>ログイン</title>
@@ -12,17 +12,14 @@
 
 		echo $this->Html->css(array(
 			'bootstrap.min',
-			'bootstrap-theme.min',
-			'jquery-ui.min',
 			'Layouts/default',
 			'CrudBase/common',
 		));
 
 
 		echo $this->Html->script(array(
-			'jquery-2.1.4.min',
+			'jquery.min',
 			'bootstrap.min',
-			'jquery-ui.min',
 			'Layouts/default',
 			));
 		
@@ -36,7 +33,6 @@
 
 <body>
 <div class="container">
-
 
 <div class="well" style="width: 200px;margin-left : auto ; margin-right : auto ;">
 	<h2>ログイン</h2>

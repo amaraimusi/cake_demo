@@ -69,7 +69,7 @@ class BulkReg{
 		
 		// データからSQLリストを作成する。
 		$sqls = $this->createInsertSqls($tbl_name, $data);
-
+		
 		$newIds = array(); // 新IDリスト
 		
 		$row_index = 1;

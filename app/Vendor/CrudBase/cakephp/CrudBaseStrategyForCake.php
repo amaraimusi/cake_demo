@@ -12,6 +12,8 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	
 	private $ctrl; // クライアントコントローラ
 	private $model; // クライアントモデル
+	private $whiteList; // ホワイトリスト
+	private $csrf_token;
 	
 	/**
 	 * クライアントコントローラのセッター
@@ -30,10 +32,21 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 		$this->model = $model;
 	}
 	
-	public function sqlExe($sql){}
-	public function begin(){}
-	public function rollback(){}
-	public function commit(){}
+	public function sqlExe($sql){
+		return $this->model->query($sql);
+	}
+	
+	public function begin(){
+		return $this->sqlExe('BEGIN');
+	}
+	
+	public function rollback(){
+		return $this->sqlExe('ROLLBACK');
+	}
+	
+	public function commit(){
+		return $this->sqlExe('COMMIT');
+	}
 	
 	
 	/**
@@ -115,7 +128,7 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	 * @param [] $data データ（エンティティの配列）
 	 * @param [] $option
 	 */
-	public function saveAll($data, $option = []){
+	public function saveAll(&$data, &$option = []){
 		
 		if(!isset($option['atomic'])) $option['atomic'] = false;
 		if(!isset($option['validate'])) $option['validate'] = false;
@@ -129,7 +142,7 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	 * @param [] $ent エンティティ
 	 * @param [] $option
 	 */
-	public function save($ent, $option){
+	public function save(&$ent, &$option = []){
 		if(!isset($option['atomic'])) $option['atomic'] = false;
 		if(!isset($option['validate'])) $option['validate'] = false;
 		$rs=$this->model->save($data, $option);
@@ -172,6 +185,42 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 		}
 		
 		return $errMsg;
+	}
+	
+	public function selectData($sql)
+	{
+		throw new Error('まだ実装されてません。：selectData');
+	}
+	
+	public function selectValue($sql)
+	{
+		throw new Error('まだ実装されてません。selectValue');
+	}
+	
+	public function getCsrfToken()
+	{
+		$this->csrf_token = $this->random();
+		return $this->csrf_token;
+	}
+	
+	private function random($length = 8)
+	{
+		return base_convert(mt_rand(pow(36, $length - 1), pow(36, $length) - 1), 10, 36);
+	}
+	
+	public function delete($id)
+	{
+		throw new Error('まだ実装されてません。delete');
+	}
+	
+	public function selectEntity($sql)
+	{
+		throw new Error('まだ実装されてません。selectEntity');
+	}
+	
+	public function setWhiteList(&$whiteList)
+	{
+		$this->whiteList = $whiteList;
 	}
 	
 }

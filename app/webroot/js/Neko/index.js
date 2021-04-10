@@ -1,6 +1,8 @@
 
+var nekouta = 128;
 
-$(function() {
+
+jQuery(()=> {
 	init();//初期化
 	
 	$('#neko_tbl').show();// 高速表示のためテーブルは最後に表示する
@@ -9,7 +11,6 @@ $(function() {
 
 
 var crudBase;//AjaxによるCRUD
-var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複数選択による一括処理
 
 /**
  *  ネコ画面の初期化
@@ -24,23 +25,28 @@ var pwms; // ProcessWithMultiSelection.js | 一覧のチェックボックス複
  * @author k-uehara
  */
 function init(){
+	let csrf_token = jQuery('#csrf_token').val(); // CSRFトークンを取得（Ajaxで必要）
+
+	let crud_base_json = jQuery('#crud_base_json').val();
+	let crudBaseData = jQuery.parseJSON(crud_base_json);
+	crudBaseData['csrf_token'] = csrf_token;
+
+	crudBaseData['ni_tr_place'] = 1; // 新規入力追加場所フラグ 0:末尾(デフォルト） , 1:先頭
+	crudBaseData['configData'] = {delete_alert_flg:1} // 削除アラートフラグ    1:一覧行の削除ボタンを押したときアラートを表示する
 	
-	// CakePHPによるAjax認証
-	var alwc = new AjaxLoginWithCake();
-	var alwcParam = {'btn_type':0,'form_slt':'#ajax_login_with_cake'}
-	alwc.loginCheckEx(alwcParam);
+	// CRUD基本クラス
+	crudBase = new CrudBase(crudBaseData);
 	
-	// 検索条件情報を取得する
-	var kjs_json = jQuery('#kjs_json').val();
-	var kjs = jQuery.parseJSON(kjs_json);
+	// 検索条件バリデーション情報のセッター
+	let validMethods =_getValidMethods();
+	crudBase.setKjsValidationForJq(
+			'#nekoIndexForm',
+			crudBaseData,
+			validMethods,
+	);
+
 	
-	//AjaxによるCRUD
-	crudBase = new CrudBase({
-			'src_code':'neko', // 画面コード（スネーク記法)
-			'kjs':kjs,
-			'ni_tr_place':1,
-			configData:{delete_alert_flg:1} // 削除アラートフラグ    1:一覧行の削除ボタンを押したときアラートを表示する
-		});
+	
 
 	// 表示フィルターデータの定義とセット
 	var disFilData = {
@@ -60,10 +66,9 @@ function init(){
 			
 	};
 	
-	// CBBXS-1023
+	// CBBXS-2023
 	// ネコグループリストJSON
-	var neko_group_json = jQuery('#neko_group_json').val();
-	var nekoGroupList = JSON.parse(neko_group_json);
+	let nekoGroupList = crudBaseData.masters.nekoGroupList;
 	disFilData['neko_group'] ={'fil_type':'select','option':{'list':nekoGroupList}};
 	// CBBXE
 
@@ -75,12 +80,6 @@ function init(){
 		this.crudBase.csh.reset();//列表示切替情報をリセット
 		localStorage.removeItem('clm_sort_chg_flg');
 	}
-
-	// 一覧のチェックボックス複数選択による一括処理
-	pwms = new ProcessWithMultiSelection({
-		'tbl_slt':'#neko_tbl',
-		'ajax_url':'neko/ajax_pwms',
-			});
 
 	// 新規入力フォームのinput要素にEnterキー押下イベントを組み込む。
 	$('#ajax_crud_new_inp_form input').keypress(function(e){
@@ -100,22 +99,103 @@ function init(){
 	var today = new Date().toLocaleDateString();
 	crudBase.crudBaseBulkAdd.init(
 		[
+			// CBBXS-2010
 			{'field':'neko_name', 'inp_type':'textarea'}, 
-//			{'field':'neko_val', 'inp_type':'textarea'}, 
+			{'field':'neko_val', 'inp_type':'textarea'}, 
+			// CBBXE
+			
 //			{'field':'neko_group', 'inp_type':'select', 'list':nekoGroupList, 'def':2}, 
 //			{'field':'neko_date', 'inp_type':'date', 'def':today}, 
 //			{'field':'note', 'inp_type':'text', 'def':'TEST'}, 
 //			{'field':'sort_no', 'inp_type':'sort_no', 'def':1}, 
 		],
 		{
-			'ajax_url':'neko/bulk_reg',
-			'ta_placeholder':"Excelからコピーしたネコ名、ネコ数値を貼り付けてください。（タブ区切りテキスト）\n(例)\nネコ名A\t100\nネコ名B\t101\n",
+			ajax_url:'neko/bulk_reg',
+			csrf_token:csrf_token,
+			ta_placeholder:"Excelからコピーしたネコ名、ネコ数値を貼り付けてください。（タブ区切りテキスト）\n(例)\nネコ名A\t100\nネコ名B\t101\n",
 		}
 	);
 	
-	
 	crudBase.newVersionReload(); // 新バージョンリロード
 }
+
+
+/**
+ * 検索条件バリデーション情報のセッター
+ */
+function _getValidMethods(){
+	let methods = {
+			// CBBXS-2011
+			kj_id:(cbv, value)=>{
+				let err = '';
+				// 自然数バリデーション
+				if(!cbv.isNaturalNumber(value)){
+					err = '自然数で入力してください。';
+				}
+				return err;
+			},
+			kj_neko_val1:(cbv, value)=>{
+				let err = '';
+				// 整数バリデーション
+				if(!cbv.isInteger(value)){
+					err = '整数で入力してください。';
+				}
+				return err;
+			},
+			kj_neko_val2:(cbv, value)=>{
+				let err = '';
+				// 整数バリデーション
+				if(!cbv.isInteger(value)){
+					err = '整数で入力してください。';
+				}
+				return err;
+			},
+			kj_neko_name:(cbv, value)=>{
+				let err = '';
+				// 文字数バリデーション
+				if(!cbv.isMaxLength(value, 255)){
+					err = '255文字以内で入力してくだい。';
+				}
+				return err;
+			},
+			kj_img_fn:(cbv, value)=>{
+				let err = '';
+				// 文字数バリデーション
+				if(!cbv.isMaxLength(value, 255)){
+					err = '255文字以内で入力してくだい。';
+				}
+				return err;
+			},
+			kj_note:(cbv, value)=>{
+				let err = '';
+				// 文字数バリデーション
+				if(!cbv.isMaxLength(value, 1000)){
+					err = '1000文字以内で入力してくだい。';
+				}
+				return err;
+			},
+			kj_update_user:(cbv, value)=>{
+				let err = '';
+				// 文字数バリデーション
+				if(!cbv.isMaxLength(value, 50)){
+					err = '50文字以内で入力してくだい。';
+				}
+				return err;
+			},
+			kj_ip_addr:(cbv, value)=>{
+				let err = '';
+				// 文字数バリデーション
+				if(!cbv.isMaxLength(value, 40)){
+					err = '40文字以内で入力してくだい。';
+				}
+				return err;
+			},
+			// CBBXE
+
+	}
+	return methods;
+}
+
 
 /**
  * 新規入力フォームを表示
@@ -130,7 +210,6 @@ function newInpShow(btnElm, ni_tr_place){
  * @param btnElm ボタン要素
  */
 function editShow(btnElm){
-	
 	var option = {};
 	crudBase.editShow(btnElm,option);
 }
@@ -190,7 +269,6 @@ function closeForm(form_type){
 }
 
 
-
 /**
  * 検索条件をリセット
  * 
@@ -203,25 +281,6 @@ function resetKjs(exempts){
 	crudBase.resetKjs(exempts);
 	
 }
-
-
-
-
-/**
- * 列並替画面に遷移する
- */
-function moveClmSorter(){
-	
-	//列並替画面に遷移する <CrudBase:index.js>
-	moveClmSorterBase('neko');
-	
-}
-
-
-
-
-
-
 
 
 /**
@@ -315,3 +374,4 @@ function calendarViewKShow(){
 	// カレンダービューを生成 
 	crudBase.calendarViewCreate('neko_date');
 }
+

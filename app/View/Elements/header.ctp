@@ -1,52 +1,54 @@
-	<div class="navbar navbar-default navbar-fixed-top">
-	  <div class="container">
-		<div class="navbar-header">
-		  <?php echo $this->Html->link('CakeDemo', '/', array('class' => 'navbar-brand', 'escape' => false)); ?>
-		  <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-		  </button>
-		</div>
-		<div class="navbar-collapse collapse" id="navbar-main">
 <?php 
+	$auth_level = 0; // 権限レベル
+	$authority_wamei = ''; // 権限名
+	$username = ''; // ユーザー名
+	//$userInfo = $crudBaseData['userInfo'];
+	$project_path = CRUD_BASE_PROJECT_PATH;
+	if(!empty($userInfo['authority'])){
+		$auth_level = $userInfo['level'];
+		$authority_wamei = $userInfo['authority']['wamei'];
+		if(!empty($userInfo['username'])) $username = $userInfo['username'];
+	}
+
 
 ?>
-			<ul class="nav navbar-nav ">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	<a class="navbar-brand" href="<?php echo CRUD_BASE_PROJECT_PATH;?>">CakeDemo</a>
+
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	<span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+			<a class="nav-link" href="<?php echo CRUD_BASE_PROJECT_PATH;?>">Home <span class="sr-only">(current)</span></a>
+			</li>
+			<li class="nav-item">
 				<?php 
-				// ユーザー権限が管理者以上であるなら「ユーザー管理」画面へのリンクを表示する
-				if(!empty($userInfo['authority']['level'])){
-					$level = $userInfo['authority']['level'];
-					if($level >= 30){
-						echo "<li><a href='user_mng'>ユーザー管理</a></li>";
-					}
+		
+				if($auth_level > 30){
+					echo '<a href="user_mng" class="nav-link">ユーザー管理画面</a>';
 				}
 				?>
-				<li class="top_menu_pull" style="z-index:2;">
-					<a href="#" >設定</a>
-					<ul>
-						<li>XXX</li>
-						<li>XXX</li>
-					</ul>
-				</li>
-			</ul>
-
-			<ul class="nav navbar-nav navbar-right">
-				<li class="top_menu_pull" style="z-index:2;">
-				<?php if(!empty($userInfo)){
-					$username = 'none';
-					if(!empty($userInfo['username'])) $username = $userInfo['username'];
-					$wamei = '未ログイン';
-					if(!empty($userInfo['authority']['wamei'])) $wamei = $userInfo['authority']['wamei'];
-					echo "<a href='#'>{$username}</a>";
-					echo "<ul>";
-					echo "<li>{$wamei}</li>";
-					echo "</ul>";
-				} ?>
-				</li>
-				
-				<li id="ajax_login_with_cake"></li><!-- ログイン or ログアウト 　AjaxLoginWithCake.js　-->
-			</ul>
-		</div>
-	  </div>
+			</li>
+	
+		</ul>
+		
+		<ul class="navbar-nav">
+			<li class="nav-item">
+				<?php if(empty($username)){ 
+					echo "<a href='{$project_path}/users/login' class='nav-link'>ログイン</a>";
+				} else {
+					echo "{$username} ($authority_wamei)";
+					
+				}
+				?>
+			</li>
+		</ul>
 	</div>
+</nav>
+
+
+
+	

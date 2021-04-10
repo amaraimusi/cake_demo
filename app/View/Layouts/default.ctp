@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
 	<?php echo $this->Html->charset("utf-8"); ?>
 	<title>
@@ -18,14 +18,14 @@
 
 
 </head>
-<body>
+<body style="padding-top:0px;">
 
 	<?php 
 	if(empty($header)) $header = 'header';
 	echo $this->element($header);
 	?>
 	
-	<div class="container">
+	<div class="container-fluid">
 		<?php 
 		echo $this->Session->flash();
 		echo $content_for_layout;
