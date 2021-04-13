@@ -22,6 +22,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+
+
 // Setup a 'default' cache configuration for use in the application.
 Cache::config('default', array('engine' => 'File'));
 
@@ -107,18 +109,5 @@ CakeLog::config('error', array(
 ));
 
 
-config('crud_base_const');//CrudBase定数ファイル
 
-
-/**
- * ログB
- * @param mixed $val
- */
-function logB($val){
-	if(is_array($val)){
-		error_log(print_r($val, true), 3, 'log_b.log');
-	}else{
-		error_log($val, 3, 'log_b.log');
-	}
-	error_log("\n", 3, 'log_b.log');
-}
+require_once '../Vendor/CrudBase/crud_base_config.php';

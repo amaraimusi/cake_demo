@@ -8,7 +8,7 @@
  * 値をサニタイズして表示したり、金額表記で表示したりする。
  * 
  * @link 
- * Config/crud_base_const.phpの定数を仕様しています。
+ * Config/crud_base_config.phpの定数を仕様しています。
  * 
  * @version 1.2
  * @date 2016-2-5 新規作成

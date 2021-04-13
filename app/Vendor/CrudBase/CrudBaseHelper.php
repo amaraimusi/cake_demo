@@ -74,7 +74,7 @@ class CrudBaseHelper {
 	 */
 	public function getJsList(){
 		return array(
-				'jquery-2.1.4.min',
+				'jquery.min',
 				'bootstrap.min',
 				'jquery-ui.min',
 				'vue.min.js',
@@ -764,7 +764,6 @@ class CrudBaseHelper {
 	 * @param string $field フィールド名
 	 */
 	public function tdStr(&$ent,$field){
-		
 		$v = $ent[$field];
 		$v = htmlspecialchars($v);
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' >{$v}</span></td>\n";

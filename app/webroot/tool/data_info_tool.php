@@ -23,6 +23,7 @@
 <p>バージョン 2.0.0</p>
 
 <?php 
+require_once '../../Vendor/CrudBase/crud_base_config.php';
 $server_name=$_SERVER['SERVER_NAME'];
 if($server_name != 'localhost') die('ローカル環境 only');
 	

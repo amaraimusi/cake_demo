@@ -1,12 +1,11 @@
 <?php
 require_once 'IDao.php';
-require_once 'CrudBaseConfig.php';
 
 /**
  * PDOのDAO（データベースアクセスオブジェクト）
  * 
- * @date 2019-10-26 | 2020-4-1
- * @version 1.1.0
+ * @date 2019-10-26 | 2021-4-13
+ * @version 1.2.0
  * @license MIT
  * @author Kenji Uehara
  *
@@ -24,10 +23,8 @@ class PdoDao implements IDao
 		
 		if($this->dao) return $this->dao;
 		
-		require_once 'CrudBaseConfig.php';
-		
-		$cbf = new CrudBaseConfig();
-		$dbConf = $cbf->getDbConfig();
+		global $crudBaseConfig;
+		$dbConf = $crudBaseConfig['dbConfig'];
 
 		try {
 			$dao = new PDO("mysql:host={$dbConf['host']};dbname={$dbConf['db_name']};charset=utf8",$dbConf['user'],$dbConf['pw'],
