@@ -1,22 +1,20 @@
 <?php 
 
-debug(CRUD_BASE_PATH . 'CrudBaseX.php');//■■■□□□■■■□□□)
-	require_once CRUD_BASE_PATH . 'CrudBaseX.php';
-	//CrudBaseX::getUserInfo();
-
-
-	$auth_level = 0; // 権限レベル
-	$authority_wamei = ''; // 権限名
-	$username = ''; // ユーザー名
-
+if(empty($userInfo)){
 	$userInfo = $crudBaseData['userInfo'];
+}
 
-	$project_path = CRUD_BASE_PROJECT_PATH;
-	if(!empty($userInfo['authority'])){
-		$auth_level = $userInfo['authority']['level'];
-		$authority_wamei = $userInfo['authority']['wamei'];
-		if(!empty($userInfo['username'])) $username = $userInfo['username'];
-	}
+$auth_level = 0; // 権限レベル
+$authority_wamei = ''; // 権限名
+$username = ''; // ユーザー名
+
+
+$project_path = CRUD_BASE_PROJECT_PATH;
+if(!empty($userInfo['authority'])){
+	$auth_level = $userInfo['authority']['level'];
+	$authority_wamei = $userInfo['authority']['wamei'];
+	if(!empty($userInfo['username'])) $username = $userInfo['username'];
+}
 
 
 ?>
