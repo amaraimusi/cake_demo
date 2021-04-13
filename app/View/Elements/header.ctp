@@ -1,11 +1,19 @@
 <?php 
+
+debug(CRUD_BASE_PATH . 'CrudBaseX.php');//■■■□□□■■■□□□)
+	require_once CRUD_BASE_PATH . 'CrudBaseX.php';
+	//CrudBaseX::getUserInfo();
+
+
 	$auth_level = 0; // 権限レベル
 	$authority_wamei = ''; // 権限名
 	$username = ''; // ユーザー名
-	//$userInfo = $crudBaseData['userInfo'];
+
+	$userInfo = $crudBaseData['userInfo'];
+
 	$project_path = CRUD_BASE_PROJECT_PATH;
 	if(!empty($userInfo['authority'])){
-		$auth_level = $userInfo['level'];
+		$auth_level = $userInfo['authority']['level'];
 		$authority_wamei = $userInfo['authority']['wamei'];
 		if(!empty($userInfo['username'])) $username = $userInfo['username'];
 	}
@@ -13,7 +21,7 @@
 
 ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-	<a class="navbar-brand" href="<?php echo CRUD_BASE_PROJECT_PATH;?>">CakeDemo</a>
+	<a class="navbar-brand" href="<?php echo CRUD_BASE_PROJECT_PATH;?>">食と農業関連セミナー 管理画面</a>
 
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 	<span class="navbar-toggler-icon"></span>
@@ -41,6 +49,7 @@
 					echo "<a href='{$project_path}/users/login' class='nav-link'>ログイン</a>";
 				} else {
 					echo "{$username} ($authority_wamei)";
+					echo "<a href='{$project_path}/users/logout' class='nav-link'>ログアウト</a>";
 					
 				}
 				?>

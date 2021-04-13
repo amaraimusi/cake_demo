@@ -110,4 +110,4 @@ CakeLog::config('error', array(
 
 
 
-require_once '../Vendor/CrudBase/crud_base_config.php';
+require_once '../../crud_base_config.php';
