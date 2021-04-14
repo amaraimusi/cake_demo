@@ -48,8 +48,7 @@ class CrudBaseController {
 	//巨大データフィールド
 	public $big_data_fields = [];
 	
-	// 当ページバージョン（各ページでオーバーライドすること)
-	public $this_page_version = '1.0';
+	public $this_page_version = '0.0';
 	
 	// バージョン情報
 	public $verInfo = [];
@@ -130,7 +129,7 @@ class CrudBaseController {
 		$this->crudBaseData['paths'] = $this->getPaths(); // パス情報
 		$this->crudBaseData['csrf_token'] = $this->strategy->getCsrfToken(); // CSRFトークン ※Ajaxのセキュリティ 
 		
-		
+		$this->this_page_version = $clientCtrl->this_page_version;
 	}
 	
 	/**
@@ -200,14 +199,12 @@ class CrudBaseController {
 
  		// 新バージョンであるかチェック。新バージョンである場合セッションクリアを行う。２回目のリクエスト（画面表示）から新バージョンではなくなる。
 		$new_version_chg = 0; // 新バージョン変更フラグ: 0:通常  ,  1:新バージョンに変更
-		//if($option['func_new_version'] != 0){
-			$system_version = $this->checkNewPageVersion($this->this_page_version);
-			
-			if(!empty($system_version)){
-				$new_version_chg = 1;
-				$this->sessionClear();
-			}
-		//}
+	
+		$system_version = $this->checkNewPageVersion($this->this_page_version);
+		if(!empty($system_version)){
+			$new_version_chg = 1;
+			$this->sessionClear();
+		}
 			
 		//URLクエリ（GET)にセッションクリアフラグが付加されている場合、当画面に関連するセッションをすべてクリアする。
 		if(!empty($this->request->query['sc'])){
@@ -418,7 +415,6 @@ class CrudBaseController {
 		$mains_ses_key = $page_code.'_mains_cb';//主要パラメータのセッションキー
 		$ini_cnds_ses_key = $page_code.'_ini_cnds';// 初期条件データのセッションキー
 		
-		
 		$this->strategy->sessionDelete($fd_ses_key);
 		$this->strategy->sessionDelete($tf_ses_key);
 		$this->strategy->sessionDelete($err_ses_key);
@@ -427,8 +423,6 @@ class CrudBaseController {
 		$this->strategy->sessionDelete($csv_ses_key);
 		$this->strategy->sessionDelete($mains_ses_key);
 		$this->strategy->sessionDelete($ini_cnds_ses_key);
-		
-		$this->log('セッションをクリアしました。');
 
 	}
 
