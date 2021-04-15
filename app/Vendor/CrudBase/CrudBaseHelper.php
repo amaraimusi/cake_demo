@@ -911,6 +911,8 @@ class CrudBaseHelper {
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
 		$this->setTd($td,$field);
 	}
+	
+	
 	public function tpMoney($v,$wamei){
 		$v = $this->propMoney($v);
 		$this->tblPreview($v,$wamei);
@@ -1206,6 +1208,27 @@ class CrudBaseHelper {
 		
 		$this->setTd($td_html,$field);
 		
+	}
+	
+	
+	
+	
+	/**
+	 * 時刻h:i型の出力
+	 * @param array $ent データのエンティティ
+	 * @param string $field フィールド名
+	 */
+	public function tdTime_hi(&$ent,$field){
+		
+		$v = $ent[$field];
+		
+		$v2 = '';
+		if(!empty($v)){
+			$v2 = date('h:i',strtotime($v));
+		}
+		
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}'  /><span class='{$field}' >{$v2}</span></td>\n";
+		$this->setTd($td,$field);
 	}
 	
 	
