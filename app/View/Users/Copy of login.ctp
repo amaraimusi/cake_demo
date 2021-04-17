@@ -36,36 +36,31 @@
 
 <div class="well" style="width: 200px;margin-left : auto ; margin-right : auto ;">
 	<h2>ログイン</h2>
-	<?php
-	echo $this->Form->create('User', array(
-		'inputDefaults' => array('label' => false, 'div' => false, 'legend' => false),
-		'class' => 'bs-example form-horizontal'
-	));
-	?>
-		<fieldset>
-			<?php
-			echo $this->Form->input('username', array(
-				'div'   => false,
-				'label' => false,
-				'class' => 'form-control',
-				'placeholder' => 'ユーザー名',
-			));
-			echo $this->Form->input('password', array(
-				'div'   => false,
-				'label' => false,
-				'class' => 'form-control',
-				'placeholder' => 'パスワード',
-			));
-		?>
-		</fieldset>
-	<?php
-	echo $this->Form->submit('login', array('div' => false, 'class' => 'btn btn-primary'));
-	echo $this->Form->end();
-	?>
-	<div class="text-danger"><?php echo $this->Session->flash(); ?></div>
+    <?php
+    echo $this->Form->create('User', array(
+        'inputDefaults' => array('label' => false, 'div' => false, 'legend' => false),
+        'class' => 'bs-example form-horizontal'
+    ));
+    ?>
+        <fieldset>
+            <?php
+            echo $this->Form->input('username', array(
+                'div'   => false,
+                'label' => false,
+                'class' => 'form-control',
+            ));
+            echo $this->Form->input('password', array(
+                'div'   => false,
+                'label' => false,
+                'class' => 'form-control',
+            ));
+        ?>
+        </fieldset>
+    <?php
+    echo $this->Form->submit('login', array('div' => false, 'class' => 'btn btn-primary'));
+    echo $this->Form->end();
+    ?>
 </div><!-- well -->
-
-
 </div><!-- container -->
 
 

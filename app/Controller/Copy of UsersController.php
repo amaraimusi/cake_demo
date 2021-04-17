@@ -10,9 +10,9 @@ class UsersController extends AppController {
 	public function login() {
 		if ($this->request->is('post')) {
 			if ($this->Auth->login()) {
-				$this->redirect('/');
+				$this->redirect($this->Auth->redirect());
 			} else {
-				$this->Session->setFlash(__('ユーザー名、またはパスワードを間違ています。<br>Invalid username or password, try again'));
+				$this->Session->setFlash(__('Invalid username or password, try again'));
 			}
 		}
 		$this->layout = '';
@@ -20,8 +20,7 @@ class UsersController extends AppController {
 
 	public function logout() {
 		$this->log($this->Auth->logout());
-		$this->redirect('login');
-		
+		$this->redirect($this->Auth->logout());
 	}
 
 	public function index() {
