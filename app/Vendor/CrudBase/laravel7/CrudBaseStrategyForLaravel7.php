@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Session;
 
 /**
  * Laravel7用ストラテジークラス
- * @version 1.0.3
- * @since 2020-6-10 | 2020-7-3
+ * @version 1.0.4
+ * @since 2020-6-10 | 2021-4-19
  * @license MIT
  */
 class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
@@ -14,6 +14,7 @@ class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
 	private $ctrl; // クライアントコントローラ
 	private $model; // クライアントモデル
 	private $whiteList; // ホワイトリスト
+	private $crudBaseData;
 	
 	/**
 	 * クライアントコントローラのセッター
@@ -293,6 +294,11 @@ class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
 		}
 		
 		return $data2;
+	}
+	
+	public function setCrudBaseData(&$crudBaseData)
+	{
+		$this->crudBaseData = $crudBaseData;
 	}
 	
 }

@@ -4,8 +4,8 @@ App::uses('AppController', 'Controller');
 
 /**
  * Cake2.x用ストラテジークラス
- * @version 1.0.2
- * @since 2020-6-10 | 2020-7-3
+ * @version 1.0.4
+ * @since 2020-6-10 | 2021-4-19
  * @license MIT
  */
 class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy{
@@ -13,6 +13,7 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	private $ctrl; // クライアントコントローラ
 	private $model; // クライアントモデル
 	private $whiteList; // ホワイトリスト
+	private $crudBaseData;
 	private $csrf_token;
 	
 	/**
@@ -199,8 +200,16 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	
 	public function getCsrfToken()
 	{
-		$this->csrf_token = $this->random();
-		return $this->csrf_token;
+		
+// 		$page_code = $this->crudBaseData['main_model_name_s'];
+// 		$ses_key = $page_code . '_csrf_token'; // セッションキーを組み立て
+
+// 		$this->csrf_token = $this->random();
+// 		$this->ctrl->Session->write($ses_key, $this->csrf_token);//セッションへの書き込み
+		
+// 		return $this->csrf_token;
+		
+		return null;
 	}
 	
 	private function random($length = 8)
@@ -221,6 +230,11 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	public function setWhiteList(&$whiteList)
 	{
 		$this->whiteList = $whiteList;
+	}
+	
+	public function setCrudBaseData(&$crudBaseData)
+	{
+		$this->crudBaseData = $crudBaseData;
 	}
 	
 }

@@ -14,7 +14,7 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.0.0";
+	public $version = "3.0.1";
 
 	///デフォルトの並び替え対象フィールド
 	public $defSortFeild='sort_no';
@@ -112,7 +112,7 @@ class CrudBaseController {
 		$whiteList = array_keys($crudBaseData['fieldData']['def']); // ホワイトリストを取得
 
 		// フレームワーク・ストラテジーの生成
-		$this->strategy = $this->factoryStrategy($fw_type, $clientCtrl, $clientModel, $whiteList);
+		$this->strategy = $this->factoryStrategy($fw_type, $clientCtrl, $clientModel, $whiteList, $crudBaseData);
 
 		// CrudBaseモデルクラスの生成
 		$this->crudBaseModel = new CrudBaseModel([
@@ -127,6 +127,7 @@ class CrudBaseController {
 		$this->crudBaseData = $crudBaseData;
 		
 		$this->crudBaseData['paths'] = $this->getPaths(); // パス情報
+		
 		$this->crudBaseData['csrf_token'] = $this->strategy->getCsrfToken(); // CSRFトークン ※Ajaxのセキュリティ 
 		
 		$this->this_page_version = $clientCtrl->this_page_version;
@@ -146,11 +147,12 @@ class CrudBaseController {
 	 * @param string $fw_type フレームワークタイプ
 	 * @param object $clientCtrl クライアントコントローラ・オブジェクト
 	 * @param object $clientModel クライアントモデル・オブジェクト
-	 * @param [] ホワイトリスト
+	 * @param [] $whiteList ホワイトリスト
+	 * @param [] $crudBaseData
 	 * @throws Exception
 	 * @return NULL|CrudBaseStrategyForCake|CrudBaseStrategyForLaravel7
 	 */
-	public function factoryStrategy($fw_type, &$clientCtrl, &$clientModel, $whiteList){
+	public function factoryStrategy($fw_type, &$clientCtrl, &$clientModel, &$whiteList, &$crudBaseData){
 		$strategy = null;
 		if($fw_type == 'cake'){
 			require_once 'cakephp/CrudBaseStrategyForCake.php';
@@ -168,6 +170,7 @@ class CrudBaseController {
 		if(isset($clientCtrl)) $strategy->setCtrl($clientCtrl); // クライアントコントローラのセット
 		$strategy->setModel($clientModel); // クライアントモデルのセット
 		$strategy->setWhiteList($whiteList); // ホワイトリストのセット
+		$strategy->setCrudBaseData($crudBaseData);
 		
 		return $strategy;
 	}
