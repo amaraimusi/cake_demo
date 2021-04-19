@@ -49,6 +49,9 @@ class NekoController extends AppController {
 		// CrudBase共通処理（前）
 		$crudBaseData = $this->cb->indexBefore();//indexアクションの共通先処理(CrudBaseController)
 		
+		// Ajaxセキュリティ:CSRFトークンの取得
+		$crudBaseData['csrf_token'] = CrudBaseU::getCsrfToken('neko');
+		
 		$res = $this->md->getData($crudBaseData);
 		$data = $res['data'];
 		$non_limit_count = $res['non_limit_count']; // LIMIT制限なし・データ件数
@@ -93,6 +96,11 @@ class NekoController extends AppController {
 	public function ajax_reg(){
 		
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('neko') == false){
+			return '不正なアクションを検出しました。';
+		}
 		
 		$userInfo = $this->Auth->user(); // ログインユーザー情報を取得する
 		
@@ -150,6 +158,11 @@ class NekoController extends AppController {
 
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('neko') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
 		if($this->login_flg == 1 && empty($this->Auth->user())){
 			return 'Error:login is needed.';// 認証中でなければエラー
 		}
@@ -196,6 +209,11 @@ class NekoController extends AppController {
 	public function auto_save(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('neko') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
 		App::uses('Sanitize', 'Utility');
 		
 		if($this->login_flg == 1 && empty($this->Auth->user())){
@@ -240,6 +258,11 @@ class NekoController extends AppController {
 	public function bulk_reg(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('neko') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
 		$this->init();
 		
 		require_once CRUD_BASE_PATH . 'BulkReg.php';
@@ -277,6 +300,12 @@ class NekoController extends AppController {
 	 */
 	public function csv_fu(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('neko') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
 		$this->csv_fu_base($this->Neko,array('id','neko_val','neko_name','neko_date','neko_group','neko_dt','neko_flg','img_fn','note','sort_no'));
@@ -291,6 +320,11 @@ class NekoController extends AppController {
 	 */
 	public function csv_download(){
 		$this->autoRender = false;//ビューを使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('neko') == false){
+			return '不正なアクションを検出しました。';
+		}
 	
 		//ダウンロード用のデータを取得する。
 		$data = $this->getDataForDownload();

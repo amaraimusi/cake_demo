@@ -98,7 +98,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 				$this->CrudBase->divCsh();
 				
 				// CSVエクスポート機能
-	 			$csv_dl_url =  'neko/csv_download';
+				$csv_dl_url = "neko/csv_download?csrf_token={$csrf_token}";
 	 			$this->CrudBase->makeCsvBtns($csv_dl_url);
 			?>
 			<button id="crud_base_bulk_add_btn" type="button" class="btn btn-secondary btn-sm" onclick="crudBase.crudBaseBulkAdd.showForm()" >一括追加</button>
