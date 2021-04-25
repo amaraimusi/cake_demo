@@ -19,7 +19,7 @@ if(!empty($userInfo['authority'])){
 
 ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-	<a class="navbar-brand" href="<?php echo CRUD_BASE_PROJECT_PATH;?>">食と農業関連セミナー 管理画面</a>
+	<a class="navbar-brand" href="<?php echo CRUD_BASE_PROJECT_PATH;?>">CakeDemo</a>
 
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 	<span class="navbar-toggler-icon"></span>

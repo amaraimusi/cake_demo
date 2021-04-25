@@ -62,10 +62,42 @@ class CrudBaseU{
 	}
 	
 	
-	private static function random($length = 8)
+	/**
+	 * ランダム文字列を作成
+	 * @param number $length
+	 * @return string
+	 */
+	public static function random($length = 8)
 	{
 		return base_convert(mt_rand(pow(36, $length - 1), pow(36, $length) - 1), 10, 36);
 	}
+	
+	/**
+	 * ランダムハッシュコードを作成
+	 * @param number $length
+	 * @return string ハッシュコード
+	 */
+	public function randomHash($length = 8)
+	{
+		$random =  substr(str_shuffle('1234567890abcdefghijklmnopqrstuvwxyz'), 0, $length);
+		$hash = hash('sha256', MD5($random)); // ハッシュを作成
+		$hash = mb_substr($hash,0,$length);
+		
+		return $hash;
+	}
+	
+	/**
+	 * CrudBase設定データをhidden化して埋め込み
+	 */
+	public static function hiddenOfCrudBaseConfigJson(){
+		global $crudBaseConfig;
+		$json_str = json_encode($crudBaseConfig,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
+		
+		echo "<input type='hidden' id='crudBaseConfig' value='{$json_str}' >";
+		
+	}
+	
+	
 	
 	
 	

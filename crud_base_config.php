@@ -35,7 +35,7 @@ define('CRUD_BASE_PATH',$crud_base_path);
 define('CRUD_BASE_JS',$CRUD_BASE_JS);
 define('CRUD_BASE_CSS',$CRUD_BASE_CSS);
 
-
+// CrudBase設定データ
 $crudBaseConfig = [
 	'fw_type'=>'cake_php',
 	'env'=>'localhost', // 環境種別 localhost, amaraimusi, product
@@ -50,6 +50,9 @@ $crudBaseConfig = [
 
 // DB設定情報を取得する
 $crudBaseConfig['dbConfig'] = getDbConfigForCrudBase($crudBaseConfig['env']);
+
+// 汎用メソッドクラス
+require_once $crud_base_path . 'CrudBaseU.php';
 
 /**
  * DB設定

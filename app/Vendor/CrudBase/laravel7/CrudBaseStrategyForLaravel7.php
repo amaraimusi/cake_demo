@@ -301,4 +301,8 @@ class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
 		$this->crudBaseData = $crudBaseData;
 	}
 	
+	public function passwordToHash($pw){
+		throw new Error('passwordToHashメソッドは未実装です。');// ■■■□□□■■■□□□
+	}
+	
 }

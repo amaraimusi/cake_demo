@@ -131,7 +131,7 @@ class NekoController extends AppController {
 		$ent['img_fn'] = $this->cb->makeFilePath($_FILES, 'rsc/img/%field/y%Y/m%m/orig/%Y%m%d%H%i%s_%fn', $ent, 'img_fn');
 		// CBBXE
 		
-		$this->md->saveEntity($ent, $regParam);
+		$ent = $this->md->saveEntity($ent, $regParam);
 		
 		// CBBXS-2025
 		// ファイルアップロードの一括作業

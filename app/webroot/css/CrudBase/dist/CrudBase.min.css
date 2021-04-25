@@ -552,3 +552,7 @@ border-radius: 35px;
 	display:inline-block;
 	width:150px;
 }
+
+.error{
+	color:red;
+}
