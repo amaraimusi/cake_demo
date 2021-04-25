@@ -11,7 +11,7 @@
 		'bootstrap.min',
 		'jquery.validate.min',
 		'vue.min',
-		'SigninX/SigninX.js?v=1.0.0',
+		'CrudBase/dist/CrudBase.min.js',
 		'SigninX/step2.js?v=1.0.0',
 	];
 	$this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
