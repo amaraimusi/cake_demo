@@ -1,8 +1,8 @@
 /**
  * サインX
- * @date 2021-4-1
+ * @date 2021-4-1 | 2021-4-28
  * @license MIT
- * @version 1.0.0
+ * @version 1.0.1
  */
 class SigninX{
 	
@@ -244,9 +244,24 @@ class SigninX{
 	
 	/**
 	 * 本登録アクション
+	 * @param {} param
+	 * - def_role string 権限
+	 * - roleOptions [] SELECT用・権限リスト
+	 * 
 	 */
-	step2(){
+	step2(param){
 		
+		if(param == null) param = {};
+		if(param['def_role'] == null) param['def_role'] = 'oparator'; // デフォルト権限
+		
+		// 権限リスト
+		if(param['roleOptions'] == null){
+			param['roleOptions']= [
+						{ text: 'オペレータ', value: 'oparator' },
+						{ text: 'クライアント', value: 'client' },
+					];
+		}
+				
 		$('#app1').show();
 		
 		// 埋め込みからユーザーエンティティを取得する
@@ -254,7 +269,14 @@ class SigninX{
 		let ent = JSON.parse(user_json);
 		
 		let role = ent.role;
-		if(role == null || role == '') role = 'oparator';
+		if(role == null || role == ''){
+			role = param.def_role;
+		} else{
+			// 権限リストに存在しない権限である場合、デフォルト権限をセットする。
+			if(!this._isRoleInOptions(role, param.roleOptions)){
+				role = param.def_role;
+			}
+		}
 		
 		this.app = new Vue({
 			el: '#app1',
@@ -262,6 +284,7 @@ class SigninX{
 				nickname: ent.nickname, // 名前
 				password: '',
 				role: role,
+				roleOptions:param.roleOptions, // SELECT用権限リスト
 				form_visible:1, // フォーム表示 0:非表示, 1:表示
 				send_mail_msg_visible:0, // メール送信メッセージ表示 0:非表示, 1:表示
 				repw_visible:0, // パスワード再発行区分表示 0:非表示, 1:表示
@@ -279,6 +302,20 @@ class SigninX{
 		
 		// step1のバリデーションルール設定
 		this._validStep2();
+	}
+	
+	
+	// 権限リストに存在する権限か？
+	_isRoleInOptions(role, roleOptions){
+		let flg = false;
+		for(let i in roleOptions){
+			let optionEnt = roleOptions[i];
+			if(role == optionEnt.value){
+				flg = true;
+				break;
+			}
+		}
+		return flg;
 	}
 	
 	
@@ -343,7 +380,7 @@ class SigninX{
 		ent.nickname = this.app.nickname;
 		ent.password = this.app.password;
 		ent.role = this.app.role;
-		
+
 		let repw_flg = $('#repw_flg'); // パスワード再発行フラグを取得
 		
 		// 送信データ

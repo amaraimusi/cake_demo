@@ -7,7 +7,15 @@ $(() => {
 	
 	signinX = new SigninX();
 	
-	signinX.step2(); // step2:本登録アクション
+	let param = {
+		def_role: 'oparator', // デフォルト権限
+		roleOptions: [
+			{ text: 'オペレータ', value: 'oparator' },
+			{ text: 'クライアント', value: 'client' },
+		]
+	};
+	
+	signinX.step2(param); // step2:本登録アクション
 	
 });
 

@@ -3,7 +3,7 @@
 	$cssList = [
 		'bootstrap.min',
 		'CrudBase/dist/CrudBase.min',
-		'SigninX/step2.css?v=1.0.0',
+		'SigninX/step2.css?v=1.0.1',
 	];
 	$this->assign('css', $this->Html->css($cssList));
 	
@@ -52,10 +52,11 @@
 						<input name="nickname" type="text" value="" v-model="nickname" class="form-control" placeholder="農業 好太郎" />
 					</div>
 					<div class="form-group">
-						<label for="role" v-mode="role">種別</label>
-						<select name="role" class="form-control">
-							<option value="entrant">受講者</option>
-							<option value="organizer">主催者</option>
+						<label for="role" >種別</label>
+						<select id="role" name="role" v-model="role" class="form-control">
+							<option v-for="option in roleOptions" v-bind:value="option.value">
+								{{ option.text }}
+							</option>
 						</select>
 					</div>
 					<div class="form-group">
