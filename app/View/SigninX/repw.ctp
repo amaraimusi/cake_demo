@@ -1,22 +1,13 @@
 
 <?php 
-	$cssList = [
-		'bootstrap.min',
-		'CrudBase/dist/CrudBase.min',
-		'SigninX/repw.css?v=1.0.0',
-	];
-	$this->assign('css', $this->Html->css($cssList));
-	
-	$jsList[] = [
-		'jquery.min',
-		'bootstrap.min',
-		'jquery.validate.min',
-		'vue.min',
-		'CrudBase/dist/CrudBase.min.js',
-		'SigninX/repw.js?v=1.0.0',
-	];
-	$this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
-	
+$cssList = CrudBaseU::getCssList();
+$cssList[] = 'SigninX/repw.css?v=1.0.0';
+$this->assign('css', $this->Html->css($cssList));
+
+$jsList = CrudBaseU::getJsList();
+$jsList[] = 'jquery.validate.min';
+$jsList[] = 'SigninX/repw.js?v=1.0.0';
+$this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 ?>
 
 <?php  echo $this->element('header_plain');?>

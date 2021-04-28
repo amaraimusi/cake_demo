@@ -5,10 +5,41 @@
  * 汎用的なStaticメソッドを提供するクラス
  * @author kenji uehara
  * @license MIT
- * @since 2021-4-19
+ * @since 2021-4-19 | 2021-4-28
  *
  */
 class CrudBaseU{
+	
+	
+	/**
+	 * CSSファイルリストを取得する
+	 * @return array CSSファイルリスト
+	 */
+	public static function getCssList(){
+		
+		
+		return [
+			'bootstrap.min',
+			'jquery-ui.min',
+			'Layouts/default',
+			'CrudBase/dist/CrudBase.min.css?ver=3.0.6',
+		];
+	}
+	
+	/**
+	 * JSファイルのインクルード
+	 */
+	public static function getJsList(){
+		return [
+			'jquery.min',
+			'bootstrap.min',
+			'jquery-ui.min',
+			'vue.min',
+			'Layouts/default',
+			'CrudBase/dist/CrudBase.min.js?ver=3.0.6',
+		];
+	}
+
 	
 	/**
 	 * CSRFトークンによるセキュリティチェック

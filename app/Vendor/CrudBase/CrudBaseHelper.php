@@ -59,29 +59,17 @@ class CrudBaseHelper {
 	 */
 	public function getCssList(){
 		
-		
-		return [
-			'bootstrap.min',
-			'bootstrap-theme.min',
-			'jquery-ui.min',
-			'Layouts/default',
-			'CrudBase/dist/CrudBase.min.css?ver=3.0.5',
-		];
+		return CrudBaseU::getCssList();
+
 	}
 	
 	/**
 	 * JSファイルのインクルード
 	 */
 	public function getJsList(){
-		return array(
-				'jquery.min',
-				'bootstrap.min',
-				'jquery-ui.min',
-				'vue.min.js',
-				'Layouts/default',
-				'CrudBase/dist/CrudBase.min.js?ver=3.0.5',
-				
-		);
+		
+		return CrudBaseU::getJsList();
+		
 	}
 	
 	/**

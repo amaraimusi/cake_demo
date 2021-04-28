@@ -8,12 +8,12 @@ $this->CrudBase = new CrudBaseHelper($crudBaseData);
 $ver_str = '?v=' . $version; // キャッシュ回避のためのバージョン文字列
 
 // CSSファイルのインクルード
-$cssList = $this->CrudBase->getCssList();
+$cssList = CrudBaseU::getCssList();
 $cssList[] = 'Neko/index.css' . $ver_str; // 当画面専用CSS
 $this->assign('css', $this->Html->css($cssList));
 
 // JSファイルのインクルード
-$jsList = $this->CrudBase->getJsList();
+$jsList = CrudBaseU::getJsList();
 $jsList[] = 'Neko/index.js' . $ver_str; // 当画面専用JavaScript
 $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 
