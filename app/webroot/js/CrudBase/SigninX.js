@@ -430,6 +430,10 @@ class SigninX{
 					devElm.html(res.dev_mailtext);
 				}
 				
+				// トップページへジャンプ
+				let top_path = this.crudBaseConfig.crud_base_project_path;
+				location.href = top_path;
+				
 			}
 			
 		})

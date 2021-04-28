@@ -88,4 +88,38 @@ class UsersController extends AppController {
 		$this->Session->setFlash(__('User was not deleted'));
 		$this->redirect(array('action' => 'index'));
 	}
+	
+	
+	/**
+	 * パスワード入力なしの自動ログイン（localhostのみ）
+	 */
+	public function test(){
+		if($_SERVER['SERVER_NAME'] != 'localhost'){
+			echo 'localhost only!';
+			die();
+		}
+
+		$id = 4; // ログイン対象のユーザーID
+		
+		// ユーザーエンティティ
+		$user = $this->User->find('first', [
+				'conditions' => ['User.id' => $id],
+				'recursive' => -1
+				]
+			);
+		
+		
+		// パスワードは削除
+		unset($user['User']['password']);
+		
+		// ログインする。
+		if ($this->Auth->login($user['User'])) {
+			echo 'login success';
+		}else{
+			
+			echo 'login false';
+		}
+		die();
+	}
+	
 }

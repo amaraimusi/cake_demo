@@ -432,8 +432,8 @@ class Signin{
 		$ent['temp_hash'] = null;
 		$ent['temp_datetime'] = null;
 		
-		$this->save($ent); // DB保存
-		
+		$ent = $this->save($ent); // DB保存
+		$ent = $ent['SigninX'];
 		
 		// SigninXの設定データをDBから取得する。
 		$configs = $this->getConfigsForSigninX();
@@ -475,6 +475,7 @@ class Signin{
 		
 		// フロントエンドへのレスポンスデータ
 		$res = [
+			'user' => $ent,
 			'success' => 1,// 成功フラグ
 			'dev_flg' => $dev_flg,
 			'dev_mailtext' => $dev_mailtext,
