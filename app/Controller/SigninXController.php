@@ -7,11 +7,7 @@ App::uses('AppController', 'Controller');
 class SigninXController extends AppController {
 	
 	public $uses = ['SigninX', 'ConfigX'];
-	
-	// ■■■□□□■■■□□□
-	//public $components = null;//ログイン認証不要
-	
-	
+
 	public function beforeFilter() {
 		// 未ログイン中である場合、未認証モードの扱いでページ表示する。
 		if(empty($this->Auth->user())){

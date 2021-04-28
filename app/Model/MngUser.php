@@ -129,47 +129,6 @@ class MngUser extends AppModel {
 		
 		return ['data' => $data2, 'non_limit_count' => $non_limit_count];
 		
-		return $data2;
-		
-		/*
-		//■■■□□□■■■□□□
-		// オフセットの組み立て
-		$offset=null;
-		if(!empty($row_limit)) $offset = $page_no * $row_limit;
-		
-		// ORDER文の組み立て
-		$order = $sort_field;
-		if(empty($order)) $order='sort_no';
-		
-		$order_option = 'asc';
-		if(!empty($sort_desc)) $order_option = 'desc';
-		
-		$str_fields = implode(",", $fields);
-		
-		$query = \DB::table('users as MngUser');
-		$query->selectRaw('SQL_CALC_FOUND_ROWS ' . $str_fields);
-		if(!empty($conditions)) $query->whereRaw($conditions);
-		if(!empty($offset)) $query->offset($offset);
-		if(!empty($row_limit)) $query->limit($row_limit);
-		if(!empty($order)) $query->orderBy($order, $order_option);
-		$data = $query->get();
-		
-		
-		// LIMIT制限なし・データ件数
-		$non_limit_count = 0;
-		$res = \DB::select('SELECT FOUND_ROWS()');
-		if(!empty($res)){
-			$non_limit_count = reset($res[0]);
-		}
-		
-		// 構造変換
-		$data2 = [];
-		foreach($data as $ent){
-			$data2[] = (array)$ent;
-		}
-		
-		return ['data' => $data2, 'non_limit_count' => $non_limit_count];
-		*/
 	}
 	
 	/**

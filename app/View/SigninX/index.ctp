@@ -1,11 +1,6 @@
 
 <?php 
-// ■■■□□□■■■□□□
-// 	$cssList = [
-// 		'bootstrap.min',
-// 		'CrudBase/dist/CrudBase.min',
-// 		'SigninX/index.css?v=1.0.0',
-// 	];
+
 	$cssList = CrudBaseU::getCssList();
 	$cssList[] = 'SigninX/index.css?v=1.0.0';
 	$this->assign('css', $this->Html->css($cssList));
@@ -13,14 +8,6 @@
 	$jsList = CrudBaseU::getJsList();
 	$jsList[] = 'jquery.validate.min';
 	$jsList[] = 'SigninX/index.js?v=1.0.0';
-	// 	$jsList[] = [// ■■■□□□■■■□□□
-// 		'jquery.min',
-// 		'bootstrap.min',
-// 		'jquery.validate.min',
-// 		'vue.min',
-// 		'CrudBase/dist/CrudBase.min.js',
-// 		'SigninX/index.js?v=1.0.0',
-// 	];
 	$this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 	
 ?>
