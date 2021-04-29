@@ -1,20 +1,23 @@
 .fuk_label{
 	display:'inline-block';
 	background-color:#d0dfef;
+	width:100%;
+	height:100%;
+	border:solid 1px #a8c5e1;
 }
 
 .fuk .fuk_msg {
-	font-size:1em;
-	font-weight:normal;
-	padding:5px;
+	display:inline-block;
+	width:100%;
+	height:100%;
+	text-align:center;
 }
 
 .fuk .fuk_file_unit{
 	float:left;
-	padding:5px;
+	padding:0px;
 	font-size:0.8em;
 	font-weight:normal;
-	border:solid 1px #a8c5e1;
 }
 
 .fuk .fuk_file_unit label{
@@ -32,8 +35,9 @@
 
 .fuk .fuk_clear_btn_w{
 	clear:both;
-	margin:5px;
-	border-top:solid 1px #858585;
+	margin-top:0px;
+	margin-left:5px;
+	margin-bottom:5px;
 	display:none;
 }
 

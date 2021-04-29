@@ -13,8 +13,9 @@
  * 
  * @license MIT
  * @version 1.3.1
- * @date 2018-7-6 | 2019-8-21
+ * @date 2018-7-6 | 2020-4-29
  * @history 
+ *  - 2021-04-29 var 1.3.0 大幅なバージョンアップ
  *  - 2018-10-2 var 1.2.6 「Now Loading...」メッセージを表示する
  *  - 2018-9-18 var 1.2.5 コールバックパラメータを追加（pacb_param)
  *  - 2018-9-18 var 1.2.4 fuk_preview要素のstyle属性を修正
@@ -38,7 +39,6 @@ class FileUploadK{
 	 * - unit_slt まとまり要素のセレクタ  省略時はbody
 	 * - prog_slt 進捗バー要素のセレクタ
 	 * - err_slt  エラー要素のセレクタ
-	 * - fuk_msg_text 初期メッセージテキスト
 	 * - img_width プレビュー画像サイスX　（画像ファイルのみ影響）
 	 * - img_height プレビュー画像サイスY
 	 * - adf    補足データフラグリスト (Ancillary Data Flgs)
@@ -92,8 +92,6 @@ class FileUploadK{
 		if(param['unit_slt'] == null) param['unit_slt'] = 'body';
 		
 		if(param['err_slt'] == null) param['err_slt'] = '#err';
-		
-		if(param['fuk_msg_text'] == null) param['fuk_msg_text'] = '';
 		
 		if(param['valid_mime_flg'] == null) param['valid_mime_flg'] = 0;
 		
@@ -215,10 +213,7 @@ class FileUploadK{
 		
 		if(fps == null || fps == '' || fps == 0) return;
 		if(typeof fps == 'string') fps = [fps];
-		
-		var fukMsg = this._getElement(fue_id,'fuk_msg');
-		fukMsg.html('Now Loading ..');
-		
+
 		var bData = [];
 		option['pacb'] = () => {
 			//複数非同期・全終了後コールバック
@@ -288,7 +283,6 @@ class FileUploadK{
 				'blob':blob
 		};
 		
-		
 		bData.push(bEnt);
 
 		// 複数非同期・全終了後コールバック・アクション
@@ -304,18 +298,16 @@ class FileUploadK{
 	 */
 	_addRelatedElements(parLabel,fue_id,box){
 		
-		var html = '';
 		
-		// 初期メッセージ要素を追加
-		var fuk_msg_text = box[fue_id]['fuk_msg_text']; // 初期メッセージテキスト
-		html += "<span class='fuk_msg'>" + fuk_msg_text +"</span>";
 		
-		// プレビュー要素を追加
-		html += "<span class='fuk_preview' style='display:inline-block'></span>";
-		
-		// クリアボタン用を追加
-		html += "<div class='fuk_clear_btn_w'><input type='button' value='Clear' class='btn btn-secondary btn-sm fuk_clear_btn' " +
-				"data-fue-id='" + fue_id + "' /></div>";
+		let html = `
+			<div class='fuk_box1'>
+				<div class='fuk_preview' style='display:inline-block'></div>
+				<div class='fuk_clear_btn_w'>
+					<input type='button' value='Clear' class='btn btn-secondary btn-sm fuk_clear_btn' data-fue-id='${fue_id}' />
+				</div>
+			</div>
+		`;
 		
 		parLabel.append(html);
 		
@@ -345,22 +337,17 @@ class FileUploadK{
 	 */
 	_preview(fue_id,bin_type,option){
 
-		var fukMsg = this._getElement(fue_id,'fuk_msg');
-		fukMsg.html('Now Loading ...');
-
 		this.active_fue_id = fue_id;
 		
 		var files = null;
 		var bData = null;
 		var fileData = [];
 		if(bin_type == 'files'){
-
 			// filesからファイル名などのファイルデータを取得する
 			var files = this.box[fue_id]['files'];
 			fileData = this._getFileDataFromFiles(files);
 			
 		}else if(bin_type == 'blob'){
-			
 			// BLOBの関連データからファイルデータを取得する
 			bData = this.box[fue_id]['bData'];
 			fileData = this._getFileDataFromBData(bData);
@@ -373,6 +360,7 @@ class FileUploadK{
 		// 親ラベル要素を内部要素に合わせてフィットさせるため幅をautoにする。
 		var parLbl = this._getElement(fue_id,'label');
 		parLbl.css({'width':'auto','height':'auto'});
+		
 
 		// クリアボタンを表示する
 		var clearBtnW = this._getElement(fue_id,'clear_btn_w');
@@ -412,7 +400,6 @@ class FileUploadK{
 		fileData = this._filteringFileData(fileData,rpElms);
 		
 		if(bin_type == 'files'){
-		
 			// プレビュー後コールバックアクションの初期化
 			this._cbAsynsEndInit(fileData.length,option);
 		
@@ -431,10 +418,8 @@ class FileUploadK{
 			this._cbAsynsEndAction('exe2'); // プレビュー後コールバックアクション：制御と実行2
 		
 		}else if(bin_type == 'blob'){
-
 			// リソース（画像など）をリソースプレビュー要素に表示させる。
 			for(var i in fileData){
-	
 				var fEnt = fileData[i];
 				var index = fEnt.index;
 				var blob = bData[index]['blob'];
@@ -540,6 +525,7 @@ class FileUploadK{
 			if(mime != null){
 				if(mime.indexOf('image') >= 0) file_type = 'image';
 				if(mime.indexOf('audio') >= 0) file_type = 'audio';
+				//if(mime.indexOf('video') >= 0) file_type = 'video';
 			}
 			fEnt['file_type'] = file_type;
 			
@@ -601,6 +587,7 @@ class FileUploadK{
 			if(fEnt.mime != null){
 				if(fEnt.mime.indexOf('image') >= 0) file_type = 'image';
 				if(fEnt.mime.indexOf('audio') >= 0) file_type = 'audio';
+				//if(fEnt.mime.indexOf('video') >= 0) file_type = 'video';
 			}
 			fEnt['file_type'] = file_type;
 			
@@ -752,19 +739,14 @@ class FileUploadK{
 			p_unit_html = "<div class='fuk_file_unit' >" + p_unit_html + '</div>';
 			return p_unit_html;
 		}
-		
-		// プレビュー画像サイズを取得
-		var imgSize = this._getImgSize(fue_id,option);
-		var label_width = imgSize.width;
-		var label_height = imgSize.height;
-		
+
 		// 画像要素と音楽要素の作成
 		if(fEnt.file_type == 'image'){
-			p_unit_html += "<img src='' class='fuk_rp' style='width:" + label_width + "px;height:" + label_height + "px;' />";
+			p_unit_html += "<img src='' class='fuk_rp' style='width:100%;height:100%' />";
 		}else if(fEnt.file_type == 'audio'){
 			p_unit_html += "<audio src='' class='fuk_rp' controls />";
 		}
-		
+
 		var adf = this.param.adf;// 付属データフラグリスト
 	
 		// 通常パラメータの表示
@@ -775,16 +757,26 @@ class FileUploadK{
 			{'label':'更新日','val':fEnt.modified,'flg':adf.modified_flg},
 		];
 		
+		let params_html = '';
+
 		// パラメータ区分のHTMLを組み立てる
 		for(var i in paramData){
 			var pEnt = paramData[i];
 			if(pEnt.flg != 1) continue;
-			p_unit_html += 
-				"<div><label class='fuk_param_label'>" + pEnt.label + "</label>" + 
-				"<val class='fuk_param_val'>" + pEnt.val + "</val></div>";
+			params_html += 
+				`
+					<div><label class='fuk_param_label'>${pEnt.label}</label>
+					<val class='fuk_param_val'>${pEnt.val}</val></div>
+				`;
+
 		}
 
-		p_unit_html = "<div class='fuk_file_unit' >" + p_unit_html + '</div>';
+		p_unit_html = `
+			<div class='fuk_file_unit' >
+				<div class='fuk_file_view'>${p_unit_html}</div>
+				<div class='fuk_params'>${params_html}</div>
+			</div>
+			`;
 
 		return p_unit_html;
 		
@@ -856,23 +848,14 @@ class FileUploadK{
 
 		// 初期メッセージ要素を再表示する。
 		var fukMsg = this._getElement(fue_id,'fuk_msg');
-		var fuk_msg_text = this.box[fue_id]['fuk_msg_text'];
-		fukMsg.html(fuk_msg_text);
 		fukMsg.show();
 		
 		// プレビュー要素を取得し、中身をクリアする。
 		var preview = this._getElement(fue_id,'preview');
 		preview.html('');
 
-		// 親ラベルの幅をautoから初期サイズに戻す
-		var label_width = this.box[fue_id]['label_width']
-		var label_height = this.box[fue_id]['label_height']
-		var parLabel = this._getElement(fue_id,'label');
-		var display = parLabel.css('display');
-		if(display == 'block'){
-			parLabel.width(label_width);
-			parLabel.height(label_height);
-		}
+		var parLbl = this._getElement(fue_id,'label');
+		parLbl.css({'width':'100%','height':'100%'});
 
 		// ファイルデータもクリアする。
 		this.box[fue_id]['fileData'] = [];
@@ -952,6 +935,7 @@ class FileUploadK{
 		// 初期メッセージ要素を隠す。
 		var fukMsgElm = this._getElement(this.active_fue_id,'fuk_msg');
 		fukMsgElm.hide();
+		
 	}
 	
 	
@@ -1185,21 +1169,6 @@ class FileUploadK{
 		bEnt['label_width'] = parLebel.width(); 
 		bEnt['label_height'] = parLebel.height(); 
 		
-		// paramの初期メッセージテキストをセット。空ならFU要素のtitle属性をセット
-		var fuk_msg_text = ''; // 初期メッセージテキスト
-		if(this.param.fuk_msg_text){
-			fuk_msg_text = this.param.fuk_msg_text;
-		}else{
-			var fue = this._getElement(fue_id,'fue'); // FU要素
-			var fe_title = fue.attr('title');
-			if(fe_title){
-				fuk_msg_text = fe_title;
-			}else{
-				fuk_msg_text = 'File Upload';
-			}
-		}
-		bEnt['fuk_msg_text'] = fuk_msg_text;
-		
 		// バリデーション情報をセットする
 		if(option['valid_ext'] == null){
 			bEnt['validData'] = this.param.validData;
@@ -1272,6 +1241,10 @@ class FileUploadK{
 		
 		else if(valid_ext == 'audio'){
 			validExts = ['mp3','wav'];
+		}
+		
+		else if(valid_ext == 'video'){
+			validExts = ['mp4','avi','mov','webm'];
 		}
 		
 		// バリデーション拡張子が文字列型である場合

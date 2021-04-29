@@ -232,9 +232,9 @@ foreach($data as $i=>&$ent){
 		<div class="err text-danger"></div>
 		
 		<div style="display:none">
-	    	<input type="hidden" name="form_type">
-	    	<input type="hidden" name="row_index">
-	    	<input type="hidden" name="sort_no">
+			<input type="hidden" name="form_type">
+			<input type="hidden" name="row_index">
+			<input type="hidden" name="sort_no">
 		</div>
 	
 	
@@ -242,9 +242,10 @@ foreach($data as $i=>&$ent){
 		
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp_label_long' >画像ファイル名: </div>
-			<div class='cbf_input'>
-				<label for="img_fn_n" class="fuk_label" style="width:100px;height:100px;">
+			<div class='cbf_input' style="width:240px;height:auto;">
+				<label for="img_fn_n" class="fuk_label">
 					<input type="file" id="img_fn_n" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)"  data-inp-ex='image_fuk' data-fp='' />
+					<span class='fuk_msg' style="padding:20%">画像ファイルをドラッグ＆ドロップ(複数可)</span>
 				</label>
 			</div>
 		</div>
@@ -355,9 +356,10 @@ foreach($data as $i=>&$ent){
 			
 			<div class="cbf_inp_wrap">
 				<div class='cbf_inp_label_long' >画像ファイル名: </div>
-				<div class='cbf_input'>
-					<label for="img_fn_e" class="fuk_label" style="width:100px;height:100px;">
+				<div class='cbf_input' style="width:180px;height:auto;">
+					<label for="img_fn_e" class="fuk_label" >
 						<input type="file" id="img_fn_e" class="img_fn" style="display:none" accept="image/*" title="画像ファイルをドラッグ＆ドロップ(複数可)" data-inp-ex='image_fuk' data-fp='' />
+						<span class='fuk_msg' style="padding:20%">画像ファイルをドラッグ＆ドロップ(複数可)</span>
 					</label>
 				</div>
 			</div>
