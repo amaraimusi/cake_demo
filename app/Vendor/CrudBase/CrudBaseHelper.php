@@ -9,7 +9,7 @@
  * 2.0.0よりCakeからの依存から離脱
  * 
  * @version 2.0.2
- * @since 2016-7-27 | 2020-9-17
+ * @since 2016-7-27 | 2021-5-4
  * @author k-uehara
  * @license MIT
  */
@@ -24,7 +24,7 @@ class CrudBaseHelper {
 	private $_clmSortMode = 0;		// 列並モード 0:OFF, 1:ON
 	private $_fieldData;			// フィールドデータ
 	private $kjs; // 検索条件情報
-	
+	private $unique_index = 0; // 一意インデックス
 	
 	/**
 	 * コンストラクタ
@@ -1020,6 +1020,68 @@ class CrudBaseHelper {
 				<span class='{$field}'>{$v2}</span>{$note_detail_open_html}
 			</td>";
 		$this->setTd($td,$field);
+	}
+	
+	
+	
+	
+	/**
+	 * 長文ノート 指定文字数を超えたら切り揃えて「続き」ボタンを表示する
+	 * @param string $v 長文ノート
+	 * @param int $str_len 指定文字数（表示文字数）
+	 * @param [] $option
+	 *  - open_btn_name string 開ボタン名
+	 *  - close_btn_name string 閉ボタン名
+	 */
+	public function noteOverCompact($v, $str_len = null, $option=[]){
+		
+		
+		if($str_len == null) $str_len = 140;
+		
+		if(empty($v)){
+			echo '';
+			return;
+		}
+		
+		$str_len2  = mb_strlen($v); // 文字数を取得
+		
+		// 文字数が短ければそのまま表示。
+		if($str_len >= $str_len2){
+			echo h($v);
+			return ;
+		}
+		
+		if(empty($option)) $option = [];
+		$open_btn_name = $option['open_btn_name'] ?? '続き';
+		$close_btn_name = $option['close_btn_name'] ?? 'たたむ';
+		
+		$orig_str = h($v); // 元文字
+		$str2 = mb_substr($v,0,$str_len); // 切り揃えた文字列
+		$str2 = h($str2);
+		
+		$unique_index = $this->getUniqueIndex();
+		
+		$str3 = 
+			"
+				<div id='note_orig{$unique_index}A'>{$str2}...
+					<button type='button' class='btn btn-secondary btn-sm' onclick=\"jQuery('#note_orig{$unique_index}A').toggle();jQuery('#note_orig{$unique_index}B').toggle(); \">{$open_btn_name}</button>
+				</div>
+				<div id='note_orig{$unique_index}B' style='display:none'>
+					{$orig_str}
+					<button type='button' class='btn btn-secondary btn-sm' onclick=\"jQuery('#note_orig{$unique_index}A').toggle();jQuery('#note_orig{$unique_index}B').toggle(); \">{$close_btn_name}</button>
+				</div>
+				
+				
+			";
+				
+		echo $str3;
+	}
+	
+	/** リクエスト内で一意なインデックスを取得する
+	 */
+	private function getUniqueIndex(){
+		$this->unique_index ++;
+		return $this->unique_index;
 	}
 	
 	
