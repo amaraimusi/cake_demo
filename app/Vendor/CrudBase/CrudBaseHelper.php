@@ -300,9 +300,6 @@ class CrudBaseHelper {
 	}
 	
 	
-	
-	
-	
 	/**
 	 * 検索用のセレクトフォームを作成
 	 * 
@@ -340,7 +337,7 @@ class CrudBaseHelper {
 		$html = "
 			<div class='kj_div kj_wrap' data-field='{$field}'>
 				<div class='input select'>
-					<select name='data[{$model_name_c}][{$field}]' id='{$field}' style='{$width_style}' class='kjs_inp' title='{$title}'>
+					<select name='data[{$model_name_c}][{$field}]' id='{$field}' style='{$width_style}' class='kjs_inp form-control' title='{$title}'>
 						<option value=''>-- {$wamei} --</option>
 						$options_str
 					</select>
@@ -350,10 +347,54 @@ class CrudBaseHelper {
 
 		echo $html;
 	}
-
-
 	
 	
+	/**
+	 * 検索用のセレクトフォームを作成(Bootstrap4版）
+	 *
+	 * @param string $field フィールド名
+	 * @param string $wamei フィールド和名
+	 * @param string $list 選択肢リスト
+	 * @param int $width 入力フォームの横幅（省略可）
+	 * @param string $title ツールチップメッセージ（省略可）
+	 * @param [] option
+	 *  - string model_name_c モデル名（キャメル記法）
+	 */
+	public function inputKjSelectB4($field, $wamei, $list, $width=null, $title=null, $option = []){
+		
+		
+		$width_style = '';
+		if(!empty($width)) $width_style="width:{$width}px";
+		
+		if($title===null) $title = $wamei . "で検索";
+		
+		// モデル名を取得
+		$model_name_c = $this->crudBaseData['model_name_c'];
+		if(!empty($option['model_name_c'])) $model_name_c = $option['model_name_c'];
+		
+		$options_str = ''; // option要素群文字列
+		
+		$value = $this->kjs[$field];
+		foreach($list as $id => $name){
+			$selected = '';
+			if($id == $value) $selected = 'selected';
+			$name = htmlspecialchars($name); // XSSサニタイズ
+			$options_str .= "<option value='{$id}' {$selected}>{$name}</option>";
+		}
+		
+		
+		$html = "
+			<div class='form-group' data-field='{$field}'>
+				<select name='data[{$model_name_c}][{$field}]' id='{$field}' style='{$width_style}' class='kjs_inp form-control' title='{$title}'>
+					<option value=''>-- {$wamei} --</option>
+					$options_str
+				</select>
+			</div>
+		";
+						
+						echo $html;
+	}
+
 	
 	/**
 	 * 検索用の更新日時セレクトフォームを作成
