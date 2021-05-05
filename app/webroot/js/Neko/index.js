@@ -1,6 +1,4 @@
 
-var nekouta = 128;
-
 
 jQuery(()=> {
 	init();//初期化
@@ -345,6 +343,7 @@ function saveRequest(){
  * 
  */
 function sessionClear(){
+	
 	crudBase.sessionClear();
 	
 }

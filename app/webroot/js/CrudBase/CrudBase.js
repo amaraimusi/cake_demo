@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @date 2016-9-21 | 2020-8-29
- * @version 3.1.1
+ * @since 2016-9-21 | 2021-5-5
+ * @version 3.1.2
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -4440,13 +4440,25 @@ class CrudBase{
 	
 	/**
 	 * セッションクリア
+	 * @param web_query_str string WEBクエリ（ 例→user_id=4&status=1 )
 	 */
-	sessionClear(){
+	sessionClear(web_query_str){
+		
+		// WEBクエリの先頭に「&」がついていなければ付加する。
+		if(!this._empty(web_query_str)){
+			let s1 = web_query_str.charAt(0);
+			if(s1 != '&'){
+				web_query_str = '&' + web_query_str;
+			}
+		}else{
+			web_query_str = '';
+		}
+		
 		
 		this._clear();
 		
 		// リロード
-		location.href = '?ini=1&sc=1';
+		location.href = '?ini=1&sc=1' + web_query_str;
 	}
 	
 	
