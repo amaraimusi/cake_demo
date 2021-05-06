@@ -14,7 +14,7 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.0.1";
+	public $version = "3.0.2";
 
 	///デフォルトの並び替え対象フィールド
 	public $defSortFeild='sort_no';
@@ -90,6 +90,17 @@ class CrudBaseController {
 		
 		$model_name = $crudBaseData['model_name_c'];
 		$model_name_s= $this->snakize($model_name);
+		
+		global $crudBaseConfig;
+		if(!empty($crudBaseConfig)){
+			$crudBaseData['env'] = $crudBaseConfig['env']; //  環境種別 localhost, amaraimusi, product
+			$crudBaseData['crud_base_root'] = $crudBaseConfig['crud_base_root']; // プロジェクトのルートパス（絶対パス）
+			$crudBaseData['crud_base_app_path'] = $crudBaseConfig['crud_base_app_path']; // appディレクトリの絶対パス
+			$crudBaseData['crud_base_project_path'] = $crudBaseConfig['crud_base_project_path']; // プロジェクト名もしくはプロジェクトの相対パス→（例: animal_park/public)
+			$crudBaseData['crud_base_path'] = $crudBaseConfig['crud_base_path']; // Vendor側のCrudBaseライブラリへの絶対パス
+			$crudBaseData['crud_base_js'] = $crudBaseConfig['crud_base_js']; // jsのCrudBaseライブラリパス（相対パス）
+			$crudBaseData['crud_base_css'] = $crudBaseConfig['crud_base_css']; // cssのCrudBaseライブラリパス（相対パス）
+		}
 		
 		$crudBaseData['main_model_name'] = $model_name;
 		$crudBaseData['main_model_name_s'] = $model_name_s;

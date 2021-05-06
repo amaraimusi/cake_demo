@@ -525,12 +525,8 @@ class NekoController extends AppController {
 		}
 		unset($fEnt);
 		
-		$crud_base_path = CRUD_BASE_PATH;
-		$crud_base_js = CRUD_BASE_JS;
-		$crud_base_css = CRUD_BASE_CSS;
-		require_once $crud_base_path . 'CrudBaseController.php';
+		require_once CRUD_BASE_PATH . 'CrudBaseController.php';
 
-		
 		$model = $this->Neko; // モデルクラス
 		
 		$crudBaseData = [
@@ -539,9 +535,6 @@ class NekoController extends AppController {
 			'tbl_name' => 'nekos', // テーブル名をセット
 			'kensakuJoken' => $kensakuJoken, //検索条件情報
 			'fieldData' => $fieldData, //フィールドデータ
-			'crud_base_path' => $crud_base_path,
-			'crud_base_js' => $crud_base_js,
-			'crud_base_css' => $crud_base_css,
 		];
 
 		$crudBaseCon = new CrudBaseController($this, $model, $crudBaseData);
