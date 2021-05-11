@@ -20,6 +20,7 @@ class CrudBaseU{
 		
 		return [
 			'bootstrap.min',
+			'font/css/open-iconic.min', // アイコン
 			'jquery-ui.min',
 			'Layouts/default',
 			'CrudBase/dist/CrudBase.min.css?ver=3.0.6',

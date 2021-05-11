@@ -1,0 +1,22 @@
+@charset "UTF-8";
+
+.bannar_text {
+	color:white;
+	display: inline-block;
+	padding: 10px 20px;
+	font-size:32px;
+	font-weight:bold;
+	text-shadow: #030c03 1px 0 10px;
+}
+.bannar {
+	text-align: center;
+	padding: 100px;
+	border: solid 2px;
+	background-image: url(banner.jpg);
+	background-size:  cover;
+}
+
+#middle1{
+	padding:100px;
+	text-align:center
+}

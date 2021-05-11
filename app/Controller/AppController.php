@@ -163,21 +163,58 @@ class AppController extends Controller {
 		
 		return $ent2;
 	}
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+	/**
+	 * ユーザー情報を取得する
+	 *
+	 * @return
+	 *  - update_user 更新ユーザー
+	 *  - ip_addr IPアドレス
+	 *  - user_agent ユーザーエージェント
+	 *  - role 権限
+	 *  - authority 権限データ
+	 */
+	public function getUserInfo(){
+		$userInfo = $this->Auth->user();
+		$update_user = '';
+		if(! empty($userInfo['username'])) $update_user = $userInfo['username'];
+		$userInfo['update_user'] = $update_user;// 更新ユーザー
+		$userInfo['ip_addr'] = $_SERVER["REMOTE_ADDR"];// IPアドレス
+		$userInfo['user_agent'] = $_SERVER['HTTP_USER_AGENT']; // ユーザーエージェント
+		
+		// 権限が空であるならオペレータ扱いにする
+		if(empty($userInfo['role'])){
+			$userInfo['role'] = 'oparator';
+		}
+		$role = $userInfo['role'];
+		
+		$userInfo['authority'] = $this->getAuthority($role);
+		
+		return $userInfo;
+	}
+	
+	/**
+	 * 権限に紐づく権限エンティティを取得する
+	 * @param string $role 権限
+	 * @return array 権限エンティティ
+	 */
+	private function getAuthority($role){
+		
+		// 権限データを取得する
+		global $crudBaseAuthorityData; // 権限データ
+		
+		// 権限データを取得する
+		$authorityData = $crudBaseAuthorityData;
+		
+		$authority = [];
+		if(!empty($authorityData[$role])){
+			$authority = $authorityData[$role];
+		}
+		
+		return $authority;
+	}
+	
+
 
 }

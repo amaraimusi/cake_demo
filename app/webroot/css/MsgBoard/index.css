@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+.message_div{
+	white-space:pre-wrap; 
+	word-wrap:break-word;
+	width:100%;
+	font-size:1.2em
+}
+
+.entity_box1{
+	border-top:solid 1px #899298;
+	padding-top:12px;
+}

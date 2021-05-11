@@ -2,20 +2,20 @@
 
 
 /**
- * ネコ画面
+ * メッセージボード画面
  * 
  * @date 2015-9-16 | 2021-4-10
  *
  */
-class NekoController extends AppController {
+class MsgBoardController extends AppController {
 
 	private $cb; // CrudBase制御クラス
 	
 	/// 名称コード
-	public $name = 'Neko';
+	public $name = 'MsgBoard';
 	
 	/// 使用しているモデル[CakePHPの機能]
-	public $uses = ['Neko'];
+	public $uses = ['MsgBoard'];
 	
 	public $login_flg = 0; // ログインフラグ 0:ログイン不要, 1:ログイン必須
 	
@@ -25,7 +25,7 @@ class NekoController extends AppController {
 	
 	
 	public function beforeFilter() {
-		
+
 		// 未ログイン中である場合、未認証モードの扱いでページ表示する。
 		if($this->login_flg == 0 && empty($this->Auth->user())){
 			$this->Auth->allow(); // 未認証モードとしてページ表示を許可する。
@@ -38,7 +38,7 @@ class NekoController extends AppController {
 	/**
 	 * indexページのアクション
 	 *
-	 * indexページではネコ一覧を検索閲覧できます。
+	 * indexページではメッセージボード一覧を検索閲覧できます。
 	 * 一覧のidから詳細画面に遷移できます。
 	 * ページネーション、列名ソート、列表示切替、CSVダウンロード機能を備えます。
 	 */
@@ -48,35 +48,32 @@ class NekoController extends AppController {
 		
 		// CrudBase共通処理（前）
 		$crudBaseData = $this->cb->indexBefore();//indexアクションの共通先処理(CrudBaseController)
+		$crudBaseData['pages']['sort_desc'] = 1;
 		
 		// Ajaxセキュリティ:CSRFトークンの取得
-		$crudBaseData['csrf_token'] = CrudBaseU::getCsrfToken('neko');
+		$crudBaseData['csrf_token'] = CrudBaseU::getCsrfToken('msg_board');
 		
-		$res = $this->md->getData($crudBaseData);
+		$res = $this->MsgBoard->getData($crudBaseData);
 		$data = $res['data'];
 		$non_limit_count = $res['non_limit_count']; // LIMIT制限なし・データ件数
-
+		
 		// CrudBase共通処理（後）
 		$crudBaseData = $this->cb->indexAfter($crudBaseData, ['non_limit_count'=>$non_limit_count]);
 		
-		$masters = []; // マスターリスト群
+		$userInfo = $crudBaseData['userInfo'];
 		
-		// CBBXS-2020
-		$nekoGroupList = $this->md->getNekoGroupList();
-		$masters['nekoGroupList'] = $nekoGroupList;
-
-		// CBBXE
+		// 当画面のユーザータイプを取得 master:マスター型, login_user:一般ログインユーザー, guest:未ログインユーザー
+		$this_user_type = $this->getThisUserType();
 		
-		$crudBaseData['masters'] = $masters;
+		// 当画面のユーザータイプによる変更ボタン、削除ボタンの表示、非表示情報をセットする
+		$data = $this->MsgBoard->setBtnDisplayByThisUserType($this_user_type, $data, $userInfo);
+		
+		$crudBaseData['this_user_type'] = $this_user_type;
 		
 		$crud_base_json = json_encode($crudBaseData,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
-		// CBBXS-2019
-	
-		// CBBXE
-
 		$this->set([
-			'title_for_layout'=>'ネコ',
+			'title_for_layout'=>'メッセージボード',
 			'data'=> $data,
 			'crudBaseData'=> $crudBaseData,
 			'crud_base_json'=> $crud_base_json,
@@ -98,20 +95,13 @@ class NekoController extends AppController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('neko') == false){
+		if(CrudBaseU::checkCsrfToken('msg_board') == false){
 			return '不正なアクションを検出しました。';
 		}
 		
 		$userInfo = $this->Auth->user(); // ログインユーザー情報を取得する
 		
 		$this->init();
-		
-		$errs = []; // エラーリスト
-		
-		// 未ログインかつローカルでないなら、エラーアラートを返す。
-		if(empty($userInfo) && $_SERVER['SERVER_NAME']!='localhost'){
-			return 'Error:ログイン認証が必要です。 Login is needed';
-		}
 		
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
@@ -124,11 +114,12 @@ class NekoController extends AppController {
 		
 		
 		// CBBXS-1024
-		
+
 		// CBBXE
 		
 		// CBBXS-2024
-		$ent['img_fn'] = $this->cb->makeFilePath($_FILES, 'rsc/img/%field/y%Y/m%m/orig/%Y%m%d%H%i%s_%fn', $ent, 'img_fn');
+		$ent['attach_fn'] = $this->cb->makeFilePath($_FILES, 'rsc/img/%field/y%Y/m%m/orig/%fn', $ent, 'attach_fn');
+
 		// CBBXE
 		
 		$ent = $this->md->saveEntity($ent, $regParam);
@@ -136,7 +127,8 @@ class NekoController extends AppController {
 		// CBBXS-2025
 		// ファイルアップロードの一括作業
 		$fileUploadK = $this->factoryFileUploadK();
-		$res = $fileUploadK->putFile1($_FILES, 'img_fn', $ent['img_fn']);
+		$res = $fileUploadK->putFile1($_FILES, 'attach_fn', $ent['attach_fn']);
+
 		// CBBXE
 		
 		$json_str = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS); // JSONに変換
@@ -159,43 +151,130 @@ class NekoController extends AppController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('neko') == false){
-			return '不正なアクションを検出しました。';
+		if(CrudBaseU::checkCsrfToken('msg_board') == false){
+			return '不正なアクションなアクションです。 210510B';
 		}
 		
-		if($this->login_flg == 1 && empty($this->Auth->user())){
-			return 'Error:login is needed.';// 認証中でなければエラー
+		$userInfo = $this->getUserInfo();
+		if(empty($userInfo['id'])){
+			return '不正なアクションなアクションです。 210510C';
 		}
+		
+		$config = 
+			[
+				'org_del_flg'=>'1', // マスター権限者は一般ログインユーザーのメッセージを削除できるか 0:削除不可, 1:削除フラグON, 2:抹消する
+				'my_del_flg'=>'1', // 一般ログインユーザーは自分のメッセージを削除できるか。 0:削除不可, 1:削除フラグON, 2:抹消する
+			];
+			
+		$org_del_flg = $config['org_del_flg'];
+		$my_del_flg = $config['my_del_flg'];
+		
+		$user_id = $userInfo['id'];
 
+		// 当画面のユーザータイプを取得 master:マスター型, login_user:一般ログインユーザー, guest:未ログインユーザー
+		$this_user_type = $this->getThisUserType($userInfo); 
+		
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
-		$ent0 = json_decode($json,true);
+		$param = json_decode($json, true);
+		$id = $param['id']; // メッセージボードID
 		
-		// 登録パラメータ
-		$reg_param_json = $_POST['reg_param_json'];
-		$regParam = json_decode($reg_param_json,true);
+		// 削除対象のメッセージボードエンティティを取得する
+		$sql = "SELECT * FROM msg_boards WHERE id={$id}";
+		$ent = $this->MsgBoard->query($sql);
 
-		// 抹消フラグ
-		$eliminate_flg = 0;
-		if(isset($regParam['eliminate_flg'])) $eliminate_flg = $regParam['eliminate_flg'];
-		
-		// 削除用のエンティティを取得する
-		$ent = $this->getEntForDelete($ent0['id']);
-		$ent['delete_flg'] = $ent0['delete_flg'];
-	
-		// エンティティをDB保存
-		$this->Neko->begin();
-		if($eliminate_flg == 0){
-			$ent = $this->Neko->saveEntity($ent,$regParam); // 更新
-		}else{
-			$this->Neko->eliminateFiles($ent['id'], 'img_fn', $ent); // ファイル抹消（他のレコードが保持しているファイルは抹消対象外）
-			$this->Neko->delete($ent['id']); // 削除
+		if(empty($ent)) return '不正なアクション 210511A';
+		$ent = $ent[0]['msg_boards'];
+
+		$my_msg_flg = 0; // 自分のメッセージであるか？ 0:違う, 1:自分のメッセージである。
+		if($ent['user_id'] == $user_id){
+			$my_msg_flg = 1;
 		}
-		$this->Neko->commit();//コミット
 		
-		$json_str =json_encode($ent);//JSONに変換
-	
+		if($this_user_type == 'master'){
+			// 自分のメッセージである場合
+			if($my_msg_flg == 1){
+				$this->deleteActionToDb($my_del_flg, $ent, $userInfo);
+			}
+			
+			// 自分のメッセージではない場合
+			else{
+				$this->deleteActionToDb($org_del_flg, $ent, $userInfo);
+			}
+		}else if($this_user_type == 'login_user'){
+			if($my_msg_flg == 1){
+				$this->deleteActionToDb($my_del_flg, $ent, $userInfo);
+			}
+			
+			// 自分のメッセージではない場合は何もしない
+			else{
+				
+			}
+		}else{
+			return 'システムエラー 210511B';
+		}
+		
+		$res = ['success'=>1];
+		
+		$json_str =json_encode($res);//JSONに変換
+		
 		return $json_str;
+
+	}
+	
+	
+	/**
+	 * 
+	 * 当画面のユーザータイプを取得
+	 * @param [] $userInfo
+	 * @return string 当画面のユーザータイプ master:マスター型, login_user:一般ログインユーザー, guest:未ログインユーザー
+	 */
+	private function getThisUserType($userInfo = []){
+		
+		if(empty($userInfo)){
+			$userInfo = $this->getUserInfo();
+		}
+		
+		if(empty($userInfo['id'])) return 'guest';
+		
+		$this_user_type = 'login_user'; // 当画面のユーザータイプ 
+		
+		if($userInfo['authority']['level'] >= 30){
+			$this_user_type = 'master';
+		}
+		
+		return $this_user_type;
+	}
+	
+	
+	
+	/**
+	 * DBへの削除処理
+	 * @param int $del_flg 削除方法フラグ 0:削除しない, 1:削除フラグをON, 2:抹消（DELETE）
+	 * @param [] $ent メッセージボードエンティティ
+	 * @param [] $userInfo ユーザー情報
+	 */	
+	private function deleteActionToDb($my_del_flg, &$ent, &$userInfo){
+		
+		if($my_del_flg == 0) return;
+		
+		// 削除フラグON
+		elseif($my_del_flg == 1){
+			$ent['update_user'] = $userInfo['update_user'];
+			$ent['ip_addr'] = $userInfo['ip_addr'];
+			$ent['delete_flg'] = 1;
+			$this->MsgBoard->save($ent, ['validate'=>false]);
+			
+		}
+		
+		// 抹消
+		elseif($my_del_flg == 2){
+			$this->MsgBoard->delete($ent['id']);
+		}
+		
+		else{
+			throw new Exception('システムエラー 210511C');
+		}
 	}
 	
 	
@@ -210,7 +289,7 @@ class NekoController extends AppController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('neko') == false){
+		if(CrudBaseU::checkCsrfToken('msg_board') == false){
 			return '不正なアクションを検出しました。';
 		}
 		
@@ -225,9 +304,9 @@ class NekoController extends AppController {
 		$data = json_decode($json,true);//JSON文字を配列に戻す
 		
 		// データ保存
-		$this->Neko->begin();
-		$this->Neko->saveAll($data); // まとめて保存。内部でSQLサニタイズされる。
-		$this->Neko->commit();
+		$this->MsgBoard->begin();
+		$this->MsgBoard->saveAll($data); // まとめて保存。内部でSQLサニタイズされる。
+		$this->MsgBoard->commit();
 
 		$res = array('success');
 		
@@ -259,7 +338,7 @@ class NekoController extends AppController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('neko') == false){
+		if(CrudBaseU::checkCsrfToken('msg_board') == false){
 			return '不正なアクションを検出しました。';
 		}
 		
@@ -283,7 +362,7 @@ class NekoController extends AppController {
 		// 一括登録
 		$strategy = $this->cb->getStrategy(); // フレームワークストラテジーを取得する
 		$bulkReg = new \BulkReg($strategy, $update_user);
-		$res = $bulkReg->reg('nekos', $param);
+		$res = $bulkReg->reg('msg_boards', $param);
 		
 		//JSONに変換
 		$str_json = json_encode($res,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
@@ -302,13 +381,13 @@ class NekoController extends AppController {
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
 		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('neko') == false){
+		if(CrudBaseU::checkCsrfToken('msg_board') == false){
 			return '不正なアクションを検出しました。';
 		}
 		
 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
-		$this->csv_fu_base($this->Neko,array('id','neko_val','neko_name','neko_date','neko_group','neko_dt','neko_flg','img_fn','note','sort_no'));
+		$this->csv_fu_base($this->MsgBoard,array('id','msg_board_val','msg_board_name','msg_board_date','msg_board_group','msg_board_dt','msg_board_flg','img_fn','note','sort_no'));
 		
 	}
 
@@ -322,7 +401,7 @@ class NekoController extends AppController {
 		$this->autoRender = false;//ビューを使わない。
 		
 		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('neko') == false){
+		if(CrudBaseU::checkCsrfToken('msg_board') == false){
 			return '不正なアクションを検出しました。';
 		}
 	
@@ -351,7 +430,7 @@ class NekoController extends AppController {
 		//CSVファイル名を作成
 		$date = new DateTime();
 		$strDate=$date->format("Y-m-d");
-		$fn='neko'.$strDate.'.csv';
+		$fn='msg_board'.$strDate.'.csv';
 
 		//CSVダウンロード
 		App::uses('CsvDownloader','Vendor/CrudBase');
@@ -366,10 +445,10 @@ class NekoController extends AppController {
 		 
 		
 		//セッションから検索条件情報を取得
-		$kjs=$this->Session->read('neko_kjs');
+		$kjs=$this->Session->read('msg_board_kjs');
 		
 		// セッションからページネーション情報を取得
-		$pages = $this->Session->read('neko_pages');
+		$pages = $this->Session->read('msg_board_pages');
 
 		$page_no = 0;
 		$row_limit = 100000;
@@ -387,7 +466,7 @@ class NekoController extends AppController {
 		
 
 		//DBからデータ取得
-		$data=$this->Neko->findData($crudBaseData);
+		$data=$this->MsgBoard->findData($crudBaseData);
 		if(empty($data)){
 			return array();
 		}
@@ -410,24 +489,18 @@ class NekoController extends AppController {
 			
 			['name'=>'kj_main', 'def'=>null],
 			// CBBXS-2000
-			['name'=>'kj_id', 'def'=>null],
-			['name'=>'kj_neko_val1', 'def'=>null, 'field'=>'neko_val'],
-			['name'=>'kj_neko_val2', 'def'=>null, 'field'=>'neko_val'],
-			['name'=>'kj_neko_name', 'def'=>null],
-			['name'=>'kj_neko_date_ym', 'def'=>null],
-			['name'=>'kj_neko_date1', 'def'=>null, 'field'=>'neko_date'],
-			['name'=>'kj_neko_date2', 'def'=>null, 'field'=>'neko_date'],
-			['name'=>'kj_neko_group', 'def'=>null],
-			['name'=>'kj_neko_dt', 'def'=>null],
-			['name'=>'kj_neko_flg', 'def'=>-1],
-			['name'=>'kj_img_fn', 'def'=>null],
-			['name'=>'kj_note', 'def'=>null],
-			['name'=>'kj_sort_no', 'def'=>null],
-			['name'=>'kj_delete_flg', 'def'=>0],
-			['name'=>'kj_update_user', 'def'=>null],
-			['name'=>'kj_ip_addr', 'def'=>null],
-			['name'=>'kj_created', 'def'=>null],
-			['name'=>'kj_modified', 'def'=>null],
+				['name'=>'kj_id', 'def'=>null],
+				['name'=>'kj_other_id', 'def'=>null],
+				['name'=>'kj_user_id', 'def'=>null],
+				['name'=>'kj_message', 'def'=>null],
+				['name'=>'kj_attach_fn', 'def'=>null],
+				['name'=>'kj_sort_no', 'def'=>null],
+				['name'=>'kj_delete_flg', 'def'=>0],
+				['name'=>'kj_update_user', 'def'=>null],
+				['name'=>'kj_ip_addr', 'def'=>null],
+				['name'=>'kj_created', 'def'=>null],
+				['name'=>'kj_modified', 'def'=>null],
+
 			// CBBXE
 			
 			['name'=>'row_limit', 'def'=>50],
@@ -440,80 +513,61 @@ class NekoController extends AppController {
 			
 			// CBBXS-2002
 			'id'=>[
-				'name'=>'ID',//HTMLテーブルの列名
-				'row_order'=>'Neko.id',//SQLでの並び替えコード
-				'clm_show'=>1,//デフォルト列表示 0:非表示 1:表示
+					'name'=>'ID',//HTMLテーブルの列名
+					'row_order'=>'MsgBoard.id',//SQLでの並び替えコード
+					'clm_show'=>1,//デフォルト列表示 0:非表示 1:表示
 			],
-			'neko_val'=>[
-				'name'=>'ネコ数値',
-				'row_order'=>'Neko.neko_val',
-				'clm_show'=>0,
+			'other_id'=>[
+					'name'=>'外部ID',
+					'row_order'=>'MsgBoard.other_id',
+					'clm_show'=>1,
 			],
-			'neko_name'=>[
-				'name'=>'ネコ名前',
-				'row_order'=>'Neko.neko_name',
-				'clm_show'=>1,
+			'user_id'=>[
+					'name'=>'ユーザーID',
+					'row_order'=>'MsgBoard.user_id',
+					'clm_show'=>1,
 			],
-			'neko_group'=>[
-				'name'=>'ネコ種別',
-				'row_order'=>'Neko.neko_group',
-				'clm_show'=>1,
+			'message'=>[
+					'name'=>'メッセージ',
+					'row_order'=>'MsgBoard.message',
+					'clm_show'=>1,
 			],
-			'neko_date'=>[
-				'name'=>'ネコ日',
-				'row_order'=>'Neko.neko_date',
-				'clm_show'=>1,
-			],
-			'neko_dt'=>[
-				'name'=>'ネコ日時',
-				'row_order'=>'Neko.neko_dt',
-				'clm_show'=>1,
-			],
-			'neko_flg'=>[
-				'name'=>'ネコフラグ',
-				'row_order'=>'Neko.neko_flg',
-				'clm_show'=>1,
-			],
-			'img_fn'=>[
-				'name'=>'画像ファイル名',
-				'row_order'=>'Neko.img_fn',
-				'clm_show'=>1,
-			],
-			'note'=>[
-				'name'=>'備考',
-				'row_order'=>'Neko.note',
-				'clm_show'=>0,
+			'attach_fn'=>[
+					'name'=>'添付ファイル',
+					'row_order'=>'MsgBoard.attach_fn',
+					'clm_show'=>1,
 			],
 			'sort_no'=>[
-				'name'=>'順番',
-				'row_order'=>'Neko.sort_no',
-				'clm_show'=>0,
+					'name'=>'順番',
+					'row_order'=>'MsgBoard.sort_no',
+					'clm_show'=>0,
 			],
 			'delete_flg'=>[
-				'name'=>'有効/無効',
-				'row_order'=>'Neko.delete_flg',
-				'clm_show'=>1,
+					'name'=>'無効フラグ',
+					'row_order'=>'MsgBoard.delete_flg',
+					'clm_show'=>0,
 			],
 			'update_user'=>[
-				'name'=>'更新者',
-				'row_order'=>'Neko.update_user',
-				'clm_show'=>0,
+					'name'=>'更新者',
+					'row_order'=>'MsgBoard.update_user',
+					'clm_show'=>0,
 			],
 			'ip_addr'=>[
-				'name'=>'更新IPアドレス',
-				'row_order'=>'Neko.ip_addr',
-				'clm_show'=>0,
+					'name'=>'IPアドレス',
+					'row_order'=>'MsgBoard.ip_addr',
+					'clm_show'=>0,
 			],
 			'created'=>[
-				'name'=>'生成日時',
-				'row_order'=>'Neko.created',
-				'clm_show'=>0,
+					'name'=>'生成日時',
+					'row_order'=>'MsgBoard.created',
+					'clm_show'=>0,
 			],
 			'modified'=>[
-				'name'=>'更新日時',
-				'row_order'=>'Neko.modified',
-				'clm_show'=>1,
+					'name'=>'更新日',
+					'row_order'=>'MsgBoard.modified',
+					'clm_show'=>0,
 			],
+
 			// CBBXE
 		]];
 		
@@ -527,12 +581,12 @@ class NekoController extends AppController {
 		
 		require_once CRUD_BASE_PATH . 'CrudBaseController.php';
 
-		$model = $this->Neko; // モデルクラス
+		$model = $this->MsgBoard; // モデルクラス
 		
 		$crudBaseData = [
 			'fw_type' => 'cake',
-			'model_name_c' => 'Neko',
-			'tbl_name' => 'nekos', // テーブル名をセット
+			'model_name_c' => 'MsgBoard',
+			'tbl_name' => 'msg_boards', // テーブル名をセット
 			'kensakuJoken' => $kensakuJoken, //検索条件情報
 			'fieldData' => $fieldData, //フィールドデータ
 		];

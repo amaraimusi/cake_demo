@@ -30,7 +30,7 @@ $CRUD_BASE_JS = "{$project_path}/js/CrudBase/dist/CrudBase.min.js";
 $CRUD_BASE_CSS = "{$project_path}/css/CrudBase/dist/CrudBase.min.css";
 define('CRUD_BASE_ROOT',$crud_base_root);// テキストエリアCSV出力用
 define('CRUD_BASE_APP_PATH',$crud_base_app_path);
-define('CRUD_BASE_PROJECT_PATH',$project_path);
+define('CRUD_BASE_PROJECT_PATH',$project_path); // Ajaxや画像のパス
 define('CRUD_BASE_PATH',$crud_base_path);
 define('CRUD_BASE_JS',$CRUD_BASE_JS);
 define('CRUD_BASE_CSS',$CRUD_BASE_CSS);
@@ -53,6 +53,38 @@ $crudBaseConfig['dbConfig'] = getDbConfigForCrudBase($crudBaseConfig['env']);
 
 // 汎用メソッドクラス
 require_once $crud_base_path . 'CrudBaseU.php';
+
+// 権限データ
+global $crudBaseAuthorityData;
+$crudBaseAuthorityData = [
+	'master'=>[
+		'name'=>'master',
+		'wamei'=>'マスター',
+		'level'=>41,
+	],
+	'developer'=>[
+		'name'=>'developer',
+		'wamei'=>'開発者',
+		'level'=>40,
+	],
+	'admin'=>[
+		'name'=>'admin',
+		'wamei'=>'管理者',
+		'level'=>30,
+	],
+	'client'=>[
+		'name'=>'client',
+		'wamei'=>'クライアント',
+		'level'=>20,
+	],
+	'oparator'=>[
+		'name'=>'oparator',
+		'wamei'=>'オペレータ',
+		'level'=>10,
+	],
+	
+];
+
 
 /**
  * DB設定

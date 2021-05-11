@@ -2168,4 +2168,82 @@ class CrudBaseHelper {
 		return 0;
 	}
 	
+	
+	/**
+	 * ファイルプレビューAタイプ
+	 * @param string $fp ファイルパス
+	 * @param [] $option
+	 * - top_class string トップ要素のclass属性
+	 * - size_type string 一覧に表示する画像サイズタイプ orig,mid,thum
+	 * 
+	 */
+	public function filePreviewA($fp, $option=[]){
+
+		if(empty($fp)) return '';
+		
+		$top_class = $option['top_class'] ?? 'filePreviewA';
+		$size_type = $option['size_type'] ?? 'mid';
+		$img_class = $top_class . '_img';
+		$img_link_class = $top_class . '_img_link';
+		$pdf_class = $top_class . '_pdf';
+		$img_w_class = $top_class . '_img_w';
+		$pdf_w_class = $top_class . '_pdf_w';
+		$download_btn_w_class = $top_class . '_download_btn_w';
+		$download_fn_class = $top_class . '_download_fn';
+		
+		
+		// 拡張子を取得する
+		$pi = pathinfo($fp);
+		$ext = mb_strtolower($pi['extension']);
+		$fn = $pi['basename'];
+		
+		$imgExts = ['jpg','jpeg','png','gif'];
+		
+		$fn_type = '';
+		if(in_array($ext, $imgExts)){
+			$fn_type = 'img';
+		}else if($ext == 'pdf'){
+			$fn_type = 'pdf';
+		}else{
+			$fn_type = 'other';
+		}
+		
+		$img_display = 'none';
+		$pdf_display = 'none';
+		
+		if($fn_type == 'img'){
+			$img_display = 'inline-block;';
+		}else if($fn_type == 'pdf'){
+			$pdf_display = 'inline-block;';
+		}
+		
+		$fp2 = str_replace('/orig/', "/{$size_type}/", $fp);
+		
+		$fp = CRUD_BASE_PROJECT_PATH . '/' . $fp;
+		$fp2 = CRUD_BASE_PROJECT_PATH . '/' . $fp2;
+
+		$html = 
+		"
+		<div class='{$top_class}'>
+			<div class='{$img_w_class}' style='display:{$img_display};'>
+				<a class='{$img_link_class}' href='{$fp}' target='_blank' title='クリックで拡大表示'>
+				<img class='{$img_class}' src='{$fp2}' style='width:100%' /></a>
+			</div>
+			<div class='{$pdf_w_class}' style='display:{$pdf_display};'>
+				<object class='{$pdf_class}' data='{$fp}' width='100%' height='auto'></object>
+			</div>
+			<div class='{$download_btn_w_class}'>
+				<div style='display:inline-block;margin-right:10px'>
+					<a href='{$fp}' class='btn btn-outline-info btn-sm text-info' download title='ダウンロードします。'>
+						<span class='oi' data-glyph='data-transfer-download'></span>
+						<span class='{$download_fn_class}'>{$fn}</span>
+					</a>
+				</div>
+
+			</div>
+		</div>
+		";
+		return $html;
+	}
+	
 }
