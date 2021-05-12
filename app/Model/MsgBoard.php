@@ -72,7 +72,7 @@ class MsgBoard extends AppModel {
 	/**
 	 * 検索条件とページ情報を元にDBからデータを取得する
 	 * @param array $crudBaseData
-	 * @return number[]|unknown[]
+	 * @return []
 	 *  - array data データ
 	 *  - int non_limit_count LIMIT制限なし・データ件数
 	 */
@@ -368,7 +368,6 @@ class MsgBoard extends AppModel {
 			}
 		}
 		
-
 		//DBに登録('atomic' => false　トランザクションなし。saveでSQLサニタイズされる）
 		$ent = $this->save($ent, array('atomic' => false,'validate'=>false));
 

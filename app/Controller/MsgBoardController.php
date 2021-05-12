@@ -84,13 +84,10 @@ class MsgBoardController extends AppController {
 
 	
 	/**
-	 * DB登録
+	 * Ajax 新規DB登録
 	 *
-	 * @note
-	 * Ajaxによる登録。
-	 * 編集登録と新規入力登録の両方に対応している。
 	 */
-	public function ajax_reg(){
+	public function ajax_new_reg(){
 		
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
@@ -111,25 +108,60 @@ class MsgBoardController extends AppController {
 		$reg_param_json = $_POST['reg_param_json'];
 		$regParam = json_decode($reg_param_json,true);
 		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
-		
-		
-		// CBBXS-1024
 
-		// CBBXE
-		
-		// CBBXS-2024
 		$ent['attach_fn'] = $this->cb->makeFilePath($_FILES, 'rsc/img/%field/y%Y/m%m/orig/%fn', $ent, 'attach_fn');
 
+		$ent = $this->setCommonToEntity($ent);
 		// CBBXE
-		
 		$ent = $this->md->saveEntity($ent, $regParam);
 		
-		// CBBXS-2025
 		// ファイルアップロードの一括作業
 		$fileUploadK = $this->factoryFileUploadK();
 		$res = $fileUploadK->putFile1($_FILES, 'attach_fn', $ent['attach_fn']);
 
+		$json_str = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS); // JSONに変換
+		
+		return $json_str;
+		
+	}
+	
+	
+	/**
+	 * Ajax 編集DB登録
+	 *
+	 */
+	public function ajax_edit_reg(){
+		
+		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('msg_board') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
+			
+		$userInfo = $this->getUserInfo();
+		if(empty($userInfo['id'])) throw new Exception('システムエラー 210512A');
+		
+		$this->init();
+		
+		// JSON文字列をパースしてエンティティを取得する
+		$json=$_POST['key1'];
+		$ent = json_decode($json, true);
+		
+		if($userInfo['id'] != $ent['user_id']) throw new Exception('システムエラー 210512B');
+		
+		// 登録パラメータ
+		$reg_param_json = $_POST['reg_param_json'];
+		$regParam = json_decode($reg_param_json,true);
+
+		$ent = $this->setCommonToEntity($ent);
+
+		unset($ent['attach_fn']);
+		if(empty($ent['id'])) throw new Exception('システムエラー 210512C');
+		
 		// CBBXE
+		$ent = $this->md->saveEntity($ent, $regParam);
 		
 		$json_str = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS); // JSONに変換
 		

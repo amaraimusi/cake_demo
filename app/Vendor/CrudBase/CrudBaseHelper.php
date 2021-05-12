@@ -2179,7 +2179,8 @@ class CrudBaseHelper {
 	 */
 	public function filePreviewA($fp, $option=[]){
 
-		if(empty($fp)) return '';
+		$display = '';
+		if(empty($fp)) $display = 'display:none;';
 		
 		$top_class = $option['top_class'] ?? 'filePreviewA';
 		$size_type = $option['size_type'] ?? 'mid';
@@ -2193,9 +2194,13 @@ class CrudBaseHelper {
 		
 		
 		// 拡張子を取得する
-		$pi = pathinfo($fp);
-		$ext = mb_strtolower($pi['extension']);
-		$fn = $pi['basename'];
+		$ext = '';
+		$fn = '';
+		if(!empty($fp)){
+			$pi = pathinfo($fp);
+			$ext = mb_strtolower($pi['extension']);
+			$fn = $pi['basename'];
+		}
 		
 		$imgExts = ['jpg','jpeg','png','gif'];
 		
@@ -2217,14 +2222,20 @@ class CrudBaseHelper {
 			$pdf_display = 'inline-block;';
 		}
 		
-		$fp2 = str_replace('/orig/', "/{$size_type}/", $fp);
+		$fp2 = '';
+		if(!empty($fp)){
+			$fp2 = str_replace('/orig/', "/{$size_type}/", $fp);
+		}
 		
-		$fp = CRUD_BASE_PROJECT_PATH . '/' . $fp;
-		$fp2 = CRUD_BASE_PROJECT_PATH . '/' . $fp2;
+		// ファイルパスにパスを付加する。
+		if(!empty($fp)){
+			$fp = CRUD_BASE_PROJECT_PATH . '/' . $fp;
+			$fp2 = CRUD_BASE_PROJECT_PATH . '/' . $fp2;
+		}
 
 		$html = 
 		"
-		<div class='{$top_class}'>
+		<div class='{$top_class}' style='{$display}'>
 			<div class='{$img_w_class}' style='display:{$img_display};'>
 				<a class='{$img_link_class}' href='{$fp}' target='_blank' title='クリックで拡大表示'>
 				<img class='{$img_class}' src='{$fp2}' style='width:100%' /></a>

@@ -69,7 +69,7 @@ class MsgBoard{
 		fd.append( "csrf_token", csrf_token );
 		
 		let crud_base_project_path = this.crudBaseData.crud_base_project_path;
-		let ajax_url = crud_base_project_path + '/msg_board/ajax_reg';
+		let ajax_url = crud_base_project_path + '/msg_board/ajax_new_reg';
 
 		// AJAX
 		jQuery.ajax({
@@ -110,7 +110,7 @@ class MsgBoard{
 	// メッセージ新規入力フォームをクリアする。
 	_clearNewInput(){
 		this.fileUploadK.setFilePaths('attach_fn', '');
-		jQuery('#ni_message').html('');
+		jQuery('#ni_message').val('');
 		jQuery('#send_mail_flg').prop('checked', false);
 		
 	}
@@ -130,7 +130,13 @@ class MsgBoard{
 		
 		let newEntDiv = jQuery('#msg_board_list').children().eq(0); 
 
+		// ニックネームのセット
+		let nickname = this.userInfo.nickname;
+		if(nickname=='') nickname = 'none';
+		newEntDiv.find('.nickname').html(nickname);
+
 		newEntDiv.find('.message_div').html(ent.message);
+		newEntDiv.find('.message_edit_ta').html(ent.message);
 		newEntDiv.find('.nickname').html(this.nickname);
 		newEntDiv.find('.edit_btn').show();
 		newEntDiv.find('.delete_btn').show();
@@ -237,6 +243,7 @@ class MsgBoard{
 		}
 		
 		
+		filePreviewA.show();
 	}
 	
 	
@@ -438,6 +445,85 @@ class MsgBoard{
 		});
 		
 	}
+	
+	
+	// 編集登録アクション
+	regEdit(selfElm){
+		
+		let parElm = jQuery(selfElm).parents('.entity'); 
+		let id = parElm.attr('data-id'); // メッセージボードID
+		
+		let user_id = -1;
+		if(this.userInfo.id != null) user_id = this.userInfo.id;
+		let message = parElm.find('.message_edit_ta').val();
+
+		message = message.trim();
+		if(message == '') return;
+		
+		let sendData={
+			id: id,
+			message: message, 
+			user_id: user_id,
+			attach_fn: '',
+			};
+		
+		// データ中の「&」と「%」を全角の＆と％に一括エスケープ(&記号や%記号はPHPのJSONデコードでエラーになる)
+		sendData = this._escapeAjaxSendData(sendData);
+		
+		let fd = new FormData();
+		
+		let send_json = JSON.stringify(sendData);//データをJSON文字列にする。
+		fd.append( "key1", send_json );
+		
+		let regParam = {form_type: 'edit'};
+		let reg_param_json = JSON.stringify(regParam);//データをJSON文字列にする。
+		fd.append( "reg_param_json", reg_param_json );
+		
+		// CSRFトークンを取得
+		let csrf_token = this.crudBaseData.csrf_token;
+		fd.append( "csrf_token", csrf_token );
+		
+		let crud_base_project_path = this.crudBaseData.crud_base_project_path;
+		let ajax_url = crud_base_project_path + '/msg_board/ajax_edit_reg';
+
+		// AJAX
+		jQuery.ajax({
+			type: "post",
+			url: ajax_url,
+			data: fd,
+			cache: false,
+			dataType: "text",
+			processData: false,
+			contentType : false,
+		})
+		.done((res_json, type) => {
+			let res;
+			try{
+				res =jQuery.parseJSON(res_json);//パース
+				
+			}catch(e){
+				jQuery("#err").append(res_json);
+				return;
+			}
+			
+			res = this._escapeAjaxSendData(res); // XSS対策
+			parElm.find('.message_div').html(res.message);
+			
+			// 編集区分を閉じる
+			parElm.find('.edit_div').hide();
+			
+			// メニュー区分を閉じる
+			parElm.find('.menu_div').hide();
+
+		})
+		.fail((jqXHR, statusText, errorThrown) => {
+			let errElm = jQuery('#err');
+			errElm.append('アクセスエラー');
+			errElm.append(jqXHR.responseText);
+			alert(statusText);
+		});
+	}
+
 	
 	
 }

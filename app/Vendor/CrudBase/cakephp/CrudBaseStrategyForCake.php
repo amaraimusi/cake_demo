@@ -4,8 +4,8 @@ App::uses('AppController', 'Controller');
 
 /**
  * Cake2.x用ストラテジークラス
- * @version 1.0.4
- * @since 2020-6-10 | 2021-4-19
+ * @version 1.0.5
+ * @since 2020-6-10 | 2021-5-12
  * @license MIT
  */
 class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy{
@@ -92,17 +92,22 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	public function getUserInfo(){
 		$userInfo = $this->ctrl->Auth->user();
 		$update_user = '';
-		if(! empty($userInfo['username'])) $update_user = $userInfo['username'];
 		$userInfo['update_user'] = $update_user;// 更新ユーザー
 		$userInfo['ip_addr'] = $_SERVER["REMOTE_ADDR"];// IPアドレス
 		$userInfo['user_agent'] = $_SERVER['HTTP_USER_AGENT']; // ユーザーエージェント
-		
+
 		// 権限が空であるならオペレータ扱いにする
 		if(empty($userInfo['role'])){
 			$userInfo['role'] = 'oparator';
 		}
 		
-		
+		$userInfo['nickname'] = '';
+		if(!empty($userInfo['id'])){
+			$user2 = $this->sqlExe("SELECT nickname FROM users WHERE id={$userInfo['id']}");
+			
+			$userInfo['nickname'] = $user2[0]['users']['nickname'];
+		}
+
 		return $userInfo;
 	}
 	

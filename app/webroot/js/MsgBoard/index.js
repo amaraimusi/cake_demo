@@ -33,3 +33,8 @@ function returnEdit(selfElm){
 function deleteAction(selfElm){
 	msgBoard.deleteAction(selfElm);
 }
+
+// 編集登録アクション
+function regEdit(selfElm){
+	msgBoard.regEdit(selfElm);
+}

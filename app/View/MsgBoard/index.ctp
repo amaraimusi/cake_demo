@@ -27,7 +27,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		<div class="col-12 col-md-8">
 			<div class="form-group row">
 				<div class="col-12 col-md-9">
-					<textarea class="form-control" id="ni_message" style="width:100%;height:40px" placeholder="-- メッセージ --"></textarea>
+					<textarea class="form-control" id="ni_message" style="width:100%;height:40px" maxlength="2000" placeholder="-- メッセージ --" title="2000文字まで"></textarea>
 					
 				</div>
 				<div class="btn-group col-12 col-md-3">
@@ -93,10 +93,10 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		</div>
 		<div class="edit_div" class="row" style="display:none">
 			<div class="form-group col-12 col-md-9" >
-				<textarea class="form-control message_edit_ta" style="width:100%;height:auto;"><?php echo h($ent['message']);?></textarea>
+				<textarea class="form-control message_edit_ta" maxlength="2000" style="width:100%;height:auto;"><?php echo h($ent['message']);?></textarea>
 			</div>
 			<div class="form-group col-12 col-md-3">
-				<button type="button" class="btn btn-warning btn-sm">変更</button>
+				<button type="button" class="btn btn-warning btn-sm" onclick="regEdit(this)">変更</button>
 				<button type="button" class="btn btn-outline-secondary btn-sm" onclick="returnEdit(this)">戻る</button>
 			</div>
 		</div>

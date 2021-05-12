@@ -191,6 +191,13 @@ class AppController extends Controller {
 		
 		$userInfo['authority'] = $this->getAuthority($role);
 		
+		$userInfo['nickname'] = '';
+		if(!empty($userInfo['id'])){
+			$this->User = ClassRegistry::init('User');
+			$user2 = $this->User->query("SELECT nickname FROM users WHERE id={$userInfo['id']}");
+			$userInfo['nickname'] = $user2[0]['users']['nickname'];
+		}
+
 		return $userInfo;
 	}
 	
