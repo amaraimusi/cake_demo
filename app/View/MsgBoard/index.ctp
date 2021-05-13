@@ -61,6 +61,14 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 	</div>
 </div>
 
+<div class="row" style="margin-top:10px">
+		<div class="col-12 col-md-2"></div>
+		<div class="col-12 col-md-8">
+			<?php $this->CrudBase->divPagenation(); // ページネーション ?>
+		</div>
+		<div class="col-12 col-md-2"></div>
+</div>
+
 <!-- メッセージ一覧 -->
 <div id="msg_board_list" style="margin-top:60px">
 <?php foreach($data as $ent){ ?>
