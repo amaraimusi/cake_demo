@@ -140,6 +140,7 @@ class MsgBoard{
 		newEntDiv.find('.nickname').html(this.nickname);
 		newEntDiv.find('.edit_btn').show();
 		newEntDiv.find('.delete_btn').show();
+		newEntDiv.find('.menu_div').hide();
 		
 		let this_user_type = this.crudBaseData.this_user_type; // 当画面のユーザータイプ
 		if(this_user_type == 'master' || this_user_type == 'login_user'){
@@ -149,6 +150,8 @@ class MsgBoard{
 		}
 		
 		newEntDiv.attr('data-id', ent.id);
+		
+		newEntDiv.show();
 		
 		
 		this._setEntTo_filePreviewA(newEntDiv, ent);

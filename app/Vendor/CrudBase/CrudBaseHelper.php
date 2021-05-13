@@ -2169,6 +2169,55 @@ class CrudBaseHelper {
 	}
 	
 	
+	public function youtubeHtml($url){
+		
+
+		// テストデータ
+		//$url = 'https://youtu.be/KotU7jKOqLk';
+		//$url = 'https://youtu.be/KotU7jKOqLk?t=230';
+		//$url = 'https://www.youtube.com/watch?v=KotU7jKOqLk&t=221s';
+		//$url = 'https://www.youtube.com/watch?v=KotU7jKOqLk';
+		
+		if(strpos($url, 'youtu') === false){
+			$html = "<a href='{$url}' target='_blank'>動画</a>";
+			echo $html;
+		}else{
+			
+			
+			if(strpos($url, 'youtu.be') !== false){
+				// 変換前→ https://youtu.be/KotU7jKOqLk
+				// 返還後→ https://www.youtube.com/embed/KotU7jKOqLk
+				$url = str_replace('youtu.be', 'www.youtube.com/embed', $url);
+				
+			}else if(strpos($url, 'watch') !== false){
+				// 変換前→ https://www.youtube.com/watch?v=KotU7jKOqLk&t=221s
+				// 返還後→ https://www.youtube.com/embed/KotU7jKOqLk
+				$wq = $this->stringRightRev($url, 'v=');
+				$wq2 = $this->stringLeftRev($wq, '&');
+				if($wq2 != ''){
+					$wq = $wq2;
+				}
+				
+				$url = 'https://www.youtube.com/embed/' . $wq;
+			}else{
+				$html = "<a href='{$url}' target='_blank'>動画</a>";
+				echo $html;
+				return;
+			}
+			
+			$html =
+			"
+				<div class='video_w'>
+					<iframe src='{$url}' frameborder='0' allowfullscreen></iframe>
+				</div>
+				<a href='{$url}' target='_blank'>動画</a>
+			";
+			echo $html;
+		}
+		
+		
+	}
+	
 	/**
 	 * ファイルプレビューAタイプ
 	 * @param string $fp ファイルパス
@@ -2179,6 +2228,7 @@ class CrudBaseHelper {
 	 */
 	public function filePreviewA($fp, $option=[]){
 
+		//if(empty($fp)) return '';//■■■□□□■■■□□□
 		$display = '';
 		if(empty($fp)) $display = 'display:none;';
 		

@@ -89,7 +89,7 @@ class CrudBaseModel{
 		
 		// 権限データを取得する
 		$authorityData = $this->getAuthorityData();
-		
+
 		$authority = [];
 		if(!empty($authorityData[$role])){
 			$authority = $authorityData[$role];
