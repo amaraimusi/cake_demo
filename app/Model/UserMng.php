@@ -100,7 +100,7 @@ class UserMng extends AppModel {
 		$sql =
 		"
 				SELECT SQL_CALC_FOUND_ROWS UserMng.*
-				FROM user_mngs AS UserMng
+				FROM users AS UserMng
 				WHERE {$conditions}
 				ORDER BY {$sort_field} {$sort_type}
 				LIMIT {$page_no}, {$row_limit}
