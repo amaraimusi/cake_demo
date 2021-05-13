@@ -71,11 +71,67 @@ class MngUser extends AppModel {
 	/**
 	 * 検索条件とページ情報を元にDBからデータを取得する
 	 * @param array $crudBaseData
-	 * @return number[]|unknown[]
+	 * @return []
 	 *  - array data データ
 	 *  - int non_limit_count LIMIT制限なし・データ件数
 	 */
 	public function getData($crudBaseData){
+		
+		$fields = $crudBaseData['fields']; // フィールド
+		
+		$kjs = $crudBaseData['kjs'];//検索条件情報
+		$pages = $crudBaseData['pages'];//ページネーション情報
+		
+		// ▽ SQLインジェクション対策
+		$kjs = $this->sqlSanitizeW($kjs);
+		$pages = $this->sqlSanitizeW($pages);
+		
+		$page_no = $pages['page_no']; // ページ番号
+		$row_limit = $pages['row_limit']; // 表示件数
+		$sort_field = $pages['sort_field']; // ソートフィールド
+		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
+		
+		//条件を作成
+		$conditions=$this->createKjConditions($kjs);
+		
+		$sort_type = '';
+		if(!empty($sort_desc)) $sort_type = 'DESC';
+		
+		$sql =
+		"
+				SELECT SQL_CALC_FOUND_ROWS MngUser.*
+				FROM mng_users AS MngUser
+				WHERE {$conditions}
+				ORDER BY {$sort_field} {$sort_type}
+				LIMIT {$page_no}, {$row_limit}
+			";
+		
+		$data = $this->query($sql);
+		
+		//データ構造を変換（2次元配列化）
+		$data2 = [];
+		if(!empty($data)) $data2 = Hash::extract($data, '{n}.MngUser');
+		
+		// LIMIT制限なし・データ件数
+		$non_limit_count = 0;
+		$res = $this->query('SELECT FOUND_ROWS()');
+		if(!empty($res)){
+			$res = reset($res[0]);
+			$non_limit_count= reset($res);
+		}
+		
+		return ['data' => $data2, 'non_limit_count' => $non_limit_count];
+		
+	}
+	
+	/**
+	 * 検索条件とページ情報を元にDBからデータを取得する
+	 * @param array $crudBaseData
+	 * @return []
+	 *  - array data データ
+	 *  - int non_limit_count LIMIT制限なし・データ件数
+	 */
+	public function getData_old($crudBaseData){
 		
 		$fields = $crudBaseData['fields']; // フィールド
 		
