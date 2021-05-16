@@ -19,6 +19,7 @@ class MsgBoard{
 		this.csrf_token = this.crudBaseData.csrf_token;
 		
 		this.userInfo = this.crudBaseData.userInfo;
+		this.kjs = this.crudBaseData.kjs;
 		
 		this.nickname = this.userInfo.nickname;
 		if(this.userInfo.nickname==null){
@@ -50,8 +51,7 @@ class MsgBoard{
 		
 		// データ中の「&」と「%」を全角の＆と％に一括エスケープ(&記号や%記号はPHPのJSONデコードでエラーになる)
 		sendData = this._escapeAjaxSendData(sendData);
-		// sendData = this._ampTo26(sendData); // PHPのJSONデコードでエラーになるので、＆を%26に一括変換する
-		
+
 		let fd = new FormData();
 		
 		let send_json = JSON.stringify(sendData);//データをJSON文字列にする。
@@ -60,6 +60,14 @@ class MsgBoard{
 		let regParam = {form_type: 'new_inp'};
 		let reg_param_json = JSON.stringify(regParam);//データをJSON文字列にする。
 		fd.append( "reg_param_json", reg_param_json );
+		
+		// ▼メール通知チェックフラグを取得し、送信メール情報にセット
+		let send_mail_check = jQuery('#send_mail_check:checked').val();
+		if(send_mail_check == null) send_mail_check = 0;
+		let sendMailInfo = this.crudBaseData.sendMailInfo;
+		sendMailInfo['send_mail_check'] = send_mail_check;
+		let send_mail_info_json = JSON.stringify(sendMailInfo);
+		fd.append( "send_mail_info_json", send_mail_info_json );
 		
 		// ファイルアップロード
 		fd.append( "attach_fn", $("#attach_fn").prop("files")[0] );
@@ -95,7 +103,8 @@ class MsgBoard{
 				location.reload(true);
 			}else{
 				this._addNewEntityToBoardDiv(res); // 新エンティティをボードdivの先頭要素に表示
-				this._clearNewInput();
+				this._clearNewInput(res);
+				this._reactSendMail(res);
 			}
 		})
 		.fail((jqXHR, statusText, errorThrown) => {
@@ -107,18 +116,55 @@ class MsgBoard{
 		
 	}
 	
+	// リアクティブ的にメール通知関連要素に反映
+	_reactSendMail(res){
+		// デバッグ・メールテキストを要素にセット（開発環境用の処理）
+		let sendMailInfo = res.sendMailInfo;
+		let debug_mail_text = sendMailInfo.debug_mail_text; // デバッグ・メールテキスト
+		if(!this._empty(debug_mail_text)){
+			let dmtwElm = jQuery('#send_mail_debug_mail_text_w');
+			dmtwElm.show();
+			dmtwElm.find('#send_mail_debug_mail_text').html(debug_mail_text);
+		}else{
+			jQuery('#send_mail_debug_mail_text_w').hide();
+		}
+		
+		this._reactMailSendCont(sendMailInfo.mail_send_cont); // リアクティブ的に送信メール数を要素にセット
+		
+		jQuery('#send_mail_check:checked').prop('checked', false);
+	}
+	
+	/** リアクティブ的に送信メール数を要素にセット
+	 */
+	_reactMailSendCont(mail_send_cont){
+		let msg = `${mail_send_cont}件メールを送信しました。`;
+		let elm = jQuery('#mail_send_cont');
+		elm.html(msg);
+		if(this._empty(mail_send_cont)){
+			elm.hide();
+		}else{
+			elm.show();
+		}
+		
+	}
+	
+	
+	
 	// メッセージ新規入力フォームをクリアする。
 	_clearNewInput(){
 		this.fileUploadK.setFilePaths('attach_fn', '');
 		jQuery('#ni_message').val('');
 		jQuery('#send_mail_flg').prop('checked', false);
 		
+
+		
 	}
 	
 	
 	// 新エンティティを一覧divの先頭要素に表示
-	_addNewEntityToBoardDiv(ent){
+	_addNewEntityToBoardDiv(res){
 
+		let ent = res.ent;
 		ent = this._xss_sanitize(ent);
 
 		// ボードdivの先頭エンティティDIVを取得する。
@@ -153,8 +199,8 @@ class MsgBoard{
 		
 		newEntDiv.show();
 		
-		
 		this._setEntTo_filePreviewA(newEntDiv, ent);
+		
 		
 	}
 	
@@ -525,6 +571,21 @@ class MsgBoard{
 			errElm.append(jqXHR.responseText);
 			alert(statusText);
 		});
+	}
+
+	
+	// Check empty.
+	_empty(v){
+		if(v == null || v == '' || v=='0'){
+			return true;
+		}else{
+			if(typeof v == 'object'){
+				if(Object.keys(v).length == 0){
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 
 	

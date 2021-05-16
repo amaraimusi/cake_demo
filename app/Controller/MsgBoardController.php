@@ -44,6 +44,7 @@ class MsgBoardController extends AppController {
 	 */
 	public function index() {
 		
+		
 		$this->init();
 		
 		// CrudBase共通処理（前）
@@ -69,6 +70,11 @@ class MsgBoardController extends AppController {
 		$data = $this->MsgBoard->setBtnDisplayByThisUserType($this_user_type, $data, $userInfo);
 		
 		$crudBaseData['this_user_type'] = $this_user_type;
+		
+		// メール通知機能の初期化
+		$otherUserIds = $this->MsgBoard->getOtherUserIds();// その他関係者ユーザーID配列をセミナー受講者テーブルから取得する	
+		$sendMailInfo = $this->MsgBoard->initSendMailInfo($this, $data, $this_user_type, $userInfo, $otherUserIds);
+		$crudBaseData['sendMailInfo'] = $sendMailInfo;
 		
 		$crud_base_json = json_encode($crudBaseData,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
 
@@ -117,9 +123,15 @@ class MsgBoardController extends AppController {
 		
 		// ファイルアップロードの一括作業
 		$fileUploadK = $this->factoryFileUploadK();
-		$res = $fileUploadK->putFile1($_FILES, 'attach_fn', $ent['attach_fn']);
+		$fileUploadK->putFile1($_FILES, 'attach_fn', $ent['attach_fn']);
 
-		$json_str = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS); // JSONに変換
+		// メール送信
+		$send_mail_info_json = $_POST['send_mail_info_json'];
+		$sendMailInfo = json_decode($send_mail_info_json, true);
+		$sendMailInfo = $this->MsgBoard->sendMail($this, $ent, $sendMailInfo, $userInfo);
+		
+		$res = ['ent'=>$ent, 'sendMailInfo'=>$sendMailInfo];
+		$json_str = json_encode($res, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS); // JSONに変換
 		
 		return $json_str;
 		
@@ -311,44 +323,6 @@ class MsgBoardController extends AppController {
 	
 	
 	/**
-	* Ajax | 自動保存
-	* 
-	* @note
-	* バリデーション機能は備えていない
-	* 
-	*/
-	public function auto_save(){
-		$this->autoRender = false;//ビュー(ctp)を使わない。
-		
-		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('msg_board') == false){
-			return '不正なアクションを検出しました。';
-		}
-		
-		App::uses('Sanitize', 'Utility');
-		
-		if($this->login_flg == 1 && empty($this->Auth->user())){
-			return 'Error:login is needed.';// 認証中でなければエラー
-		}
-		
-		$json=$_POST['key1'];
-		
-		$data = json_decode($json,true);//JSON文字を配列に戻す
-		
-		// データ保存
-		$this->MsgBoard->begin();
-		$this->MsgBoard->saveAll($data); // まとめて保存。内部でSQLサニタイズされる。
-		$this->MsgBoard->commit();
-
-		$res = array('success');
-		
-		$json_str = json_encode($res);//JSONに変換
-		
-		return $json_str;
-	}
-	
-	
-	/**
 	 * ファイルアップロードクラスのファクトリーメソッド
 	 * @return \App\Http\Controllers\FileUploadK
 	 */
@@ -359,153 +333,6 @@ class MsgBoardController extends AppController {
 		return $fileUploadK;
 	}
 	
-	
-	/**
-	 * 一括登録 | AJAX
-	 *
-	 * @note
-	 * 一括追加, 一括編集, 一括複製
-	 */
-	public function bulk_reg(){
-		$this->autoRender = false;//ビュー(ctp)を使わない。
-		
-		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('msg_board') == false){
-			return '不正なアクションを検出しました。';
-		}
-		
-		$this->init();
-		
-		require_once CRUD_BASE_PATH . 'BulkReg.php';
-		
-		// 更新ユーザーを取得
-		$update_user = 'none';
-		if(!empty($this->Auth->user())){
-			$userData = $this->Auth->user();
-			$update_user = $userData['username'];
-		}else{
-			throw new Exception('Login is needed. ログインが必要です。');
-			die();
-		}
-		
-		$json_param=$_POST['key1'];
-		$param = json_decode($json_param,true);//JSON文字を配列に戻す
-		
-		// 一括登録
-		$strategy = $this->cb->getStrategy(); // フレームワークストラテジーを取得する
-		$bulkReg = new \BulkReg($strategy, $update_user);
-		$res = $bulkReg->reg('msg_boards', $param);
-		
-		//JSONに変換
-		$str_json = json_encode($res,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
-		
-		return $str_json;
-	}
-
-	
-	/**
-	 * CSVインポート | AJAX
-	 *
-	 * @note
-	 *
-	 */
-	public function csv_fu(){
-		$this->autoRender = false;//ビュー(ctp)を使わない。
-		
-		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('msg_board') == false){
-			return '不正なアクションを検出しました。';
-		}
-		
-		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
-		
-		$this->csv_fu_base($this->MsgBoard,array('id','msg_board_val','msg_board_name','msg_board_date','msg_board_group','msg_board_dt','msg_board_flg','img_fn','note','sort_no'));
-		
-	}
-
-	
-	/**
-	 * CSVダウンロード
-	 *
-	 * 一覧画面のCSVダウンロードボタンを押したとき、一覧データをCSVファイルとしてダウンロードします。
-	 */
-	public function csv_download(){
-		$this->autoRender = false;//ビューを使わない。
-		
-		// CSRFトークンによるセキュリティチェック
-		if(CrudBaseU::checkCsrfToken('msg_board') == false){
-			return '不正なアクションを検出しました。';
-		}
-	
-		//ダウンロード用のデータを取得する。
-		$data = $this->getDataForDownload();
-		
-		// ダブルクォートで値を囲む
-		foreach($data as &$ent){
-			unset($ent['xml_text']);
-			foreach($ent as $field => $value){
-				if(mb_strpos($value,'"')!==false){
-					$value = str_replace('"', '""', $value);
-				}
-				$value = '"' . $value . '"';
-				$ent[$field] = $value;
-			}
-		}
-		unset($ent);
-		
-		//列名配列を取得
-		$clms=array_keys($data[0]);
-	
-		//データの先頭行に列名配列を挿入
-		array_unshift($data,$clms);
-	
-		//CSVファイル名を作成
-		$date = new DateTime();
-		$strDate=$date->format("Y-m-d");
-		$fn='msg_board'.$strDate.'.csv';
-
-		//CSVダウンロード
-		App::uses('CsvDownloader','Vendor/CrudBase');
-		$csv= new CsvDownloader();
-		$csv->output($fn, $data);
-
-	}
-
-	
-	//ダウンロード用のデータを取得する。
-	private function getDataForDownload(){
-		 
-		
-		//セッションから検索条件情報を取得
-		$kjs=$this->Session->read('msg_board_kjs');
-		
-		// セッションからページネーション情報を取得
-		$pages = $this->Session->read('msg_board_pages');
-
-		$page_no = 0;
-		$row_limit = 100000;
-		$sort_field = $pages['sort_field'];
-		$sort_desc = $pages['sort_desc'];
-		
-		$crudBaseData = array(
-				'kjs' => $kjs,
-				'pages' => $pages,
-				'page_no' => $page_no,
-				'row_limit' => $row_limit,
-				'sort_field' => $sort_field,
-				'sort_desc' => $sort_desc,
-		);
-		
-
-		//DBからデータ取得
-		$data=$this->MsgBoard->findData($crudBaseData);
-		if(empty($data)){
-			return array();
-		}
-	
-		return $data;
-	}
-
 	
 	/**
 	 * CrudBase用の初期化処理

@@ -1,12 +1,13 @@
 <?php
+require_once CRUD_BASE_PATH . 'MsgBoardEx.php'; // メッセージボード・拡張サポートクラス
 App::uses('Model', 'Model');
 App::uses('CrudBase', 'Model');
 
 /**
  * メッセージボードのCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-10-10
- * @version 3.1.2
+ * @date 2021-5-12
+ * @version 1.0.0
  *
  */
 class MsgBoard extends AppModel {
@@ -127,75 +128,7 @@ class MsgBoard extends AppModel {
 		return ['data' => $data2, 'non_limit_count' => $non_limit_count];
 		
 	}
-	
-	/**
-	 * 検索条件とページ情報を元にDBからデータを取得する
-	 * @param array $crudBaseData
-	 * @return []
-	 *  - array data データ
-	 *  - int non_limit_count LIMIT制限なし・データ件数
-	 */
-	public function getData_old($crudBaseData){
-		
-		$fields = $crudBaseData['fields']; // フィールド
-		
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-		
-		$page_no = $pages['page_no']; // ページ番号
-		$row_limit = $pages['row_limit']; // 表示件数
-		$sort_field = $pages['sort_field']; // ソートフィールド
-		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
-		
-		//条件を作成
-		$conditions=$this->createKjConditions($kjs);
-		
-		// オフセットの組み立て
-		$offset=null;
-		if(!empty($row_limit)) $offset = $page_no * $row_limit;
-		
-		// ORDER文の組み立て
-		$order = $sort_field;
-		if(empty($order)) $order='sort_no';
-		if(!empty($sort_desc)) $order .= ' DESC';
-		
-		$option=array(
-			'conditions' => $conditions,
-			'limit' =>$row_limit,
-			'offset'=>$offset,
-			'order' => $order,
-		);
-		
-		//DBからデータを取得
-		$data = $this->find('all',$option);
-		
-		//データ構造を変換（2次元配列化）
-		$data2=array();
-		foreach($data as $i=>$tbl){
-			foreach($tbl as $ent){
-				foreach($ent as $key => $v){
-					$data2[$i][$key]=$v;
-				}
-			}
-		}
-		
-		
-		// LIMIT制限なし・データ件数
-		$non_limit_count = 0;
-		$res = $this->query('SELECT FOUND_ROWS()');
-		if(!empty($res)){
-			$res = reset($res[0]);
-			$non_limit_count= reset($res);
-		}
-		
-		// ユーザー名を取得してデータにセットする。
-		$data2 = $this->getNickName($data2);
-		
-		return ['data' => $data2, 'non_limit_count' => $non_limit_count];
-		
-	}
-	
-	
+
 	
 	/**
 	 *  ユーザー名を取得してデータにセットする。
@@ -233,110 +166,6 @@ class MsgBoard extends AppModel {
 
 		return $data;
 	}
-	
-	/**
-	 * メッセージボードエンティティを取得
-	 *
-	 * メッセージボードテーブルからidに紐づくエンティティを取得します。
-	 *
-	 * @param int $id メッセージボードID
-	 * @return array メッセージボードエンティティ
-	 */
-	public function findEntity($id){
-
-		$conditions='id = '.$id;
-
-		//DBからデータを取得
-		$data = $this->find(
-				'first',
-				Array(
-						'conditions' => $conditions,
-				)
-		);
-
-		$ent=array();
-		if(!empty($data)){
-			$ent=$data['MsgBoard'];
-		}
-		
-
-
-
-		return $ent;
-	}
-
-
-	
-	
-	/**
-	 * 一覧データを取得する
-	 * @return array メッセージボード画面一覧のデータ
-	 */
-	public function findData(&$crudBaseData){
-		
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-
-
-		$page_no = $pages['page_no']; // ページ番号
-		$row_limit = $pages['row_limit']; // 表示件数
-		$sort_field = $pages['sort_field']; // ソートフィールド
-		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
-		
-		
-		//条件を作成
-		$conditions=$this->createKjConditions($kjs);
-		
-		// オフセットの組み立て
-		$offset=null;
-		if(!empty($row_limit)) $offset = $page_no * $row_limit;
-		
-		// ORDER文の組み立て
-		$order = $sort_field;
-		if(empty($order)) $order='sort_no';
-		if(!empty($sort_desc)) $order .= ' DESC';
-		
-		$option=array(
-				'conditions' => $conditions,
-				'limit' =>$row_limit,
-				'offset'=>$offset,
-				'order' => $order,
-		);
-		
-		//DBからデータを取得
-		$data = $this->find('all',$option);
-		
-		//データ構造を変換（2次元配列化）
-		$data2=array();
-		foreach($data as $i=>$tbl){
-			foreach($tbl as $ent){
-				foreach($ent as $key => $v){
-					$data2[$i][$key]=$v;
-				}
-			}
-		}
-
-		
-		return $data2;
-	}
-
-	
-	
-	/**
-	 * SQLのダンプ
-	 * @param  $option
-	 */
-	private function dumpSql($option){
-		$dbo = $this->getDataSource();
-		
-		$option['table']=$dbo->fullTableName($this->MsgBoard);
-		$option['alias']='MsgBoard';
-		
-		$query = $dbo->buildStatement($option,$this->MsgBoard);
-		
-		Debugger::dump($query);
-	}
-
 
 
 	/**
@@ -442,38 +271,7 @@ class MsgBoard extends AppModel {
 		return $ent;
 	}
 
-	
 
-
-	/**
-	 * 全データ件数を取得
-	 *
-	 * limitによる制限をとりはらった、検索条件に紐づく件数を取得します。
-	 *  全データ件数はページネーション生成のために使われています。
-	 *
-	 * @param array $kjs 検索条件情報
-	 * @return int 全データ件数
-	 */
-	public function findDataCnt($kjs){
-
-		//DBから取得するフィールド
-		$fields=array('COUNT(id) AS cnt');
-		$conditions=$this->createKjConditions($kjs);
-
-		//DBからデータを取得
-		$data = $this->find(
-				'first',
-				Array(
-						'fields'=>$fields,
-						'conditions' => $conditions,
-				)
-		);
-
-		$cnt=$data[0]['cnt'];
-		return $cnt;
-	}
-
-	
 	/**
 	 * 当画面のユーザータイプによる変更ボタン、削除ボタンの表示、非表示情報をセットする
 	 * @param string $this_user_type 当画面のユーザータイプ
@@ -532,6 +330,60 @@ class MsgBoard extends AppModel {
 		return $data;
 	}
 
+	/**
+	 * その他関係者ユーザーID配列をセミナー受講者テーブルから取得する
+	 * @param int $seminar_id セミナーID
+	 * @return [] その他関係者ユーザーID配列
+	 */
+	public function getOtherUserIds(){
+		
+		return [1,2,3,4];
+		/**
+		$sql = "
+			SELECT entrant_user_id, permission 
+			FROM seminar_entrants 
+			WHERE seminar_id = {$seminar_id} AND permission = 1
+		";
+		
+		$data = $this->query($sql);
+		if(empty($data)) return [];
+		$otherUserIds = Hash::extract($data, '{n}.seminar_entrants.entrant_user_id');
+		return $otherUserIds;*/
+		
+	}
+	
+	/**
+	 * メール通知機能の初期化、送信メール情報の取得
+	 * @param [] $data メッセージボードデータ
+	 * @param string $this_user_type 当画面でのユーザータイプ master:当セミナーの主催者, login_user:その他のログインユーザー
+	 * @param [] $userInfo ユーザー情報
+	 * @param [] $otherUserIds その他ユーザーID配列
+	 */
+	public function initSendMailInfo($ctrl, &$data, $this_user_type, &$userInfo, &$otherUserIds){
+
+		// 送信メール情報の基本設定
+		$sendMailInfo = [
+			'config_group_key'=>'msg_board',
+		];
+		
+		$msgBoardEx = new MsgBoardEx($ctrl, $this);
+		$sendMailInfo = $msgBoardEx->init($sendMailInfo, $data, $this_user_type, $userInfo, $otherUserIds);
+		return $sendMailInfo;
+	}
+	
+	
+	/**
+	 * メール送信
+	 * @param [] $ent メッセージボードエンティティ
+	 * @param [] $sendMailInfo 送信メール情報
+	 * @param [] $userInfo ユーザー情報
+	 * @return [] $sendMailInfo 送信メール情報
+	 */
+	public function sendMail($ctrl, &$ent, &$sendMailInfo, &$userInfo){
+		$msgBoardEx = new MsgBoardEx($ctrl, $this);
+		$sendMailInfo = $msgBoardEx->sendMail($ent, $sendMailInfo, $userInfo);
+		return $sendMailInfo;
+	}
 	
 
 }

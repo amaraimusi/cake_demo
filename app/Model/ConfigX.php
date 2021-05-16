@@ -101,7 +101,7 @@ class ConfigX extends AppModel {
 		$sql =
 		"
 				SELECT SQL_CALC_FOUND_ROWS ConfigX.*
-				FROM config_xs AS ConfigX
+				FROM configs AS ConfigX
 				WHERE {$conditions}
 				ORDER BY {$sort_field} {$sort_type}
 				LIMIT {$page_no}, {$row_limit}

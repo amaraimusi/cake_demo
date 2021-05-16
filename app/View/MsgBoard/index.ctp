@@ -53,8 +53,13 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		</div><!-- col -->
 		<div class="col-12 col-md-5">
 			<div class="form-group form-check">
-				<input type="checkbox" class="form-check-input" id="send_mail_flg">
-				<label class="form-check-label" for="send_mail_flg">Eメールも送信します。</label>
+				<div style="<?php echo $sendMailInfo['disp_mail_check']; ?>">
+					<input type="checkbox" class="form-check-input send_mail_check" id="send_mail_check" value="1">
+					<label class="form-check-label" for="send_mail_check">受講者全員にメールで通知します。</label>
+					<aside>※サーバの負荷状況によりメール通知されない可能性もございます。</aside>
+				</div>
+				<div class="text-secondary send_mail_err_msg" ><?php echo $sendMailInfo['err_msg']; ?></div>
+				<div id="mail_send_cont" class="text-success"></div>
 			</div>
 		</div>
 		<div class="col-12 col-md-2"></div>
@@ -67,6 +72,12 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 			<?php $this->CrudBase->divPagenation(); // ページネーション ?>
 		</div>
 		<div class="col-12 col-md-2"></div>
+</div>
+
+<div id="send_mail_debug_mail_text_w" class="" style="display:none;">
+	<p class="text-danger">開発環境 メールの内容</p>
+	localhostでは実際にメール送信しない。代わりにメール内容を以下に表示する。
+	<div id="send_mail_debug_mail_text" class="" ></div>
 </div>
 
 <!-- メッセージ一覧 -->

@@ -11,3 +11,12 @@
 	border-top:solid 1px #899298;
 	padding-top:12px;
 }
+
+#send_mail_debug_mail_text{
+	overflow: scroll;
+	height:200px;
+	white-space:pre-wrap; 
+	word-wrap:break-word;
+	background-color:#edafa0;
+	padding:40px;
+}
