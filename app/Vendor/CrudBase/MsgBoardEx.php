@@ -92,6 +92,9 @@ class MsgBoardEx{
 		if($permission_flg == 0){
 			$disp_mail_check = 'display:none;';
 		}
+		
+		$info_url = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://').$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+		
 
 		$sendMailInfo['permission_master'] = $permission_master;
 		$sendMailInfo['permission_login_user'] = $permission_login_user;
@@ -103,6 +106,7 @@ class MsgBoardEx{
 		$sendMailInfo['err_msg'] = $err_msg;
 		$sendMailInfo['disp_mail_check'] = $disp_mail_check;
 		$sendMailInfo['this_user_type'] = $this_user_type;
+		$sendMailInfo['info_url'] = $info_url;
 
 		return $sendMailInfo;
 	}
@@ -203,7 +207,7 @@ class MsgBoardEx{
 			$mail_text = str_replace('%to_nickname', $to_nickname, $mail_text_tmpl);
 			$mail_text = str_replace('%nickname', $nickname, $mail_text);
 			$mail_text = str_replace('%message', $message, $mail_text);
-			$url = (empty($_SERVER['HTTPS']) ? 'http://' : 'https://').$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+			$url = $sendMailInfo['info_url'];
 			$mail_text = str_replace('%url', $url, $mail_text);
 			
 			
