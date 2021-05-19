@@ -37,6 +37,7 @@ class MsgBoard{
 		
 		let user_id = -1;
 		if(this.userInfo.id != null) user_id = this.userInfo.id;
+		let user_type = this.crudBaseData.user_type;
 		let message = jQuery('#ni_message').val();
 		let file_val = jQuery('#attach_fn').val();
 		
@@ -46,6 +47,7 @@ class MsgBoard{
 		let sendData={
 			message:message, 
 			user_id:user_id,
+			user_type:user_type,
 			attach_fn:'',
 			};
 		
@@ -188,8 +190,8 @@ class MsgBoard{
 		newEntDiv.find('.delete_btn').show();
 		newEntDiv.find('.menu_div').hide();
 		
-		let this_user_type = this.crudBaseData.this_user_type; // 当画面のユーザータイプ
-		if(this_user_type == 'master' || this_user_type == 'login_user'){
+		let user_type = this.crudBaseData.user_type; // 当画面のユーザータイプ
+		if(user_type == 'master' || user_type == 'login_user'){
 			newEntDiv.find('.menu_btn').show();
 		}else{
 			newEntDiv.find('.menu_btn').hide();

@@ -63,17 +63,23 @@ class MsgBoardController extends AppController {
 		
 		$userInfo = $crudBaseData['userInfo'];
 		
+		//■■■□□□■■■□□□
+		if(empty($userInfo['id'])){
+			$userInfo['id'] = -1;
+		}
+		
 		// 当画面のユーザータイプを取得 master:マスター型, login_user:一般ログインユーザー, guest:未ログインユーザー
-		$this_user_type = $this->getThisUserType();
+		$user_type = $this->getThisUserType();
+		
 		
 		// 当画面のユーザータイプによる変更ボタン、削除ボタンの表示、非表示情報をセットする
-		$data = $this->MsgBoard->setBtnDisplayByThisUserType($this_user_type, $data, $userInfo);
+		$data = $this->MsgBoard->setBtnDisplayByThisUserType($user_type, $data, $userInfo);
 		
-		$crudBaseData['this_user_type'] = $this_user_type;
+		$crudBaseData['user_type'] = $user_type;
 		
 		// メール通知機能の初期化
 		$otherUserIds = $this->MsgBoard->getOtherUserIds();// その他関係者ユーザーID配列をセミナー受講者テーブルから取得する	
-		$sendMailInfo = $this->MsgBoard->initSendMailInfo($this, $data, $this_user_type, $userInfo, $otherUserIds);
+		$sendMailInfo = $this->MsgBoard->initSendMailInfo($this, $data, $user_type, $userInfo, $otherUserIds);
 		$crudBaseData['sendMailInfo'] = $sendMailInfo;
 		
 		$crud_base_json = json_encode($crudBaseData,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
@@ -216,7 +222,7 @@ class MsgBoardController extends AppController {
 		$user_id = $userInfo['id'];
 
 		// 当画面のユーザータイプを取得 master:マスター型, login_user:一般ログインユーザー, guest:未ログインユーザー
-		$this_user_type = $this->getThisUserType($userInfo); 
+		$user_type = $this->getThisUserType($userInfo); 
 		
 		// JSON文字列をパースしてエンティティを取得する
 		$json=$_POST['key1'];
@@ -235,7 +241,7 @@ class MsgBoardController extends AppController {
 			$my_msg_flg = 1;
 		}
 		
-		if($this_user_type == 'master'){
+		if($user_type == 'master'){
 			// 自分のメッセージである場合
 			if($my_msg_flg == 1){
 				$this->deleteActionToDb($my_del_flg, $ent, $userInfo);
@@ -245,7 +251,7 @@ class MsgBoardController extends AppController {
 			else{
 				$this->deleteActionToDb($org_del_flg, $ent, $userInfo);
 			}
-		}else if($this_user_type == 'login_user'){
+		}else if($user_type == 'login_user'){
 			if($my_msg_flg == 1){
 				$this->deleteActionToDb($my_del_flg, $ent, $userInfo);
 			}
@@ -281,13 +287,13 @@ class MsgBoardController extends AppController {
 		
 		if(empty($userInfo['id'])) return 'guest';
 		
-		$this_user_type = 'login_user'; // 当画面のユーザータイプ 
+		$user_type = 'login_user'; // 当画面のユーザータイプ 
 		
 		if($userInfo['authority']['level'] >= 30){
-			$this_user_type = 'master';
+			$user_type = 'master';
 		}
 		
-		return $this_user_type;
+		return $user_type;
 	}
 	
 	
@@ -351,6 +357,7 @@ class MsgBoardController extends AppController {
 				['name'=>'kj_id', 'def'=>null],
 				['name'=>'kj_other_id', 'def'=>null],
 				['name'=>'kj_user_id', 'def'=>null],
+				['name'=>'kj_user_type', 'def'=>null],
 				['name'=>'kj_message', 'def'=>null],
 				['name'=>'kj_attach_fn', 'def'=>null],
 				['name'=>'kj_sort_no', 'def'=>null],
@@ -385,6 +392,11 @@ class MsgBoardController extends AppController {
 					'name'=>'ユーザーID',
 					'row_order'=>'MsgBoard.user_id',
 					'clm_show'=>1,
+			],
+			'user_type'=>[
+				'name'=>'ユーザータイプ',
+				'row_order'=>'MsgBoard.user_type',
+				'clm_show'=>1,
 			],
 			'message'=>[
 					'name'=>'メッセージ',

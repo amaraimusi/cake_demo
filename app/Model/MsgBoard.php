@@ -25,17 +25,18 @@ class MsgBoard extends AppModel {
 	// ホワイトリスト（DB保存時にこのホワイトリストでフィルタリングが施される）
 	public $fillable = [
 		// CBBXS-2009
-			'id',
-			'other_id',
-			'user_id',
-			'message',
-			'attach_fn',
-			'sort_no',
-			'delete_flg',
-			'update_user',
-			'ip_addr',
-			'created',
-			'modified',
+		'id',
+		'other_id',
+		'user_id',
+		'user_type',
+		'message',
+		'attach_fn',
+		'sort_no',
+		'delete_flg',
+		'update_user',
+		'ip_addr',
+		'created',
+		'modified',
 
 		// CBBXE
 	];
@@ -193,6 +194,9 @@ class MsgBoard extends AppModel {
 		if(!empty($kjs['kj_user_id']) || $kjs['kj_user_id'] ==='0' || $kjs['kj_user_id'] ===0){
 			$cnds[]="MsgBoard.user_id = {$kjs['kj_user_id']}";
 		}
+		if(!empty($kjs['kj_user_type'])){
+			$cnds[]="MsgBoard.user_type = '{$kjs['kj_user_type']}'";
+		}
 		if(!empty($kjs['kj_message'])){
 			$cnds[]="MsgBoard.message LIKE '%{$kjs['kj_message']}%'";
 		}
@@ -274,18 +278,18 @@ class MsgBoard extends AppModel {
 
 	/**
 	 * 当画面のユーザータイプによる変更ボタン、削除ボタンの表示、非表示情報をセットする
-	 * @param string $this_user_type 当画面のユーザータイプ
+	 * @param string $user_type 当画面のユーザータイプ
 	 * @param [] $data メッセージボード・データ
 	 * @param [] $userInfo ユーザー情報
 	 * @return [] メッセージボード・データ
 	 */
-	public function setBtnDisplayByThisUserType($this_user_type, &$data, &$userInfo){
+	public function setBtnDisplayByThisUserType($user_type, &$data, &$userInfo){
 		
 		$self_user_id = $userInfo['id'] ?? -1; // 自分のユーザーID
 
 		foreach($data as &$ent){
 			
-			if($this_user_type == 'master'){
+			if($user_type == 'master'){
 				// 自分のメッセージである場合
 				if($ent['user_id'] == $self_user_id){
 					$ent['edit_btn'] = '';
@@ -299,7 +303,7 @@ class MsgBoard extends AppModel {
 					$ent['delete_btn'] = '';
 					$ent['menu_btn'] = '';
 				}
-			}else if($this_user_type == 'login_user'){
+			}else if($user_type == 'login_user'){
 				// 自分のメッセージである場合
 				if($ent['user_id'] == $self_user_id){
 					$ent['edit_btn'] = '';
@@ -316,7 +320,7 @@ class MsgBoard extends AppModel {
 			}
 			
 			//　ゲストユーザーである場合、編集ボタンも変更ボタンを非表示
-			else if($this_user_type == 'guest'){
+			else if($user_type == 'guest'){
 				$ent['edit_btn'] = 'display:none;';
 				$ent['delete_btn'] = 'display:none;';
 				$ent['menu_btn'] = 'display:none;';
@@ -355,11 +359,11 @@ class MsgBoard extends AppModel {
 	/**
 	 * メール通知機能の初期化、送信メール情報の取得
 	 * @param [] $data メッセージボードデータ
-	 * @param string $this_user_type 当画面でのユーザータイプ master:当セミナーの主催者, login_user:その他のログインユーザー
+	 * @param string $user_type 当画面でのユーザータイプ master:当セミナーの主催者, login_user:その他のログインユーザー
 	 * @param [] $userInfo ユーザー情報
 	 * @param [] $otherUserIds その他ユーザーID配列
 	 */
-	public function initSendMailInfo($ctrl, &$data, $this_user_type, &$userInfo, &$otherUserIds){
+	public function initSendMailInfo($ctrl, &$data, $user_type, &$userInfo, &$otherUserIds){
 
 		// 送信メール情報の基本設定
 		$sendMailInfo = [
@@ -367,7 +371,7 @@ class MsgBoard extends AppModel {
 		];
 		
 		$msgBoardEx = new MsgBoardEx($ctrl, $this);
-		$sendMailInfo = $msgBoardEx->init($sendMailInfo, $data, $this_user_type, $userInfo, $otherUserIds);
+		$sendMailInfo = $msgBoardEx->init($sendMailInfo, $data, $user_type, $userInfo, $otherUserIds);
 		return $sendMailInfo;
 	}
 	
