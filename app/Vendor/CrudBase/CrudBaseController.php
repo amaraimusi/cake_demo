@@ -1793,6 +1793,11 @@ class CrudBaseController {
 		
 		// フィールドを置換
 		$fp = str_replace('%field', $field, $fp);
+		
+		if(strpos($fp, '%unique')){
+			$unique = uniqid(rand(1, 1000)); // ユニーク値を取得
+			$fp = str_replace('%unique', $unique, $fp);
+		}
 
 		// 日付が空なら現在日時をセットする
 		$Y = date('Y',$u);

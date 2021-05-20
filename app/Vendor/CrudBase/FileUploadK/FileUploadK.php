@@ -9,9 +9,10 @@ require_once 'ThumbnailEx.php';
  * 「<input type = 'file'>」であるファイルアップロードのフォーム要素から送られてきたファイルデータを指定場所に保存する。
  * ファイルチェックや、画像形式ならサムネイル画像作成も行う。
  * 
- * @date 2018-6-30 | 2020-6-12
- * @version 1.1.4
+ * @date 2018-6-30 | 2021-5-20
+ * @version 1.1.5
  * @history
+ * 2021-5-20 バグ修正
  * 2018-10-23 ver 1.1.2 セパレータから始まるディレクトリの時に起こるバグを修正
  * 2018-8-23 ver1.1 optionにfn(ファイル名)を指定できるようにした。
  * 2018-8-22 ver1.0 リリース
@@ -139,6 +140,9 @@ class FileUploadK{
 		// ファイルをディレクトリパスへコピーする。
 		$fileData = $this->copyOrigFiles($fileData,$dpDatas);
 		
+		// サムネイル用のディレクトリを作成
+		$this->makeThumsDp($dpDatas);
+		
 		// サムネイルを作成する。
 		$fileData = $this->createThumFiles($fileData,$dpDatas);
 		
@@ -148,6 +152,23 @@ class FileUploadK{
 		);
 		
 		return $res;
+	}
+	
+	
+	/**
+	 * サムネイル用のディレクトリを作成
+	 * @param [] $fileData
+	 */
+	private function makeThumsDp(&$fileData){
+		
+		foreach($fileData as &$box1){
+			$thums = $box1['thums'];
+			foreach($thums as $ent){
+				$thum_dp = $ent['thum_dp'];
+				$this->makeDirEx($thum_dp);
+			}
+		}
+		
 	}
 	
 	
@@ -608,12 +629,13 @@ class FileUploadK{
 	 * @return string ファイルパス
 	 */
 	private function connectPath($dp,$fn){
+		
 
 		if(empty($dp)) return $fn;
 		
 		$es1 = mb_substr($dp,-1); // ディレクトリパスから末尾の一文字を取得
 		$fp = ''; // ファイルパス
-		
+
 		if($es1 == '/' || $es1 == '\\'){
 			$fp = $dp . $fn;
 		}else{
@@ -621,7 +643,13 @@ class FileUploadK{
 			$fp = $dp . $sep . $fn;
 		}
 
-		$fp = str_replace($es1.$es1, $es1, $fp); // 2重セパレータを置換する
+		// 2重セパレータを置換する
+		if(strpos($fp, '//') !== false){
+			$fp = str_replace($es1.$es1, $es1, $fp); 
+		}
+		if(strpos($fp, '\\\\') !== false){
+			$fp = str_replace($es1.$es1, $es1, $fp);
+		}
 		
 		return $fp;
 		

@@ -31,7 +31,6 @@ class ThumbnailEx{
 	 */
 	public function createThumbnail($orig_fp,$thum_fp,$thum_width=null,$thum_height=null){
 
-		
 		$orig_fp=mb_convert_encoding($orig_fp,'SJIS','UTF-8');
 		
 		// オリジナル画像が存在なら処理抜け
@@ -121,7 +120,7 @@ class ThumbnailEx{
 	 * @param string $dir_path ディレクトリパス
 	 */
 	public function makeDirEx($dir_path,$permission = 0705){
-		
+
 		if(empty($dir_path)){return;}
 		
 		// 日本語名を含むパスに対応する
