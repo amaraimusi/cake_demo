@@ -37,7 +37,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		<div class="cb_kj_detail" style="display:none">
 			<table style="width:100%"><tbody><tr>
 				<td>詳細検索</td>
-				<td style="text-align:right"><button type="button" class="btn btn-secondary btn-sm"  onclick="jQuery('.cb_kj_detail').toggle(300);">閉じる</button></td>
+				<td style="text-align:right"><button type="button" class="btn btn-outline-secondary btn-sm"  onclick="jQuery('.cb_kj_detail').toggle(300);">閉じる</button></td>
 			</tr></tbody></table>
 		<?php 
 		
@@ -89,7 +89,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 
 <div style="clear:both"></div>
 
-<div id="detail_div" style="background-color:#ebedef;padding:4px;display:none">
+<div id="detail_div" style="background-color:#ebedef;margin-top:4px;padding:4px;display:none">
 	
 	<div id="main_tools" style="margin-bottom:10px;margin-top:4px">
 		<div style="display:inline-block;width:75%; ">

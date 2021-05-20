@@ -82,7 +82,7 @@ class PagenationJump{
 	_createHtml(){
 		// テキストボックス cbpjump_tb、ジャンプボタン cbpjump_btn
 		let html = `
-	<button class="cbpjump_show_btn btn btn-secondary btn-sm" title="ページジャンプ">
+	<button class="cbpjump_show_btn btn btn-outline-primary btn-sm" title="ページジャンプ">
 			⇒
 	</button>
 	<div style="display:inline-block">

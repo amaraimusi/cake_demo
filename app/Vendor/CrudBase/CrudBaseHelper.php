@@ -181,14 +181,14 @@ class CrudBaseHelper {
 		
 		$html = "
 			<div class='' data-field='{$field}' style='display:inline-block'>
-				<div class='input search'>
+				<div class='input search form-group'>
 					<input 
 						name='data[{$model_name_c}][{$field}]' 
 						id='{$field}' 
 						value='{$this->kjs[$field]}'
 						 placeholder='{$placeholder}' 
 						style='width:{$width}px; ' 
-						class='kjs_inp' 
+						class='form-control form-control-sm' 
 						title='{$title}' maxlength='{$maxlength}' type='search' />
 				</div>
 			</div>
