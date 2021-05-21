@@ -86,7 +86,10 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 <div class="row entity" data-id="<?php echo $ent['id']; ?>" style="margin-top:24px">
 	<div class="col-12 col-md-2"></div>
 	<div class="col-12 col-md-8 entity_box1" >
-		<div class="text-secondary nickname"><?php echo h($ent['nickname']);?></div>
+		<div>
+			<div class="text-secondary" style="display:inline-block;margin-right:40px;"><?php echo $this->CrudBase->dateFormat($ent['modified'], 'Y-m-d H:i'); ?></div>
+			<div class="text-secondary nickname" style="display:inline-block"><?php echo h($ent['nickname']);?></div>
+		</div>
 		<div class="text-md-left message_div"><?php echo h($ent['message']);?></div>
 		<div style="width:320px;height:auto;">
 		<?php echo $this->CrudBase->filePreviewA($ent['attach_fn']); ?>
