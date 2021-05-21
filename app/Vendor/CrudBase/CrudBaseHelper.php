@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.0.2
- * @since 2016-7-27 | 2021-5-4
+ * @version 2.0.3
+ * @since 2016-7-27 | 2021-5-21
  * @author k-uehara
  * @license MIT
  */
@@ -1306,6 +1306,10 @@ class CrudBaseHelper {
 	
 	/**
 	 * 時刻h:i型の出力
+	 * 
+	 * @desc
+	 * 分単位で時刻を表示
+	 * 
 	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
 	 */
@@ -2135,17 +2139,24 @@ class CrudBaseHelper {
 	
 	/**
 	 * 複数有効/削除の区分を表示する
+	 * @param [] $option
+	 * - help_flg string ヘルプフラグ 0:ヘルプ表示しない, 1:ヘルプを表示（デフォルト）$this
+	 * - help_msg string ヘルプメッセージ
 	 */
-	public function divPwms(){
+	public function divPwms($option=[]){
+		
+		$help_flg = $option['help_flg'] ?? 1;
+		$help_msg = $option['help_msg'] ?? "※ID列の左側にあるチェックボックスにチェックを入れてから「削除」ボタンを押すと、まとめて削除されます。<br>削除の復元は画面下側のヘルプボタンを参照してください。<br>";
+		
+		$help_html = '';
+		if($help_flg) $help_html = "<aside>{$help_msg}</aside>";
+		
 		$html = "
 			<div style='margin-top:10px;margin-bottom:10px'>
 				<label for='pwms_all_select'>すべてチェックする <input type='checkbox' name='pwms_all_select' onclick='crudBase.pwms.switchAllSelection(this);' /></label>
 				<button type='button' onclick='crudBase.pwms.action(10)' class='btn btn-success btn-sm'>有効</button>
 				<button type='button' onclick='crudBase.pwms.action(11)' class='btn btn-danger btn-sm'>削除</button>
-				<aside>
-					※ID列の左側にあるチェックボックスにチェックを入れてから「削除」ボタンを押すと、まとめて削除されます。<br>
-					削除の復元は画面下側のヘルプボタンを参照してください。<br>
-				</aside>
+				{$help_html}
 			</div>
 		";
 		echo $html;
