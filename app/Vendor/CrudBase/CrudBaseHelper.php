@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.0.3
- * @since 2016-7-27 | 2021-5-21
+ * @version 2.0.4
+ * @since 2016-7-27 | 2021-5-22
  * @author k-uehara
  * @license MIT
  */
@@ -2316,6 +2316,17 @@ class CrudBaseHelper {
 		</div>
 		";
 		return $html;
+	}
+	
+	/**
+	 * 日付用のフォーマット変換
+	 * @param mixed $date 日時
+	 * @param string $format フォーマット Y-m-d H:i:s
+	 * @return string
+	 */
+	public function dateFormat($date, $format = 'Y-m-d'){
+		if(empty($date)) return '';
+		return date($format, strtotime($date));
 	}
 	
 }
