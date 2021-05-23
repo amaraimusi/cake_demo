@@ -47,8 +47,10 @@ class FileUploadK{
 	 * @param string $fp ファイルパス
 	 */
 	public function putFile1(&$FILES, $filed, $fp){
+		if(empty($FILES)) return;
 		
 		if(empty($fp)) return;
+		
 		
 		// ファイルパスからファイル名とディレクトリパスを取得する
 		$pathInfo = pathinfo($fp);
@@ -89,6 +91,8 @@ class FileUploadK{
 	}
 	
 	
+	
+	
 	/**
 	 * 一括作業
 	 * @param array $files2 $_FILES
@@ -120,8 +124,10 @@ class FileUploadK{
 	 *  - errs エラーリスト
 	 *
 	 */
-	public function workAllAtOnce(&$FILES,&$option = array()){
+	public function workAllAtOnce(&$FILES, &$option = []){
+		if(empty($FILES)) return;
 		
+
 		// ファイルデータを取得する
 		$fileData = $this->getFileData($FILES,$option);
 		
@@ -135,10 +141,10 @@ class FileUploadK{
 		$err_msg = $this->combineErrMsg($fileData);
 		
 		// ディレクトリパスデータを取得する
-		$dpDatas = $this->getDirPathData($fileData,$option);
+		$dpDatas = $this->getDirPathData($fileData, $option);
 		
 		// ファイルをディレクトリパスへコピーする。
-		$fileData = $this->copyOrigFiles($fileData,$dpDatas);
+		$fileData = $this->copyOrigFiles($fileData, $dpDatas);
 		
 		// サムネイル用のディレクトリを作成
 		$this->makeThumsDp($dpDatas);
@@ -153,6 +159,46 @@ class FileUploadK{
 		
 		return $res;
 	}
+	
+	
+
+	
+	
+	/**
+	 * ファイルパスの「/orig/」から左部分パスを切り取る
+	 * @param string $fp
+	 * @return string 「/orig/」から左部分パスを切り取る
+	 */
+	public function cutLeftFromOrig($fp){
+		$dp3 = '';
+		$dp2 = $fp . '/';
+		if(strpos($dp2, '/orig/') !== false){
+			$dp3 = $this->stringLeftRev($dp2, '/orig/');
+		}
+		return $dp3;
+	}
+	
+	/**
+	 * 文字列を右側から印文字を検索し、左側の文字を切り出す。
+	 * @param $s string 対象文字列
+	 * @param $mark string 印文字
+	 * @return string  印文字から左側の文字列
+	 */
+	private function stringLeftRev($s,$mark){
+		
+		if ($s==null || $s==""){
+			return $s;
+		}
+		$a = strrpos($s,$mark);
+		if($a==null && $a!==0){
+			return "";
+		}
+		
+		$s2=substr($s,0,$a);
+		return $s2;
+		
+	}
+	
 	
 	
 	/**
@@ -832,6 +878,32 @@ class FileUploadK{
 				mkdir($dd,$permission);//ディレクトリを作成
 				chmod($dd,$permission);// 書込み可能なディレクトリとする
 			}
+		}
+	}
+	
+	/**
+	 * ディレクトリごとファイルを削除する。（階層化のファイルまで削除可能）
+	 * @param string $dir 削除対象ディレクトリ(絶対パスで指定する。セパレータはスラッシュ、バックスラッシュが混在しても良い）
+	 */
+	public function removeDirectory($dir) {
+		// ディレクトリでないなら即削除
+ 		if (!is_dir($dir)) {
+			@unlink($dir);
+			return;
+		}
+		if ($handle = opendir($dir)) {
+			while (false !== ($item = readdir($handle))) {
+				if ($item != "." && $item != "..") {
+					$dp = $dir . '/' . $item;
+					if (is_dir($dp)) {
+						$this->removeDirectory($dp);
+					} else {
+						@unlink($dp);
+					}
+				}
+			}
+			closedir($handle);
+			rmdir($dir);
 		}
 	}
 	

@@ -25,6 +25,8 @@ $crud_base_root = dirname(__FILE__) . '/';
 $crud_base_app_path = $crud_base_root . 'app/';
 $crud_base_path = $crud_base_app_path . 'Vendor/CrudBase/';
 $project_path = '/cake_demo'; // 例：「/animal/mng」
+$crud_base_webroot_abs_path = $crud_base_root . 'app/webroot/';
+	
 
 $CRUD_BASE_JS = "{$project_path}/js/CrudBase/dist/CrudBase.min.js";
 $CRUD_BASE_CSS = "{$project_path}/css/CrudBase/dist/CrudBase.min.css";
@@ -34,6 +36,7 @@ define('CRUD_BASE_PROJECT_PATH',$project_path); // Ajaxや画像のパス
 define('CRUD_BASE_PATH',$crud_base_path);
 define('CRUD_BASE_JS',$CRUD_BASE_JS);
 define('CRUD_BASE_CSS',$CRUD_BASE_CSS);
+define('CRUD_BASE_WEBROOT_ABS_PATH', $crud_base_webroot_abs_path);
 
 // CrudBase設定データ
 $crudBaseConfig = [
@@ -46,6 +49,7 @@ $crudBaseConfig = [
 	'crud_base_path'=>CRUD_BASE_PATH, // Vendor側のCrudBaseライブラリへの絶対パス
 	'crud_base_js'=>CRUD_BASE_JS, // jsのCrudBaseライブラリパス（相対パス）
 	'crud_base_css'=>CRUD_BASE_CSS, // cssのCrudBaseライブラリパス（相対パス）
+	'crud_base_webroot_abs_path'=>$crud_base_webroot_abs_path,
 ];
 
 // DB設定情報を取得する
