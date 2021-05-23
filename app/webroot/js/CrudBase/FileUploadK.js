@@ -13,7 +13,7 @@
  * 
  * @license MIT
  * @version 1.3.1
- * @date 2018-7-6 | 2020-4-29
+ * @date 2018-7-6 | 2021-5-22
  * @history 
  *  - 2021-04-29 var 1.3.0 大幅なバージョンアップ
  *  - 2018-10-2 var 1.2.6 「Now Loading...」メッセージを表示する
@@ -248,7 +248,11 @@ class FileUploadK{
 		xhr.open('GET', fp, true);
 		xhr.responseType = 'blob';
 		xhr.onload = (e) => {
-
+			
+			if(e.currentTarget.status == '404'){
+				throw new Error('ファイルが見つかりません。パスを確認してください。');
+			} 
+			
 			// プリロードのonloadイベント処理： ファイル関連情報をbDataにセットする。
 			this._xhrOnload(e,xhr,bData);
 

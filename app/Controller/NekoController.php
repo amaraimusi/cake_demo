@@ -102,7 +102,7 @@ class NekoController extends AppController {
 			return '不正なアクションを検出しました。';
 		}
 		
-		$userInfo = $this->Auth->user(); // ログインユーザー情報を取得する
+		$userInfo = $this->getUserInfo();
 		
 		$this->init();
 		
