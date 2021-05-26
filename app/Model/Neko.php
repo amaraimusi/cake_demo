@@ -113,7 +113,13 @@ class Neko extends AppModel {
 		
 		//データ構造を変換（2次元配列化）
 		$data2 = [];
-		if(!empty($data)) $data2 = Hash::extract($data, '{n}.Neko');
+		foreach($data as $i=>$tbl){
+			foreach($tbl as $ent){
+				foreach($ent as $key => $v){
+					$data2[$i][$key]=$v;
+				}
+			}
+		}
 		
 		// LIMIT制限なし・データ件数
 		$non_limit_count = 0;

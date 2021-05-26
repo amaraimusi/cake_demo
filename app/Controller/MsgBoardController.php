@@ -119,17 +119,19 @@ class MsgBoardController extends AppController {
 		// 登録パラメータ
 		$reg_param_json = $_POST['reg_param_json'];
 		$regParam = json_decode($reg_param_json,true);
-		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
-
-		$ent['attach_fn'] = $this->cb->makeFilePath($_FILES, 'rsc/img/%field/y%Y/m%m/orig/%fn', $ent, 'attach_fn');
+		//$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate1■■■□□□■■■□□□
 
 		$ent = $this->setCommonToEntity($ent);
 		// CBBXE
 		$ent = $this->md->saveEntity($ent, $regParam);
 		
-		// ファイルアップロードの一括作業
-		$fileUploadK = $this->factoryFileUploadK();
-		$fileUploadK->putFile1($_FILES, 'attach_fn', $ent['attach_fn']);
+		// ファイルアップロードとファイル名のDB保存
+		if(!empty($_FILES)){
+			$ent['attach_fn'] = $this->cb->makeFilePath($_FILES, "storage/msg_board/y%Y/{$ent['id']}/%unique/orig/%fn", $ent, 'attach_fn');
+			$fileUploadK = $this->factoryFileUploadK();
+			$fileUploadK->putFile1($_FILES, 'attach_fn', $ent['attach_fn']);
+			$this->md->save($ent, ['validate'=>false]);
+		}
 
 		// メール送信
 		$send_mail_info_json = $_POST['send_mail_info_json'];

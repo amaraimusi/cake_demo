@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.0.4
- * @since 2016-7-27 | 2021-5-22
+ * @version 2.0.5
+ * @since 2016-7-27 | 2021-5-26
  * @author k-uehara
  * @license MIT
  */
@@ -188,7 +188,7 @@ class CrudBaseHelper {
 						value='{$this->kjs[$field]}'
 						 placeholder='{$placeholder}' 
 						style='width:{$width}px; ' 
-						class='form-control form-control-sm' 
+						class='form-control form-control-sm kjs_inp' 
 						title='{$title}' maxlength='{$maxlength}' type='search' />
 				</div>
 			</div>
