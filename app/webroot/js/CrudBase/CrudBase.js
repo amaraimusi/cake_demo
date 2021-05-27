@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @since 2016-9-21 | 2021-5-5
- * @version 3.1.2
+ * @since 2016-9-21 | 2021-5-27
+ * @version 3.1.3
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -3432,22 +3432,34 @@ class CrudBase{
 		}
 
 		// URLからパラメータを取得する
-		var param = this._getUrlQuery();
+		let param = this._getUrlQuery();
 
-		var formElm = this._getFormKjsElm(); // 検索条件フォーム要素を取得する
+		let formElm = this._getFormKjsElm(); // 検索条件フォーム要素を取得する
 		
 		// form要素内の入力要素群をループする。
-		var kjs = {}; // 検索条件情報
-		var removes = []; // 除去リスト（入力が空の要素のフィールド）
+		let kjs = {}; // 検索条件情報
+		let removes = []; // 除去リスト（入力が空の要素のフィールド）
 		
 		formElm.find('.kjs_inp').each((i,elm)=>{
 
 			// 要素から選択値を取得する
-			var kjsElm = jQuery(elm);
-			var val = kjsElm.val();
+			let kjsElm = jQuery(elm);
+			
+			let type = kjsElm.attr('type');
+			
+			let val = '';
+			if(type == 'checkbox'){
+				if(kjsElm.prop('checked')){
+					val = 1;
+				}else{
+					val = 0;
+				}
+			}else{
+				 val = kjsElm.val();
+			}
 
 			// 選択値が空でない場合（0も空ではない扱い）
-			var field = kjsElm.attr('id'); // 要素のID属性から検索条件フィールドを取得する
+			let field = kjsElm.attr('id'); // 要素のID属性から検索条件フィールドを取得する
 			if(!this._emptyNotZero(val)){
 				val = encodeURIComponent(val); // 要素の値をURLエンコードする
 				kjs[field] = val; // 検索条件情報にセットする
@@ -3460,8 +3472,8 @@ class CrudBase{
 		jQuery.extend(param, kjs);
 
 		// パラメータから除去リストのフィールドを削除する。
-		for(var i in removes){
-			var rem_field = removes[i];
+		for(let i in removes){
+			let rem_field = removes[i];
 			delete param[rem_field];
 		}
 
@@ -3469,14 +3481,14 @@ class CrudBase{
 		param['page_no'] = 0;
 
 		// パラメータからURLクエリを組み立てる
-		var query = '';
-		for(var field in param){
-			var val = param[field];
+		let query = '';
+		for(let field in param){
+			let val = param[field];
 			query += field + '=' + val + '&';
 		}
 
 		// URLの組み立て
-		var url;
+		let url;
 		if(query != ''){
 			query = query.substr(0,query.length-1); // 末尾の一文字を除去する
 			url = '?' + query;

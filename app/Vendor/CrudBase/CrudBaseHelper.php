@@ -767,6 +767,24 @@ class CrudBaseHelper {
 
 	}
 	
+	/**
+	 * 検索条件要素：チェックボックス
+	 * @param string $field
+	 * @param string $wamei
+	 * @param [] $option
+	 */
+	public function inputKjCheckboxA($field, $wamei, $option=[]){
+		
+		$flg = $this->kjs[$field];
+		$checked = '';
+		if(!empty($flg)) $checked = 'checked';
+		
+		$html = "
+			<input type='checkbox' class='form-check-input kjs_inp' id='{$field}' value='1' {$checked}>
+			<label class='form-check-label' for='{$field}'>{$wamei}</label>
+		";
+		echo $html;
+	}
 
 
 	
