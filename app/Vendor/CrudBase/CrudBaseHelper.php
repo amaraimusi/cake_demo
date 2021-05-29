@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.0.5
- * @since 2016-7-27 | 2021-5-26
+ * @version 2.0.6
+ * @since 2016-7-27 | 2021-5-29
  * @author k-uehara
  * @license MIT
  */
@@ -128,7 +128,7 @@ class CrudBaseHelper {
 						value='{$this->kjs[$field]}' 
 						placeholder='{$placeholder}' 
 						style='width:{$width}px' 
-						class='kjs_inp' 
+						class='kjs_inp form-control' 
 						title='{$title}' 
 						maxlength='{$maxlength}' 
 						type='text'>
@@ -243,7 +243,7 @@ class CrudBaseHelper {
 						id='{$field}' 
 						value='{$this->kjs[$field]}' 
 						placeholder='{$placeholder}' 
-						class='kjs_inp' 
+						class='kjs_inp form-control' 
 						style='width:{$width}px; '
 						title='{$title}' 
 						maxlength='{$maxlength}' 
@@ -524,7 +524,7 @@ class CrudBaseHelper {
 		$html = "
 			<div class='kj_div kj_wrap' data-field='{$field}'>
 				<div class='input select'>
-					<select name='data[{$model_name_c}][{$field}]' id='{$field}' style='{$width_style}' class='kjs_inp' title='{$title}'>
+					<select name='data[{$model_name_c}][{$field}]' id='{$field}' style='{$width_style}' class='kjs_inp form-control' title='{$title}'>
 						<option value=''>-- {$wamei} --</option>
 						{$options_str}
 					</select>
@@ -582,7 +582,7 @@ class CrudBaseHelper {
 			<div class='kj_div kj_wrap' data-field='{$field}'>
 				<span>有効/削除</span>
 				<div class='input select' style='display:inline-block'>
-					<select name='data[{$model_name_c}][{$field}]' id='{$field}' class='kjs_inp' title='{$title}' style='{$width_style}'>
+					<select name='data[{$model_name_c}][{$field}]' id='{$field}' class='kjs_inp form-control' title='{$title}' style='{$width_style}'>
 						{$option_html}
 					</select>
 				</div>
@@ -678,7 +678,7 @@ class CrudBaseHelper {
 		$html = "
 			<div class='kj_div kj_wrap' data-field='row_limit'>
 				<div class='input select'>
-					<select name='data[{$model_name_c}][row_limit]' id='row_limit' style='height:27px' class='kjs_inp'>
+					<select name='data[{$model_name_c}][row_limit]' id='row_limit'  class='kjs_inp form-control'>
 						{$option_html}
 					</select>
 				</div>
@@ -717,7 +717,7 @@ class CrudBaseHelper {
 		$kj_field2 = $field . '2';
 		$date2 =  $kjs[$kj_field2];
 		
-		echo "<div id='{$field}' class='range_ym_ex' data-wamei='{$wamei}' data-def-ym='{$ym}' data-def1='{$date1}' data-def2='{$date2}' style='margin-right:40px'></div>";
+		echo "<div id='{$field}' class='range_ym_ex' data-wamei='{$wamei}' data-def-ym='{$ym}' data-def1='{$date1}' data-def2='{$date2}' style='margin-right:40px;display:inline-block'></div>";
 		
 	}
 	
@@ -2200,7 +2200,6 @@ class CrudBaseHelper {
 	
 	public function youtubeHtml($url){
 		
-
 		// テストデータ
 		//$url = 'https://youtu.be/KotU7jKOqLk';
 		//$url = 'https://youtu.be/KotU7jKOqLk?t=230';
@@ -2211,8 +2210,7 @@ class CrudBaseHelper {
 			$html = "<a href='{$url}' target='_blank'>動画</a>";
 			echo $html;
 		}else{
-			
-			
+
 			if(strpos($url, 'youtu.be') !== false){
 				// 変換前→ https://youtu.be/KotU7jKOqLk
 				// 返還後→ https://www.youtube.com/embed/KotU7jKOqLk
@@ -2247,6 +2245,8 @@ class CrudBaseHelper {
 		
 	}
 	
+	
+	
 	/**
 	 * ファイルプレビューAタイプ
 	 * @param string $fp ファイルパス
@@ -2257,7 +2257,6 @@ class CrudBaseHelper {
 	 */
 	public function filePreviewA($fp, $option=[]){
 
-		//if(empty($fp)) return '';//■■■□□□■■■□□□
 		$display = '';
 		if(empty($fp)) $display = 'display:none;';
 		
@@ -2345,6 +2344,47 @@ class CrudBaseHelper {
 	public function dateFormat($date, $format = 'Y-m-d'){
 		if(empty($date)) return '';
 		return date($format, strtotime($date));
+	}
+	
+	
+	/**
+	 * 文字列を右側から印文字を検索し、右側の文字を切り出す。
+	 * @param string $s 対象文字列
+	 * @param string $mark 印文字
+	 * @return string 印文字から右側の文字列
+	 */
+	private function stringRightRev($s,$mark){
+		if ($s==null || $s==""){
+			return $s;
+		}
+		
+		$a = strrpos($s,$mark);
+		if($a==null && $a!==0){
+			return "";
+		}
+		$s2=substr($s,$a + strlen($mark),strlen($s));
+		
+		return $s2;
+	}
+	
+	/**
+	 * 文字列を右側から印文字を検索し、左側の文字を切り出す。
+	 * @param string $s 対象文字列
+	 * @param string $mark 印文字
+	 * @return string 印文字から左側の文字列
+	 */
+	private function stringLeftRev($s,$mark){
+		
+		if ($s==null || $s==""){
+			return $s;
+		}
+		$a = strrpos($s,$mark);
+		if($a==null && $a!==0){
+			return "";
+		}
+		$s2=substr($s,0,$a);
+		return $s2;
+		
 	}
 	
 }
