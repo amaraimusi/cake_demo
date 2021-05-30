@@ -20,7 +20,7 @@ class NekoController extends AppController {
 	public $login_flg = 0; // ログインフラグ 0:ログイン不要, 1:ログイン必須
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '4.0.0';
+	public $this_page_version = '4.0.1';
 
 	
 	
@@ -231,6 +231,19 @@ class NekoController extends AppController {
 		$json_str = json_encode($res);//JSONに変換
 		
 		return $json_str;
+	}
+	
+	
+	/**
+	 * AJAX | 一覧のチェックボックス複数選択による一括処理
+	 * @return string
+	 */
+	public function ajax_pwms() {
+		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		$this->init();
+		return $this->cb->ajax_pwms();
+		
 	}
 	
 	
