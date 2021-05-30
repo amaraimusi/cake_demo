@@ -90,6 +90,7 @@ class UserMng extends AppModel {
 		$row_limit = $pages['row_limit']; // 表示件数
 		$sort_field = $pages['sort_field']; // ソートフィールド
 		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
+		$offset = $page_no * $row_limit;
 		
 		//条件を作成
 		$conditions=$this->createKjConditions($kjs);
@@ -103,7 +104,7 @@ class UserMng extends AppModel {
 				FROM users AS UserMng
 				WHERE {$conditions}
 				ORDER BY {$sort_field} {$sort_type}
-				LIMIT {$page_no}, {$row_limit}
+				LIMIT {$offset}, {$row_limit}
 			";
 		
 		$data = $this->query($sql);
