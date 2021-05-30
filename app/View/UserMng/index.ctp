@@ -93,7 +93,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 				$this->CrudBase->divCsh();
 				
 				// CSVエクスポート機能
-				$csv_dl_url = "user_mng/csv_download?csrf_token={$csrf_token}";
+	 			$csv_dl_url =  'user_mng/csv_download';
 	 			$this->CrudBase->makeCsvBtns($csv_dl_url);
 			?>
 			<button id="crud_base_bulk_add_btn" type="button" class="btn btn-secondary btn-sm" onclick="crudBase.crudBaseBulkAdd.showForm()" >一括追加</button>
