@@ -14,7 +14,7 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.0.2";
+	public $version = "3.1.0";
 
 	///デフォルトの並び替え対象フィールド
 	public $defSortFeild='sort_no';
@@ -1848,7 +1848,7 @@ class CrudBaseController {
 	 * XSSサニタイズ
 	 * 記号「<>」を「&lt;&gt;」にエスケープする。
 	 *
-	 * @param mixied $data 対象データ | 値および配列を指定
+	 * @param mixed $data 対象データ | 値および配列を指定
 	 * @return void
 	 */
 	public function xssSanitizeW(&$data){
@@ -1864,7 +1864,7 @@ class CrudBaseController {
 	 * 記号「<>」を「&lt;&gt;」にエスケープする。
 	 * 高速化のため、引数は参照（ポインタ）にしており、返値もかねている。
 	 *
-	 * @param mixied $data 対象データ | 値および配列を指定
+	 * @param mixed $data 対象データ | 値および配列を指定
 	 * @return void
 	 */
 	private function xss_sanitize(&$data){

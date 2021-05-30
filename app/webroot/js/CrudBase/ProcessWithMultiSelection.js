@@ -8,8 +8,8 @@
  * 一括無効化、一括有効化などの機能を備えている。
  * 複数選択の方法はチェックボックスにのみ対応している。
  * 
- * @version 2.0.0
- * @date 2016-2-5 | 2020-8-13
+ * @version 2.0.1
+ * @date 2016-2-5 | 2021-5-31
  * 
  */
 class ProcessWithMultiSelection{
@@ -204,6 +204,8 @@ class ProcessWithMultiSelection{
 		
 		// 一覧をループして全行のチェック切替を行う
 		let slt = this.param.tbl_slt + ' tbody tr';
+		if(slt.charAt(0)!= '#') slt = '#' + slt; // 先頭に「#」がついていないなら付加
+		
 		jQuery(slt).each((i, elm)=>{
 			
 			let tr = jQuery(elm);
