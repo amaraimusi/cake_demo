@@ -119,7 +119,6 @@ class MsgBoardController extends AppController {
 		// 登録パラメータ
 		$reg_param_json = $_POST['reg_param_json'];
 		$regParam = json_decode($reg_param_json,true);
-		//$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate1■■■□□□■■■□□□
 
 		$ent = $this->setCommonToEntity($ent);
 		// CBBXE
