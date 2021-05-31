@@ -67,22 +67,27 @@ class DATABASE_CONFIG {
 
 	public function __construct() {
 
- 		global $crudBaseConfig;
-		$dbConfig = $crudBaseConfig['dbConfig'];
-
 		$this->default = [
 			'datasource' => 'Database/Mysql',
 			'persistent' => false,
-			'host' => $dbConfig['host'],
-			'login' => $dbConfig['user'],
-			'password' => $dbConfig['pw'],
-			'database' => $dbConfig['db_name'],
+			'host' => 'localhost',
+			'login' => 'root',
+			'password' => '',
+			'database' => 'cake_demo',
 			'prefix' => '',
 			'encoding' => 'utf8',
 		];
-		
+
 		$this->test = $this->default;
 		
+	}
+	
+	/**
+	 * DB接続情報を取得（オリジナルライブラリ用）
+	 * @return [] DB接続情報
+	 */
+	public function getDbInfo(){
+		return $this->default;
 	}
 
 

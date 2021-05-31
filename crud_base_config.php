@@ -96,6 +96,10 @@ $crudBaseAuthorityData = [
  */
 function getDbConfigForCrudBase($env = null){
 	
+	require_once 'app/Config/database.php';
+	$databaseConfig = new DATABASE_CONFIG();
+	$dbInfo = $databaseConfig->getDbInfo();
+	
 	if($env == null){
 		global $crudBaseConfig;
 		$env = $crudBaseConfig['env'];
@@ -104,10 +108,10 @@ function getDbConfigForCrudBase($env = null){
 	switch ($env){
 		case 'localhost':
 			$dbConfig = [
-				'host'=>'localhost',
-				'db_name'=>'cake_demo',
-				'user'=>'root',
-				'pw'=>'',
+				'host'=>$dbInfo['host'],
+				'db_name'=>$dbInfo['database'],
+				'user'=>$dbInfo['login'],
+				'pw'=>$dbInfo['password'],
 			];
 			break;
 
