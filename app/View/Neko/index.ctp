@@ -19,6 +19,8 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 
 ?>
 
+<?php echo $this->element('header'); ?>
+<div class="container-fluid">
 
 <div class="cb_func_line">
 
@@ -548,6 +550,7 @@ foreach($data as $i=>&$ent){
 	</div><!-- panel-body -->
 </div><br>
 
+
 <!-- ヘルプ用  -->
 <input type="button" class="btn btn-info btn-sm" onclick="$('#help_x').toggle()" value="ヘルプ" />
 <div id="help_x" class="help_x" style="display:none">
@@ -556,3 +559,8 @@ foreach($data as $i=>&$ent){
 	<?php echo $this->element('CrudBase/crud_base_help');?>
 
 </div>
+
+</div><!-- container-fluid -->
+<div class="yohaku"></div>
+<?php echo $this->element('footer');?>
+

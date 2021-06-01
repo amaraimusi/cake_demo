@@ -19,6 +19,9 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 
 ?>
 
+<?php echo $this->element('header'); ?>
+<div class="container-fluid">
+
 <div id="err" class="text-danger"></div>
 
 <div id="add_msg_div">
@@ -131,3 +134,6 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 
 <input id="crud_base_json" type="hidden" value='<?php echo $crud_base_json; ?>' />
 <div class="yohaku"></div>
+
+</div><!-- container-fluid -->
+<?php echo $this->element('footer');?>

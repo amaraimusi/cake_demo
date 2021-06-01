@@ -20,18 +20,11 @@
 </head>
 <body style="padding-top:0px;">
 
-	<?php 
-	if(empty($header)) $header = 'header';
-	echo $this->element($header);
-	?>
 	
-	<div class="container-fluid">
-		<?php 
-		echo $this->Session->flash();
-		echo $content_for_layout;
-		echo $this->element('footer');
-		?>
-	</div>
+	<?php 
+	echo $this->Session->flash();
+	echo $content_for_layout;
+	?>
 
 	<?php 
 	// SQLダンプ
