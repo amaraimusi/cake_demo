@@ -240,7 +240,7 @@ foreach($data as $i=>&$ent){
 	
 		<!-- CBBXS-1006 -->
 		
-		<div class="cbf_inp_wrap">
+		<div class="cbf_inp_wrap" style="float:left">
 			<div class='cbf_inp_label_long' >画像ファイル名: </div>
 			<div class='cbf_input' style="width:240px;height:auto;">
 				<label for="img_fn_n" class="fuk_label">
@@ -253,7 +253,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >ネコ名: </div>
 			<div class='cbf_input'>
-				<input type="text" name="neko_name" class="valid " value=""  maxlength="255" title="255文字以内で入力してください" />
+				<input type="text" name="neko_name" class="valid form-control" value=""  maxlength="255" title="255文字以内で入力してください" placeholder="ネコ名" />
 				<label class="text-danger" for="neko_name"></label>
 			</div>
 		</div>
@@ -261,7 +261,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp_label' >ネコ数値: </div>
 			<div class='cbf_input'>
-				<input type="text" name="neko_val" class="valid" value="" pattern="^[0-9]+$" maxlength="11" title="数値を入力してください" />
+				<input type="text" name="neko_val" class="valid form-control" value="" pattern="^[0-9]+$" maxlength="11" title="数値を入力してください" />
 				<label class="text-danger" for="neko_val" ></label>
 			</div>
 		</div>
@@ -269,7 +269,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp_label' >ネコ日付: </div>
 			<div class='cbf_input'>
-				<input type="text" name="neko_date" class="valid datepicker" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+				<input type="text" name="neko_date" class="valid datepicker form-control" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
 				<label class="text-danger" for="neko_date"></label>
 			</div>
 		</div>
@@ -277,7 +277,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp_label' >ネコ種別: </div>
 			<div class='cbf_input'>
-				<?php $this->CrudBase->selectX('neko_group',null,$nekoGroupList,null);?>
+				<?php $this->CrudBase->selectX('neko_group',null,$nekoGroupList,['class'=>'form-control']);?>
 				<label class="text-danger" for="neko_group"></label>
 			</div>
 		</div>
@@ -285,23 +285,22 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp_label' >ネコ日時: </div>
 			<div class='cbf_input'>
-				<input type="text" name="neko_dt" class="valid " value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
+				<input type="text" name="neko_dt" class="valid form-control" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
 				<label class="text-danger" for="neko_dt"></label>
 			</div>
 		</div>
 		
 		<div class="cbf_inp_wrap">
-			<div class='cbf_inp_label' >ネコフラグ: </div>
-			<div class='cbf_input'>
-				<input type="checkbox" name="neko_flg" class="valid"/>
-				<label class="text-danger" for="neko_flg" ></label>
+			<div class='form-check'>
+				<input id="neko_flg_n" type="checkbox" name="neko_flg" class="valid form-check-input"/>
+				<label class="form-check-label" for="neko_flg_n" >ネコフラグ</label>
 			</div>
 		</div>
-		
+
 		<div class="cbf_inp_wrap_long">
 			<div class='cbf_inp_label' >備考： </div>
 			<div class='cbf_input'>
-				<textarea name="note" maxlength="1000" title="1000文字以内で入力してください" style="height:100px;width:100%"></textarea>
+				<textarea name="note" maxlength="1000" title="1000文字以内で入力してください" style="height:100px;width:100%" class="form-control" placeholder="備考"></textarea>
 				<label class="text-danger" for="note"></label>
 			</div>
 		</div>
@@ -346,15 +345,8 @@ foreach($data as $i=>&$ent){
 				</div>
 			</div>
 			
-			<div class="cbf_inp_wrap_long">
-				<div class='cbf_inp' >ネコ名: </div>
-				<div class='cbf_input'>
-					<input type="text" name="neko_name" class="valid " value=""  maxlength="255" title="255文字以内で入力してください" />
-					<label class="text-danger" for="neko_name"></label>
-				</div>
-			</div>
 			
-			<div class="cbf_inp_wrap">
+			<div class="cbf_inp_wrap" style="float:left">
 				<div class='cbf_inp_label_long' >画像ファイル名: </div>
 				<div class='cbf_input' style="width:180px;height:auto;">
 					<label for="img_fn_e" class="fuk_label" >
@@ -366,9 +358,17 @@ foreach($data as $i=>&$ent){
 		
 		
 			<div class="cbf_inp_wrap">
+				<div class='cbf_inp' >ネコ名: </div>
+				<div class='cbf_input'>
+					<input type="text" name="neko_name" class="valid form-control" value=""  maxlength="255" title="255文字以内で入力してください" placeholder="ネコ名" />
+					<label class="text-danger" for="neko_name"></label>
+				</div>
+			</div>
+		
+			<div class="cbf_inp_wrap">
 				<div class='cbf_inp_label' >ネコ数値: </div>
 				<div class='cbf_input'>
-					<input type="text" name="neko_val" class="valid" value="" pattern="^[0-9]+$" maxlength="11" title="数値を入力してください" />
+					<input type="text" name="neko_val" class="valid form-control" value="" pattern="^[0-9]+$" maxlength="11" title="数値を入力してください" />
 					<label class="text-danger" for="neko_val" ></label>
 				</div>
 			</div>
@@ -376,7 +376,7 @@ foreach($data as $i=>&$ent){
 			<div class="cbf_inp_wrap">
 				<div class='cbf_inp_label' >ネコ日付: </div>
 				<div class='cbf_input'>
-					<input type="text" name="neko_date" class="valid datepicker" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
+					<input type="text" name="neko_date" class="valid datepicker form-control" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2})" title="日付形式（Y-m-d）で入力してください(例：2012-12-12)" />
 					<label class="text-danger" for="neko_date"></label>
 				</div>
 			</div>
@@ -384,24 +384,31 @@ foreach($data as $i=>&$ent){
 			<div class="cbf_inp_wrap">
 				<div class='cbf_inp_label' >ネコ種別: </div>
 				<div class='cbf_input'>
-					<?php $this->CrudBase->selectX('neko_group',null,$nekoGroupList,null);?>
+					<?php $this->CrudBase->selectX('neko_group',null,$nekoGroupList,['class'=>'form-control']);?>
 					<label class="text-danger" for="neko_group"></label>
 				</div>
 			</div>
-
+		
 			<div class="cbf_inp_wrap">
 				<div class='cbf_inp_label' >ネコ日時: </div>
 				<div class='cbf_input'>
-					<input type="text" name="neko_dt" class="valid " value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
+					<input type="text" name="neko_dt" class="valid form-control" value=""  pattern="([0-9]{4})(\/|-)([0-9]{1,2})(\/|-)([0-9]{1,2}) \d{2}:\d{2}:\d{2}" title="日時形式（Y-m-d H:i:s）で入力してください(例：2012-12-12 12:12:12)" />
 					<label class="text-danger" for="neko_dt"></label>
 				</div>
 			</div>
 			
 			<div class="cbf_inp_wrap">
-				<div class='cbf_inp_label' >ネコフラグ: </div>
+				<div class='form-check'>
+					<input id="neko_flg_e" type="checkbox" name="neko_flg" class="valid form-check-input"/>
+					<label class="form-check-label" for="neko_flg_e" >ネコフラグ</label>
+				</div>
+			</div>
+	
+			<div class="cbf_inp_wrap_long">
+				<div class='cbf_inp_label' >備考： </div>
 				<div class='cbf_input'>
-					<input type="checkbox" name="neko_flg" class="valid"/>
-					<label class="text-danger" for="neko_flg" ></label>
+					<textarea name="note" maxlength="1000" title="1000文字以内で入力してください" style="height:100px;width:100%" class="form-control" placeholder="備考"></textarea>
+					<label class="text-danger" for="note"></label>
 				</div>
 			</div>
 			
@@ -409,14 +416,6 @@ foreach($data as $i=>&$ent){
 				<div class='cbf_inp_label' >削除：</div>
 				<div class='cbf_input'>
 					<input type="checkbox" name="delete_flg" class="valid"  />
-				</div>
-			</div>
-			
-			<div class="cbf_inp_wrap_long">
-				<div class='cbf_inp_label' >備考： </div>
-				<div class='cbf_input'>
-					<textarea name="note" maxlength="1000" title="1000文字以内で入力してください" data-folding-ta="40" style="height:100px;width:100%"></textarea>
-					<label class="text-danger" for="note"></label>
 				</div>
 			</div>
 			

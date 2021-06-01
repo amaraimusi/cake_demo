@@ -5,8 +5,9 @@
  * @note
  * テーブルの行を入れ替えることによる並べ替え
  * 
- * @version 1.1 ExchangeTrから名称変更
- * @date 2017-3-7 | 2018-3-2
+ * @version 1.2.0 Bootstrap4に対応
+ * @since 2017-3-7 | 2021-6-1
+ * @license MIT
  * 
  */
 class CrudBaseRowExchange{
@@ -321,19 +322,19 @@ class CrudBaseRowExchange{
 		
 		var html = 
 			"<div id='" + xid +"_rap'>" +
-			"	<div id='" + xid +"' class='card' style='display:none;width:170px;background-color:white'>" +
-			"		<div class='card-header'>" +
+			"	<div id='" + xid +"' class='card' style='display:none;width:200px;background-color:white'>" +
+			"		<div class='card-header bg-primary'>" +
 			"			" +
-			"			<div style='display:inline-block;width:60%'>行入替</div>" +
-			"			<div style='display:inline-block;width:35%;text-align:right'>" +
-			"				<button type='button' class='exchange_tr_form_close close'  aria-label='閉じる'>" +
-			"					<span aria-hidden='true'>&times;</span>" +
+			"			<div class='text-light' style='display:inline-block;width:60%'>行入替</div>" +
+			"			<div class='text-light' style='display:inline-block;width:35%;text-align:right'>" +
+			"				<button type='button' class='exchange_tr_form_close btn btn-primary btn-sm'  aria-label='閉じる'>" +
+			"					<span class='oi' data-glyph='x'></span>" +
 			"				</button>" +
 			"			</div>" +
 			"		</div>" +
 			"		<div class='card-body' \">" +
-			"			<button type='button' class='exchange_tr_shift_up btn btn-primary btn-sm'>↑</button>" +
-			"			<button type='button' class='exchange_tr_shift_down btn btn-primary btn-sm'>↓</button>" +
+			"			<button type='button' class='exchange_tr_shift_up btn btn-primary btn-sm' style='font-weight:bold;'><span class='oi' data-glyph='arrow-thick-top'></span></button>" +
+			"			<button type='button' class='exchange_tr_shift_down btn btn-primary btn-sm' style='font-weight:bold;'><span class='oi' data-glyph='arrow-thick-bottom'></span></button>" +
 			"			<div style='margin-top:20px'>" +
 			"				<input class='exchange_tr_sort_no' type='number' style='width:60px' min='1' max='9999'  />" +
 			"				<input type='button' value='行入替' class='exchange_tr_btn btn btn-warning btn-sm' />" +

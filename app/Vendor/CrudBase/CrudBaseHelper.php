@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.0.6
- * @since 2016-7-27 | 2021-5-29
+ * @version 2.0.7
+ * @since 2016-7-27 | 2021-6-1
  * @author k-uehara
  * @license MIT
  */
@@ -634,7 +634,7 @@ class CrudBaseHelper {
 		$html = "
 			<div class='kj_div kj_wrap' data-field='{$field}'>
 				<div class='input select'>
-					<select name='data[{$model_name_c}][{$field}]' id='{$field}' class='kjs_inp' title='{$wamei}'>
+					<select name='data[{$model_name_c}][{$field}]' id='{$field}' class='kjs_inp form-control' title='{$wamei}'>
 						{$option_html}
 					</select>
 				</div>
@@ -751,14 +751,14 @@ class CrudBaseHelper {
 			<div class='kj_div'>
 				<div class='input number' style='display:inline-block'>
 					<input name='data[Neko][kj_{$field}1]' id='kj_{$field}1' value='{$value1}' 
-						class='kjs_inp' placeholder='{$wamei}～' title='{$wamei}～' 
+						class='kjs_inp form-control' placeholder='{$wamei}～' title='{$wamei}～' 
 						type='number' style='width:{$width}'>
 						<span id='kj_{$field}1_err' class='text-danger'></span>
 				</div>
 				<span>～</span>
 				<div class='input number' style='display:inline-block'>
 					<input name='data[Neko][kj_{$field}2]' id='kj_{$field}2' value='{$value2}' 
-						class='kjs_inp' placeholder='～{$wamei}' title='～{$wamei}' 
+						class='kjs_inp form-control' placeholder='～{$wamei}' title='～{$wamei}' 
 						type='number' style='width:{$width}'>
 					<span id='kj_{$field}2_err' class='text-danger'></span>
 				</div>
