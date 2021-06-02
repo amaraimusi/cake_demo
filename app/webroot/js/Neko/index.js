@@ -374,3 +374,10 @@ function calendarViewKShow(){
 	crudBase.calendarViewCreate('neko_date');
 }
 
+/**
+ * 外部idに紐づく外部テーブルの名前フィールドを取得する
+ */
+function getOuterName(thisElm){
+	crudBase.crudBaseOuterName.getOuterName(thisElm);
+}
+

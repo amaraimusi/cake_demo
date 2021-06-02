@@ -78,7 +78,7 @@ class Neko extends AppModel {
 	 *  - array data データ
 	 *  - int non_limit_count LIMIT制限なし・データ件数
 	 */
-	public function getData($crudBaseData){
+	public function getData(&$crudBaseData){
 		
 		$fields = $crudBaseData['fields']; // フィールド
 		
@@ -95,6 +95,12 @@ class Neko extends AppModel {
 		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
 		$offset = $page_no * $row_limit;
 		
+		// 外部SELECT文字列を作成する。
+		$outer_selects_str = $this->makeOuterSelectStr($crudBaseData);
+		
+		// 外部結合文字列を作成する。
+		$outer_join_str = $this->makeOuterJoinStr($crudBaseData);
+		
 		//条件を作成
 		$conditions=$this->createKjConditions($kjs);
 		
@@ -103,14 +109,16 @@ class Neko extends AppModel {
 		
 		$sql =
 		"
-				SELECT SQL_CALC_FOUND_ROWS Neko.*
+				SELECT SQL_CALC_FOUND_ROWS Neko.* {$outer_selects_str}
 				FROM nekos AS Neko
+				{$outer_join_str}
 				WHERE {$conditions}
 				ORDER BY {$sort_field} {$sort_type}
 				LIMIT {$offset}, {$row_limit}
 			";
 		
 		$data = $this->query($sql);
+		
 		
 		//データ構造を変換（2次元配列化）
 		$data2 = [];
@@ -121,7 +129,7 @@ class Neko extends AppModel {
 				}
 			}
 		}
-		
+
 		// LIMIT制限なし・データ件数
 		$non_limit_count = 0;
 		$res = $this->query('SELECT FOUND_ROWS()');
@@ -135,69 +143,43 @@ class Neko extends AppModel {
 		
 	}
 	
-	/**
-	 * 検索条件とページ情報を元にDBからデータを取得する
-	 * @param array $crudBaseData
-	 * @return []
-	 *  - array data データ
-	 *  - int non_limit_count LIMIT制限なし・データ件数
-	 */
-	public function getData_old($crudBaseData){
+	
+	// 外部結合文字列を作成する。
+	private function makeOuterJoinStr(&$crudBaseData){
+		$fieldData = $crudBaseData['fieldData'];
+		$model_name_c = $crudBaseData['model_name_c'];
+		$str = '';
 		
-		$fields = $crudBaseData['fields']; // フィールド
-		
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-		
-		$page_no = $pages['page_no']; // ページ番号
-		$row_limit = $pages['row_limit']; // 表示件数
-		$sort_field = $pages['sort_field']; // ソートフィールド
-		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
-		
-		//条件を作成
-		$conditions=$this->createKjConditions($kjs);
-		
-		// オフセットの組み立て
-		$offset=null;
-		if(!empty($row_limit)) $offset = $page_no * $row_limit;
-		
-		// ORDER文の組み立て
-		$order = $sort_field;
-		if(empty($order)) $order='sort_no';
-		if(!empty($sort_desc)) $order .= ' DESC';
-		
-		$option=array(
-			'conditions' => $conditions,
-			'limit' =>$row_limit,
-			'offset'=>$offset,
-			'order' => $order,
-		);
-		
-		//DBからデータを取得
-		$data = $this->find('all',$option);
-		
-		//データ構造を変換（2次元配列化）
-		$data2=array();
-		foreach($data as $i=>$tbl){
-			foreach($tbl as $ent){
-				foreach($ent as $key => $v){
-					$data2[$i][$key]=$v;
-				}
-			}
+		foreach($fieldData as $fEnt){
+			if(empty($fEnt['outer_tbl_name'])) continue;
+			$field = $fEnt['id'];
+			$str .= "LEFT JOIN {$fEnt['outer_tbl_name']} AS {$fEnt['outer_tbl_name_c']} ON {$model_name_c}.{$field} = {$fEnt['outer_tbl_name_c']}.id";
+			
 		}
 		
-		// LIMIT制限なし・データ件数
-		$non_limit_count = 0;
-		$res = $this->query('SELECT FOUND_ROWS()');
-		if(!empty($res)){
-			$res = reset($res[0]);
-			$non_limit_count= reset($res);
-		}
-		
-		return ['data' => $data2, 'non_limit_count' => $non_limit_count];
-		
+		return $str;
 	}
 	
+	
+	// 外部SELECT文字列を作成する。
+	private function makeOuterSelectStr(&$crudBaseData){
+		$fieldData = $crudBaseData['fieldData'];
+
+		$str = '';
+		
+		foreach($fieldData as $fEnt){
+			
+			if(empty($fEnt['outer_tbl_name'])) continue;
+			$str .= " ,{$fEnt['outer_tbl_name_c']}.{$fEnt['outer_field']} AS {$fEnt['outer_name']} ";
+			
+		}
+		
+		
+		return $str;
+	}
+	
+	
+
 	/**
 	 * ネコエンティティを取得
 	 *
@@ -227,60 +209,6 @@ class Neko extends AppModel {
 
 
 		return $ent;
-	}
-
-
-	
-	
-	/**
-	 * 一覧データを取得する
-	 * @return array ネコ画面一覧のデータ
-	 */
-	public function findData(&$crudBaseData){
-
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-
-
-		$page_no = $pages['page_no']; // ページ番号
-		$row_limit = $pages['row_limit']; // 表示件数
-		$sort_field = $pages['sort_field']; // ソートフィールド
-		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
-		
-		
-		//条件を作成
-		$conditions=$this->createKjConditions($kjs);
-		
-		// オフセットの組み立て
-		$offset=null;
-		if(!empty($row_limit)) $offset = $page_no * $row_limit;
-		
-		// ORDER文の組み立て
-		$order = $sort_field;
-		if(empty($order)) $order='sort_no';
-		if(!empty($sort_desc)) $order .= ' DESC';
-		
-		$option=array(
-				'conditions' => $conditions,
-				'limit' =>$row_limit,
-				'offset'=>$offset,
-				'order' => $order,
-		);
-		
-		//DBからデータを取得
-		$data = $this->find('all',$option);
-		
-		//データ構造を変換（2次元配列化）
-		$data2=array();
-		foreach($data as $i=>$tbl){
-			foreach($tbl as $ent){
-				foreach($ent as $key => $v){
-					$data2[$i][$key]=$v;
-				}
-			}
-		}
-		
-		return $data2;
 	}
 
 	

@@ -20,7 +20,7 @@ class NekoController extends AppController {
 	public $login_flg = 0; // ログインフラグ 0:ログイン不要, 1:ログイン必須
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '4.0.1';
+	public $this_page_version = '4.0.2';
 
 	
 	
@@ -104,7 +104,7 @@ class NekoController extends AppController {
 		
 		$userInfo = $this->getUserInfo();
 		
-		$this->init();
+		$crudBaseData = $this->init();
 		
 		$errs = []; // エラーリスト
 		
@@ -397,7 +397,8 @@ class NekoController extends AppController {
 		
 
 		//DBからデータ取得
-		$data=$this->Neko->findData($crudBaseData);
+		$res=$this->Neko->getData($crudBaseData);
+		$data = $res['data'];
 		if(empty($data)){
 			return array();
 		}
@@ -428,6 +429,7 @@ class NekoController extends AppController {
 			['name'=>'kj_neko_date1', 'def'=>null, 'field'=>'neko_date'],
 			['name'=>'kj_neko_date2', 'def'=>null, 'field'=>'neko_date'],
 			['name'=>'kj_neko_group', 'def'=>null],
+			['name'=>'kj_en_sp_id', 'def'=>null],
 			['name'=>'kj_neko_dt', 'def'=>null],
 			['name'=>'kj_neko_flg', 'def'=>-1],
 			['name'=>'kj_img_fn', 'def'=>null],
@@ -468,6 +470,15 @@ class NekoController extends AppController {
 				'name'=>'ネコ種別',
 				'row_order'=>'Neko.neko_group',
 				'clm_show'=>1,
+			],
+			'en_sp_id'=>[
+				'name'=>'絶滅危惧種',
+				'row_order'=>'Neko.en_sp_id',
+				'clm_show'=>1,
+				'outer_tbl_name'=>'en_sps',
+				'outer_tbl_name_c'=>'EnSp',
+				'outer_field'=>'wamei',
+				'outer_name'=>'en_sp_name'
 			],
 			'neko_date'=>[
 				'name'=>'ネコ日',

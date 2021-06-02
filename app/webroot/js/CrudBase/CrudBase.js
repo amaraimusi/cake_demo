@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @since 2016-9-21 | 2021-5-27
- * @version 3.1.3
+ * @since 2016-9-21 | 2021-6-2
+ * @version 3.1.4
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -52,11 +52,12 @@ class CrudBase{
 	 *  - その他多数...
 	 */
 	constructor(param){
-
 		// --- 初期化: CrudBaseBaseクラスのメンバを初期化する ----
 		
 		// パラメータに空プロパティがあれば、デフォルト値をセットする
 		this.param = this._setParamIfEmpty(param);
+		
+		this.crudBaseData = param;
 
 		// フォーム情報の取得と初期化
 		this.formInfo = this._initFormInfo(this.param);
@@ -134,6 +135,10 @@ class CrudBase{
 		let rngYmEx = new RangeYmEx();
 		rngYmEx.init();
 		
+		// クラスの骨組み 外部名称クラス：外部idに紐づく外部テーブルの名前要素を制御
+		this.crudBaseOuterName = new CrudBaseOuterName();
+		this.crudBaseOuterName.init(this.crudBaseData);
+		
 		// -----------
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
@@ -172,6 +177,8 @@ class CrudBase{
 				ajax_url:this.param.pwms_ajax_url,
 				csrf_token:this.param.csrf_token,
 		});
+		
+	
 		
 
 

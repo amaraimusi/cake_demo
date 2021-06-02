@@ -50,6 +50,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		$this->CrudBase->inputKjSelect('kj_neko_group','ネコ種別', $masters['nekoGroupList']); 
 		$this->CrudBase->inputKjText('kj_neko_dt','ネコ日時',150);
 		$this->CrudBase->inputKjFlg('kj_neko_flg','ネコフラグ');
+		$this->CrudBase->inputKjOuterId('kj_en_sp_id', '絶滅危惧種', 'en_sps', 'wamei', ['width'=>130]);
 		$this->CrudBase->inputKjText('kj_img_fn','画像ファイル名',200);
 		$this->CrudBase->inputKjText('kj_note','備考',200,'部分一致検索');
 		$this->CrudBase->inputKjId(); 
@@ -60,6 +61,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		$this->CrudBase->inputKjCreated();
 		$this->CrudBase->inputKjModified();
 		
+		
 		// --- CBBXE
 		
 		$this->CrudBase->inputKjLimit();
@@ -67,6 +69,10 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		
 		
 		?>
+		
+		
+		
+		
 				<div class="kj_div" style="margin-top:5px">
 					<input type="button" value="検索入力リセット" title="検索入力を初期に戻します" onclick="resetKjs()" class="btn btn-primary btn-sm" />
 				</div>
@@ -163,13 +169,14 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 $this->CrudBase->startClmSortMode();
 
 foreach($data as $i=>&$ent){
-
+	
 	echo "<tr id='ent{$ent['id']}' >";
 	// CBBXS-2005
 	$this->CrudBase->tdId($ent,'id', ['checkbox_name'=>'pwms']);
 	$this->CrudBase->tdMoney($ent, 'neko_val');
 	$this->CrudBase->tdStr($ent, 'neko_name');
 	$this->CrudBase->tdList($ent, 'neko_group',$nekoGroupList);
+	$this->CrudBase->tdOuterName($ent, 'en_sp_id', 'en_sp_name');
 	$this->CrudBase->tdPlain($ent, 'neko_date');
 	$this->CrudBase->tdPlain($ent, 'neko_dt');
 	$this->CrudBase->tdFlg($ent, 'neko_flg');
