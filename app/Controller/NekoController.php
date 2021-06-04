@@ -20,7 +20,7 @@ class NekoController extends AppController {
 	public $login_flg = 0; // ログインフラグ 0:ログイン不要, 1:ログイン必須
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '4.0.2';
+	public $this_page_version = '4.0.3';
 
 	
 	
@@ -141,6 +141,56 @@ class NekoController extends AppController {
 		return $json_str;
 		
 	}
+	
+	
+	/**
+	 * 外部idに紐づく外部テーブルの名前要素を制御 | Ajax 非同期通信
+	 * @return string
+	 */
+	public function getOuterName(){
+		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('neko') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
+		// 通信元から送信されてきたパラメータを取得する。
+		$param_json = $_POST['key1'];
+		$param=json_decode($param_json,true);//JSON文字を配列に戻す
+		
+		$outer_id = $param['outer_id'];
+		$outer_id_field = $param['outer_id_field'];
+		
+		$crudBaseData = $this->init();
+		$fieldData = $crudBaseData['fieldData']['def'];
+		
+		
+		if(empty($fieldData[$outer_id_field])) throw new Error('システムエラー 210603B');
+		$fEnt = $fieldData[$outer_id_field];
+		$outer_tbl_name = $fEnt['outer_tbl_name'];
+		$outer_field = $fEnt['outer_field'];
+		$outer_alias = $fEnt['outer_alias'];
+		
+		$sql = "SELECT {$outer_field} AS {$outer_alias} FROM {$outer_tbl_name} WHERE id={$outer_id}";
+		$data = $this->Neko->query($sql);
+		
+		$outer_name = '';
+		if(!empty($data)){
+			$outer_name = $data[0][$outer_tbl_name][$outer_alias];
+		}
+
+		//データ加工や取得
+		$res = ['success'=>1, 'outer_name'=>$outer_name];
+		
+		// JSONに変換し、通信元に返す。
+		$json_str = json_encode($res, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
+		return $json_str;
+		
+	}
+	
+	
+
 
 	
 	/**
@@ -478,7 +528,7 @@ class NekoController extends AppController {
 				'outer_tbl_name'=>'en_sps',
 				'outer_tbl_name_c'=>'EnSp',
 				'outer_field'=>'wamei',
-				'outer_name'=>'en_sp_name'
+				'outer_alias'=>'en_sp_name'
 			],
 			'neko_date'=>[
 				'name'=>'ネコ日',

@@ -154,7 +154,6 @@ class CrudBaseModel{
 		//構造変換
 		$data=array();
 		foreach($active as $id=>$ent){
-			debug('$id＝' . $id);//■■■□□□■■■□□□)
 			$ent['id']=$id;
 			$data[]=$ent;
 		}

@@ -792,15 +792,13 @@ class CrudBaseHelper {
 	 *
 	 * @param string $field フィールド名
 	 * @param string $wamei フィールド和名
-	 * @param string $outer_tbl_name 外部テーブル名
-	 * @param string $outer_field 外部フィールド
 	 * @param [] option
 	 *  - string title ツールチップ
 	 *  - int maxlength 最大文字数(共通フィールドは設定不要）
 	 *  - string model_name_c モデル名（キャメル記法）
 	 *  - string placeholder
 	 */
-	public function inputKjOuterId($field, $wamei, $outer_tbl_name, $outer_field, $option = []){
+	public function inputKjOuterId($kj_field, $wamei, $option = []){
 
 		$title = $option['title'] ?? $wamei."で検索";
 		$width = $option['width'] ?? 120;
@@ -815,30 +813,30 @@ class CrudBaseHelper {
 		// maxlengthがデフォルト値のままなら、共通フィールド用のmaxlength属性値を取得する
 		$maxlength=1000;
 		if(empty($option['maxlength'])){
-			$maxlength = $this->getMaxlenIfCommonField($field,$maxlength);
+			$maxlength = $this->getMaxlenIfCommonField($kj_field,$maxlength);
 		}else{
 			$maxlength=$option['maxlength'];
 		}
 		
 		$html = "
-			<div class='kj_div kj_wrap OuterName' data-field='{$field}'>
+			<div class='kj_div kj_wrap OuterName' data-field='{$kj_field}'>
 				<div class='input text' style='display:inline-block'>
 					<input
-						name='data[{$model_name_c}][{$field}]'
-						id='{$field}'
-						value='{$this->kjs[$field]}'
+						name='data[{$model_name_c}][{$kj_field}]'
+						id='{$kj_field}'
+						value='{$this->kjs[$kj_field]}'
 						placeholder='{$placeholder}'
-						class='kjs_inp form-control OuterName-id'
+						class='kjs_inp form-control OuterName-kj_en_sp_id-outer_id'
 						style='width:{$width}px; '
 						title='{$title}'
 						maxlength='{$maxlength}'
 						type='text'>
 				</div>
-				<button type='button' class='btn btn-secondary btn-sm' onclick='getOuterName(this)' >
+				<button type='button' class='btn btn-secondary btn-sm OuterName-kj_en_sp_id-outer_show_btn' onclick='getOuterName(this)' >
 					<span class='oi' data-glyph='arrow-thick-right'></span>{$btn_wamei}
 				</button>
-				<div class='OuterName-name' style='display:inline-block'></div>
-				<div id='{$field}_err' class='text-danger'></div>
+				<div class='OuterName-kj_en_sp_id-outer_name' style='display:inline-block'></div>
+				<div id='{$kj_field}_err' class='text-danger'></div>
 			</div>
 		";
 		
@@ -2458,5 +2456,75 @@ class CrudBaseHelper {
 		return $s2;
 		
 	}
+	
+	
+	public function formOuterName($field, $wamei, $form_type, $option = []){
+		
+		if(empty($field)) echo ('システムエラー CBH210604G');
+		if(empty($form_type)) echo ('システムエラー CBH210604G');
+		$formTypes = ['edit', 'ni', 'new_inp'];
+		if(in_array($form_type, $formTypes) == false) echo ('システムエラー CBH210604H');
+		if($formTypes == 'new_inp') $form_type = 'ni';
+		
+		$title = $option['title'] ?? $wamei."で検索";
+		$width = $option['width'] ?? 120;
+		$placeholder = $option['placeholder'] ?? $wamei . 'ID';
+		$btn_wamei = $option['btn_wamei'] ?? $wamei . '名の表示';
+		$btn_wamei = str_replace('名名', '名', $btn_wamei);
+		
+		
+		
+		// モデル名を取得
+		$model_name_c = $this->crudBaseData['model_name_c'];
+		if(!empty($option['model_name_c'])) $model_name_c = $option['model_name_c'];
+		
+		// maxlengthがデフォルト値のままなら、共通フィールド用のmaxlength属性値を取得する
+		$maxlength=1000;
+		if(empty($option['maxlength'])){
+			$maxlength = $this->getMaxlenIfCommonField($field, $maxlength);
+		}else{
+			$maxlength=$option['maxlength'];
+		}
+		
+		// 外部別名
+		$outer_alias = '';
+		$fieldData = $this->crudBaseData['fieldData'];
+		foreach($fieldData as $fEnt){
+			if($fEnt['id'] == $field){
+				$outer_alias = $fEnt['outer_alias'];
+			}
+		}
+		if(empty($outer_alias)) throw new Exception('CBH210604C');
+
+		$outer_id_slt = "OuterName-{$form_type}_{$field}-outer_id";
+		$outer_name_slt = "OuterName-{$form_type}_{$field}-outer_name";
+		$outer_show_btn_slt = "OuterName-{$form_type}_{$field}-outer_show_btn";
+
+		$html = "
+			<div class='OuterName' >
+				<div class='input text' style='display:inline-block'>
+					<input
+						
+						name='{$field}'
+						value=''
+						placeholder='{$placeholder}'
+						class='form-control {$outer_id_slt}'
+						style='width:{$width}px; '
+						title='{$title}'
+						maxlength='{$maxlength}'
+						type='text'>
+				</div>
+				<button type='button' class='btn btn-secondary btn-sm {$outer_show_btn_slt}' onclick='getOuterName('{}')' >
+					<span class='oi' data-glyph='arrow-thick-right'></span>{$btn_wamei}
+				</button>
+				<div class='{$outer_name_slt}' style='display:inline-block'></div>
+				<label class='text-danger' for='{$field}'></label>
+			</div>
+		";
+		
+		echo $html;
+		
+	}
+	
 	
 }

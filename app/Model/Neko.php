@@ -170,7 +170,7 @@ class Neko extends AppModel {
 		foreach($fieldData as $fEnt){
 			
 			if(empty($fEnt['outer_tbl_name'])) continue;
-			$str .= " ,{$fEnt['outer_tbl_name_c']}.{$fEnt['outer_field']} AS {$fEnt['outer_name']} ";
+			$str .= " ,{$fEnt['outer_tbl_name_c']}.{$fEnt['outer_field']} AS {$fEnt['outer_alias']} ";
 			
 		}
 		
@@ -273,6 +273,10 @@ class Neko extends AppModel {
 		
 		if(!empty($kjs['kj_neko_group'])){
 			$cnds[]="Neko.neko_group = {$kjs['kj_neko_group']}";
+		}
+		
+		if(!empty($kjs['kj_en_sp_id'])){
+			$cnds[]="Neko.en_sp_id = {$kjs['kj_en_sp_id']}";
 		}
 		
 		if(!empty($kjs['kj_neko_dt'])){

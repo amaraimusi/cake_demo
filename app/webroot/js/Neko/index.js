@@ -115,6 +115,14 @@ function init(){
 	);
 	
 	crudBase.newVersionReload(); // 新バージョンリロード
+	
+	// 外部名称
+	let outerNameData = [
+		{unique_code:'kj_en_sp_id', wamei:'絶滅危惧種'},
+		{unique_code:'edit_en_sp_id', wamei:'絶滅危惧種'},
+		{unique_code:'ni_en_sp_id', wamei:'絶滅危惧種'},
+	];
+	crudBase.crudBaseOuterName.init(crudBaseData, outerNameData);
 }
 
 
@@ -377,7 +385,7 @@ function calendarViewKShow(){
 /**
  * 外部idに紐づく外部テーブルの名前フィールドを取得する
  */
-function getOuterName(thisElm){
-	crudBase.crudBaseOuterName.getOuterName(thisElm);
+function getOuterName(unique_code){
+	crudBase.crudBaseOuterName.getOuterName(unique_code);
 }
 

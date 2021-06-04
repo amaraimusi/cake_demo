@@ -50,7 +50,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		$this->CrudBase->inputKjSelect('kj_neko_group','ネコ種別', $masters['nekoGroupList']); 
 		$this->CrudBase->inputKjText('kj_neko_dt','ネコ日時',150);
 		$this->CrudBase->inputKjFlg('kj_neko_flg','ネコフラグ');
-		$this->CrudBase->inputKjOuterId('kj_en_sp_id', '絶滅危惧種', 'en_sps', 'wamei', ['width'=>130]);
+		$this->CrudBase->inputKjOuterId('kj_en_sp_id', '絶滅危惧種', ['width'=>130]);
 		$this->CrudBase->inputKjText('kj_img_fn','画像ファイル名',200);
 		$this->CrudBase->inputKjText('kj_note','備考',200,'部分一致検索');
 		$this->CrudBase->inputKjId(); 
@@ -290,6 +290,11 @@ foreach($data as $i=>&$ent){
 				<label class="text-danger" for="neko_group"></label>
 			</div>
 		</div>
+		
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp_label' >絶滅危惧種ID: </div>
+			<?php $this->CrudBase->formOuterName('en_sp_id', '絶滅危惧種', 'ni', ['width'=>130]); ?>
+		</div>
 	
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp_label' >ネコ日時: </div>
@@ -396,6 +401,10 @@ foreach($data as $i=>&$ent){
 					<?php $this->CrudBase->selectX('neko_group',null,$nekoGroupList,['class'=>'form-control']);?>
 					<label class="text-danger" for="neko_group"></label>
 				</div>
+			</div>
+			<div class="cbf_inp_wrap">
+				<div class='cbf_inp_label' >絶滅危惧種ID: </div>
+				<?php $this->CrudBase->formOuterName('en_sp_id', '絶滅危惧種', 'edit', ['width'=>130]); ?>
 			</div>
 		
 			<div class="cbf_inp_wrap">

@@ -137,7 +137,6 @@ class CrudBase{
 		
 		// クラスの骨組み 外部名称クラス：外部idに紐づく外部テーブルの名前要素を制御
 		this.crudBaseOuterName = new CrudBaseOuterName();
-		this.crudBaseOuterName.init(this.crudBaseData);
 		
 		// -----------
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
@@ -1327,6 +1326,8 @@ class CrudBase{
 		// 検索条件要素の各種ガシェットをリセットする
 		if(this.cbGadgetKj) this.cbGadgetKj.reset();
 		
+		// 外部名称クラス：表示中の外部名称をクリアする。
+		this.crudBaseOuterName.clear();
 		
 	}
 	
