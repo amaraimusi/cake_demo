@@ -25,7 +25,6 @@ class CrudBaseOuterName{
 		
 		// 省略されている値をセットする。
 		data = this._setValueIfEmpty(data);
-		console.log(data);//■■■□□□■■■□□□
 		
 		this.data = data;
 		
@@ -63,9 +62,7 @@ class CrudBaseOuterName{
 			box[unique_code] = boxEnt;
 			
 		}
-		
-		console.log(box);//■■■□□□■■■□□□
-		
+
 		return box;
 	}
 	
@@ -116,6 +113,7 @@ class CrudBaseOuterName{
 	 * 外部idに紐づく外部テーブルの名前フィールドを取得する
 	 */
 	getOuterName(unique_code){
+
 		let boxEnt = this.box[unique_code];
 		let outerIdElm = boxEnt['outerIdElm'];
 		

@@ -832,7 +832,7 @@ class CrudBaseHelper {
 						maxlength='{$maxlength}'
 						type='text'>
 				</div>
-				<button type='button' class='btn btn-secondary btn-sm OuterName-kj_en_sp_id-outer_show_btn' onclick='getOuterName(this)' >
+				<button type='button' class='btn btn-secondary btn-sm OuterName-kj_en_sp_id-outer_show_btn' onclick=\"getOuterName('{$kj_field}')\" >
 					<span class='oi' data-glyph='arrow-thick-right'></span>{$btn_wamei}
 				</button>
 				<div class='OuterName-kj_en_sp_id-outer_name' style='display:inline-block'></div>
@@ -2499,6 +2499,8 @@ class CrudBaseHelper {
 		$outer_id_slt = "OuterName-{$form_type}_{$field}-outer_id";
 		$outer_name_slt = "OuterName-{$form_type}_{$field}-outer_name";
 		$outer_show_btn_slt = "OuterName-{$form_type}_{$field}-outer_show_btn";
+		
+		$unique_code = $form_type . '_' . $field;
 
 		$html = "
 			<div class='OuterName' >
@@ -2514,7 +2516,7 @@ class CrudBaseHelper {
 						maxlength='{$maxlength}'
 						type='text'>
 				</div>
-				<button type='button' class='btn btn-secondary btn-sm {$outer_show_btn_slt}' onclick='getOuterName('{}')' >
+				<button type='button' class='btn btn-secondary btn-sm {$outer_show_btn_slt}' onclick=\"getOuterName('{$unique_code}')\" >
 					<span class='oi' data-glyph='arrow-thick-right'></span>{$btn_wamei}
 				</button>
 				<div class='{$outer_name_slt}' style='display:inline-block'></div>

@@ -386,6 +386,7 @@ function calendarViewKShow(){
  * 外部idに紐づく外部テーブルの名前フィールドを取得する
  */
 function getOuterName(unique_code){
+	console.log('unique_code＝' + unique_code);//■■■□□□■■■□□□)
 	crudBase.crudBaseOuterName.getOuterName(unique_code);
 }
 
