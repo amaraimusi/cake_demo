@@ -11,7 +11,9 @@ class CrudBaseOuterName{
 	 * @param {} crudBaseData
 	 * @param [{}] data 外部名称データ
 	 * 	- string unique_code 一意コード：
-	 *		「アクションメソッド_フォーム種別_IDフィールド」のパターンで書くと下記パラメータを省略できる。例→kj_en_sp_id, edit_en_sp_id, ni_en_sp_id
+	 *		「フォーム種別_IDフィールド」のパターンで書くと下記パラメータを省略できる。例→kj_en_sp_id, edit_en_sp_id, ni_en_sp_id
+	 * 	- string outer_id_field 外部IDフィールド（省略可）
+	 * 	- string outer_name_field 外部名称フィールド（省略可）
 	 * 	- string wamei 和名
 	 * 	- string outer_id_slt	外部ID要素のセレクタ（省略可）。例→#slt-kj_en_sp_id-outer_id
 	 * 	- string outer_name_slt	外部名称要素のセレクタ（省略可）。例→#kj_en_sp_id-outer_name
@@ -74,15 +76,64 @@ class CrudBaseOuterName{
 			let ent = data[i];
 			if(ent['unique_code'] == null) throw new Error('CBON0604D i=' + i);
 			let unique_code = ent['unique_code'];
+			if(ent['outer_id_field'] == null) ent['outer_id_field'] = this._extractIdField(unique_code);
+			if(ent['outer_name_field'] == null) ent['outer_name_field'] = this._extractOuterNameField(ent['outer_id_field']);
 			if(ent['wamei'] == null) ent['wamei'] = '';
 			if(ent['outer_id_slt'] == null) ent['outer_id_slt'] = '.OuterName-' + unique_code + '-outer_id';
 			if(ent['outer_name_slt'] == null) ent['outer_name_slt'] = '.OuterName-' + unique_code + '-outer_name';
 			if(ent['outer_show_btn_slt'] == null) ent['outer_show_btn_slt'] = '.OuterName-' + unique_code + '-outer_show_btn';
 			if(ent['form_type'] == null) ent['form_type'] = this._extactFromType(unique_code);
+
 		}
-		
 		return data;
 	}
+	
+	// 外部名称フィールドを取得する
+	_extractOuterNameField(id_field){
+		
+		let fEnt = this._getFieldEnt(id_field);
+		if(fEnt.outer_alias == null) throw new Error('CBON210605B'); 
+		return fEnt.outer_alias;
+	}
+	
+	// フィールドデータからフィールドエンティティを取得する
+	_getFieldEnt(field){
+		let fEnt = null;
+		let fieldData = this.crudBaseData.fieldData;
+		for(let i in fieldData){
+			let fEnt2 = fieldData[i];
+			if(fEnt2.id == field){
+				fEnt = fEnt2;
+				break;
+			}
+		}
+		
+		if(fEnt == null) throw new Error('システムエラー CBON210605A');
+		return fEnt;
+	}
+	
+	
+	// IDフィールド名を取得する
+	_extractIdField(unique_code){
+		return this._stringRight(unique_code, '_');
+	}
+	
+		/**
+	 * 文字列を左側から印文字を検索し、右側の文字を切り出す。
+	 * @param s 対象文字列
+	 * @param mark 印文字
+	 * @return 印文字から右側の文字列
+	 */
+	_stringRight(s,mark){
+		if (s==null || s==""){
+			return s;
+		}
+		
+		var a=s.indexOf(mark);
+		var s2=s.substring(a+mark.length,s.length);
+		return s2;
+	}
+	
 	
 	
 	// フォーム種別を一意コードから抽出する。
@@ -235,5 +286,35 @@ class CrudBaseOuterName{
 			return data;
 		}
 	}
+	
+	/** 新規入力フォーム表示
+	 */
+	newInpShow(ent){
+		this._show(ent, 'new_inp');
+	}
+	
+	/** 編集フォーム表示
+	 */
+	editShow(ent){
+		this._show(ent, 'edit');
+	}
+	
+	// フォーム表示
+	_show(ent, form_type){
+
+		for(let i in this.box){
+			let boxEnt = this.box[i];
+			let outerNameEnt = boxEnt['ent'];
+			let outer_name_field = outerNameEnt.outer_name_field;
+			if(outerNameEnt.form_type == form_type){
+				let outerNameElm = boxEnt.outerNameElm;
+				let outer_name = ent[outer_name_field];
+				if(outer_name == null) outer_name = '';
+				outerNameElm.html(outer_name);
+			}
+		}
+	}
+	
+	
 	
 }

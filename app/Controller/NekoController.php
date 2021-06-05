@@ -135,6 +135,9 @@ class NekoController extends AppController {
 			// CBBXE
 		}
 		
+		// 外部名称をエンティティにセットする
+		$ent = $this->cb->setOuterNameFromDb($ent);
+		
 		
 		$json_str = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS); // JSONに変換
 		

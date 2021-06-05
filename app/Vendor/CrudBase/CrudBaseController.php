@@ -14,7 +14,9 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.1.0";
+	public $version = "3.2.0";
+	
+	public $crudBaseData = [];
 
 	///デフォルトの並び替え対象フィールド
 	public $defSortFeild='sort_no';
@@ -2057,5 +2059,35 @@ class CrudBaseController {
 		return $this->crudBaseModel->makePermRoles();
 	}
 	
+	
+	/**
+	 * 外部名称をエンティティにセットする
+	 * @param [] $ent エンティティ
+	 */
+	public function setOuterNameFromDb(&$ent){
+		
+		// フィールドデータを取得する
+		$fieldData = $this->crudBaseData['fieldData']['def'];
+		foreach($ent as $field=>$value){
+			if(empty($fieldData[$field])) continue;
+			$fEnt = $fieldData[$field];
+			
+			if(!empty($fEnt['outer_tbl_name'])){
+				if(empty($value)) continue;
+				if(!is_numeric($value)) throw new Exception('システムエラー CBC210605C');
+				$outer_tbl_name = $fEnt['outer_tbl_name'];
+				$outer_field = $fEnt['outer_field'];
+				$outer_alias = $fEnt['outer_alias'];
+				$sql = "SELECT {$outer_field} AS {$outer_alias} FROM {$outer_tbl_name} WHERE id={$value}";
+				$outer_name = $this->strategy->selectValue($sql);
+				if($outer_name === null) $outer_name = '';
+				$ent[$outer_alias] = $outer_name;
+				
+			}
+			
+		}
+	
+		return $ent;
+	}
 
 }

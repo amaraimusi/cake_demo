@@ -175,8 +175,6 @@ class MsgBoardEx{
 			$message = h($message); // XSSサニタイズ
 		}
 		
-		//if(empty($message))■■■□□□■■■□□□ファイル添付メッセージ
-		
 		$debug_mail_text = ''; // デバッグメールテキスト
 		
 		// 日本語文字化け対策

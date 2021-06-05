@@ -686,6 +686,8 @@ class CrudBase{
 		
 		this.crudBasePasswordEdit.showForm('new_inp'); // パスワード編集機能
 		this.foldingTaN.reflection(); // 折り畳み式テキストエリアに反映
+		this.crudBaseOuterName.newInpShow(); // 外部名称・クリア
+
 		
 	}
 
@@ -744,6 +746,8 @@ class CrudBase{
 		
 		this.crudBasePasswordEdit.showForm('edit'); // パスワード編集機能
 		this.foldingTaE.reflection(); // 折り畳み式テキストエリアに反映
+		
+		this.crudBaseOuterName.editShow(ent); // 外部名称・クリア
 
 	}
 
@@ -824,7 +828,7 @@ class CrudBase{
 		
 		// パスワード編集機能
 		this.crudBasePasswordEdit.showForm('copy');
-
+		this.crudBaseOuterName.newInpShow(ent); // 外部名称・クリア
 
 
 	}
@@ -983,7 +987,6 @@ class CrudBase{
 		let token = this.param.csrf_token;
 		fd.append( "_token", token );
 		
-		// WordPressの場合■■■□□□■■■□□□後日でwp_nonceをcsrf_tokenに変更する
 		if(option['wp_action']){
 			regParam['action'] = option['wp_action'];
 			if(option['wp_nonce']) regParam['nonce'] = option['wp_nonce'];
@@ -1037,6 +1040,9 @@ class CrudBase{
 
 				// 新しい行を作成する
 				var tr = this._addTr(ent,add_row_index);
+				
+				// 外部名称をTR要素にセットする。
+				this._setOuterNameToTr(ent,tr);
 				
 				// ボタン群の表示切替
 				this._switchBtnsDisplay(tr,ent)
@@ -1147,7 +1153,7 @@ class CrudBase{
 				console.log(str_json);
 				jQuery("#err").html(str_json);
 			}
-
+			
 			// 編集中の行にエンティティを反映する。
 			if(ent){
 				if(ent['err']){
@@ -1172,6 +1178,9 @@ class CrudBase{
 
 				// TR要素にエンティティの値をセットする
 				this._setEntityToEditTr(ent,tr);
+				
+				// 外部名称をTR要素にセットする。
+				this._setOuterNameToTr(ent,tr);
 				
 				this._offNoteDetail(tr);
 
@@ -4506,7 +4515,28 @@ class CrudBase{
 	}
 	
 	
-	
+	// 外部名称をTR要素にセットする。
+	_setOuterNameToTr(ent,tr){
+		let fieldData = this.crudBaseData.fieldData;
+		for(let i in fieldData){
+			let fEnt = fieldData[i];
+			if(fEnt.outer_tbl_name == null) continue;
+			let outer_alias = fEnt.outer_alias;
+			let outer_name = ent[outer_alias];
+			outer_name = this._xssSanitaizeEncode(outer_name);
+			if(outer_name == null) outer_name = '';
+			let elm1 = tr.find('.' + outer_alias);
+			if(elm1[0]){
+				elm1.html(outer_name);
+			}
+			let elm2 = tr.find(`input[name='${outer_alias}']`);
+			if(elm2[0]){
+				elm2.val(outer_name);
+			}
+			
+		}
+
+	}
 	
 }
 

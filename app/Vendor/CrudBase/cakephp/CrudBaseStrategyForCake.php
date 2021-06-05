@@ -200,7 +200,15 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	
 	public function selectValue($sql)
 	{
-		throw new Error('まだ実装されてません。selectValue');
+		
+		$res = $this->sqlExe($sql);
+		$value = null;
+		if(!empty($res)){
+			$ent = current($res);
+			$ary = current($ent);
+			$value = current($ary);
+		}
+		return $value;
 	}
 	
 	public function getCsrfToken()
