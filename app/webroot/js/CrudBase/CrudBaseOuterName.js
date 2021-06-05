@@ -1,8 +1,8 @@
 /**
  * 外部名称クラス： 外部idに紐づく外部テーブルの名前要素を制御
- * @since 2021-6-2
+ * @since 2021-6-2 | 2021-6-5
  * @license MIT
- * @version 1.0.0
+ * @version 1.0.1
  */
 class CrudBaseOuterName{
 
@@ -289,8 +289,8 @@ class CrudBaseOuterName{
 	
 	/** 新規入力フォーム表示
 	 */
-	newInpShow(ent){
-		this._show(ent, 'new_inp');
+	newInpShow(){
+		this._show(null, 'new_inp');
 	}
 	
 	/** 編集フォーム表示
@@ -308,7 +308,12 @@ class CrudBaseOuterName{
 			let outer_name_field = outerNameEnt.outer_name_field;
 			if(outerNameEnt.form_type == form_type){
 				let outerNameElm = boxEnt.outerNameElm;
-				let outer_name = ent[outer_name_field];
+
+				let outer_name = '';
+				if(ent){
+					outer_name = ent[outer_name_field];
+				}
+				
 				if(outer_name == null) outer_name = '';
 				outerNameElm.html(outer_name);
 			}
