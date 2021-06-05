@@ -3,18 +3,19 @@ App::uses('Model', 'Model');
 App::uses('CrudBase', 'Model');
 
 /**
- * ネコのCakePHPモデルクラス
+ * タヌキのCakePHPモデルクラス
  *
  * @date 2015-9-16 | 2018-10-10
  * @version 3.1.2
  *
  */
-class Neko extends AppModel {
+class Tanuki extends AppModel {
 
-	public $name='Neko';
+	public $name='Tanuki';
 	
 	// 関連付けるテーブル CBBXS-1040
 	public $useTable = 'nekos';
+
 	// CBBXE
 
 	/// バリデーションはコントローラクラスで定義
@@ -23,28 +24,30 @@ class Neko extends AppModel {
 	// ホワイトリスト（DB保存時にこのホワイトリストでフィルタリングが施される）
 	public $fillable = [
 		// CBBXS-2009
-		'id',
-		'neko_val',
-		'neko_name',
-		'neko_date',
-		'neko_group',
-		'neko_dt',
-		'neko_flg',
-		'img_fn',
-		'note',
-		'sort_no',
-		'delete_flg',
-		'update_user',
-		'ip_addr',
-		'created',
-		'modified',
+			'id',
+			'neko_val',
+			'neko_name',
+			'neko_date',
+			'neko_group',
+			'en_sp_id',
+			'neko_dt',
+			'neko_flg',
+			'img_fn',
+			'note',
+			'sort_no',
+			'delete_flg',
+			'update_user',
+			'ip_addr',
+			'created',
+			'modified',
+
 		// CBBXE
 	];
 	
 	// CBBXS-2012
 	const CREATED_AT = 'created';
 	const UPDATED_AT = 'modified';
-	
+
 	// CBBXE
 	
 	private $cb; // CrudBase制御クラス
@@ -110,8 +113,8 @@ class Neko extends AppModel {
 		
 		$sql =
 		"
-				SELECT SQL_CALC_FOUND_ROWS Neko.* {$outer_selects_str}
-				FROM {$main_tbl_name} AS Neko
+				SELECT SQL_CALC_FOUND_ROWS Tanuki.* {$outer_selects_str}
+				FROM {$main_tbl_name} AS Tanuki
 				{$outer_join_str}
 				WHERE {$conditions}
 				ORDER BY {$sort_field} {$sort_type}
@@ -182,12 +185,12 @@ class Neko extends AppModel {
 	
 
 	/**
-	 * ネコエンティティを取得
+	 * タヌキエンティティを取得
 	 *
-	 * ネコテーブルからidに紐づくエンティティを取得します。
+	 * タヌキテーブルからidに紐づくエンティティを取得します。
 	 *
-	 * @param int $id ネコID
-	 * @return array ネコエンティティ
+	 * @param int $id タヌキID
+	 * @return array タヌキエンティティ
 	 */
 	public function findEntity($id){
 
@@ -203,7 +206,7 @@ class Neko extends AppModel {
 
 		$ent=array();
 		if(!empty($data)){
-			$ent=$data['Neko'];
+			$ent=$data['Tanuki'];
 		}
 		
 
@@ -221,10 +224,10 @@ class Neko extends AppModel {
 	private function dumpSql($option){
 		$dbo = $this->getDataSource();
 		
-		$option['table']=$dbo->fullTableName($this->Neko);
-		$option['alias']='Neko';
+		$option['table']=$dbo->fullTableName($this->Tanuki);
+		$option['alias']='Tanuki';
 		
-		$query = $dbo->buildStatement($option,$this->Neko);
+		$query = $dbo->buildStatement($option,$this->Tanuki);
 		
 		Debugger::dump($query);
 	}
@@ -243,97 +246,75 @@ class Neko extends AppModel {
 		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
 		
 		if(!empty($kjs['kj_main'])){
-			$cnds[]="CONCAT( IFNULL(Neko.neko_name, '') ,IFNULL(Neko.note, '')) LIKE '%{$kjs['kj_main']}%'";
+			$cnds[]="CONCAT( IFNULL(Tanuki.tanuki_name, '') ,IFNULL(Tanuki.note, '')) LIKE '%{$kjs['kj_main']}%'";
 		}
 		
 		// CBBXS-1003
-		
-		if(!empty($kjs['kj_id'])){
-			$cnds[]="Neko.id = {$kjs['kj_id']}";
+		if(!empty($kjs['kj_id']) || $kjs['kj_id'] ==='0' || $kjs['kj_id'] ===0){
+			$cnds[]="Tanuki.id = {$kjs['kj_id']}";
 		}
-		
 		if(!empty($kjs['kj_neko_val1'])){
-			$cnds[]="Neko.neko_val >= {$kjs['kj_neko_val1']}";
+			$cnds[]="Tanuki.neko_val >= {$kjs['kj_neko_val1']}";
 		}
-		
 		if(!empty($kjs['kj_neko_val2'])){
-			$cnds[]="Neko.neko_val <= {$kjs['kj_neko_val2']}";
+			$cnds[]="Tanuki.neko_val <= {$kjs['kj_neko_val2']}";
 		}
-		
 		if(!empty($kjs['kj_neko_name'])){
-			$cnds[]="Neko.neko_name LIKE '%{$kjs['kj_neko_name']}%'";
+			$cnds[]="Tanuki.neko_name LIKE '%{$kjs['kj_neko_name']}%'";
 		}
-		
 		if(!empty($kjs['kj_neko_date1'])){
-			$cnds[]="Neko.neko_date >= '{$kjs['kj_neko_date1']}'";
+			$cnds[]="Tanuki.neko_date >= '{$kjs['kj_neko_date1']}'";
 		}
-		
 		if(!empty($kjs['kj_neko_date2'])){
-			$cnds[]="Neko.neko_date <= '{$kjs['kj_neko_date2']}'";
+			$cnds[]="Tanuki.neko_date <= '{$kjs['kj_neko_date2']}'";
 		}
-		
-		if(!empty($kjs['kj_neko_group'])){
-			$cnds[]="Neko.neko_group = {$kjs['kj_neko_group']}";
+		if(!empty($kjs['kj_neko_group']) || $kjs['kj_neko_group'] ==='0' || $kjs['kj_neko_group'] ===0){
+			$cnds[]="Tanuki.neko_group = {$kjs['kj_neko_group']}";
 		}
-		
-		if(!empty($kjs['kj_en_sp_id'])){
-			$cnds[]="Neko.en_sp_id = {$kjs['kj_en_sp_id']}";
+		if(!empty($kjs['kj_en_sp_id']) || $kjs['kj_en_sp_id'] ==='0' || $kjs['kj_en_sp_id'] ===0){
+			$cnds[]="Tanuki.en_sp_id = {$kjs['kj_en_sp_id']}";
 		}
-		
 		if(!empty($kjs['kj_neko_dt'])){
 			$kj_neko_dt = $kjs['kj_neko_dt'];
 			$dtInfo = $this->CrudBase->guessDatetimeInfo($kj_neko_dt);
-			$cnds[]="DATE_FORMAT(Neko.neko_dt,'{$dtInfo['format_mysql_a']}') = DATE_FORMAT('{$dtInfo['datetime_b']}','{$dtInfo['format_mysql_a']}')";
+			$cnds[]="DATE_FORMAT(Tanuki.neko_dt,'{$dtInfo['format_mysql_a']}') = DATE_FORMAT('{$dtInfo['datetime_b']}','{$dtInfo['format_mysql_a']}')";
 		}
-		
 		$kj_neko_flg = $kjs['kj_neko_flg'];
 		if(!empty($kjs['kj_neko_flg']) || $kjs['kj_neko_flg'] ==='0' || $kjs['kj_neko_flg'] ===0){
 			if($kjs['kj_neko_flg'] != -1){
-				$cnds[]="Neko.neko_flg = {$kjs['kj_neko_flg']}";
+				$cnds[]="Tanuki.neko_flg = {$kjs['kj_neko_flg']}";
 			}
 		}
-		
 		if(!empty($kjs['kj_img_fn'])){
-			$cnds[]="Neko.img_fn = '{$kjs['kj_img_fn']}'";
+			$cnds[]="Tanuki.img_fn LIKE '%{$kjs['kj_img_fn']}%'";
 		}
-
 		if(!empty($kjs['kj_note'])){
-			$cnds[]="Neko.note LIKE '%{$kjs['kj_note']}%'";
+			$cnds[]="Tanuki.note LIKE '%{$kjs['kj_note']}%'";
 		}
-		
 		if(!empty($kjs['kj_sort_no']) || $kjs['kj_sort_no'] ==='0' || $kjs['kj_sort_no'] ===0){
-			$cnds[]="Neko.sort_no = {$kjs['kj_sort_no']}";
+			$cnds[]="Tanuki.sort_no = {$kjs['kj_sort_no']}";
 		}
-		
 		$kj_delete_flg = $kjs['kj_delete_flg'];
 		if(!empty($kjs['kj_delete_flg']) || $kjs['kj_delete_flg'] ==='0' || $kjs['kj_delete_flg'] ===0){
 			if($kjs['kj_delete_flg'] != -1){
-			   $cnds[]="Neko.delete_flg = {$kjs['kj_delete_flg']}";
+			   $cnds[]="Tanuki.delete_flg = {$kjs['kj_delete_flg']}";
 			}
 		}
-
 		if(!empty($kjs['kj_update_user'])){
-			$cnds[]="Neko.update_user = '{$kjs['kj_update_user']}'";
+			$cnds[]="Tanuki.update_user LIKE '%{$kjs['kj_update_user']}%'";
 		}
-
 		if(!empty($kjs['kj_ip_addr'])){
-			$cnds[]="Neko.ip_addr = '{$kjs['kj_ip_addr']}'";
+			$cnds[]="Tanuki.ip_addr LIKE '%{$kjs['kj_ip_addr']}%'";
 		}
-		
-		if(!empty($kjs['kj_user_agent'])){
-			$cnds[]="Neko.user_agent LIKE '%{$kjs['kj_user_agent']}%'";
-		}
-
 		if(!empty($kjs['kj_created'])){
 			$kj_created=$kjs['kj_created'].' 00:00:00';
-			$cnds[]="Neko.created >= '{$kj_created}'";
+			$cnds[]="Tanuki.created >= '{$kj_created}'";
 		}
-		
 		if(!empty($kjs['kj_modified'])){
 			$kj_modified=$kjs['kj_modified'].' 00:00:00';
-			$cnds[]="Neko.modified >= '{$kj_modified}'";
+			$cnds[]="Tanuki.modified >= '{$kj_modified}'";
 		}
-		
+
 		// CBBXE
 		
 		$cnd=null;
@@ -348,13 +329,13 @@ class Neko extends AppModel {
 	/**
 	 * エンティティをDB保存
 	 *
-	 * ネコエンティティをネコテーブルに保存します。
+	 * タヌキエンティティをタヌキテーブルに保存します。
 	 *
-	 * @param array $ent ネコエンティティ
+	 * @param array $ent タヌキエンティティ
 	 * @param array $option オプション
 	 *  - form_type フォーム種別  new_inp:新規入力 , copy:複製 , edit:編集
 	 *  - ni_tr_place 新規入力追加場所フラグ 0:末尾 , 1:先頭
-	 * @return array ネコエンティティ（saveメソッドのレスポンス）
+	 * @return array タヌキエンティティ（saveメソッドのレスポンス）
 	 */
 	public function saveEntity($ent,$option=array()){
 
@@ -374,10 +355,10 @@ class Neko extends AppModel {
 		//DBからエンティティを取得
 		$ent = $this->find('first',
 				array(
-						'conditions' => "id={$ent['Neko']['id']}"
+						'conditions' => "id={$ent['Tanuki']['id']}"
 				));
 
-		$ent=$ent['Neko'];
+		$ent=$ent['Tanuki'];
 		if(empty($ent['delete_flg'])) $ent['delete_flg'] = 0;
 
 		return $ent;
@@ -430,7 +411,6 @@ class Neko extends AppModel {
 	
 	
 	// CBBXS-1021
-	
 	/**
 	 * 猫種別リストをDBから取得する
 	 */
@@ -457,7 +437,7 @@ class Neko extends AppModel {
 		
 		return $data;
 	}
-	
+
 	// CBBXE
 
 

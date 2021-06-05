@@ -3,7 +3,7 @@
 jQuery(()=> {
 	init();//初期化
 	
-	$('#neko_tbl').show();// 高速表示のためテーブルは最後に表示する
+	$('#tanuki_tbl').show();// 高速表示のためテーブルは最後に表示する
 	
 });
 
@@ -11,7 +11,7 @@ jQuery(()=> {
 var crudBase;//AjaxによるCRUD
 
 /**
- *  ネコ画面の初期化
+ *  タヌキ画面の初期化
  * 
   * ◇主に以下の処理を行う。
  * - 日付系の検索入力フォームにJQueryカレンダーを組み込む
@@ -38,7 +38,7 @@ function init(){
 	// 検索条件バリデーション情報のセッター
 	let validMethods =_getValidMethods();
 	crudBase.setKjsValidationForJq(
-			'#nekoIndexForm',
+			'#tanukiIndexForm',
 			crudBaseData,
 			validMethods,
 	);
@@ -49,25 +49,23 @@ function init(){
 	// 表示フィルターデータの定義とセット
 	var disFilData = {
 			// CBBXS-1008
-			'neko_val':{
-				'fil_type':'money',
-				'option':{'currency':'&yen;'}
-			},
 			'neko_flg':{
-				'fil_type':'select',
+				'fil_type':'flg',
 				'option':{'list':['OFF','ON']}
 			},
 			'delete_flg':{
 				'fil_type':'delete_flg',
 			},
+
 			// CBBXE
 			
 	};
 	
 	// CBBXS-2023
-	// ネコグループリストJSON
+	// 猫種別リストJSON
 	let nekoGroupList = crudBaseData.masters.nekoGroupList;
 	disFilData['neko_group'] ={'fil_type':'select','option':{'list':nekoGroupList}};
+
 	// CBBXE
 
 	
@@ -98,19 +96,25 @@ function init(){
 	crudBase.crudBaseBulkAdd.init(
 		[
 			// CBBXS-2010
-			{'field':'neko_name', 'inp_type':'textarea'}, 
+			{'field':'id', 'inp_type':'textarea'}, 
 			{'field':'neko_val', 'inp_type':'textarea'}, 
+			{'field':'neko_group', 'inp_type':'select', 'list':nekoGroupList, 'def':0}, 
+			{'field':'en_sp_id', 'inp_type':'textarea'}, 
+			{'field':'neko_flg', 'inp_type':'textarea'}, 
+			{'field':'sort_no', 'inp_type':'textarea'}, 
+			{'field':'delete_flg', 'inp_type':'textarea'}, 
+
 			// CBBXE
 			
-//			{'field':'neko_group', 'inp_type':'select', 'list':nekoGroupList, 'def':2}, 
-//			{'field':'neko_date', 'inp_type':'date', 'def':today}, 
+//			{'field':'tanuki_group', 'inp_type':'select', 'list':tanukiGroupList, 'def':2}, 
+//			{'field':'tanuki_date', 'inp_type':'date', 'def':today}, 
 //			{'field':'note', 'inp_type':'text', 'def':'TEST'}, 
 //			{'field':'sort_no', 'inp_type':'sort_no', 'def':1}, 
 		],
 		{
-			ajax_url:'neko/bulk_reg',
+			ajax_url:'tanuki/bulk_reg',
 			csrf_token:csrf_token,
-			ta_placeholder:"Excelからコピーしたネコ名、ネコ数値を貼り付けてください。（タブ区切りテキスト）\n(例)\nネコ名A\t100\nネコ名B\t101\n",
+			ta_placeholder:"Excelからコピーしたタヌキ名、タヌキ数値を貼り付けてください。（タブ区切りテキスト）\n(例)\nタヌキ名A\t100\nタヌキ名B\t101\n",
 		}
 	);
 	
@@ -119,9 +123,10 @@ function init(){
 	// 外部名称
 	let outerNameData = [
 		// CBBXS-2028
-		{unique_code:'kj_en_sp_id', wamei:'絶滅危惧種'},
-		{unique_code:'edit_en_sp_id', wamei:'絶滅危惧種'},
-		{unique_code:'ni_en_sp_id', wamei:'絶滅危惧種'},
+		{unique_code:'kj_en_sp_id', wamei:'絶滅危惧種ID'},
+		{unique_code:'edit_en_sp_id', wamei:'絶滅危惧種ID'},
+		{unique_code:'ni_en_sp_id', wamei:'絶滅危惧種ID'},
+
 		// CBBXE
 	];
 	crudBase.crudBaseOuterName.init(crudBaseData, outerNameData);
@@ -142,22 +147,6 @@ function _getValidMethods(){
 				}
 				return err;
 			},
-			kj_neko_val1:(cbv, value)=>{
-				let err = '';
-				// 整数バリデーション
-				if(!cbv.isInteger(value)){
-					err = '整数で入力してください。';
-				}
-				return err;
-			},
-			kj_neko_val2:(cbv, value)=>{
-				let err = '';
-				// 整数バリデーション
-				if(!cbv.isInteger(value)){
-					err = '整数で入力してください。';
-				}
-				return err;
-			},
 			kj_neko_name:(cbv, value)=>{
 				let err = '';
 				// 文字数バリデーション
@@ -166,19 +155,27 @@ function _getValidMethods(){
 				}
 				return err;
 			},
+			kj_id:(cbv, value)=>{
+				let err = '';
+				// 自然数バリデーション
+				if(!cbv.isNaturalNumber(value)){
+					err = '自然数で入力してください。';
+				}
+				return err;
+			},
 			kj_img_fn:(cbv, value)=>{
 				let err = '';
 				// 文字数バリデーション
-				if(!cbv.isMaxLength(value, 255)){
-					err = '255文字以内で入力してくだい。';
+				if(!cbv.isMaxLength(value, 256)){
+					err = '256文字以内で入力してくだい。';
 				}
 				return err;
 			},
 			kj_note:(cbv, value)=>{
 				let err = '';
 				// 文字数バリデーション
-				if(!cbv.isMaxLength(value, 1000)){
-					err = '1000文字以内で入力してくだい。';
+				if(!cbv.isMaxLength(value, ex)){
+					err = 'ex文字以内で入力してくだい。';
 				}
 				return err;
 			},
@@ -198,6 +195,7 @@ function _getValidMethods(){
 				}
 				return err;
 			},
+
 			// CBBXE
 
 	}
@@ -382,7 +380,7 @@ function searchKjs(){
  */
 function calendarViewKShow(){
 	// カレンダービューを生成 
-	crudBase.calendarViewCreate('neko_date');
+	crudBase.calendarViewCreate('tanuki_date');
 }
 
 /**

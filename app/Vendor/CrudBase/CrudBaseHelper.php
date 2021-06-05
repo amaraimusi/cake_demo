@@ -8,7 +8,7 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.0.7
+ * @version 2.0.8
  * @since 2016-7-27 | 2021-6-1
  * @author k-uehara
  * @license MIT
@@ -826,16 +826,16 @@ class CrudBaseHelper {
 						id='{$kj_field}'
 						value='{$this->kjs[$kj_field]}'
 						placeholder='{$placeholder}'
-						class='kjs_inp form-control OuterName-kj_en_sp_id-outer_id'
+						class='kjs_inp form-control OuterName-{$kj_field}-outer_id'
 						style='width:{$width}px; '
 						title='{$title}'
 						maxlength='{$maxlength}'
 						type='text'>
 				</div>
-				<button type='button' class='btn btn-secondary btn-sm OuterName-kj_en_sp_id-outer_show_btn' onclick=\"getOuterName('{$kj_field}')\" >
+				<button type='button' class='btn btn-secondary btn-sm OuterName-{$kj_field}-outer_show_btn' onclick=\"getOuterName('{$kj_field}')\" >
 					<span class='oi' data-glyph='arrow-thick-right'></span>{$btn_wamei}
 				</button>
-				<div class='OuterName-kj_en_sp_id-outer_name' style='display:inline-block'></div>
+				<div class='OuterName-{$kj_field}-outer_name' style='display:inline-block'></div>
 				<div id='{$kj_field}_err' class='text-danger'></div>
 			</div>
 		";
