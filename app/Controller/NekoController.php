@@ -439,14 +439,14 @@ class NekoController extends AppController {
 		$sort_field = $pages['sort_field'];
 		$sort_desc = $pages['sort_desc'];
 		
-		$crudBaseData = array(
-				'kjs' => $kjs,
-				'pages' => $pages,
-				'page_no' => $page_no,
-				'row_limit' => $row_limit,
-				'sort_field' => $sort_field,
-				'sort_desc' => $sort_desc,
-		);
+		$pages['page_no'] = $page_no;
+		$pages['row_limit'] = $row_limit;
+		$pages['sort_field'] = $sort_field;
+		$pages['sort_desc'] = $sort_desc;
+		
+		$crudBaseData = $this->init();
+		$crudBaseData['kjs'] = $kjs;
+		$crudBaseData['pages'] = $pages;
 		
 
 		//DBからデータ取得
