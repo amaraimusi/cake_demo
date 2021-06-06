@@ -12,8 +12,8 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.3.1
- * @date 2018-7-6 | 2021-5-22
+ * @version 1.3.2
+ * @date 2018-7-6 | 2021-6-6
  * @history 
  *  - 2021-04-29 var 1.3.0 大幅なバージョンアップ
  *  - 2018-10-2 var 1.2.6 「Now Loading...」メッセージを表示する
@@ -210,7 +210,13 @@ class FileUploadK{
 		if(option == null) option = {};
 		
 		this._clearBtnAction(fue_id); // クリアボタンアクション
+
+		if(typeof fps == 'string'){
+			let ext0 = this._getExtension(fps);
+			if(ext0 == '') return;
+		}
 		
+
 		if(fps == null || fps == '' || fps == 0) return;
 		if(typeof fps == 'string') fps = [fps];
 
@@ -661,9 +667,10 @@ class FileUploadK{
 			}
 			
 			var ext = this._getExtension(fEnt.fn);// ファイル名から拡張子を取得する。
-			
+
 			// 拡張子チェック
 			var res = validExts.indexOf(ext);
+
 			if(res == -1){ // 対象外の拡張子である場合
 				fEnt['err_flg'] = true;
 				fEnt['err_msg'] = fn + 'の拡張子は対象外です。';
@@ -686,14 +693,13 @@ class FileUploadK{
 	 * @return string 拡張子
 	 */
 	_getExtension(fn){
-		if(fn==null){
-			return '';
-		}
+		if(fn==null || fn=='') return '';
+		if(fn.indexOf('.') == -1) return '';
 
-		var ary=fn.split(".");
-		var ext=ary[ary.length-1];
+		let ary=fn.split(".");
+		let ext=ary[ary.length-1];
 
-		ext=ext.toLowerCase();//小文字化する
+		ext = ext.toLowerCase();//小文字化する
 
 		return ext;
 	}

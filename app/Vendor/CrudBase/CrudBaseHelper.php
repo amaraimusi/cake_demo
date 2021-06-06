@@ -1351,7 +1351,7 @@ class CrudBaseHelper {
 		$href = '';
 		$thum_src = '';
 		
-		if(!empty($orig_fp)){
+		if(!empty($ent[$field])){
 			$href = $orig_fp;
 			$thum_src = str_replace('/orig/', '/thum/', $orig_fp);
 		}else{
