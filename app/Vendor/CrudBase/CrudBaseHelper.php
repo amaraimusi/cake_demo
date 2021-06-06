@@ -940,7 +940,7 @@ class CrudBaseHelper {
 		$v2 = $this->propList($v,$list);
 		$v2 = htmlspecialchars($v2);
 		
-		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>\n";
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>";
 		$this->setTd($td,$field);
 	
 	}
@@ -949,6 +949,38 @@ class CrudBaseHelper {
 		$this->tblPreview($v,$wamei);
 	
 	}
+	
+	
+	/**
+	 * 値にひもづくリストの値をTD要素出力する。（アンカー版）
+	 * @param [] $ent データのエンティティ
+	 * @param string $field フィールド名
+	 * @param [] $list リスト
+	 * @param string $href リンクURL
+	 * @param [] $option
+	 *  - bool target_flg target属性フラグ
+	 */
+	public function tdListLink(&$ent, $field, $list=[], $href, $option=[]){
+		
+		$target_flg = $option['target_flg'] ?? 0;
+		$target = '';
+		if($target_flg) $target = "target='_blank'";
+		
+		$v = $ent[$field];
+		
+		$v2 = $this->propList($v,$list);
+		$v2 = htmlspecialchars($v2);
+		
+		$td = "
+			<td>
+				<input type='hidden' name='{$field}' value='{$v}' /><a class='{$field}' href='{$href}' {$target}>{$v2}</a>
+			</td>
+			";
+		
+		$this->setTd($td,$field);
+		
+	}
+	
 	/**
 	 * プロパティをリスト内の値に置き換える
 	 * @param string $v プロパティ
@@ -1412,6 +1444,26 @@ class CrudBaseHelper {
 		$outer_name = $ent[$outer_name_field];
 		$outer_name = htmlspecialchars($outer_name);
 		$td = "<td><input type='hidden' name='{$id_field}' value='{$id}' /><span class='{$outer_name_field}' >{$outer_name}</span></td>\n";
+		$this->setTd($td, $id_field);
+		
+	}
+	
+	
+	/**
+	 * 外部フィールド名のTD要素表示(リンク版）
+	 * @param array $ent データのエンティティ
+	 * @param string $id_field 外部IDフィールド名
+	 * @param string $outer_name_field 外部名前フィールド
+	 */
+	public function tdOuterNameLink(&$ent,$id_field, $outer_name_field, $href, $option=[]){
+		$target_flg = $option['target_flg'] ?? 0;
+		$target = '';
+		if($target_flg) $target = "target='_blank'";
+		
+		$id = $ent[$id_field];
+		$outer_name = $ent[$outer_name_field];
+		$outer_name = htmlspecialchars($outer_name);
+		$td = "<td><input type='hidden' name='{$id_field}' value='{$id}' /><a class='{$outer_name_field}'  href='{$href}' {$target}>{$outer_name}</a></td>\n";
 		$this->setTd($td, $id_field);
 		
 	}

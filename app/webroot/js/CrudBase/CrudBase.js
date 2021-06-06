@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @since 2016-9-21 | 2021-6-2
- * @version 3.1.4
+ * @since 2016-9-21 | 2021-6-6
+ * @version 3.1.5
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -1049,9 +1049,7 @@ class CrudBase{
 
 				// 登録後にコールバック関数を非同期で実行する
 				if(afterCallBack != null){
-					window.setTimeout(()=>{
-						afterCallBack(ent);
-						}, 1);
+						afterCallBack(ent, tr);
 				}
 
 
@@ -1072,7 +1070,7 @@ class CrudBase{
 	/**
 	 * 編集登録
 	 * @param beforeCallBack Ajax送信前のコールバック（送信データを編集できる）
-	 * @param afterCallBack Ajax送信後のコールバック
+	 * @param afterCallBack Ajax送信後のコールバック(ent, tr)
 	 * @param option オプション
 	 * - wp_action :WPアクション	WordPressでは必須
 	 * - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）
@@ -1184,11 +1182,9 @@ class CrudBase{
 				
 				this._offNoteDetail(tr);
 
-				// 登録後にコールバック関数を非同期で実行する
+				// 登録後にコールバック関数を実行する
 				if(afterCallBack != null){
-					window.setTimeout(()=>{
-						afterCallBack(ent);
-					}, 1);
+					afterCallBack(ent, tr);
 				}
 
 				var kjs = this._getKjs(); // 検索条件情報を取得する
