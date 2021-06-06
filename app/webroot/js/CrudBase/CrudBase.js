@@ -2272,7 +2272,6 @@ class CrudBase{
 			}
 			// 入力要素が1件である場合、その要素から値を取得する。
 			else if(cnt==1){
-
 				v = this._getEntByForm2(inps,form,f);
 			}
 			// 入力要素が2件以上である場合、最初の1件のみ取得

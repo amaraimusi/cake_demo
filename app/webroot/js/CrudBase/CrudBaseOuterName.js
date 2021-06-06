@@ -301,7 +301,6 @@ class CrudBaseOuterName{
 	
 	// フォーム表示
 	_show(ent, form_type){
-
 		for(let i in this.box){
 			let boxEnt = this.box[i];
 			let outerNameEnt = boxEnt['ent'];

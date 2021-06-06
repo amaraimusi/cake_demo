@@ -2559,13 +2559,13 @@ class CrudBaseHelper {
 				<div class='input text' style='display:inline-block'>
 					<input
 						
-						name='{$field}'
-						value=''
-						placeholder='{$placeholder}'
-						class='form-control {$outer_id_slt}'
-						style='width:{$width}px; '
-						title='{$title}'
-						maxlength='{$maxlength}'
+						name='{$field}' 
+						value='' 
+						placeholder='{$placeholder}' 
+						class='form-control {$outer_id_slt}' 
+						style='width:{$width}px; ' 
+						title='{$title}' 
+						maxlength='{$maxlength}' 
 						type='text'>
 				</div>
 				<button type='button' class='btn btn-secondary btn-sm {$outer_show_btn_slt}' onclick=\"getOuterName('{$unique_code}')\" >
