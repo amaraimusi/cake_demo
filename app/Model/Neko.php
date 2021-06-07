@@ -154,7 +154,7 @@ class Neko extends AppModel {
 		foreach($fieldData as $fEnt){
 			if(empty($fEnt['outer_tbl_name'])) continue;
 			$field = $fEnt['id'];
-			$str .= "LEFT JOIN {$fEnt['outer_tbl_name']} AS {$fEnt['outer_tbl_name_c']} ON {$model_name_c}.{$field} = {$fEnt['outer_tbl_name_c']}.id";
+			$str .= " LEFT JOIN {$fEnt['outer_tbl_name']} AS {$fEnt['outer_tbl_name_c']} ON {$model_name_c}.{$field} = {$fEnt['outer_tbl_name_c']}.id";
 			
 		}
 		

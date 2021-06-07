@@ -1073,6 +1073,8 @@ class CrudBaseHelper {
 		$v = $ent[$field];
 		$url2 = str_replace('%0', $v, $url);
 		
+		$v = htmlspecialchars($v);
+		
 		$td = "
 			<td>
 				<input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
