@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.0.8
- * @since 2016-7-27 | 2021-6-1
+ * @version 2.1.0
+ * @since 2016-7-27 | 2021-6-7
  * @author k-uehara
  * @license MIT
  */
@@ -1349,30 +1349,51 @@ class CrudBaseHelper {
 	 */
 	public function tdImage(&$ent, $field, $midway_dp = ''){
 		
-		$orig_fp = $midway_dp . $ent[$field];
-		$href = '';
+		$fp = $ent[$field];
+		$orig_fp = '';
+		$img_href = '';
 		$thum_src = '';
+		$dl_href = '';
+		$display_img_a = 'display:none;';
+		$display_none = 'display:none;';
+		$display_dl = 'display:none;';
 		
-		if(!empty($ent[$field])){
-			$href = $orig_fp;
-			$thum_src = str_replace('/orig/', '/thum/', $orig_fp);
+		if(!empty($fp)){
+			$orig_fp = $midway_dp . $fp;
+			
+			//拡張子を取得する
+			$pi = pathinfo($fp);
+			$ext = mb_strtolower($pi['extension']);
+			
+			// 画像系ファイルであるか判定する。
+			$exts = ['jpg', 'jpeg', 'png', 'gif'];
+			if(in_array($ext, $exts)){
+				$img_href = $orig_fp;
+				$thum_src = str_replace('/orig/', '/thum/', $orig_fp);
+				$display_img_a = '';
+			}else{
+				$dl_href = $orig_fp;
+				$display_dl = '';
+			}
+			
 		}else{
-			$href = 'javascript void(0)';
-			$thum_src = 'img/icon/none.gif';
+			$display_none = '';
 		}
+		$orig_fp = $midway_dp . $ent[$field];
+
 		
-		$td_html = "
+		$html = "
 			<td>
-				<input type='hidden' name='{$field}' value='{$orig_fp}' data-inp-ex='image1'>
-				<label for='{$field}'>
-					<a href='{$href}' target='brank'>
-						<img src='{$thum_src}' >
-					</a>
-				</label>
+				<input type='hidden' name='{$field}' value='{$fp}' data-inp-ex='image1'>
+				<a class='image1_img_a' href='{$img_href}' target='_blank' style='width:100%;{$display_img_a}'>
+					<img class='image1_img' src='{$thum_src}' >
+				</a>
+				<a class='image1_dl btn btn-success' href = '{$dl_href}' download style='{$display_dl}' title='{$fp}'><span class='oi' data-glyph='cloud-download'></span>DL</span></a>
+				<img class='image1_none' src='img/icon/none.gif' style='{$display_none}' />
 			</td>
 		";
-
-		$this->setTd($td_html,$field);
+		
+		$this->setTd($html, $field);
 		
 	}
 	

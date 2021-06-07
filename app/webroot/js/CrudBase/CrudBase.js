@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @since 2016-9-21 | 2021-6-6
- * @version 3.1.5
+ * @since 2016-9-21 | 2021-6-7
+ * @version 3.1.6
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -2765,6 +2765,7 @@ class CrudBase{
 		
 		// 拡張型の入力要素への反映
 		var inp_ex = elm.attr('data-inp-ex');
+
 		if(inp_ex){
 			switch(inp_ex){
 			case 'image1':
@@ -2879,48 +2880,84 @@ class CrudBase{
 	 * @param string fp 画像パス
 	 */
 	_setEntToImage1(elm, field, fp){
+
+		let mode=0; // 0:ファイル空, 1:画像ファイル系, 2:その他ファイル（ダウンロード対象）
 		
+		if(fp==null || fp==''){
+			mode=0;
+		}else{
+			let ext = this._getExtension(fp);
+			let exts = ['jpg', 'jpeg', 'png', 'gif'];
+			if(exts.indexOf(ext) == -1){
+				mode = 2;
+			}else{
+				mode = 1;
+			}
+		}
+
 		// 画像1型のHTML構造
-		//	<td>
-		//		<input type='hidden' name='{$field}' value='{$orig_fp}' data-inp-ex='image1' data-fp='' >
-		//		<label for='{$field}'>
-		//			<a href='{$href}' target='brank'>
-		//				<img src='{$thum_src}' >
-		//			</a>
-		//		</label>
-		//	</td>
+		//<td>
+		//	<input type='hidden' name='{$field}' value='{$fp}' data-inp-ex='image1'>
+		//	<a class='image1_img_a' href='{$img_href}' target='_blank' style='width:100%;{$display_img_a}'><img src='{$thum_src}' ></a>
+		//	<a class='image1_dl btn btn-success' href = '{$dl_href}' download style='{$display_dl}' title='{$fp}'><span class='oi' data-glyph='cloud-download'></span>DL</span></a>
+		//	<img class='image1_none' src='img/icon/none.gif' style='{$display_none}' />
+		//</td>
+		
+		let tdElm = elm.parents('td'); // 親要素
+		let imgAElm = tdElm.find('.image1_img_a'); 
+		let imgElm = tdElm.find('.image1_img'); 
+		let dlElm = tdElm.find('.image1_dl'); 
+		let noneElm = tdElm.find('.image1_none'); 
+		
+		imgAElm.attr('href', '');
+		imgElm.attr('src', '');
+		dlElm.attr('href', '');
+		
+		imgAElm.hide();
+		dlElm.hide();
+		noneElm.hide();
+		
+		let orig_fp = this.param.midway_dp + fp; // 中間パスをはさむ
+		
 		elm.val(fp);
 		
-		var fp2 = this.param.midway_dp + fp; // 中間パスをはさむ
-		
-		
-		var orig_href = '';
-		var img_src = '';
-		if(this._empty(fp)){
-			orig_href = "javascript void(0)";
-			img_src = "img/icon/none.gif";
-		}else{
-			orig_href = fp2;
-			img_src = fp2.replace('/orig/', '/thum/');
+		switch(mode){
+			case 0: // ファイル空
+				noneElm.show();
+				break;
+			case 1: // 画像系ファイル
+				let thum_fp = orig_fp.replace('/orig/', '/thum/');
+				imgElm.attr('src', thum_fp);
+				imgAElm.attr('href', orig_fp);
+				imgAElm.show();
+				break;
+			case 2: // その他ファイル
+				dlElm.attr('href', orig_fp);
+				dlElm.show();
+				break;
+			default:
+				throw new Error('システムエラー CB210607A');
 		}
-		
-		// 弟要素のlabelを取得
-		var label = elm.next();
-
-		// アンカー要素をlabelから取得し、ファイルパスをセットする
-		var aElm = label.find('a');
-		if(aElm[0]){
-			aElm.attr('href', orig_href);
-		}
-
-		var imgElm = label.find('img'); // IMG要素を取得
-		if(imgElm[0]){
-			imgElm.attr('src', img_src);
-		}
-		
-		elm.attr('data-fp', fp); // 「type='file'」に対応
 
 	}
+	
+	/**
+	 * ファイル名から拡張子を取得する。
+	 * @param string fn ファイル名
+	 * @return string 拡張子
+	 */
+	_getExtension(fn){
+		if(fn==null || fn=='') return '';
+		if(fn.indexOf('.') == -1) return '';
+
+		let ary=fn.split(".");
+		let ext=ary[ary.length-1];
+
+		ext = ext.toLowerCase();//小文字化する
+
+		return ext;
+	}
+	
 	
 	
 	/**

@@ -104,7 +104,7 @@ class CbFileUploadComponent{
 		var fileUploadK = new FileUploadK({
 			'prog_slt':'#prog1',
 			'err_slt':'#err',
-			'valid_ext':'image',
+			//'valid_ext':'image',// ■■■□□□■■■□□□ 有効にすると画像ファイルのみ許可する。どうするかあとで考察
 			'img_width':120,
 			'img_height':120,
 			});
