@@ -8,7 +8,7 @@
  * 
  * 
  * @license MIT
- * @since 2016-9-21 | 2021-6-7
+ * @since 2016-9-21 | 2021-6-9
  * @version 3.1.6
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
@@ -2755,6 +2755,8 @@ class CrudBase{
 		
 		var tag_name = elm.get(0).tagName; // 入力要素のタグ名を取得する
 		
+	
+		
 		
 		// 値に表示フィルターをかける
 		if(option['dis_fil_flg']){
@@ -2762,6 +2764,7 @@ class CrudBase{
 			val1 = res.val1;
 			xss = res.xss;
 		}
+		
 		
 		// 拡張型の入力要素への反映
 		var inp_ex = elm.attr('data-inp-ex');
@@ -2831,7 +2834,7 @@ class CrudBase{
 			if( typeof val1 == 'string'){
 				val1=val1.replace(/<br>/g,"\r");
 				// XSSサニタイズを施す
-				if(option.xss == 1){
+				if(xss == 1){
 					val1 = this._xssSanitaizeEncode(val1); 
 				}
 				val1 = this._nl2brEx(val1);// 改行コートをBRタグに変換する
