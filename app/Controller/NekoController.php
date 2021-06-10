@@ -128,9 +128,18 @@ class NekoController extends AppController {
 		// ファイルアップロードとファイル名のDB保存
 		if(!empty($_FILES)){
 			// CBBXS-2027
-			$ent['img_fn'] = $this->cb->makeFilePath($_FILES, "storage/neko/y%Y/{$ent['id']}/%unique/orig/%fn", $ent, 'img_fn');
+			$img_fn = $this->cb->makeFilePath($_FILES, "storage/neko/y%Y/{$ent['id']}/%unique/orig/%fn", $ent, 'img_fn');
 			$fileUploadK = $this->factoryFileUploadK();
-			$fileUploadK->putFile1($_FILES, 'img_fn', $ent['img_fn']);
+			
+			// ▼旧ファイルを指定ディレクトリごと削除する。
+			$ary = explode("/", $img_fn);
+			$ary = array_slice($ary, 0, 4);
+			$del_dp = implode('/', $ary);
+ 			$fileUploadK->removeDirectory($del_dp); // 旧ファイルを指定ディレクトリごと削除
+ 			
+ 			// ファイル配置＆DB保存
+			$fileUploadK->putFile1($_FILES, 'img_fn', $img_fn);
+			$ent['img_fn'] = $img_fn;
 			$this->md->save($ent, ['validate'=>false]);
 			// CBBXE
 		}
