@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @since 2016-9-21 | 2021-6-9
- * @version 3.1.6
+ * @since 2016-9-21 | 2021-6-10
+ * @version 3.1.7
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -138,7 +138,14 @@ class CrudBase{
 		// クラスの骨組み 外部名称クラス：外部idに紐づく外部テーブルの名前要素を制御
 		this.crudBaseOuterName = new CrudBaseOuterName();
 		
-		// -----------
+		// テキストエリア高さ自動調整クラス
+		this.crudBaseTaAutoHeightSize = new CrudBaseTaAutoHeightSize();
+		this.crudBaseTaAutoHeightSize.init();
+		
+		
+		
+		
+		// -----------------------------------------------
 		this.fueIdCash; // file要素のid属性データ（キャッシュ）
 		
 		// 折り畳みテキストエリア | FoldingTa.js
@@ -687,6 +694,7 @@ class CrudBase{
 		this.crudBasePasswordEdit.showForm('new_inp'); // パスワード編集機能
 		this.foldingTaN.reflection(); // 折り畳み式テキストエリアに反映
 		this.crudBaseOuterName.newInpShow(); // 外部名称・クリア
+		this.crudBaseTaAutoHeightSize.newInpShow(form); // テキストエリア高さ自動調整クラス・高さ自動調整
 
 		
 	}
@@ -748,6 +756,8 @@ class CrudBase{
 		this.foldingTaE.reflection(); // 折り畳み式テキストエリアに反映
 		
 		this.crudBaseOuterName.editShow(ent); // 外部名称・クリア
+		this.crudBaseTaAutoHeightSize.editShow(form); // テキストエリア高さ自動調整クラス・高さ自動調整
+		
 
 	}
 
@@ -829,6 +839,7 @@ class CrudBase{
 		// パスワード編集機能
 		this.crudBasePasswordEdit.showForm('copy');
 		this.crudBaseOuterName.newInpShow(ent); // 外部名称・クリア
+		this.crudBaseTaAutoHeightSize.copyShow(form); // テキストエリア高さ自動調整クラス・高さ自動調整
 
 
 	}
