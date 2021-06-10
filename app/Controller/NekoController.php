@@ -4,7 +4,7 @@
 /**
  * ネコ画面
  * 
- * @since 2015-9-16 | 2021-4-10
+ * @since 2021-6-11
  *
  */
 class NekoController extends AppController {

@@ -5,7 +5,7 @@ App::uses('AppController', 'Controller');
  * 
  * @note 未ログインユーザーも閲覧可能なトップ画面
  * 
- * @since 2021-4-9
+ * @since 2021-6-11
  *
  */
 class MainController extends AppController {

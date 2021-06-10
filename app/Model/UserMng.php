@@ -5,8 +5,8 @@ App::uses('CrudBase', 'Model');
 /**
  * ユーザー管理のCakePHPモデルクラス
  *
- * @date 2015-9-16 | 2018-10-10
- * @version 3.1.2
+ * @since 2021-6-11
+ * @version 1.0.0
  *
  */
 class UserMng extends AppModel {

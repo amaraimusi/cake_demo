@@ -6,7 +6,7 @@ App::uses('CrudBase', 'Model');
 /**
  * メッセージボードのCakePHPモデルクラス
  *
- * @date 2021-5-12
+ * @since 2021-6-11
  * @version 1.0.0
  *
  */

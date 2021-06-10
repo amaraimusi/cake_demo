@@ -4,12 +4,7 @@ App::uses('AppController', 'Controller');
 /**
  * 管理者トップ
  * 
- * @version 2.0
- * @date 2014-8-21 | 2018-10-9
- * @history
- * 2014-8-21 新規作成
- * 2018-10-9 シンプル化
- * @author k-uehara
+ * @since 2021-6-11
  *
  */
 class PagesController extends AppController {

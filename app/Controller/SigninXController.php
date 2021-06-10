@@ -3,6 +3,8 @@ require_once CRUD_BASE_PATH . 'Signin.php';
 App::uses('AppController', 'Controller');
 /**
  * サインインXのコントローラ
+ * @since 2021-6-11
+ * @version 1.0.0
  */
 class SigninXController extends AppController {
 	

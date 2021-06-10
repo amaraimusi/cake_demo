@@ -4,7 +4,7 @@ App::uses('Model', 'Model');
 /**
  * サインインXのモデル
  *
- * @since 2021-4-20
+ * @since 2021-6-11
  * @version 1.0.0
  *
  */
