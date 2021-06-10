@@ -29,7 +29,6 @@ function init(){
 	let crudBaseData = jQuery.parseJSON(crud_base_json);
 	crudBaseData['csrf_token'] = csrf_token;
 
-	crudBaseData['ni_tr_place'] = 1; // 新規入力追加場所フラグ 0:末尾(デフォルト） , 1:先頭
 	crudBaseData['configData'] = {delete_alert_flg:1} // 削除アラートフラグ    1:一覧行の削除ボタンを押したときアラートを表示する
 	
 	// CRUD基本クラス

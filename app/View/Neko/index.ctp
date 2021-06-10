@@ -144,7 +144,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
 
 <?php if(!empty($data)){ ?>
-	<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">新規追加</span></button>
+	<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">新規追加</button>
 <?php } ?>
 
 
@@ -216,7 +216,7 @@ foreach($data as $i=>&$ent){
 <?php $this->CrudBase->divPagenationB(); ?>
 <br>
 	
-<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">新規追加</span></button>	
+<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 0);">新規追加</button>	
 
 <?php $this->CrudBase->divPwms(); // 複数有効/削除の区分を表示する ?>
 
