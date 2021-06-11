@@ -14,7 +14,7 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.2.0";
+	public $version = "3.2.1";
 	
 	public $crudBaseData = [];
 
