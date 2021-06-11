@@ -5,7 +5,7 @@
  * CurdBase.jsのコンポーネントの一つ
  * 
  * @date 2018-8-24 | 2021-6-11
- * @version 1.2.1
+ * @version 1.2.2
  * @history
  * 2019-2-13 v1.2.0 経由パス関連を廃止
  * 2018-10-9 v1.1.3 経由ディレクトリパスに対応
@@ -22,13 +22,13 @@ class CbFileUploadComponent{
 	 * コンストラクタ
 	 * 
 	 * @param param fuIds file要素idリスト
-	 * @param object option FileUploadK:addEventのoption
+	 * @param {} param FileUploadK::コンストラクタのparam
+	 * @param {} option FileUploadK:addEventのoption
 	 * 
 	 */
-	constructor(fuIds,option){
-		
-		
-		this.fileUploadK = this._factoryFileUploadK(fuIds,option); // 拡張ファイルアップロード・オブジェクト
+	constructor(fuIds,param, option){
+
+		this.fileUploadK = this._factoryFileUploadK(fuIds, param, option); // 拡張ファイルアップロード・オブジェクト
 		
 		this.fuIds = fuIds; // file要素idリスト
 		this.fields = this._fueIdsToFields(fuIds); // FUフィールドリスト
@@ -95,25 +95,26 @@ class CbFileUploadComponent{
 	/**
 	 * 拡張ファイルアップロード・コンポーネントのファクトリーメソッド
 	 * @param array fuIds file要素idリスト
-	 * @param object option FileUploadK:addEventのoption
+	 * @param {} param FileUploadK::コンストラクタのparam
+	 * @param {} option FileUploadK:addEventのoption
 	 * @return FileUploadK 拡張ファイルアップロード・コンポーネント
 	 */
-	_factoryFileUploadK(fuIds,option){
+	_factoryFileUploadK(fuIds, param, option){
+		
+		if(param['prog_slt'] == null ) param['prog_slt'] = '#prog1';
+		if(param['err_slt'] == null ) param['err_slt'] = '#err';
+		if(param['valid_ext'] == null ) param['valid_ext'] = 'often_use'; // 一般的な書類の拡張子 jpg,pdf,xlsxなど
+		if(param['max_size'] == null ) param['max_size'] = 5000000; // 最大容量5MB
+		if(param['img_width'] == null ) param['img_width'] = 120;
+		if(param['img_height'] == null ) param['img_height'] = 120;
 		
 		// 拡張ファイルアップロードクラスの生成
-		var fileUploadK = new FileUploadK({
-			'prog_slt':'#prog1',
-			'err_slt':'#err',
-			'valid_ext':'often_use',// 一般的な書類の拡張子 jpg,pdf,xlsxなど
-			'img_width':120,
-			'img_height':120,
-			});
-		
+		var fileUploadK = new FileUploadK(param);
 		
 		// file要素を拡張
 		for(var i in fuIds){
 			var fue_id = fuIds[i];
-			fileUploadK.addEvent(fue_id,option);
+			fileUploadK.addEvent(fue_id, option);
 		}
 
 		return fileUploadK;

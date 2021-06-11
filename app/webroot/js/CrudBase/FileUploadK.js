@@ -48,7 +48,7 @@ class FileUploadK{
 	 *     - modified 更新日時・表示フラグ
 	 * - valid_ext バリデーション拡張子
 	 *      指定方法
-	 *          グループ指定： audio,image
+	 *          グループ指定： audio,image,
 	 *          拡張子単体指定: jpg
 	 *          拡張子配列指定: array('jpg','png')
 	 *          拡張子コンマ連結: 'jpg,png,gif'

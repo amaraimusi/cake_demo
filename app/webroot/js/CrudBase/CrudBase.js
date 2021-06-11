@@ -49,6 +49,8 @@ class CrudBase{
 	 *  - form_mode フォームモード 0:ダイアログモード , 1:アコーディオンモード(デフォルト）
 	 *  - midway_dp リソース配置先用の中間ディレクトリパス
 	 *  - configData CrudBaseConfigの設定データ
+	 *  - fukParam				FileUploadK::コンストラクタのparam
+	 *  - fukAddEventOption		FileUploadK::addEventのoption
 	 *  - その他多数...
 	 */
 	constructor(param){
@@ -346,8 +348,11 @@ class CrudBase{
 		
 		if(param['pwms_ajax_url'] == null) param['pwms_ajax_url'] = param.main_model_name_s + '/ajax_pwms';
 		
+		// FileUploadK関連
+		if(param['fukParam'] == null) param['fukParam'] = {}; // FileUploadK::コンストラクタのparam
+		if(param['fukAddEventOption'] == null) param['fukAddEventOption'] = {}; // FileUploadK::addEventのoption
 		
-		
+
 		return param;
 	}
 	
@@ -476,13 +481,21 @@ class CrudBase{
 		var eFuIds = this._getFueIds('edit');
 		var fuIds = nFuIds.concat(eFuIds);// 配列結合
 		
-		// オプションに「ファイルプレビュー後コールバック」をセットする
-		var option = {
-				'pacb':this._fukPrevAfterCallback,
-				'pacb_param':{'self':this},
-				};
+
+		var param = this.param.fukParam; // FileUploadK::コンストラクタのparam
+		var option = this.param.fukAddEventOption; // FileUploadK::addEventのoption
 		
-		cbFileUploadComp = new CbFileUploadComponent(fuIds,option);
+		// オプションに「ファイルプレビュー後コールバック」をセットする
+		option['pacb'] = this._fukPrevAfterCallback;
+		option['pacb_param'] = {'self':this};
+	
+	//■■■□□□■■■□□□	
+//		var option = {
+//				'pacb':this._fukPrevAfterCallback,
+//				'pacb_param':{'self':this},
+//				};
+		
+		cbFileUploadComp = new CbFileUploadComponent(fuIds, param, option);
 		
 		return cbFileUploadComp;
 	}
