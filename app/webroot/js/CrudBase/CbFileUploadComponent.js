@@ -4,7 +4,7 @@
  * @note
  * CurdBase.jsのコンポーネントの一つ
  * 
- * @date 2018-8-24 | 2019-8-21
+ * @date 2018-8-24 | 2021-6-11
  * @version 1.2.1
  * @history
  * 2019-2-13 v1.2.0 経由パス関連を廃止
@@ -104,7 +104,7 @@ class CbFileUploadComponent{
 		var fileUploadK = new FileUploadK({
 			'prog_slt':'#prog1',
 			'err_slt':'#err',
-			//'valid_ext':'image',// ■■■□□□■■■□□□ 有効にすると画像ファイルのみ許可する。どうするかあとで考察
+			'valid_ext':'often_use',// 一般的な書類の拡張子 jpg,pdf,xlsxなど
 			'img_width':120,
 			'img_height':120,
 			});

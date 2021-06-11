@@ -12,8 +12,8 @@
  * ファイルの初期表示
  * 
  * @license MIT
- * @version 1.3.2
- * @date 2018-7-6 | 2021-6-6
+ * @version 1.3.7
+ * @date 2018-7-6 | 2021-6-11
  * @history 
  *  - 2021-04-29 var 1.3.0 大幅なバージョンアップ
  *  - 2018-10-2 var 1.2.6 「Now Loading...」メッセージを表示する
@@ -53,6 +53,7 @@ class FileUploadK{
 	 *          拡張子配列指定: array('jpg','png')
 	 *          拡張子コンマ連結: 'jpg,png,gif'
 	 * - valid_mime_flg バリデーションMIMEフラグ 0:バリデーション行わない(デフォ) , 1:バリデーションを行う
+	 * - max_size 最大容量
 	 * 
 	 * @param callbacks
 	 * - function fileputEvent(box) ファイル配置イベント    DnD直後およびファイル選択直後のイベント
@@ -108,10 +109,13 @@ class FileUploadK{
 			};
 		}
 		
+		if(param['max_size'] == null) param['max_size'] = 5000000; // 5MB
+		
+		
 		// バリデーション情報を作成する。
 		var valid_ext = null;
 		if(param['valid_ext'] != null) valid_ext = param['valid_ext'];
-		param['validData'] = this._createValidData(valid_ext);
+		param['validData'] = this._createValidData(valid_ext, param['max_size']);
 
 		return param;
 	}
@@ -161,7 +165,7 @@ class FileUploadK{
 			// ボックスデータにアップロードファイル情報を追加
 			var files = evt.dataTransfer.files; 
 			this.box[fue_id]['files'] = files;
-			this._preview(fue_id,'files',option); // プレビュー表示
+			this._preview(fue_id, 'files', 'dnd', option); // プレビュー表示
 
 			// コールバックを実行する
 			if(this.callbacks.fileputEvent != null){
@@ -182,7 +186,7 @@ class FileUploadK{
 			var files = e.target.files; // ファイルオブジェクト配列を取得（配列要素数は選択したファイル数を表す）
 			if(files == null || files.length == 0) return;// ファイル件数が0件なら処理抜け
 			this.box[fue_id]['files'] = files;
-			this._preview(fue_id,'files',option); // プレビュー表示
+			this._preview(fue_id, 'files', 'change', option); // プレビュー表示
 			
 			// コールバックを実行する
 			if(this.callbacks.fileputEvent != null){
@@ -225,7 +229,7 @@ class FileUploadK{
 			//複数非同期・全終了後コールバック
 			// プレビュー表示
 			this.box[fue_id]['bData'] = bData;
-			this._preview(fue_id,'blob',option);
+			this._preview(fue_id, 'blob', 'set_file_path', option);
 		}
 		
 		// 複数非同期・全終了後コールバック・初期化
@@ -342,10 +346,11 @@ class FileUploadK{
 	 * プレビュー表示
 	 * @param string fue_id ファイルアップロード要素のid属性
 	 * @param bin_type 'files' or 'blob'
+	 * @param comefrom 出身コード dnd:ドラッグ＆ドロップ, change:ファイル選択, set_file_path:ファイルパスのセット
 	 * @param object option オプション（addEventメソッドの引数と同じ）
 	 *  -  BLOBフラグ ファイル初期表示から呼び出し時はtrue
 	 */
-	_preview(fue_id,bin_type,option){
+	_preview(fue_id, bin_type, comeform, option){
 
 		this.active_fue_id = fue_id;
 		
@@ -377,7 +382,7 @@ class FileUploadK{
 		clearBtnW.show();
 		
 		// バリデーション確認
-		fileData = this._validCheck(fue_id,fileData); 
+		fileData = this._validCheck(fue_id, fileData, comeform); 
 		this.box[fue_id]['fileData'] = fileData;
 		
 		
@@ -633,10 +638,11 @@ class FileUploadK{
 	/**
 	 * バリデーション確認
 	 * @param string fue_id ファイルアプロード要素のID属性値
-	 * @param array fileData ファイルデータ
-	 * @return array エラーフラグをセットしたファイルデータ
+	 * @param fileData ファイルデータ
+	 * @param comefrom 出身コード
+	 * @return エラーフラグをセットしたファイルデータ
 	 */
-	_validCheck(fue_id,fileData){
+	_validCheck(fue_id,fileData, comefrom){
 
 		if(fue_id == null) return fileData;
 		
@@ -649,13 +655,19 @@ class FileUploadK{
 
 		for(var i in fileData){
 			var fEnt = fileData[i];
-			
+
+			// 出身コードがファイルパスのセットであるなら、バリデーション対象外
+			if(comefrom == 'set_file_path'){
+				fEnt['err_flg'] = false;
+				continue;
+			}
+
 			// バリデーション実行フラグがOFFならチェックをしない。
 			if(valid_flg == false){
 				fEnt['err_flg'] = false;
 				continue;
 			}
-			
+
 			var fn = fEnt.fn;
 			
 			// ファイル名が空である場合
@@ -681,6 +693,17 @@ class FileUploadK{
 			
 			// MIMEチェック
 			fEnt = this._validCheckMime(fue_id,fEnt);
+			
+			// 最大容量チェック
+			let size = Number(fEnt['size']);
+			let max_size = Number(validData['max_size']);
+			if(size > max_size){
+				fEnt['err_flg'] = true;
+				let max_size_str = this._convSizeUnit(max_size, 0);
+				fEnt['err_msg'] = `ファイルサイズが制限を超えています。(最大${max_size_str}まで)`;
+			}else{
+				fEnt['err_flg'] = false;
+			}
 			
 		}
 		
@@ -711,6 +734,7 @@ class FileUploadK{
 	 * @return fEnt
 	 */
 	_validCheckMime(fue_id,fEnt){
+		
 		if(this.param.valid_mime_flg == 0) return fEnt;
 		if(fEnt.err_flg == true) return fEnt;
 		
@@ -1227,9 +1251,12 @@ class FileUploadK{
 	/**
 	 * バリデーション情報を作成する。
 	 * @param string valid_ext バリデーション拡張子
+	 * @param int max_size 最大容量
 	 * @return object バリデーション情報
 	 */
-	_createValidData(valid_ext){
+	_createValidData(valid_ext, max_size){
+		
+		if(max_size == null) max_size = this.param.max_size;
 
 		var validData = {
 				'validExts':[],
@@ -1257,6 +1284,20 @@ class FileUploadK{
 			validExts = ['mp4','avi','mov','webm'];
 		}
 		
+		else if(valid_ext == 'often_use'){
+			validExts = [
+				'pdf',
+				'jpg','jpeg','png','gif','bpg', 'tif', 'tiff',
+				'zip','lzh', 'tar',
+				'xls', 'xlsx', 'doc', 'docx',
+				'txt', 'csv', 'xml', 
+				'mp3', 'wav','ogg', 'm4a',
+				'avi', 'mp4', 'mpg',
+				'ppt', 'pptx', 
+				'mdb', 'accdb',  
+				];
+		}
+		
 		// バリデーション拡張子が文字列型である場合
 		else{
 			validExts = valid_ext.split(',');
@@ -1275,6 +1316,7 @@ class FileUploadK{
 		
 		validData['validExts'] = validExts;
 		validData['validMimes'] = validMimes;
+		validData['max_size'] = max_size;
 		
 		return validData;
 
