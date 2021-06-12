@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.1.0
- * @since 2016-7-27 | 2021-6-7
+ * @version 2.1.1
+ * @since 2016-7-27 | 2021-6-12
  * @author k-uehara
  * @license MIT
  */
@@ -1067,8 +1067,15 @@ class CrudBaseHelper {
 	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
 	 * @param string $url URL	URLの変値部分は「%0」と表記する。
+	 * @param [] $option
+	 *  - bool target_flg target属性フラグ
 	 */
-	public function tdLink(&$ent, $field, $url){
+	public function tdLink(&$ent, $field, $url, $option=[]){
+		
+		$target_flg = $option['target_flg'] ?? 0;
+		$target = '';
+		if($target_flg) $target = "target='_blank'";
+		
 		
 		$v = $ent[$field];
 		$url2 = str_replace('%0', $v, $url);
@@ -1077,7 +1084,7 @@ class CrudBaseHelper {
 		
 		$td = "
 			<td>
-				<input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' />
+				<input data-custum-type='link' type='hidden' name='{$field}' value='{$v}' {$target} />
 				<a href='{$url2}' data-url-tmp='{$url}' >{$v}</a>
 			</td>";
 		$this->setTd($td,$field);
