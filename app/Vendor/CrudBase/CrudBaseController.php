@@ -14,7 +14,7 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.2.1";
+	public $version = "3.3.0";
 	
 	public $crudBaseData = [];
 
@@ -87,6 +87,7 @@ class CrudBaseController {
 	 *  - func_csv_export CSVエクスポート機能 0:OFF ,1:ON(デフォルト)
 	 *  - sql_dump_flg SQLダンプフラグ   true:SQLダンプを表示（デバッグモードである場合。デフォルト） , false:デバッグモードであってもSQLダンプを表示しない。
 	 *  - func_file_upload ファイルアップロード機能 0:OFF , 1:ON(デフォルト)
+	 *  - $defPages デフォルトページ情報
 	 */
 	public function __construct(&$clientCtrl, &$clientModel, &$crudBaseData){
 		
@@ -108,11 +109,13 @@ class CrudBaseController {
 		$crudBaseData['main_model_name_s'] = $model_name_s;
 		$crudBaseData['model_name_s'] = $model_name_s;
 		
+		$crudBaseData['defPages'] = $this->getDefPages($crudBaseData); // デフォルトページ情報を取得する
+		
 		if (empty($crudBaseData['tbl_name'])) $crudBaseData['tbl_name'] = $model_name_s . 's';;
 		if (empty($crudBaseData['func_csv_export'])) $crudBaseData['func_csv_export'] = 1;
 		if (empty($crudBaseData['sql_dump_flg'])) $crudBaseData['sql_dump_flg'] = true;
 		if (empty($crudBaseData['func_file_upload'])) $crudBaseData['func_file_upload'] = 1;
-
+		
 		if(empty($crudBaseData['debug'])) $crudBaseData['debug'] = 0; // デバッグモード
 		$crudBaseData['fields'] = array_keys($crudBaseData['fieldData']['def']); // フィールドリスト
 		
@@ -145,6 +148,28 @@ class CrudBaseController {
 		
 		$this->this_page_version = $clientCtrl->this_page_version;
 	}
+	
+	
+	/**
+	 * デフォルトページ情報を取得する
+	 * @param [] $crudBaseData
+	 * @return [] デフォルトページ情報
+	 */
+	private function getDefPages(&$crudBaseData){
+		
+		$defPages = [];
+		if(!empty($crudBaseData['defPages'])){
+			$defPages = $crudBaseData['defPages'];
+		}
+		
+		if(empty($defPages['page_no'])) $defPages['page_no'] = 0;
+		if(empty($defPages['row_limit'])) $defPages['row_limit'] = 50;
+		if(empty($defPages['sort_field'])) $defPages['sort_field'] = $this->defSortFeild;
+		if(empty($defPages['sort_desc'])) $defPages['sort_desc'] = $this->defSortType;//0:昇順 1:降順
+		
+		return $defPages;
+	}
+	
 	
 	/**
 	 * CrudBaseパラメータのGetter
@@ -255,13 +280,12 @@ class CrudBaseController {
 		//検索ボタンが押された場合
 		$pages=[];
 		if(!empty($request['search'])){
+			
 			//ページネーションパラメータを取得
 			$pages = $this->getPageParamForSubmit($kjs,$searchPosts);
 		}else{
 			//ページネーション用パラメータを取得
-			$overData['row_limit']=$kjs['row_limit'];
-			$pages=$this->getPageParam($overData);
-			
+			$pages=$this->getPageParam($kjs);
 			
 		}
 
@@ -541,7 +565,6 @@ class CrudBaseController {
 		}
 		$data_count = $non_limit_count;
 		
-
 		// パス情報からホーム相対パスを取得する
 		$paths = $crudBaseData['paths'];
 		$home_r_path = $paths['home_r_path'];
@@ -985,39 +1008,38 @@ class CrudBaseController {
 	 *
 	 * ページネーション情報は、ページ番号の羅列であるページ目次のほかに、ソート機能にも使われます。
 	 *
-	 * @param array $overData 上書きデータ
 	 * @return array
 	 * - page_no <int> 現在のページ番号
 	 * - limit <int> 表示件数
 	 * - sort_field <string> ソートする列フィールド
 	 * - sort_desc <int> 並び方向。 0:昇順 1:降順
 	 */
-	protected function getPageParam($overData){
+	protected function getPageParam(&$kjs){
+		$defPages = $this->crudBaseData['defPages']; // デフォルトページ情報
 		
+		if(!empty($kjs['row_limit'])){
+			$defPages['row_limit'] = $kjs['row_limit'];
+			$this->crudBaseData['defPages'] = $defPages;
+		}
 
 		//GETよりパラメータを取得する。
 		$pages = $this->gets; 
-
-		// 上書き
-		$pages=HashCustom::merge($pages,$overData);
-
 		
-		$defs=$this->getDefKjs();//デフォルト情報を取得
+		$defs = $this->getDefKjs();//デフォルト情報を取得
 
 		//空ならデフォルトをセット
 		if(empty($pages['page_no'])){
 			$pages['page_no']=0;
 		}
 		if(empty($pages['row_limit'])){
-			$pages['row_limit']=$defs['row_limit'];
+			$pages['row_limit'] = $defPages['row_limit'];
 		}
 		if(empty($pages['sort_field'])){
-			$pages['sort_field']=$this->defSortFeild;
+			$pages['sort_field'] = $defPages['sort_field'];
 		}
 		if(!isset($pages['sort_desc'])){
-			$pages['sort_desc']=$this->defSortType;//0:昇順 1:降順
+			$pages['sort_desc'] = $defPages['sort_desc'];
 		}
-
 
 		return $pages;
 	}

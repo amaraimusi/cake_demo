@@ -4,7 +4,7 @@
 /**
  * ネコ画面
  * 
- * @since 2021-6-11
+ * @since 2021-6-12
  *
  */
 class NekoController extends AppController {
@@ -612,12 +612,19 @@ class NekoController extends AppController {
 
 		$model = $this->Neko; // モデルクラス
 		
+		// デフォルトページ情報
+		$defPages = [
+			'sort_field'=>'Neko.sort_no',
+			'sort_desc'=>0,
+		];
+		
 		$crudBaseData = [
 			'fw_type' => 'cake',
 			'model_name_c' => 'Neko',
 			'tbl_name' => 'nekos', // テーブル名をセット
 			'kensakuJoken' => $kensakuJoken, //検索条件情報
 			'fieldData' => $fieldData, //フィールドデータ
+			'defPages' => $defPages, 
 		];
 
 		$crudBaseCon = new CrudBaseController($this, $model, $crudBaseData);
