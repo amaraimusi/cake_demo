@@ -5,7 +5,7 @@ App::uses('CrudBase', 'Model');
 /**
  * ユーザー管理のCakePHPモデルクラス
  *
- * @since 2021-6-11
+ * @since 2021-5-1
  * @version 1.0.0
  *
  */
@@ -24,16 +24,18 @@ class UserMng extends AppModel {
 	// ホワイトリスト（DB保存時にこのホワイトリストでフィルタリングが施される）
 	public $fillable = [
 		// CBBXS-2009
-			'id',
-			'username',
-			'password',
-			'role',
-			'sort_no',
-			'delete_flg',
-			'update_user',
-			'ip_addr',
-			'created',
-			'modified',
+		'id',
+		'username',
+		'email',
+		'nickname',
+		'password',
+		'role',
+		'sort_no',
+		'delete_flg',
+		'update_user',
+		'ip_addr',
+		'created',
+		'modified',
 
 		// CBBXE
 	];
@@ -68,7 +70,6 @@ class UserMng extends AppModel {
 		$this->fillable = $fields;
 	}
 	
-	
 	/**
 	 * 検索条件とページ情報を元にDBからデータを取得する
 	 * @param array $crudBaseData
@@ -76,13 +77,15 @@ class UserMng extends AppModel {
 	 *  - array data データ
 	 *  - int non_limit_count LIMIT制限なし・データ件数
 	 */
-	public function getData($crudBaseData){
+	public function getData(&$crudBaseData){
 		
 		$fields = $crudBaseData['fields']; // フィールド
 		
 		$kjs = $crudBaseData['kjs'];//検索条件情報
 		$pages = $crudBaseData['pages'];//ページネーション情報
-		
+		$userInfo = $crudBaseData['userInfo'];
+		$role = $userInfo['role'];
+
 		// ▽ SQLインジェクション対策
 		$kjs = $this->sqlSanitizeW($kjs);
 		$pages = $this->sqlSanitizeW($pages);
@@ -91,9 +94,10 @@ class UserMng extends AppModel {
 		$row_limit = $pages['row_limit']; // 表示件数
 		$sort_field = $pages['sort_field']; // ソートフィールド
 		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
+		$offset = $page_no * $row_limit;
 		
 		//条件を作成
-		$conditions=$this->createKjConditions($kjs);
+		$conditions=$this->createKjConditions($kjs, $role);
 		
 		$sort_type = '';
 		if(!empty($sort_desc)) $sort_type = 'DESC';
@@ -104,7 +108,7 @@ class UserMng extends AppModel {
 				FROM users AS UserMng
 				WHERE {$conditions}
 				ORDER BY {$sort_field} {$sort_type}
-				LIMIT {$page_no}, {$row_limit}
+				LIMIT {$offset}, {$row_limit}
 			";
 		
 		$data = $this->query($sql);
@@ -112,69 +116,6 @@ class UserMng extends AppModel {
 		//データ構造を変換（2次元配列化）
 		$data2 = [];
 		if(!empty($data)) $data2 = Hash::extract($data, '{n}.UserMng');
-		
-		// LIMIT制限なし・データ件数
-		$non_limit_count = 0;
-		$res = $this->query('SELECT FOUND_ROWS()');
-		if(!empty($res)){
-			$res = reset($res[0]);
-			$non_limit_count= reset($res);
-		}
-		
-		return ['data' => $data2, 'non_limit_count' => $non_limit_count];
-		
-	}
-	
-	/**
-	 * 検索条件とページ情報を元にDBからデータを取得する
-	 * @param array $crudBaseData
-	 * @return number[]|unknown[]
-	 *  - array data データ
-	 *  - int non_limit_count LIMIT制限なし・データ件数
-	 */
-	public function getData_old($crudBaseData){
-		
-		$fields = $crudBaseData['fields']; // フィールド
-		
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-		
-		$page_no = $pages['page_no']; // ページ番号
-		$row_limit = $pages['row_limit']; // 表示件数
-		$sort_field = $pages['sort_field']; // ソートフィールド
-		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
-		
-		//条件を作成
-		$conditions=$this->createKjConditions($kjs);
-		
-		// オフセットの組み立て
-		$offset=null;
-		if(!empty($row_limit)) $offset = $page_no * $row_limit;
-		
-		// ORDER文の組み立て
-		$order = $sort_field;
-		if(empty($order)) $order='sort_no';
-		if(!empty($sort_desc)) $order .= ' DESC';
-		
-		$option=array(
-			'conditions' => $conditions,
-			'limit' =>$row_limit,
-			'offset'=>$offset,
-			'order' => $order,
-		);
-		
-		//DBからデータを取得
-		$data = $this->find('all',$option);
-		
-		//データ構造を変換（2次元配列化）
-		$data2=array();
-		foreach($data as $i=>$tbl){
-			foreach($tbl as $ent){
-				foreach($ent as $key => $v){
-					$data2[$i][$key]=$v;
-				}
-			}
-		}
 		
 		// LIMIT制限なし・データ件数
 		$non_limit_count = 0;
@@ -219,61 +160,6 @@ class UserMng extends AppModel {
 		return $ent;
 	}
 
-
-	
-	
-	/**
-	 * 一覧データを取得する
-	 * @return array ユーザー管理画面一覧のデータ
-	 */
-	public function findData(&$crudBaseData){
-
-		$kjs = $crudBaseData['kjs'];//検索条件情報
-		$pages = $crudBaseData['pages'];//ページネーション情報
-
-
-		$page_no = $pages['page_no']; // ページ番号
-		$row_limit = $pages['row_limit']; // 表示件数
-		$sort_field = $pages['sort_field']; // ソートフィールド
-		$sort_desc = $pages['sort_desc']; // ソートタイプ 0:昇順 , 1:降順
-		
-		
-		//条件を作成
-		$conditions=$this->createKjConditions($kjs);
-		
-		// オフセットの組み立て
-		$offset=null;
-		if(!empty($row_limit)) $offset = $page_no * $row_limit;
-		
-		// ORDER文の組み立て
-		$order = $sort_field;
-		if(empty($order)) $order='sort_no';
-		if(!empty($sort_desc)) $order .= ' DESC';
-		
-		$option=array(
-				'conditions' => $conditions,
-				'limit' =>$row_limit,
-				'offset'=>$offset,
-				'order' => $order,
-		);
-		
-		//DBからデータを取得
-		$data = $this->find('all',$option);
-		
-		//データ構造を変換（2次元配列化）
-		$data2=array();
-		foreach($data as $i=>$tbl){
-			foreach($tbl as $ent){
-				foreach($ent as $key => $v){
-					$data2[$i][$key]=$v;
-				}
-			}
-		}
-		
-		return $data2;
-	}
-
-	
 	
 	/**
 	 * SQLのダンプ
@@ -295,9 +181,10 @@ class UserMng extends AppModel {
 	/**
 	 * 検索条件情報からWHERE情報を作成。
 	 * @param array $kjs	検索条件情報
+	 * @param string $role 権限
 	 * @return string WHERE情報
 	 */
-	private function createKjConditions($kjs){
+	private function createKjConditions($kjs, $role){
 
 		$cnds=null;
 		
@@ -314,11 +201,17 @@ class UserMng extends AppModel {
 		if(!empty($kjs['kj_username'])){
 			$cnds[]="UserMng.username LIKE '%{$kjs['kj_username']}%'";
 		}
+		if(!empty($kjs['kj_email'])){
+			$cnds[]="UserMng.email LIKE '%{$kjs['kj_email']}%'";
+		}
+		if(!empty($kjs['kj_nickname'])){
+			$cnds[]="UserMng.nickname LIKE '%{$kjs['kj_nickname']}%'";
+		}
 		if(!empty($kjs['kj_password'])){
 			$cnds[]="UserMng.password LIKE '%{$kjs['kj_password']}%'";
 		}
 		if(!empty($kjs['kj_role']) || $kjs['kj_role'] ==='0' || $kjs['kj_role'] ===0){
-			$cnds[]="UserMng.role = {$kjs['kj_role']}";
+			$cnds[]="UserMng.role = '{$kjs['kj_role']}'";
 		}
 		if(!empty($kjs['kj_sort_no']) || $kjs['kj_sort_no'] ==='0' || $kjs['kj_sort_no'] ===0){
 			$cnds[]="UserMng.sort_no = {$kjs['kj_sort_no']}";
@@ -343,10 +236,15 @@ class UserMng extends AppModel {
 			$kj_modified=$kjs['kj_modified'].' 00:00:00';
 			$cnds[]="UserMng.modified >= '{$kj_modified}'";
 		}
+		
+		$cnd_role = $this->createRoleCondition($role); // 権限による条件式を作成
+		if(!empty($cnd_role)){
+			$cnds[] = $cnd_role;
+		}
 
 		// CBBXE
 		
-		$cnd=null;
+		$cnd='';
 		if(!empty($cnds)){
 			$cnd=implode(' AND ',$cnds);
 		}
@@ -354,6 +252,31 @@ class UserMng extends AppModel {
 		return $cnd;
 
 	}
+	
+	
+	/**
+	 * 権限による条件式を作成
+	 * @param string $role 権限
+	 * @return string 条件式
+	 */
+	private function createRoleCondition($role){
+		$cnd_str = '';
+		switch($role){
+			case 'master':
+				break;
+			case 'developer':
+				$cnd_str = "UserMng.role NOT IN ('master')";
+				break;
+			case 'admin':
+				$cnd_str = "UserMng.role NOT IN ('master', 'developer', 'admin')";
+				break;
+			default:
+				throw new Exception('アクセス禁止権限 210530E');
+			
+		}
+		return $cnd_str;
+	}
+	
 
 	/**
 	 * エンティティをDB保存
@@ -395,34 +318,6 @@ class UserMng extends AppModel {
 
 	
 
-
-	/**
-	 * 全データ件数を取得
-	 *
-	 * limitによる制限をとりはらった、検索条件に紐づく件数を取得します。
-	 *  全データ件数はページネーション生成のために使われています。
-	 *
-	 * @param array $kjs 検索条件情報
-	 * @return int 全データ件数
-	 */
-	public function findDataCnt($kjs){
-
-		//DBから取得するフィールド
-		$fields=array('COUNT(id) AS cnt');
-		$conditions=$this->createKjConditions($kjs);
-
-		//DBからデータを取得
-		$data = $this->find(
-				'first',
-				Array(
-						'fields'=>$fields,
-						'conditions' => $conditions,
-				)
-		);
-
-		$cnt=$data[0]['cnt'];
-		return $cnt;
-	}
 	
 	/**
 	 * アップロードファイルの抹消処理
@@ -442,13 +337,49 @@ class UserMng extends AppModel {
 	// CBBXS-1021
 	/**
 	 * 権限リストをDBから取得する
+	 * @param string $role 権限
 	 */
-	public function getRoleList(){
-		$data = Configure::read('roleList');
-		return $data;
+	public function getRoleList($role){
+		global $crudBaseAuthorityData;
+		$data = $crudBaseAuthorityData;
+		
+		switch($role){
+			case 'master':
+				break;
+			case 'developer':
+				unset($data['master']);
+				break;
+			case 'admin':
+				unset($data['master']);
+				unset($data['developer']);
+				unset($data['admin']);
+				break;
+			default:
+				throw new Exception('UM210530F');
+		}
+		
+		$list=Hash::combine($data, '{s}.name','{s}.wamei');
+		
+		return $list;
 	}
 
 	// CBBXE
+	
+	/**
+	 * Eメールの重複チェック
+	 * @param string $email Eメール
+	 * @return bool true:重複なし, false:重複あり（エラー）
+	 */
+	public function checkDuplicateOfEmail($email){
+		$email = $this->sqlSanitizeW($email);
+		$sql = "SELECT id FROM users WHERE email = '{$email}' ";
+		$res = $this->query($sql);
+		if(empty($res)){
+			return true;
+		}
+		return false;
+		
+	}
 
 
 }

@@ -7,6 +7,7 @@ require_once $crud_base_path . 'CrudBaseHelper.php';
 $this->CrudBase = new CrudBaseHelper($crudBaseData);
 $ver_str = '?v=' . $this_page_version; // キャッシュ回避のためのバージョン文字列
 
+
 // CSSファイルのインクルード
 $cssList = $this->CrudBase->getCssList();
 $cssList[] = 'UserMng/index.css' . $ver_str; // 当画面専用CSS
@@ -19,7 +20,15 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 
 ?>
 
+<?php echo $this->element('header');?>
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb bg-white">
+		<li class="breadcrumb-item"><a href="<?php echo CRUD_BASE_PROJECT_PATH;?>">ホーム</a></li>
+		<li class="breadcrumb-item active" aria-current="page">ユーザー管理</li>
+	</ol>
+</nav>
 
+<div class="container-fluid">
 <div class="cb_func_line">
 
 
@@ -44,6 +53,8 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		// --- CBBXS-2004
 		$this->CrudBase->inputKjId(); 
 		$this->CrudBase->inputKjText('kj_username','ユーザー名');
+		$this->CrudBase->inputKjText('kj_email','メールアドレス');
+		$this->CrudBase->inputKjText('kj_nickname','表示名');
 		$this->CrudBase->inputKjText('kj_password','パスワード');
 		$this->CrudBase->inputKjSelect('kj_role','権限', $masters['roleList']); 
 		$this->CrudBase->inputKjHidden('kj_sort_no');
@@ -93,7 +104,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 				$this->CrudBase->divCsh();
 				
 				// CSVエクスポート機能
-	 			$csv_dl_url =  'user_mng/csv_download';
+				$csv_dl_url = "user_mng/csv_download?csrf_token={$csrf_token}";
 	 			$this->CrudBase->makeCsvBtns($csv_dl_url);
 			?>
 			<button id="crud_base_bulk_add_btn" type="button" class="btn btn-secondary btn-sm" onclick="crudBase.crudBaseBulkAdd.showForm()" >一括追加</button>
@@ -107,12 +118,8 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		<!-- CrudBase設定 -->
 		<div id="crud_base_config" style="display:inline-block"></div>
 		
-		<button id="calendar_view_k_btn" type="button" class="btn btn-secondary btn-sm" onclick="calendarViewKShow()" >カレンダーモード</button>
-		
 		<button type="button" class="btn btn-secondary btn-sm" onclick="sessionClear()" >セッションクリア</button>
 	
-		<button id="table_transform_tbl_mode" type="button" class="btn btn-secondary btn-sm" onclick="tableTransform(0)" style="display:none">一覧の変形・テーブルモード</button>	
-		<button id="table_transform_div_mode" type="button" class="btn btn-secondary btn-sm" onclick="tableTransform(1)" >一覧の変形・スマホモード</button>
 		
 	</div><!-- sub_tools -->
 </div><!-- detail_div -->
@@ -161,6 +168,8 @@ foreach($data as $i=>&$ent){
 	// CBBXS-2005
 	$this->CrudBase->tdId($ent,'id', ['checkbox_name'=>'pwms']);
 	$this->CrudBase->tdStr($ent, 'username');
+	$this->CrudBase->tdStr($ent, 'email');
+	$this->CrudBase->tdStr($ent, 'nickname');
 	$this->CrudBase->tdStr($ent, 'password');
 	$this->CrudBase->tdList($ent, 'role', $roleList);
 	$this->CrudBase->tdPlain($ent, 'sort_no');
@@ -223,18 +232,27 @@ foreach($data as $i=>&$ent){
 		<div class="err text-danger"></div>
 		
 		<div style="display:none">
-	    	<input type="hidden" name="form_type">
-	    	<input type="hidden" name="row_index">
-	    	<input type="hidden" name="sort_no">
+			<input type="hidden" name="form_type">
+			<input type="hidden" name="row_index">
+			<input type="hidden" name="sort_no">
 		</div>
 	
 	
 		<!-- CBBXS-1006 -->
+		
 		<div class="cbf_inp_wrap">
-			<div class='cbf_inp' >ユーザー名: </div>
+			<div class='cbf_inp' >メールアドレス: </div>
 			<div class='cbf_input'>
-				<input type="text" name="username" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
-				<label class="text-danger" for="username"></label>
+				<input type="email" name="email" class="valid " value=""  maxlength="256" title="50文字以内で入力してください" style="width:400px" />
+				<label class="text-danger" for="email"></label>
+			</div>
+		</div>
+		
+		<div class="cbf_inp_wrap">
+			<div class='cbf_inp' >表示名: </div>
+			<div class='cbf_input'>
+				<input type="text" name="nickname" class="valid " value=""  maxlength="50" title="50文字以内で入力してください"  style="width:300px" placeholder="（例）山田太郎" />
+				<label class="text-danger" for="nickname"></label>
 			</div>
 		</div>
 
@@ -290,11 +308,13 @@ foreach($data as $i=>&$ent){
 					<span class="id"></span>
 				</div>
 			</div>
+
+		
 		<div class="cbf_inp_wrap">
-			<div class='cbf_inp' >ユーザー名: </div>
+			<div class='cbf_inp' >表示名: </div>
 			<div class='cbf_input'>
-				<input type="text" name="username" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
-				<label class="text-danger" for="username"></label>
+				<input type="text" name="nickname" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
+				<label class="text-danger" for="nickname"></label>
 			</div>
 		</div>
 
@@ -460,3 +480,4 @@ foreach($data as $i=>&$ent){
 	<?php echo $this->element('CrudBase/crud_base_help');?>
 
 </div>
+</div><!-- container-fluid -->

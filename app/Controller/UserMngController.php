@@ -4,7 +4,7 @@
 /**
  * ユーザー管理画面
  * 
- * @since 2021-6-11
+ * @since 2021-4-1
  *
  */
 class UserMngController extends AppController {
@@ -20,17 +20,20 @@ class UserMngController extends AppController {
 	public $login_flg = 0; // ログインフラグ 0:ログイン不要, 1:ログイン必須
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '4.0.0';
+	public $this_page_version = '1.0.1';
 
 	
 	
 	public function beforeFilter() {
 
-		// 未ログイン中である場合、未認証モードの扱いでページ表示する。
-		if($this->login_flg == 0 && empty($this->Auth->user())){
-			$this->Auth->allow(); // 未認証モードとしてページ表示を許可する。
-		}
+		$userInfo = $this->getUserInfo();
+		$role_level = $userInfo['authority']['level'];
 		
+		if($role_level < 30){
+			$this->redirect(['controller' => 'users', 'action' => 'login']);
+			die();
+		}
+
 		parent::beforeFilter();
 
 	}
@@ -48,6 +51,16 @@ class UserMngController extends AppController {
 		
 		// CrudBase共通処理（前）
 		$crudBaseData = $this->cb->indexBefore();//indexアクションの共通先処理(CrudBaseController)
+		$userInfo = $this->getUserInfo();
+		$crudBaseData['userInfo'] = $userInfo;
+		
+		// 権限チェック
+		$this->checkRole($userInfo);
+		
+		
+		// Ajaxセキュリティ:CSRFトークンの取得
+		$crudBaseData['csrf_token'] = CrudBaseU::getCsrfToken('user_mng');
+		
 		
 		$res = $this->md->getData($crudBaseData);
 		$data = $res['data'];
@@ -61,7 +74,7 @@ class UserMngController extends AppController {
 		// CBBXS-2020
 
 		// 権限リスト
-		$roleList = $this->md->getRoleList();
+		$roleList = $this->md->getRoleList($userInfo['role']);
 		$masters['roleList'] = $roleList;
 
 		// CBBXE
@@ -83,6 +96,23 @@ class UserMngController extends AppController {
 
 
 	}
+	
+	// 権限チェック
+	private function checkRole(&$userInfo){
+		
+		if(empty($userInfo)) throw new Exception('システムエラー 210530A');
+		if(empty($userInfo['authority'])) throw new Exception('システムエラー 210530B');
+		if(empty($userInfo['authority']['name'])) throw new Exception('システムエラー 210530C');
+		
+		$permission = false;
+		if($userInfo['authority']['name'] == 'master') $permission = true;
+		if($userInfo['authority']['name'] == 'developer') $permission = true;
+		if($userInfo['authority']['name'] == 'admin') $permission = true;
+		
+		if($permission == false) throw new Exception('アクセス禁止の権限です。 210530D');
+
+	}
+	
 
 	
 	/**
@@ -96,12 +126,15 @@ class UserMngController extends AppController {
 		
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('user_mng') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
 		$userInfo = $this->Auth->user(); // ログインユーザー情報を取得する
 		
 		$this->init();
-		
-		$errs = []; // エラーリスト
-		
+
 		// 未ログインかつローカルでないなら、エラーアラートを返す。
 		if(empty($userInfo) && $_SERVER['SERVER_NAME']!='localhost'){
 			return 'Error:ログイン認証が必要です。 Login is needed';
@@ -116,6 +149,14 @@ class UserMngController extends AppController {
 		$regParam = json_decode($reg_param_json,true);
 		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
 		
+		// Eメールの重複チェック
+		if($form_type == 'new_inp'){
+			if($this->md->checkDuplicateOfEmail($ent['email'])==false){
+				$errs = ['err'=>'すでに登録されているメールアドレスです。<br>一覧にて登録が確認できない場合、削除状態で登録されていることもあります。詳細検索にて「削除」で検索すると削除状態のデータを確認できます。']; // エラーリスト
+				$json_str = json_encode($errs, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS); // JSONに変換
+				return $json_str;
+			}
+		}
 		
 		// CBBXS-1024
 		// パスワードを暗号化する
@@ -130,6 +171,10 @@ class UserMngController extends AppController {
 		// CBBXS-2024
 
 		// CBBXE
+		
+		if(empty($ent['username'])){
+			$ent['username'] = $ent['email'];
+		}
 		
 		$ent = $this->md->saveEntity($ent, $regParam);
 		
@@ -155,6 +200,11 @@ class UserMngController extends AppController {
 	public function ajax_delete(){
 
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('user_mng') == false){
+			return '不正なアクションを検出しました。';
+		}
 		
 		if($this->login_flg == 1 && empty($this->Auth->user())){
 			return 'Error:login is needed.';// 認証中でなければエラー
@@ -202,6 +252,11 @@ class UserMngController extends AppController {
 	public function auto_save(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
 		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('user_mng') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
 		App::uses('Sanitize', 'Utility');
 		
 		if($this->login_flg == 1 && empty($this->Auth->user())){
@@ -226,6 +281,19 @@ class UserMngController extends AppController {
 	
 	
 	/**
+	 * AJAX | 一覧のチェックボックス複数選択による一括処理
+	 * @return string
+	 */
+	public function ajax_pwms() {
+		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		$this->init();
+		return $this->cb->ajax_pwms();
+		
+	}
+	
+	
+	/**
 	 * ファイルアップロードクラスのファクトリーメソッド
 	 * @return \App\Http\Controllers\FileUploadK
 	 */
@@ -245,6 +313,11 @@ class UserMngController extends AppController {
 	 */
 	public function bulk_reg(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('user_mng') == false){
+			return '不正なアクションを検出しました。';
+		}
 		
 		$this->init();
 		
@@ -283,9 +356,15 @@ class UserMngController extends AppController {
 	 */
 	public function csv_fu(){
 		$this->autoRender = false;//ビュー(ctp)を使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('user_mng') == false){
+			return '不正なアクションを検出しました。';
+		}
+		
 		if(empty($this->Auth->user())) return 'Error:login is needed.';// 認証中でなければエラー
 		
-		$this->csv_fu_base($this->UserMng,array('id','user_mng_val','user_mng_name','user_mng_date','user_mng_group','user_mng_dt','user_mng_flg','img_fn','note','sort_no'));
+		$this->csv_fu_base($this->UserMng, array('id','user_mng_val','user_mng_name','user_mng_date','user_mng_group','user_mng_dt','user_mng_flg','img_fn','note','sort_no'));
 		
 	}
 
@@ -297,6 +376,11 @@ class UserMngController extends AppController {
 	 */
 	public function csv_download(){
 		$this->autoRender = false;//ビューを使わない。
+		
+		// CSRFトークンによるセキュリティチェック
+		if(CrudBaseU::checkCsrfToken('user_mng') == false){
+			return '不正なアクションを検出しました。';
+		}
 	
 		//ダウンロード用のデータを取得する。
 		$data = $this->getDataForDownload();
@@ -348,14 +432,14 @@ class UserMngController extends AppController {
 		$sort_field = $pages['sort_field'];
 		$sort_desc = $pages['sort_desc'];
 		
-		$crudBaseData = array(
-				'kjs' => $kjs,
-				'pages' => $pages,
-				'page_no' => $page_no,
-				'row_limit' => $row_limit,
-				'sort_field' => $sort_field,
-				'sort_desc' => $sort_desc,
-		);
+		$pages['page_no'] = $page_no;
+		$pages['row_limit'] = $row_limit;
+		$pages['sort_field'] = $sort_field;
+		$pages['sort_desc'] = $sort_desc;
+		
+		$crudBaseData = $this->init();
+		$crudBaseData['kjs'] = $kjs;
+		$crudBaseData['pages'] = $pages;
 		
 
 		//DBからデータ取得
@@ -382,16 +466,18 @@ class UserMngController extends AppController {
 			
 			['name'=>'kj_main', 'def'=>null],
 			// CBBXS-2000
-				['name'=>'kj_id', 'def'=>null],
-				['name'=>'kj_username', 'def'=>null],
-				['name'=>'kj_password', 'def'=>null],
-				['name'=>'kj_role', 'def'=>null],
-				['name'=>'kj_sort_no', 'def'=>null],
-				['name'=>'kj_delete_flg', 'def'=>0],
-				['name'=>'kj_update_user', 'def'=>null],
-				['name'=>'kj_ip_addr', 'def'=>null],
-				['name'=>'kj_created', 'def'=>null],
-				['name'=>'kj_modified', 'def'=>null],
+			['name'=>'kj_id', 'def'=>null],
+			['name'=>'kj_username', 'def'=>null],
+			['name'=>'kj_email', 'def'=>null],
+			['name'=>'kj_nickname', 'def'=>null],
+			['name'=>'kj_password', 'def'=>null],
+			['name'=>'kj_role', 'def'=>null],
+			['name'=>'kj_sort_no', 'def'=>null],
+			['name'=>'kj_delete_flg', 'def'=>0],
+			['name'=>'kj_update_user', 'def'=>null],
+			['name'=>'kj_ip_addr', 'def'=>null],
+			['name'=>'kj_created', 'def'=>null],
+			['name'=>'kj_modified', 'def'=>null],
 
 			// CBBXE
 			
@@ -410,9 +496,19 @@ class UserMngController extends AppController {
 					'clm_show'=>1,//デフォルト列表示 0:非表示 1:表示
 			],
 			'username'=>[
-					'name'=>'ユーザー名',
+					'name'=>'username',
 					'row_order'=>'UserMng.username',
-					'clm_show'=>1,
+					'clm_show'=>0,
+			],
+			'email'=>[
+				'name'=>'メールアドレス',
+				'row_order'=>'UserMng.email',
+				'clm_show'=>1,
+			],
+			'nickname'=>[
+				'name'=>'表示名',
+				'row_order'=>'UserMng.nickname',
+				'clm_show'=>1,
 			],
 			'password'=>[
 					'name'=>'パスワード',
