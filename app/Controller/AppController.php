@@ -27,11 +27,14 @@ class AppController extends Controller {
 
 	public function beforeFilter(){
 		
-		if(empty($role)){
-			$role="developer";
+		// 削除されているアカウントならログアウトする。
+		if($this->name != 'Users'){
+			$userInfo = $this->getUserInfo();
+			if(!empty($userInfo['delete_flg'])){
+				$this->Session->setFlash(__("<div style='color:red'>このアカウントは削除されています。<br>This account has been deleted.</div>"));
+				$this->redirect($this->Auth->logout());
+			}
 		}
-		
-		$this->set('role',$role);
 	}
 
 
