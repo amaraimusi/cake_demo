@@ -8,8 +8,8 @@
  * 
  * 
  * @license MIT
- * @since 2016-9-21 | 2021-6-10
- * @version 3.1.7
+ * @since 2016-9-21 | 2021-6-14
+ * @version 3.1.8
  * @histroy
  * 2019-6-28 v2.8.3 CSVフィールドデータ補助クラス | CsvFieldDataSupport.js
  * 2018-10-21 v2.8.0 ボタンサイズ変更機能にボタン表示切替機能を追加
@@ -488,12 +488,6 @@ class CrudBase{
 		// オプションに「ファイルプレビュー後コールバック」をセットする
 		option['pacb'] = this._fukPrevAfterCallback;
 		option['pacb_param'] = {'self':this};
-	
-	//■■■□□□■■■□□□	
-//		var option = {
-//				'pacb':this._fukPrevAfterCallback,
-//				'pacb_param':{'self':this},
-//				};
 		
 		cbFileUploadComp = new CbFileUploadComponent(fuIds, param, option);
 		
@@ -2995,9 +2989,9 @@ class CrudBase{
 	 */
 	_setEntToImageFuk(elm, field, fp){
 
-		var fue_id = elm.attr('id');
-		var option = {'midway_dp':this.param.midway_dp};
-		
+		let fue_id = elm.attr('id');
+		let option = {'midway_dp':this.param.midway_dp};
+
 		// file要素にファイルパスをセットする
 		this.cbFileUploadComp.setFilePaths(fue_id, fp, option);
 		

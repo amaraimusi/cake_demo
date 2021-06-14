@@ -14,7 +14,7 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.3.0";
+	public $version = "3.4.0";
 	
 	public $crudBaseData = [];
 
@@ -96,15 +96,11 @@ class CrudBaseController {
 		
 		global $crudBaseConfig;
 		if(!empty($crudBaseConfig)){
-			$crudBaseData['env'] = $crudBaseConfig['env']; //  環境種別 localhost, amaraimusi, product
-			$crudBaseData['crud_base_root'] = $crudBaseConfig['crud_base_root']; // プロジェクトのルートパス（絶対パス）
-			$crudBaseData['crud_base_app_path'] = $crudBaseConfig['crud_base_app_path']; // appディレクトリの絶対パス
-			$crudBaseData['crud_base_project_path'] = $crudBaseConfig['crud_base_project_path']; // プロジェクト名もしくはプロジェクトの相対パス→（例: animal_park/public)
-			$crudBaseData['crud_base_path'] = $crudBaseConfig['crud_base_path']; // Vendor側のCrudBaseライブラリへの絶対パス
-			$crudBaseData['crud_base_js'] = $crudBaseConfig['crud_base_js']; // jsのCrudBaseライブラリパス（相対パス）
-			$crudBaseData['crud_base_css'] = $crudBaseConfig['crud_base_css']; // cssのCrudBaseライブラリパス（相対パス）
+			foreach($crudBaseConfig as $config_key => $config_value){
+				$crudBaseData[$config_key] = $config_value;
+			}
 		}
-		
+	
 		$crudBaseData['main_model_name'] = $model_name;
 		$crudBaseData['main_model_name_s'] = $model_name_s;
 		$crudBaseData['model_name_s'] = $model_name_s;
@@ -123,8 +119,8 @@ class CrudBaseController {
 		$this->fieldData = $crudBaseData['fieldData']; // フィールドデータ
 		$this->MainModel = $clientModel;
 		
-		$fw_type =$fw_type = $crudBaseData['fw_type']; // フレームワークタイプを取得
-		
+		$fw_type = $crudBaseData['fw_type']; // フレームワークタイプを取得
+
 		$whiteList = array_keys($crudBaseData['fieldData']['def']); // ホワイトリストを取得
 
 		// フレームワーク・ストラテジーの生成
@@ -192,7 +188,7 @@ class CrudBaseController {
 	 */
 	public function factoryStrategy($fw_type, &$clientCtrl, &$clientModel, &$whiteList, &$crudBaseData){
 		$strategy = null;
-		if($fw_type == 'cake'){
+		if($fw_type == 'cake' || $fw_type == 'cake_php'){
 			require_once 'cakephp/CrudBaseStrategyForCake.php';
 			$strategy = new CrudBaseStrategyForCake();
 			if(isset($clientCtrl)) $strategy->setCtrl($clientCtrl); // クライアントコントローラのセット
@@ -203,7 +199,7 @@ class CrudBaseController {
 			$strategy= new CrudBaseStrategyForLaravel7();
 			
 		}else{
-			throw new Exception('$fw_type is empty!');
+			throw new Exception('$fw_type is empty! 210614A');
 		}
 		if(isset($clientCtrl)) $strategy->setCtrl($clientCtrl); // クライアントコントローラのセット
 		$strategy->setModel($clientModel); // クライアントモデルのセット
