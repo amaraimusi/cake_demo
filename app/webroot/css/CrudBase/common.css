@@ -329,3 +329,11 @@ border-radius: 35px;
 .yohaku{
 	height:300px;
 }
+
+#ajax_crud_new_inp_form{
+	background-color:#fbf6fb;
+}
+
+#ajax_crud_edit_form{
+	background-color:#f4f9fd;
+}
