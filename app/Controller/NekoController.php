@@ -48,6 +48,8 @@ class NekoController extends AppController {
 		
 		// CrudBase共通処理（前）
 		$crudBaseData = $this->cb->indexBefore();//indexアクションの共通先処理(CrudBaseController)
+		$userInfo = $this->getUserInfo();
+		$crudBaseData['userInfo'] = $userInfo;
 		
 		// Ajaxセキュリティ:CSRFトークンの取得
 		$crudBaseData['csrf_token'] = CrudBaseU::getCsrfToken('neko');
@@ -122,7 +124,7 @@ class NekoController extends AppController {
 		$regParam = json_decode($reg_param_json,true);
 		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
 		
-		
+		$ent = $this->setCommonToEntity($ent); // 更新者などの情報をセットする
 		$ent = $this->md->saveEntity($ent, $regParam);
 		
 		// ファイルアップロードとファイル名のDB保存

@@ -119,20 +119,8 @@ class ConfigXController extends AppController {
 		$regParam = json_decode($reg_param_json,true);
 		$form_type = $regParam['form_type']; // フォーム種別 new_inp,edit,delete,eliminate
 		
-		
-		// CBBXS-1024
-
-		// CBBXE
-		
-		// CBBXS-2024
-
-		// CBBXE
-		
+		$ent = $this->setCommonToEntity($ent); // 更新者などの情報をセットする
 		$ent = $this->md->saveEntity($ent, $regParam);
-		
-		// CBBXS-2025
-
-		// CBBXE
 		
 		$json_str = json_encode($ent, JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS); // JSONに変換
 		

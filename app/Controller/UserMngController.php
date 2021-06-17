@@ -176,6 +176,7 @@ class UserMngController extends AppController {
 			$ent['username'] = $ent['email'];
 		}
 		
+		$ent = $this->setCommonToEntity($ent); // 更新者などの情報をセットする
 		$ent = $this->md->saveEntity($ent, $regParam);
 		
 		// CBBXS-2025
