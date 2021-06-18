@@ -464,7 +464,7 @@ class NekoController extends AppController {
 		$res=$this->Neko->getData($crudBaseData);
 		$data = $res['data'];
 		if(empty($data)){
-			return array();
+			return [];
 		}
 	
 		return $data;

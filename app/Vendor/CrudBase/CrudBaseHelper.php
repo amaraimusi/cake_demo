@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.1.1
- * @since 2016-7-27 | 2021-6-12
+ * @version 2.1.2
+ * @since 2016-7-27 | 2021-6-17
  * @author k-uehara
  * @license MIT
  */
@@ -2072,11 +2072,19 @@ class CrudBaseHelper {
 	 */
 	public function makeCsvBtns($csv_dl_url){
 		
-		$html = "
-		<a href='{$csv_dl_url}' class='btn btn-secondary btn-sm'>CSVエクスポート</a>
-		<input type='button' value='CSVインポート' class='btn btn-secondary btn-sm' onclick='jQuery(\"#csv_fu_div\").toggle(300);' style='display:none' />
-		<div id='csv_fu_div' style='display:none'><input type='file' id='csv_fu' /></div>
-		";
+		$data_count = $this->crudBaseData['data_count'];
+		
+		$html = '';
+		if(!empty($data_count)){
+			$html = "
+				<a href='{$csv_dl_url}' class='btn btn-secondary btn-sm'>CSVエクスポート</a>
+				<input type='button' value='CSVインポート' class='btn btn-secondary btn-sm' onclick='jQuery(\"#csv_fu_div\").toggle(300);' style='display:none' />
+				<div id='csv_fu_div' style='display:none'><input type='file' id='csv_fu' /></div>
+				";
+		}else{
+			$html = "<span class='text-secondary'>CSVエクスポート対象データなし</span>";
+		}
+		
 		
 		echo $html;
 		
