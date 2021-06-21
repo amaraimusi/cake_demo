@@ -191,7 +191,11 @@ class UserMng extends AppModel {
 		$this->CrudBase->sql_sanitize($kjs); // SQLサニタイズ
 		
 		if(!empty($kjs['kj_main'])){
-			$cnds[]="CONCAT( IFNULL(UserMng.user_mng_name, '') ,IFNULL(UserMng.note, '')) LIKE '%{$kjs['kj_main']}%'";
+			$cnds[]="CONCAT( 
+				IFNULL(UserMng.username, '') ,
+				IFNULL(UserMng.email, '') ,
+				IFNULL(UserMng.nickname, '')
+				) LIKE '%{$kjs['kj_main']}%'";
 		}
 		
 		// CBBXS-1003

@@ -444,9 +444,10 @@ class UserMngController extends AppController {
 		
 
 		//DBからデータ取得
-		$data=$this->UserMng->findData($crudBaseData);
+		$res=$this->UserMng->getData($crudBaseData);
+		$data = $res['data'];
 		if(empty($data)){
-			return array();
+			return [];
 		}
 	
 		return $data;
