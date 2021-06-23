@@ -9,7 +9,7 @@ require_once 'ThumbnailEx.php';
  * 「<input type = 'file'>」であるファイルアップロードのフォーム要素から送られてきたファイルデータを指定場所に保存する。
  * ファイルチェックや、画像形式ならサムネイル画像作成も行う。
  * 
- * @date 2018-6-30 | 2021-5-20
+ * @date 2018-6-30 | 2021-6-23
  * @version 1.1.5
  * @history
  * 2021-5-20 バグ修正
@@ -51,7 +51,9 @@ class FileUploadK{
 		
 		if(empty($fp)) return;
 		
-		
+		$fp = str_replace("\\", '/', $fp);
+		$fp = str_replace("//", '/', $fp);
+
 		// ファイルパスからファイル名とディレクトリパスを取得する
 		$pathInfo = pathinfo($fp);
 		$fn = $pathInfo['basename'];
