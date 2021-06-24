@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.1.2
- * @since 2016-7-27 | 2021-6-17
+ * @version 2.2.0
+ * @since 2016-7-27 | 2021-6-24
  * @author k-uehara
  * @license MIT
  */
@@ -329,7 +329,7 @@ class CrudBaseHelper {
 		foreach($list as $id => $name){
 			$selected = '';
 			if($id == $value) $selected = 'selected';
-			$name = htmlspecialchars($name); // XSSサニタイズ
+			$name = h($name); // XSSサニタイズ
 			$options_str .= "<option value='{$id}' {$selected}>{$name}</option>";
 		}
 		
@@ -378,7 +378,7 @@ class CrudBaseHelper {
 		foreach($list as $id => $name){
 			$selected = '';
 			if($id == $value) $selected = 'selected';
-			$name = htmlspecialchars($name); // XSSサニタイズ
+			$name = h($name); // XSSサニタイズ
 			$options_str .= "<option value='{$id}' {$selected}>{$name}</option>";
 		}
 		
@@ -514,7 +514,7 @@ class CrudBaseHelper {
 				if($u1 == $u2) $selected = 'selected';
 			}
 			
-			$name = htmlspecialchars($name); // XSSサニタイズ
+			$name = h($name); // XSSサニタイズ
 			$options_str .= "<option value='{$d2}' $selected>{$name}</option>";
 		}
 		
@@ -868,13 +868,15 @@ class CrudBaseHelper {
 	 */
 	public function tdStr(&$ent,$field){
 		$v = $ent[$field];
-		$v = htmlspecialchars($v);
+		//$v = h($v);
+		$v = h($v);
+		
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}' >{$v}</span></td>\n";
 		$this->setTd($td,$field);
 	
 	}
 	public function tpStr($v,$wamei){
-		$v = htmlspecialchars($v);
+		$v = h($v);
 		$this->tblPreview($v,$wamei);
 	}
 	
@@ -886,7 +888,7 @@ class CrudBaseHelper {
 	public function tdStrRN(&$ent,$field){
 	
 		$v = $ent[$field];
-		$v = htmlspecialchars($v); // XSS対策
+		$v = h($v); // XSS対策
 		$v = nl2br($v);// 改行置換
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v}</span>\n";
 		$this->setTd($td,$field);
@@ -938,7 +940,7 @@ class CrudBaseHelper {
 		$v = $ent[$field];
 
 		$v2 = $this->propList($v,$list);
-		$v2 = htmlspecialchars($v2);
+		$v2 = h($v2);
 		
 		$td = "<td><input type='hidden' name='{$field}' value='{$v}' /><span class='{$field}'>{$v2}</span></td>";
 		$this->setTd($td,$field);
@@ -969,7 +971,7 @@ class CrudBaseHelper {
 		$v = $ent[$field];
 		
 		$v2 = $this->propList($v,$list);
-		$v2 = htmlspecialchars($v2);
+		$v2 = h($v2);
 		
 		$td = "
 			<td>
@@ -1080,7 +1082,7 @@ class CrudBaseHelper {
 		$v = $ent[$field];
 		$url2 = str_replace('%0', $v, $url);
 		
-		$v = htmlspecialchars($v);
+		$v = h($v);
 		
 		$td = "
 			<td>
@@ -1149,7 +1151,7 @@ class CrudBaseHelper {
 		$v2="";
 		$long_over_flg = 0; // 制限文字数オーバーフラグ
 		if(!empty($v)){
-			$v = htmlspecialchars($v);
+			$v = h($v);
 			if($str_len === null){
 				$v2 = $v;
 			}else{
@@ -1251,7 +1253,7 @@ class CrudBaseHelper {
 		$v = $ent[$field];
 
 		if(!empty($v)){
-			$v = htmlspecialchars($v);
+			$v = h($v);
 			$v=nl2br($v);
 		
 		}
@@ -1262,7 +1264,7 @@ class CrudBaseHelper {
 	public function tpNote($v,$wamei){
 	
 		if(!empty($v)){
-			$v= str_replace('\\r\\n', '<br>', htmlspecialchars($v));
+			$v= str_replace('\\r\\n', '<br>', h($v));
 			$v= str_replace('\\', '', $v);
 		}
 	
@@ -1279,7 +1281,7 @@ class CrudBaseHelper {
 		if(!empty($v)){
 		
 			//サニタイズされた改行コードを「&#13;」に置換
-			$v = str_replace('\\r\\n', '&#13;', htmlspecialchars($v));
+			$v = str_replace('\\r\\n', '&#13;', h($v));
 			$v = str_replace('\\', '', $v);
 		
 		}
@@ -1472,7 +1474,7 @@ class CrudBaseHelper {
 	public function tdOuterName(&$ent,$id_field, $outer_name_field){
 		$id = $ent[$id_field];
 		$outer_name = $ent[$outer_name_field];
-		$outer_name = htmlspecialchars($outer_name);
+		$outer_name = h($outer_name);
 		$td = "<td><input type='hidden' name='{$id_field}' value='{$id}' /><span class='{$outer_name_field}' >{$outer_name}</span></td>\n";
 		$this->setTd($td, $id_field);
 		
@@ -1492,7 +1494,7 @@ class CrudBaseHelper {
 		
 		$id = $ent[$id_field];
 		$outer_name = $ent[$outer_name_field];
-		$outer_name = htmlspecialchars($outer_name);
+		$outer_name = h($outer_name);
 		$td = "<td><input type='hidden' name='{$id_field}' value='{$id}' /><a class='{$outer_name_field}'  href='{$href}' {$target}>{$outer_name}</a></td>\n";
 		$this->setTd($td, $id_field);
 		
@@ -2100,7 +2102,7 @@ class CrudBaseHelper {
 	public function hiddenX($field,$value){
 		
 		$model_name_c = $this->crudBaseData['model_name_c'];
-		$value = htmlspecialchars($value); // XSSサニタイズ
+		$value = h($value); // XSSサニタイズ
 		
 		$html = "
 			<input type='hidden'
