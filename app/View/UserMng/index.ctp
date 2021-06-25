@@ -37,7 +37,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 	<!-- 検索条件入力フォーム -->
 	<form action="" class="form_kjs" id="user_mngIndexForm" method="post" accept-charset="utf-8">
 		
-		<?php $this->CrudBase->inputKjMain('kj_main','',null,'ユーザー管理名、備考を検索する');?>
+		<?php $this->CrudBase->inputKjMain('kj_main','',null,'ユーザー名、メールアドレス、表示名（ニックネーム）を検索する');?>
 		<input type='button' value='検索' onclick='searchKjs()' class='search_kjs_btn btn btn-success btn-sm' />
 		<div class="btn-group">
 			<button type="button" class="btn btn-secondary btn-sm" title="詳細検索項目を表示する" onclick="jQuery('.cb_kj_detail').toggle(300)">詳細検索</button>
@@ -55,7 +55,6 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 		$this->CrudBase->inputKjText('kj_username','ユーザー名');
 		$this->CrudBase->inputKjText('kj_email','メールアドレス');
 		$this->CrudBase->inputKjText('kj_nickname','表示名');
-		$this->CrudBase->inputKjText('kj_password','パスワード');
 		$this->CrudBase->inputKjSelect('kj_role','権限', $masters['roleList']); 
 		$this->CrudBase->inputKjHidden('kj_sort_no');
 		$this->CrudBase->inputKjDeleteFlg();
@@ -138,7 +137,7 @@ $this->assign('script', $this->Html->script($jsList,['charset'=>'utf-8']));
 <div id="crud_base_auto_save_msg" style="height:20px;" class="text-success"></div>
 
 <?php if(!empty($data)){ ?>
-	<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">新規追加</span></button>
+	<button type="button" class="btn btn-warning btn-sm" onclick="newInpShow(this, 'add_to_top');">新規追加</button>
 <?php } ?>
 
 
@@ -243,7 +242,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >メールアドレス: </div>
 			<div class='cbf_input'>
-				<input type="email" name="email" class="valid " value=""  maxlength="256" title="50文字以内で入力してください" style="width:400px" />
+				<input type="email" name="email" class="valid " value="" required maxlength="256" title="メールアドレスの形式で入力してください（例：yamada_taro@example.com)" style="width:400px" />
 				<label class="text-danger" for="email"></label>
 			</div>
 		</div>
@@ -251,7 +250,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >表示名: </div>
 			<div class='cbf_input'>
-				<input type="text" name="nickname" class="valid " value=""  maxlength="50" title="50文字以内で入力してください"  style="width:300px" placeholder="（例）山田太郎" />
+				<input type="text" name="nickname" class="valid " value="" required maxlength="50" title="50文字以内で入力してください"  style="width:300px" placeholder="（例）山田太郎" />
 				<label class="text-danger" for="nickname"></label>
 			</div>
 		</div>
@@ -259,7 +258,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >パスワード: </div>
 			<div class='cbf_input'>
-				<input type="text" name="password" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
+				<input type="text" name="password" class="valid " value="" required maxlength="50" pattern="^[0-9A-Za-z]{8,50}$" title="8文字以上の半角英数字で入力してください。" />
 				<label class="text-danger" for="password"></label>
 			</div>
 		</div>
@@ -313,7 +312,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >表示名: </div>
 			<div class='cbf_input'>
-				<input type="text" name="nickname" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
+				<input type="text" name="nickname" class="valid " value="" required maxlength="50" title="50文字以内で入力してください" />
 				<label class="text-danger" for="nickname"></label>
 			</div>
 		</div>
@@ -322,7 +321,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >パスワード: </div>
 			<div class='cbf_input'>
-				<input type="text" name="password" class="valid " value=""  maxlength="50" title="50文字以内で入力してください" />
+				<input type="text" name="password" class="valid " value="" required maxlength="50" pattern="^[0-9A-Za-z]{8,50}$" title="8文字以上の半角英数字で入力してください。" />
 				<label class="text-danger" for="password"></label>
 			</div>
 		</div>

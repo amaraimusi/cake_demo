@@ -20,7 +20,7 @@ class UserMngController extends AppController {
 	public $login_flg = 0; // ログインフラグ 0:ログイン不要, 1:ログイン必須
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '1.0.1';
+	public $this_page_version = '1.0.2';
 
 	
 	
@@ -441,7 +441,7 @@ class UserMngController extends AppController {
 		$crudBaseData = $this->init();
 		$crudBaseData['kjs'] = $kjs;
 		$crudBaseData['pages'] = $pages;
-		
+		$crudBaseData['userInfo'] = $this->getUserInfo();
 
 		//DBからデータ取得
 		$res=$this->UserMng->getData($crudBaseData);
@@ -513,7 +513,7 @@ class UserMngController extends AppController {
 				'clm_show'=>1,
 			],
 			'password'=>[
-					'name'=>'パスワード',
+					'name'=>'PWハッシュ',
 					'row_order'=>'UserMng.password',
 					'clm_show'=>0,
 			],
