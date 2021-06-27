@@ -98,6 +98,7 @@ class UserMng extends AppModel {
 		
 		//条件を作成
 		$conditions=$this->createKjConditions($kjs, $role);
+		if(empty($conditions)) $conditions = '1=1'; // 検索条件なしの対策
 		
 		$sort_type = '';
 		if(!empty($sort_desc)) $sort_type = 'DESC';
