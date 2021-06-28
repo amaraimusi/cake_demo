@@ -20,7 +20,7 @@ class NekoController extends AppController {
 	public $login_flg = 0; // ログインフラグ 0:ログイン不要, 1:ログイン必須
 	
 	// 当画面バージョン (バージョンを変更すると画面に新バージョン通知とクリアボタンが表示されます。）
-	public $this_page_version = '4.0.3';
+	public $this_page_version = '4.0.4';
 
 	
 	

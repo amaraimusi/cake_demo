@@ -34,6 +34,17 @@ function init(){
 	// CRUD基本クラス
 	crudBase = new CrudBase(crudBaseData);
 	
+	// 編集ボタン、複製ボタンなどの初期設定
+	let btnsCnfData = [
+			{'slt':'.row_edit_btn','wamei':'編集ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_copy_btn','wamei':'複製ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_delete_btn','wamei':'削除ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_eliminate_btn','wamei':'抹消ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_exc_btn','wamei':'行入替ボタン(↑↓ボタン)','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+			{'slt':'.row_enabled_btn','wamei':'有効ボタン','visible':true ,'def_size':'btn-sm','size':'btn-sm'},
+		];
+	crudBase.crudBaseConfig.cbBtnSizeChanger.setCnfData(btnsCnfData);
+	
 	// 検索条件バリデーション情報のセッター
 	let validMethods =_getValidMethods();
 	crudBase.setKjsValidationForJq(
