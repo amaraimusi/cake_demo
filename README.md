@@ -88,7 +88,11 @@ farmin_food.sqlはphpmyadminなどでインポートできるようになって�
 
 ## テスト用のアカウント
 
-なし（後日準備予定）
+syoutokutaisi@example.com
+yasigani@example.com
+syo_umu_tennou@example.com
+など他多数
+パスワードはすべて「abcd1234」
 
 ------
 

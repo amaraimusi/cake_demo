@@ -43,7 +43,7 @@ class NekoController extends AppController {
 	 * ページネーション、列名ソート、列表示切替、CSVダウンロード機能を備えます。
 	 */
 	public function index() {
-		
+
 		$this->init();
 		
 		// CrudBase共通処理（前）
