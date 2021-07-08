@@ -14,7 +14,7 @@ class ConfigX extends AppModel {
 	public $name='ConfigX';
 	
 	// 関連付けるテーブル CBBXS-1040
-	public $useTable = 'configs';
+	public $useTable = 'config_xs';
 
 	// CBBXE
 
@@ -103,7 +103,7 @@ class ConfigX extends AppModel {
 		$sql =
 		"
 				SELECT SQL_CALC_FOUND_ROWS ConfigX.*
-				FROM configs AS ConfigX
+				FROM config_xs AS ConfigX
 				WHERE {$conditions}
 				ORDER BY {$sort_field} {$sort_type}
 				LIMIT {$offset}, {$row_limit}

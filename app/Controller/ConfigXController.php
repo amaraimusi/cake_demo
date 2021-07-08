@@ -266,7 +266,7 @@ class ConfigXController extends AppController {
 		// 一括登録
 		$strategy = $this->cb->getStrategy(); // フレームワークストラテジーを取得する
 		$bulkReg = new \BulkReg($strategy, $update_user);
-		$res = $bulkReg->reg('configs', $param);
+		$res = $bulkReg->reg('config_xs', $param);
 		
 		//JSONに変換
 		$str_json = json_encode($res,JSON_HEX_TAG | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_APOS);
@@ -494,7 +494,7 @@ class ConfigXController extends AppController {
 		$crudBaseData = [
 			'fw_type' => 'cake',
 			'model_name_c' => 'ConfigX',
-			'tbl_name' => 'configs', // テーブル名をセット
+			'tbl_name' => 'config_xs', // テーブル名をセット
 			'kensakuJoken' => $kensakuJoken, //検索条件情報
 			'fieldData' => $fieldData, //フィールドデータ
 			'crud_base_path' => $crud_base_path,

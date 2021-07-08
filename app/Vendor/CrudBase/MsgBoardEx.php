@@ -329,7 +329,7 @@ class MsgBoardEx{
 	private function getConfigs($group_key){
 		
 		// 設定テーブルから仮登録メール用の「件名」、「メール文」、「有効時間」等を取得する
-		$sql = "SELECT config_key, config_value FROM configs WHERE group_key = '{$group_key}'";
+		$sql = "SELECT config_key, config_value FROM config_xs WHERE group_key = '{$group_key}'";
 		$resData = $this->sqlExe($sql);
 		
 		if(empty($resData)) throw new Error('システムエラー 210515A');

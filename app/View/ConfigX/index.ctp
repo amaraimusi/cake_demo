@@ -235,7 +235,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >グループキー: </div>
 			<div class='cbf_input'>
-				<input type="text" name="group_key" class="valid " value=""  maxlength="16" title="16文字以内で入力してください" />
+				<input type="text" name="group_key" class="valid " value=""  maxlength="64" title="64文字以内で入力してください" />
 				<label class="text-danger" for="group_key"></label>
 			</div>
 		</div>
@@ -243,7 +243,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >キー: </div>
 			<div class='cbf_input'>
-				<input type="text" name="config_key" class="valid " value=""  maxlength="16" title="16文字以内で入力してください" />
+				<input type="text" name="config_key" class="valid " value=""  maxlength="64" title="64文字以内で入力してください" />
 				<label class="text-danger" for="config_key"></label>
 			</div>
 		</div>
@@ -301,7 +301,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >グループキー: </div>
 			<div class='cbf_input'>
-				<input type="text" name="group_key" class="valid " value=""  maxlength="16" title="16文字以内で入力してください" />
+				<input type="text" name="group_key" class="valid " value=""  maxlength="64" title="64文字以内で入力してください" />
 				<label class="text-danger" for="group_key"></label>
 			</div>
 		</div>
@@ -310,7 +310,7 @@ foreach($data as $i=>&$ent){
 		<div class="cbf_inp_wrap">
 			<div class='cbf_inp' >キー: </div>
 			<div class='cbf_input'>
-				<input type="text" name="config_key" class="valid " value=""  maxlength="16" title="16文字以内で入力してください" />
+				<input type="text" name="config_key" class="valid " value=""  maxlength="64" title="64文字以内で入力してください" />
 				<label class="text-danger" for="config_key"></label>
 			</div>
 		</div>

@@ -191,7 +191,7 @@ class Signin{
 	private function getConfigsForSigninX(){
 		
 		// 設定テーブルから仮登録メール用の「件名」、「メール文」、「有効時間」等を取得する
-		$sql = "SELECT config_key, config_value FROM configs WHERE group_key = 'signin_x'";
+		$sql = "SELECT config_key, config_value FROM config_xs WHERE group_key = 'signin_x'";
 		$resData = $this->sqlExe($sql);
 
 		if(empty($resData)) throw new Error('システムエラー04233:SigninX:not data');
