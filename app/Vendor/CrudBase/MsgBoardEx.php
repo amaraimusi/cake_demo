@@ -2,7 +2,7 @@
 
 /**
  * メッセージボード・拡張サポートクラス(CakePHP2に対応）
- * @since 2021-5-14
+ * @since 2021-5-14 | 2021-7-9
  * @license MIT
  * @author kenji uehara
  *
@@ -336,8 +336,8 @@ class MsgBoardEx{
 		
 		$configs = [];
 		foreach($resData as $confEnt){
-			$config_key = $confEnt['configs']['config_key'];
-			$config_value = $confEnt['configs']['config_value'];
+			$config_key = $confEnt['config_xs']['config_key'];
+			$config_value = $confEnt['config_xs']['config_value'];
 			$configs[$config_key] = $config_value;
 		}
 		
