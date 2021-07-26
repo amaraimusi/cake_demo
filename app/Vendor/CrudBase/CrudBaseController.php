@@ -14,7 +14,7 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.4.0";
+	public $version = "3.4.1";
 	
 	public $crudBaseData = [];
 
@@ -111,6 +111,8 @@ class CrudBaseController {
 		if (empty($crudBaseData['func_csv_export'])) $crudBaseData['func_csv_export'] = 1;
 		if (empty($crudBaseData['sql_dump_flg'])) $crudBaseData['sql_dump_flg'] = true;
 		if (empty($crudBaseData['func_file_upload'])) $crudBaseData['func_file_upload'] = 1;
+		if (empty($crudBaseData['kensakuJoken'])) $crudBaseData['kensakuJoken'] = [];
+		if (empty($crudBaseData['fieldData'])) $crudBaseData['fieldData'] = ['def'=>[]];
 		
 		if(empty($crudBaseData['debug'])) $crudBaseData['debug'] = 0; // デバッグモード
 		$crudBaseData['fields'] = array_keys($crudBaseData['fieldData']['def']); // フィールドリスト
@@ -904,10 +906,12 @@ class CrudBaseController {
 	 */
 	protected function getKjs($formKey){
 
-		$def=$this->getDefKjs();//デフォルトパラメータ
-		$keys=$this->getKjKeys();//検索条件キーリストを取得
-		$kjs=$this->getParams($keys,$formKey,$def);
-
+		$def = $this->getDefKjs();//デフォルトパラメータ
+		$keys = $this->getKjKeys();//検索条件キーリストを取得
+		$kjs = $this->getParams($keys,$formKey,$def);
+		
+		if(empty($kjs)) return [];
+		
 		foreach($kjs as $k=>$v){
 			if(is_array($v)){
 				$kjs[$k]=$v;
@@ -1115,8 +1119,10 @@ class CrudBaseController {
 	 * @return array パラメータ
 	 */
 	protected function getParams($keys,$formKey,$def){
-
-		$prms=null;
+		
+		$prms = null;
+		if(empty($keys)) return $prms;
+		
 		foreach($keys as $key){
 			$prms[$key]=$this->getParam($key, $formKey,$def);
 		}

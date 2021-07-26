@@ -148,7 +148,7 @@ class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
 	 *  - webroot string  ホーム相対パスのエイリアス(別名)
 	 */
 	public function getPath(){
-		$web_root = config('const.WEB_ROOT');
+		$web_root = CRUD_BASE_URL_BASE;
 		$home_r_path = $web_root;
 		
 		return [

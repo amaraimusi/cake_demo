@@ -63,6 +63,8 @@ Vue.jsも取り入れていく予定です。
 
 フロントエンド側で必要とする技術はJavaScript ES6(ES2015), jQuery, Vue.js, Gulp, npm(Node.js)です。
 
+------
+
 ## GitHub
 <https://github.com/amaraimusi/cake_demo>
 
