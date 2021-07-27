@@ -14,7 +14,7 @@ require_once 'PagenationForCake.php';
 class CrudBaseController {
 
 	///バージョン
-	public $version = "3.4.1";
+	public $version = "3.4.2";
 	
 	public $crudBaseData = [];
 
@@ -2069,10 +2069,11 @@ class CrudBaseController {
 	
 	/**
 	 * 権限リストを取得する
+	 * @param [] $userInfo ユーザー情報
 	 * @return [] 権限リスト
 	 */
-	public function getRoleList(){
-		return $this->crudBaseModel->getRoleList();
+	public function getRoleList($userInfo = []){
+		return $this->crudBaseModel->getRoleList($userInfo);
 	}
 	
 	/**

@@ -4,7 +4,7 @@ require_once 'HashCustom.php';
  * CrudBaseのロジッククラス
  * 
  * @version 3.0.1
- * @date 2016-1-21 | 2020-9-5
+ * @date 2016-1-21 | 2021-7-27
  * @history
  * 2020-6-16 CrudBaseからCrudBaseModeに名称変更。CakePHPへの依存をはずす。
  * 2018-10-8 v2.2.0 アップロードファイル関連の大幅修正
@@ -40,6 +40,7 @@ class CrudBaseModel{
 	 *  - authority 権限データ
 	 */
 	public function getUserInfo(){
+		
 		
 		$userInfo = $this->strategy->getUserInfo(); // ユーザー情報を取得する
 		
@@ -101,12 +102,15 @@ class CrudBaseModel{
 	
 	/**
 	 * 権限リストを取得する
+	 * @param [] $userInfo ユーザー情報
 	 * @return array 権限リスト
 	 */
-	public function getRoleList(){
-		
-		$userInfo = $this->getUserInfo();
+	public function getRoleList($userInfo = []){
 
+		if(empty($userInfo)){
+			$userInfo = $this->getUserInfo();
+		}
+		
 		if(empty($userInfo['authority'])) return [];
 		
 		$role = $userInfo['authority']['name']; // 現在の権限を取得
