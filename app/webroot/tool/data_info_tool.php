@@ -20,18 +20,25 @@
 <body>
 <div id="header" ><h1>DBテーブル情報閲覧ツール | ワクガンス</h1></div>
 
-<p>バージョン 2.0.0</p>
+<p>バージョン 2.0.1</p>
 
 <?php 
-require_once '../../Vendor/CrudBase/crud_base_config.php';
+
 $server_name=$_SERVER['SERVER_NAME'];
 if($server_name != 'localhost') die('ローカル環境 only');
 	
 $home_dp = dirname(dirname(__DIR__));
-require_once $home_dp . '/Vendor/CrudBase/PdoDao.php';
+require_once __DIR__ . '/../../Vendor/CrudBase/PdoDao.php';
+
+$dbConf = [
+	'host' => 'localhost',
+	'db_name' => 'cake_demo',
+	'user' => 'root',
+	'pw' => '',
+];
 
 $pdoDao = new PdoDao();
-$dao = $pdoDao->getDao();
+$dao = $pdoDao->getDao($dbConf);
 
 $param = $_GET;
 if(empty($param['tbl_name'])) $param['tbl_name'] = 'clients';
@@ -72,7 +79,7 @@ try {
 }
 ?>
 
-
+</div>
 
 
 <?php 
@@ -104,7 +111,10 @@ function filterData($data){
 
 
 function createTable($data){
-	
+	if(empty($data)) {
+		echo 'NO DATA<br>';
+		return;
+	}
 	$keys = array_keys($data[0]);
 	$head_html = "<th>{$keys[0]}</th><th>{$keys[4]}</th>";
 	
@@ -126,7 +136,10 @@ function createTable($data){
 
 
 function createTableDtl($data){
-
+	if(empty($data)) {
+		echo 'NO DATA<br>';
+		return;
+	}
 	$keys = array_keys($data[0]);
 	$head_html = "<th>" . implode("</th><th>",$keys) . "</th>";
 	
@@ -209,6 +222,7 @@ function getData2($dao, $param){
 	}
 	
 	$stmt = $dao->query($sql);
+	if(empty($stmt)) return [];
 	$data = [];
 	foreach ($stmt as $row) {
 		$data[] = $row;
@@ -224,6 +238,7 @@ function getFieldInfoData(&$dao, $param){
 	
 	$sql="SHOW FULL COLUMNS FROM {$tbl_name}";
 	$stmt = $dao->query($sql);
+	if(empty($stmt)) return [];
 	$data = [];
 	foreach ($stmt as $row) {
 		$data[] = $row;
