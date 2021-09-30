@@ -8,8 +8,8 @@
  * 検索条件入力フォームや、一覧テーブルのプロパティのラッパーを提供する
  * 2.0.0よりCakeからの依存から離脱
  * 
- * @version 2.2.0
- * @since 2016-7-27 | 2021-6-24
+ * @version 2.2.1
+ * @since 2016-7-27 | 2021-9-30
  * @author k-uehara
  * @license MIT
  */
@@ -1355,8 +1355,11 @@ class CrudBaseHelper {
 	 * @param array $ent データのエンティティ
 	 * @param string $field フィールド名
 	 * @param string $midway_dp 中間ディレクトリパス
+	 * @param []
+	 *  - orig_dir string オリジナル画像のディレクトリ名  例→ /orig/
+	 *  - thum_dir string  サムネイル画像のディレクトリ名  例→ /thum/
 	 */
-	public function tdImage(&$ent, $field, $midway_dp = ''){
+	public function tdImage(&$ent, $field, $midway_dp = '', $option=[]){
 		
 		$fp = $ent[$field];
 		$orig_fp = '';
@@ -1366,6 +1369,10 @@ class CrudBaseHelper {
 		$display_img_a = 'display:none;';
 		$display_none = 'display:none;';
 		$display_dl = 'display:none;';
+		
+		
+		$orig_dir = $option['orig_dir'] ?? '/orig/';
+		$thum_dir = $option['thum_dir'] ?? '/thum/';
 		
 		if(!empty($fp)){
 			$orig_fp = $midway_dp . $fp;
@@ -1378,7 +1385,7 @@ class CrudBaseHelper {
 			$exts = ['jpg', 'jpeg', 'png', 'gif'];
 			if(in_array($ext, $exts)){
 				$img_href = $orig_fp;
-				$thum_src = str_replace('/orig/', '/thum/', $orig_fp);
+				$thum_src = str_replace($orig_dir, $thum_dir, $orig_fp);
 				$display_img_a = '';
 			}else{
 				$dl_href = $orig_fp;

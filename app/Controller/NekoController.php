@@ -61,6 +61,8 @@ class NekoController extends AppController {
 		// CrudBase共通処理（後）
 		$crudBaseData = $this->cb->indexAfter($crudBaseData, ['non_limit_count'=>$non_limit_count]);
 		
+		debug($crudBaseData);//■■■□□□■■■□□□)
+		
 		$masters = []; // マスターリスト群
 		
 		// CBBXS-2020

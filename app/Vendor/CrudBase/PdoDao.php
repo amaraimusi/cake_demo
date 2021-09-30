@@ -4,8 +4,8 @@ require_once 'IDao.php';
 /**
  * PDOのDAO（データベースアクセスオブジェクト）
  * 
- * @date 2019-10-26 | 2021-4-13
- * @version 1.2.0
+ * @date 2019-10-26 | 2021-7-28
+ * @version 1.2.1
  * @license MIT
  * @author Kenji Uehara
  *
@@ -17,14 +17,21 @@ class PdoDao implements IDao
 	
 	/**
 	 * DAO(データベースアクセスオブジェクト）を取得する
+	 * @param [] $dbConf
+	 *  - host
+	 *  - db_name
+	 *  - user
+	 *  - pw
 	 * @return object Dao
 	 */
-	public function getDao(){
+	public function getDao($dbConf=[]){
 		
 		if($this->dao) return $this->dao;
 		
-		global $crudBaseConfig;
-		$dbConf = $crudBaseConfig['dbConfig'];
+		if(empty($dbConf)){
+			global $crudBaseConfig;
+			$dbConf = $crudBaseConfig['dbConfig'];
+		}
 
 		try {
 			$dao = new PDO("mysql:host={$dbConf['host']};dbname={$dbConf['db_name']};charset=utf8",$dbConf['user'],$dbConf['pw'],
