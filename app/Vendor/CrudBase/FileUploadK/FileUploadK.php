@@ -9,8 +9,8 @@ require_once 'ThumbnailEx.php';
  * 「<input type = 'file'>」であるファイルアップロードのフォーム要素から送られてきたファイルデータを指定場所に保存する。
  * ファイルチェックや、画像形式ならサムネイル画像作成も行う。
  * 
- * @date 2018-6-30 | 2021-6-23
- * @version 1.1.5
+ * @date 2018-6-30 | 2021-10-2
+ * @version 1.1.6
  * @history
  * 2021-5-20 バグ修正
  * 2018-10-23 ver 1.1.2 セパレータから始まるディレクトリの時に起こるバグを修正
@@ -45,11 +45,22 @@ class FileUploadK{
 	 * @param array $FILES $_FILES
 	 * @param string $filed フィールド
 	 * @param string $fp ファイルパス
+	 * @param [] $option
+	 *  - thum_width int サムネイル画像の横幅
+	 *  - thum_height  int サムネイル画像の縦幅
+	 *  - md_width int 中間画像の横幅
+	 *  - md_height  int 中間画像の縦幅
 	 */
-	public function putFile1(&$FILES, $filed, $fp){
+	public function putFile1(&$FILES, $filed, $fp, $option=[]){
 		if(empty($FILES)) return;
 		
 		if(empty($fp)) return;
+		
+		$thum_width = $option['thum_width'] ?? 64;
+		$thum_height = $option['thum_height'] ?? 64;
+		$md_width = $option['md_width'] ?? 480;
+		$md_height = $option['md_height'] ?? null;
+		
 		
 		$fp = str_replace("\\", '/', $fp);
 		$fp = str_replace("//", '/', $fp);
@@ -75,13 +86,13 @@ class FileUploadK{
 				'thums' => array(
 					0 => array(
 							'thum_dp' => $thum_dp,
-							'thum_width' => 64,
-							'thum_height' => 64,
+					    'thum_width' => $thum_width,
+					    'thum_height' => $md_height,
 							),
 					1 => array(
 							'thum_dp' => $mid_dp,
-							'thum_width' => 480,
-							'thum_height' => null,
+					    'thum_width' => $md_width,
+					    'thum_height' => $md_height,
 							),
 					)
 		);
