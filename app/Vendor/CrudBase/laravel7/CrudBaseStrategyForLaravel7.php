@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Session;
 
 /**
  * Laravel7用ストラテジークラス
- * @version 1.0.4
- * @since 2020-6-10 | 2021-4-19
+ * @version 1.1.0
+ * @since 2020-6-10 | 2021-10-2
  * @license MIT
  */
 class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
@@ -91,8 +91,7 @@ class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
 	 * @param string $key キー
 	 */
 	public function sessionDelete($key){
-		dump('XXX　sessionDelete');//■■■□□□■■■□□□)
-		// ■■■□□□■■■□□□
+	    Session::forget($key);
 	} 
 	
 	
