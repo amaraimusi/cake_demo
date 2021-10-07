@@ -5,8 +5,8 @@
  * @note
  * テーブルの行を入れ替えることによる並べ替え
  * 
- * @version 1.2.0 Bootstrap4に対応
- * @since 2017-3-7 | 2021-6-1
+ * @version 1.2.1 Bootstrap4に対応
+ * @since 2017-3-7 | 2021-10-7
  * @license MIT
  * 
  */
@@ -333,10 +333,10 @@ class CrudBaseRowExchange{
 			"			</div>" +
 			"		</div>" +
 			"		<div class='card-body' \">" +
-			"			<button type='button' class='exchange_tr_shift_up btn btn-primary btn-sm' style='font-weight:bold;'><span class='oi' data-glyph='arrow-thick-top'></span></button>" +
-			"			<button type='button' class='exchange_tr_shift_down btn btn-primary btn-sm' style='font-weight:bold;'><span class='oi' data-glyph='arrow-thick-bottom'></span></button>" +
+			"			<button type='button' class='exchange_tr_shift_up btn btn-primary btn-sm' style='font-weight:bold;' title='一つ上に移動します。'><span class='oi' data-glyph='arrow-thick-top'></span></button>" +
+			"			<button type='button' class='exchange_tr_shift_down btn btn-primary btn-sm' style='font-weight:bold;' title='一つ下に移動します。'><span class='oi' data-glyph='arrow-thick-bottom'></span></button>" +
 			"			<div style='margin-top:20px'>" +
-			"				<input class='exchange_tr_sort_no' type='number' style='width:60px' min='1' max='9999'  />" +
+			"				<input class='exchange_tr_sort_no' type='number' style='width:60px' min='1' max='9999'  title='移動したい行の位置を数値で入力してください。先頭に移動させたい場合は1を入力して行入替ボタンを押します。上から3番目に移動させたい場合は3を入力します。' />" +
 			"				<input type='button' value='行入替' class='exchange_tr_btn btn btn-warning btn-sm' />" +
 			"			</div>" +
 			"		</div>" +
