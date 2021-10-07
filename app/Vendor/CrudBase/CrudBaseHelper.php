@@ -853,7 +853,7 @@ class CrudBaseHelper {
 	public function tdPlain(&$ent,$field){
 		
 		$v = $ent[$field];
-		$td = "<td><input type='hidden' name='{$field}' value='{$v}'  /><span class='{$field}' >{$v}</span></td>\n";
+		$td = "<td><input type='hidden' name='{$field}' value='{$v}'  /><span class='{$field}' >{$v}</span></td>";
 		$this->setTd($td,$field);
 	}
 	public function tpPlain($v,$wamei){
@@ -1515,7 +1515,7 @@ class CrudBaseHelper {
 	 * @param string $td TD要素文字列
 	 * @param string $field フィールド名
 	 */
-	private function setTd($td,$field){
+	public function setTd($td,$field){
 		if($this->_clmSortMode && !empty($field) ){
 			$this->_clmSortTds[$field] = $td;
 		}else{
