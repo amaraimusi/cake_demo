@@ -4,8 +4,8 @@ App::uses('AppController', 'Controller');
 
 /**
  * Cake2.x用ストラテジークラス
- * @version 1.0.5
- * @since 2020-6-10 | 2021-5-12
+ * @version 1.0.6
+ * @since 2020-6-10 | 2021-10-26
  * @license MIT
  */
 class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy{
@@ -35,6 +35,10 @@ class CrudBaseStrategyForCake extends AppController implements ICrudBaseStrategy
 	
 	public function sqlExe($sql){
 		return $this->model->query($sql);
+	}
+	
+	public function query($sql){
+		return $this->sqlExe($sql);
 	}
 	
 	public function begin(){

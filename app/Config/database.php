@@ -72,7 +72,7 @@ class DATABASE_CONFIG {
 			'persistent' => false,
 			'host' => 'localhost',
 			'login' => 'root',
-			'password' => '',
+			'password' => 'neko',
 			'database' => 'cake_demo',
 			'prefix' => '',
 			'encoding' => 'utf8',

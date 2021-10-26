@@ -5,6 +5,7 @@ interface ICrudBaseStrategy{
 	public function setWhiteList(&$whiteList); // ホワイトリストのセッター
 	public function setCrudBaseData(&$crudBaseData); // ホワイトリストのセッター
 	public function sqlExe($sql);
+	public function query($sql);
 	public function selectValue($sql); // SQLを実行して単一の値を取得する
 	public function selectEntity($sql); // SQLを実行してエンティティを取得する
 	public function selectData($sql); // SQLを実行してデータを取得する

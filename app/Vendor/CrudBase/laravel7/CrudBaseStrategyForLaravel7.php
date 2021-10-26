@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Session;
 
 /**
  * Laravel7用ストラテジークラス
- * @version 1.1.0
- * @since 2020-6-10 | 2021-10-2
+ * @version 1.1.1
+ * @since 2020-6-10 | 2021-10-26
  * @license MIT
  */
 class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
@@ -51,6 +51,10 @@ class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
 	public function sqlExe($sql){
 		$res = \DB::select($sql);
 		return $res;
+	}
+	
+	public function query($sql){
+		return $this->sqlExe($sql);
 	}
 	
 	public function begin(){
