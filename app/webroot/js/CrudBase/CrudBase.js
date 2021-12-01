@@ -947,8 +947,8 @@ class CrudBase{
 
 	/**
 	 * 新規入力登録
-	 * @param beforeCallBack Ajax送信前のコールバック（送信データを編集できる）
-	 * @param afterCallBack Ajax送信後のコールバック
+	 * @param beforeCallBack 引数(ent, fd) Ajax送信前のコールバック（送信データを編集できる）
+	 * @param afterCallBack 引数(ent, tr) Ajax送信後のコールバック
 	 * @param option オプション 
 	 * - add_row_index 追加行インデックス :テーブル行の挿入場所。-1にすると末尾へ追加。-1がデフォルト。
 	 * - wp_action WPアクション: WordPressでは必須
@@ -1087,8 +1087,8 @@ class CrudBase{
 	
 	/**
 	 * 編集登録
-	 * @param beforeCallBack Ajax送信前のコールバック（送信データを編集できる）
-	 * @param afterCallBack Ajax送信後のコールバック(ent, tr)
+	 * @param beforeCallBack 引数(ent,fd) Ajax送信前のコールバック（送信データを編集できる）
+	 * @param afterCallBack 引数(ent, tr) Ajax送信後のコールバック
 	 * @param option オプション
 	 * - wp_action :WPアクション	WordPressでは必須
 	 * - wp_nonce  :WPノンス	WordPressのトークン的なもの（なくても動くがセキュリティが下がる）

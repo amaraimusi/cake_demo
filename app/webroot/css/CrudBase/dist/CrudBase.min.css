@@ -70,13 +70,13 @@
 body {
 	padding-bottom: 40px;
 }
-/* 横いっぱいに広げる | bootstrapのハック */
+/* 讓ｪ縺�縺｣縺ｱ縺�縺ｫ蠎�縺偵ｋ | bootstrap縺ｮ繝上ャ繧ｯ */
 .container {width: auto;}
 .sidebar-nav {
 	padding: 9px 0;
 }
 
-/* メニュープルダウン用 */
+/* 繝｡繝九Η繝ｼ繝励Ν繝�繧ｦ繝ｳ逕ｨ */
 .top_menu_pull ul{
 	display:none;
 	position:absolute;
@@ -91,13 +91,13 @@ body {
 	color:#8489ae;
 }
 		
-/* 補足 */
+/* 陬懆ｶｳ */
 aside{
 	font-size:0.7em;
 	color:#6f6b81;
 }
 
-/* テーブル */
+/* 繝�繝ｼ繝悶Ν */
 .tbl2{
 	border-collapse:collapse;
 	border-color:#b7badb;
@@ -123,13 +123,13 @@ aside{
 	color:#34353f;
 }
 
-/* 注釈 */
+/* 豕ｨ驥� */
 .annot{
 	color:#df3952;
 	font-style: italic;
 }
 
-/* ヘルプ */
+/* 繝倥Ν繝� */
 #help_x{
 	border:solid 3px #c69dd9;
 	padding:10px;
@@ -143,7 +143,7 @@ aside{
 	color:#333839;
 	font-size:14px;
 	line-height:2em;
-	font-family: "Lucida Grande", "Lucida Sans Unicode", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", Helvetica, Arial, Verdana, sans-serif
+	font-family: "Lucida Grande", "Lucida Sans Unicode", "Hiragino Kaku Gothic Pro", "繝偵Λ繧ｮ繝手ｧ偵ざ Pro W3", "繝｡繧､繝ｪ繧ｪ", Meiryo, "�ｼｭ�ｼｳ �ｼｰ繧ｴ繧ｷ繝�繧ｯ", Helvetica, Arial, Verdana, sans-serif
 	
 }
 .help_x h3{
@@ -232,13 +232,13 @@ line-height: 1.33;
 border-radius: 35px;
 }
 
-/* Cake PHPのエラーメッセージ用 */
+/* Cake PHP縺ｮ繧ｨ繝ｩ繝ｼ繝｡繝�繧ｻ繝ｼ繧ｸ逕ｨ */
 .error-message{
 	color:#de5347;
 }
 
 
-/* テーブル型入力フォームのＳＰ版（スマホ） */
+/* 繝�繝ｼ繝悶Ν蝙句�･蜉帙ヵ繧ｩ繝ｼ繝�縺ｮ�ｼｳ�ｼｰ迚茨ｼ医せ繝槭�幢ｼ� */
 .tbl_sp{
 	display:block;
 	width:100%;
@@ -268,7 +268,7 @@ border-radius: 35px;
 	width:100%;
 }
 
-/* テーブル変形 */
+/* 繝�繝ｼ繝悶Ν螟牙ｽ｢ */
 .table_transform{
 	border:none;
 	width:100%;
@@ -285,7 +285,7 @@ border-radius: 35px;
 	border:none;
 }
 
-/* バージョン2.6のフォーム */
+/* 繝舌�ｼ繧ｸ繝ｧ繝ｳ2.6縺ｮ繝輔か繝ｼ繝� */
 .crud_base_form{
 	border:solid #3174af 2px;
 	background-color:#f2f2f2;
@@ -293,6 +293,7 @@ border-radius: 35px;
 }
 .cbf_inp_wrap{
 	display:inline-block;
+	vertical-align: top;
 	margin-bottom:10px;
 }
 .cbf_inp_wrap_long{

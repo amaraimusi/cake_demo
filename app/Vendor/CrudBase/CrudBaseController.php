@@ -190,7 +190,10 @@ class CrudBaseController {
 	 */
 	public function factoryStrategy($fw_type, &$clientCtrl, &$clientModel, &$whiteList, &$crudBaseData){
 		$strategy = null;
-		if($fw_type == 'cake' || $fw_type == 'cake_php'){
+		if($fw_type == 'laravel8'){
+		    require_once 'laravel8/CrudBaseStrategyForLaravel8.php';
+		    $strategy= new CrudBaseStrategyForLaravel8();
+		}else if($fw_type == 'cake' || $fw_type == 'cake_php'){
 			require_once 'cakephp/CrudBaseStrategyForCake.php';
 			$strategy = new CrudBaseStrategyForCake();
 			if(isset($clientCtrl)) $strategy->setCtrl($clientCtrl); // クライアントコントローラのセット

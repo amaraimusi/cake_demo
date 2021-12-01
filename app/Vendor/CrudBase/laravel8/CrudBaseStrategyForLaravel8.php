@@ -5,11 +5,11 @@ use Illuminate\Support\Facades\Session;
 
 /**
  * Laravel7用ストラテジークラス
- * @version 1.1.1
- * @since 2020-6-10 | 2021-10-26
+ * @version 1.0.0
+ * @since 2021-11-23
  * @license MIT
  */
-class CrudBaseStrategyForLaravel7  implements ICrudBaseStrategy{
+class CrudBaseStrategyForLaravel8  implements ICrudBaseStrategy{
 	
 	private $ctrl; // クライアントコントローラ
 	private $model; // クライアントモデル
